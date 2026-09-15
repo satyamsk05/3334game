@@ -10,7 +10,7 @@ object ClientConfig {
      * Set your EC2 public IP or domain here (e.g., "http://13.233.100.50:4000" or "http://10.0.2.2:4000" for emulator)
      * Leave blank or empty string to use local simulated mode.
      */
-    var SERVER_BASE_URL: String = "http://10.0.2.2:4000"
+    var SERVER_BASE_URL: String = "http://3.7.73.109:4000"
 
     const val APP_VERSION: String = "1.0.0"
 
