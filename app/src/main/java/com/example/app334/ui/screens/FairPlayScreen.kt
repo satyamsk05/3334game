@@ -1,5 +1,6 @@
 package com.example.app334.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,6 +27,10 @@ fun FairPlayScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    BackHandler {
+        onBackClick()
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -60,7 +65,7 @@ fun FairPlayScreen(
             Spacer(modifier = Modifier.width(14.dp))
 
             Text(
-                text = "InGames Fair Play",
+                text = "Fair Play Policy",
                 fontSize = 22.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,
@@ -68,24 +73,24 @@ fun FairPlayScreen(
             )
         }
 
-        // Section 1: Certified RNG
+        // Section 1: Unbiased Random Outcome Generation
         FairPlayCard(
-            title = "Certified Random Number Generator (RNG)",
-            description = "All game algorithms on InGames 334 use certified cryptographic RNG systems ensuring 100% unpredictable and tamper-proof outcomes for every player.",
+            title = "Unbiased Random Outcome Generation",
+            description = "Ring of Future uses cryptographically strong SecureRandom sampling across 32 wheel segments. Outcome probability is purely random with no player manipulation.",
             iconRes = R.drawable.ic_settings_shield
         )
 
-        // Section 2: Anti-Cheating & Bot Detection
+        // Section 2: Balanced ~95% RTP Multipliers
         FairPlayCard(
-            title = "Anti-Cheating & Bot Detection",
-            description = "Advanced AI monitoring systems automatically detect and ban automated bots, multi-accounting, and collusive behaviors to protect genuine players.",
+            title = "Target ~95% Return-To-Player (RTP)",
+            description = "Multipliers are mathematically calibrated across all colors (Green 30x, Red 5.06x, Purple 3.04x, Grey 2.03x) ensuring a transparent and consistent house edge.",
             iconRes = R.drawable.ic_settings_issues
         )
 
-        // Section 3: Secure Wallet & Transactions
+        // Section 3: Transparent Ledger & Demo Accounting
         FairPlayCard(
-            title = "Secure Wallet & Financial Safety",
-            description = "Your deposits and winnings are held safely in segregated accounts with instant 24/7 withdrawal support via RBI-approved banking channels.",
+            title = "Transparent Ledger Accounting",
+            description = "All bet debits, refunds, wins, and withdrawals are recorded synchronously in the application ledger in integer paise to eliminate rounding discrepancies.",
             iconRes = R.drawable.ic_settings_add_cash
         )
 

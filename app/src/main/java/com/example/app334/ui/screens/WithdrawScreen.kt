@@ -1,5 +1,6 @@
 package com.example.app334.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,17 +25,24 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app334.R
+import com.example.app334.game.ringoffuture.backend.WalletLedger
 import com.example.app334.ui.theme.RubikFont
 
 @Composable
 fun WithdrawScreen(
-    winningsBalance: String = "₹31.45",
+    winningsBalance: String = "₹1250",
     onBackClick: () -> Unit = {},
     onNextClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    BackHandler {
+        onBackClick()
+    }
+
+    val walletBalance by WalletLedger.walletBalance.collectAsState()
     var amount by remember { mutableStateOf("") }
-    val isAmountValid = amount.isNotEmpty() && (amount.toIntOrNull() ?: 0) >= 25
+    val amountNum = amount.toIntOrNull() ?: 0
+    val isAmountValid = amount.isNotEmpty() && amountNum >= 25 && amountNum <= 5000 && amountNum <= walletBalance.winningRupees
 
     Column(
         modifier = modifier
@@ -66,7 +74,7 @@ fun WithdrawScreen(
             }
 
             Text(
-                text = "Withdraw",
+                text = "Withdraw Winnings",
                 fontSize = 20.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.W800,
@@ -83,7 +91,7 @@ fun WithdrawScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "WINNINGS BALANCE",
+                text = "AVAILABLE WINNINGS BALANCE",
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,
@@ -92,7 +100,7 @@ fun WithdrawScreen(
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = winningsBalance,
+                text = walletBalance.formattedWinnings,
                 fontSize = 36.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.W800,
@@ -105,7 +113,7 @@ fun WithdrawScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Enter Amount",
+                text = "Enter Amount (₹)",
                 fontSize = 14.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,
@@ -154,7 +162,7 @@ fun WithdrawScreen(
                             Box(contentAlignment = Alignment.CenterStart) {
                                 if (amount.isEmpty()) {
                                     Text(
-                                        text = "Enter Amount",
+                                        text = "Enter Amount (Min ₹25)",
                                         fontSize = 18.sp,
                                         fontFamily = RubikFont,
                                         fontWeight = FontWeight.W800,
@@ -170,7 +178,7 @@ fun WithdrawScreen(
             }
 
             Text(
-                text = "Min ₹25 - Max ₹5000 twice a day",
+                text = "Min ₹25 - Max ₹5000 twice a day (Winnings Only)",
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Medium,
@@ -200,7 +208,7 @@ fun WithdrawScreen(
                     tint = Color(0xFF8E899B)
                 )
                 Text(
-                    text = "Instant Withdrawals",
+                    text = "Demo Withdrawal System",
                     fontSize = 12.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Medium,

@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -15,10 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app334.game.ringoffuture.backend.GameBackendRepository
+import com.example.app334.game.ringoffuture.backend.WalletLedger
 import com.example.app334.game.ringoffuture.model.WheelConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,6 +35,8 @@ fun DepositPaymentScreen(
 
     val amountPresets = listOf("100", "500", "1000", "2000", "5000")
     val paymentMethods = listOf("PhonePe", "Paytm", "Google Pay", "BHIM UPI / QR")
+
+    val walletBalance by WalletLedger.walletBalance.collectAsState()
 
     Scaffold(
         topBar = {
@@ -75,7 +76,7 @@ fun DepositPaymentScreen(
                     Column {
                         Text("Current Balance", color = Color.Gray, fontSize = 13.sp)
                         Text(
-                            "₹${String.format("%.2f", GameBackendRepository.getWalletBalance().totalBalance)}",
+                            walletBalance.formattedTotal,
                             color = Color.White,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
@@ -214,7 +215,6 @@ fun DepositPaymentScreen(
                     errorMessage = null
                     isSubmitting = true
 
-                    // Trigger Backend Repository & Telegram Alert
                     GameBackendRepository.submitDepositRequest(amountVal, utrInput)
                     isSubmitting = false
                     showSuccessDialog = true
@@ -242,7 +242,7 @@ fun DepositPaymentScreen(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Your deposit request of ₹$selectedAmount has been submitted.", color = Color.LightGray)
-                    Text("⚡ Telegram notification sent to Admin. Wallet will update upon verification.", color = WheelConfig.COLOR_GOLD, fontSize = 13.sp)
+                    Text("⚡ Demo chips credited to your wallet balance.", color = WheelConfig.COLOR_GOLD, fontSize = 13.sp)
                 }
             },
             confirmButton = {

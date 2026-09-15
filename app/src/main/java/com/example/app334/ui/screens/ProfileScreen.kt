@@ -1,5 +1,6 @@
 package com.example.app334.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,9 +29,9 @@ import com.example.app334.ui.theme.RubikFont
 
 @Composable
 fun ProfileScreen(
-    username: String = "ashu bhai",
-    phone: String = "+91727*****82",
-    balance: String = "₹0.00",
+    username: String = "Satyam Kumar",
+    phone: String = "+91 98765 43210",
+    balance: String = "₹1850",
     onBackClick: () -> Unit = {},
     onWalletClick: () -> Unit = {},
     onSupportClick: () -> Unit = {},
@@ -38,6 +39,10 @@ fun ProfileScreen(
     onSettingsClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    BackHandler {
+        onBackClick()
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -171,7 +176,7 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text(
-                            text = if (balance == "₹0.00") "₹42.2" else balance,
+                            text = balance,
                             fontSize = 28.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.Bold,

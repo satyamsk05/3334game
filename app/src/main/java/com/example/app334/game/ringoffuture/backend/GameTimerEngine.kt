@@ -15,29 +15,49 @@ object GameTimerEngine {
     private var timerJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
+    // Tracks bucket debits per placed bet in current round
+    private var activeBetDebits = mutableListOf<BetDebitBreakdown>()
+
+    @Synchronized
     fun startEngine() {
         if (timerJob?.isActive == true) return
 
         timerJob = scope.launch {
             while (isActive) {
                 runBettingPhase()
+                if (!isActive) break
                 runLockedPhase()
+                if (!isActive) break
                 runSpinningPhase()
+                if (!isActive) break
                 runResultPhase()
             }
         }
     }
 
+    @Synchronized
+    fun stopEngine() {
+        // If stopping during BETTING phase, refund open bets back to original buckets
+        if (_gameState.value.phase == GamePhase.BETTING) {
+            refundAllCurrentBets()
+        }
+        timerJob?.cancel()
+        timerJob = null
+    }
+
     private suspend fun runBettingPhase() {
+        activeBetDebits.clear()
         _gameState.update {
             it.copy(
                 phase = GamePhase.BETTING,
                 secondsRemaining = WheelConfig.BETTING_TIME_SECONDS,
-                lastWinAmount = 0.0
+                lastWinAmount = 0.0,
+                userBets = UserBets()
             )
         }
 
         for (sec in WheelConfig.BETTING_TIME_SECONDS downTo 1) {
+            if (!scope.isActive) break
             _gameState.update { it.copy(secondsRemaining = sec) }
             delay(1000L)
         }
@@ -51,16 +71,7 @@ object GameTimerEngine {
             )
         }
 
-        // Calculate winning index via Provably Fair RNG or Admin Override
-        val winningIndex = RngEngine.generateWinningSegmentIndex(
-            roundNumber = _gameState.value.roundNumber,
-            serverSeed = "SEED_SERVER_${System.currentTimeMillis()}",
-            adminOverrideIndex = AdminEngine.manualOverrideSegmentIndex
-        )
-
-        // Clear manual override after use if set
-        AdminEngine.clearManualOverride()
-
+        val winningIndex = RngEngine.generateWinningSegmentIndex()
         val winningSegment = RngEngine.getSegment(winningIndex)
 
         _gameState.update {
@@ -87,20 +98,18 @@ object GameTimerEngine {
 
         // Calculate user win payout
         val userBets = currentState.userBets
-        val betOnWinningColor = when (winningSegment.colorType) {
+        val betOnWinningColorRupees = when (winningSegment.colorType) {
             ColorType.GREEN -> userBets.greenBet
             ColorType.RED -> userBets.redBet
             ColorType.PURPLE -> userBets.purpleBet
             ColorType.GREY -> userBets.greyBet
         }
 
-        val winAmount = betOnWinningColor * winningSegment.multiplier
+        val winAmountRupees = betOnWinningColorRupees * winningSegment.multiplier
+        val winAmountPaise = WalletLedger.rupeesToPaise(winAmountRupees)
 
-        if (winAmount > 0) {
-            WalletLedger.creditWin(winAmount, winningSegment.multiplier)
-            if (winningSegment.colorType == ColorType.GREEN) {
-                TelegramBotEngine.notifyJackpotWin("Satyam Kumar", currentState.roundNumber, winAmount, winningSegment.multiplier)
-            }
+        if (winAmountPaise > 0L) {
+            WalletLedger.creditWin(winAmountPaise, "${winningSegment.multiplier}x")
         }
 
         val newHistoryItem = SpinResult(
@@ -115,12 +124,15 @@ object GameTimerEngine {
         _gameState.update {
             it.copy(
                 phase = GamePhase.RESULT_SHOW,
-                lastWinAmount = winAmount,
+                lastWinAmount = winAmountRupees,
                 history = updatedHistory
             )
         }
 
         delay((WheelConfig.RESULT_SHOW_SECONDS * 1000L).toLong())
+
+        // Clear active debits for completed round
+        activeBetDebits.clear()
 
         // Prepare next round
         _gameState.update {
@@ -131,19 +143,22 @@ object GameTimerEngine {
         }
     }
 
-    fun placeBet(colorType: ColorType, amount: Double): Boolean {
-        if (_gameState.value.phase != GamePhase.BETTING) return false
+    fun placeBet(colorType: ColorType, amountRupees: Double): Boolean {
+        if (_gameState.value.phase != GamePhase.BETTING || amountRupees <= 0) return false
 
-        val success = WalletLedger.placeBet(amount)
-        if (!success) return false
+        val amountPaise = WalletLedger.rupeesToPaise(amountRupees)
+        val debitBreakdown = WalletLedger.placeBet(amountPaise)
+        if (!debitBreakdown.success) return false
+
+        activeBetDebits.add(debitBreakdown)
 
         _gameState.update { current ->
             val oldBets = current.userBets
             val newBets = when (colorType) {
-                ColorType.GREEN -> oldBets.copy(greenBet = oldBets.greenBet + amount)
-                ColorType.RED -> oldBets.copy(redBet = oldBets.redBet + amount)
-                ColorType.PURPLE -> oldBets.copy(purpleBet = oldBets.purpleBet + amount)
-                ColorType.GREY -> oldBets.copy(greyBet = oldBets.greyBet + amount)
+                ColorType.GREEN -> oldBets.copy(greenBet = oldBets.greenBet + amountRupees)
+                ColorType.RED -> oldBets.copy(redBet = oldBets.redBet + amountRupees)
+                ColorType.PURPLE -> oldBets.copy(purpleBet = oldBets.purpleBet + amountRupees)
+                ColorType.GREY -> oldBets.copy(greyBet = oldBets.greyBet + amountRupees)
             }
             current.copy(userBets = newBets)
         }
@@ -152,24 +167,49 @@ object GameTimerEngine {
 
     fun clearBets() {
         if (_gameState.value.phase != GamePhase.BETTING) return
-        val currentBetTotal = _gameState.value.userBets.totalBet
-        if (currentBetTotal > 0) {
-            // Refund total bet
-            WalletLedger.creditWin(currentBetTotal, 1.0f)
-            _gameState.update { it.copy(userBets = UserBets()) }
+        refundAllCurrentBets()
+    }
+
+    private fun refundAllCurrentBets() {
+        if (activeBetDebits.isEmpty()) return
+
+        var depRefund = 0L
+        var winRefund = 0L
+        var bonRefund = 0L
+
+        for (debit in activeBetDebits) {
+            depRefund += debit.depositDebited
+            winRefund += debit.winningDebited
+            bonRefund += debit.bonusDebited
         }
+
+        WalletLedger.refundBet(depRefund, winRefund, bonRefund)
+        activeBetDebits.clear()
+
+        _gameState.update { it.copy(userBets = UserBets()) }
     }
 
     fun doubleBets(): Boolean {
         if (_gameState.value.phase != GamePhase.BETTING) return false
-        val currentBetTotal = _gameState.value.userBets.totalBet
-        if (currentBetTotal <= 0) return false
+        val userBets = _gameState.value.userBets
+        if (userBets.totalBet <= 0) return false
 
-        val success = WalletLedger.placeBet(currentBetTotal)
-        if (!success) return false
+        // Attempt doubling each placed bet
+        var allSuccess = true
+        if (userBets.greenBet > 0) {
+            allSuccess = allSuccess && placeBet(ColorType.GREEN, userBets.greenBet)
+        }
+        if (userBets.redBet > 0) {
+            allSuccess = allSuccess && placeBet(ColorType.RED, userBets.redBet)
+        }
+        if (userBets.purpleBet > 0) {
+            allSuccess = allSuccess && placeBet(ColorType.PURPLE, userBets.purpleBet)
+        }
+        if (userBets.greyBet > 0) {
+            allSuccess = allSuccess && placeBet(ColorType.GREY, userBets.greyBet)
+        }
 
-        _gameState.update { it.copy(userBets = it.userBets.doubleBets()) }
-        return true
+        return allSuccess
     }
 
     fun setSelectedChip(chipValue: Int) {

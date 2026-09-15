@@ -1,5 +1,7 @@
 package com.example.app334.ui.screens
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,11 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app334.R
+import com.example.app334.game.ringoffuture.backend.WalletLedger
 
 @Composable
 fun SettingsScreen(
@@ -33,6 +37,12 @@ fun SettingsScreen(
     onLogoutClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    BackHandler {
+        onBackClick()
+    }
+
+    val context = LocalContext.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -120,7 +130,10 @@ fun SettingsScreen(
             SettingsRow(
                 title = "Check for updates",
                 iconRes = R.drawable.ic_settings_update,
-                onClick = onCheckUpdatesClick
+                onClick = {
+                    Toast.makeText(context, "You are on the latest version (v1.0.0)", Toast.LENGTH_SHORT).show()
+                    onCheckUpdatesClick()
+                }
             )
             HorizontalDivider(color = Color(0xFF2D0A4E), thickness = 1.dp)
 
@@ -172,9 +185,13 @@ fun SettingsScreen(
             )
 
             SettingsRow(
-                title = "Log out",
+                title = "Reset Demo Data",
                 iconRes = R.drawable.ic_settings_logout,
-                onClick = onLogoutClick
+                onClick = {
+                    WalletLedger.resetDemoBalance()
+                    Toast.makeText(context, "Demo balance reset to default!", Toast.LENGTH_SHORT).show()
+                    onLogoutClick()
+                }
             )
         }
         

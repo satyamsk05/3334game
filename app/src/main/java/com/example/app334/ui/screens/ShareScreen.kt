@@ -1,5 +1,8 @@
 package com.example.app334.ui.screens
 
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,16 +41,34 @@ data class ReferralUser(
 @Composable
 fun ShareScreen(
     earnings: String = "₹30",
-    onShareClick: () -> Unit = {},
-    onWhatsappShareClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val referrals = remember {
         listOf(
             ReferralUser("Dh animation", "09 Dec", "₹15", R.drawable.avatar_1),
             ReferralUser("Harshthakur", "08 Dec", "₹15", R.drawable.avatar_2),
             ReferralUser("RAHUL", "07 Dec", "₹15", R.drawable.avatar_3)
         )
+    }
+
+    fun shareAppText(whatsappOnly: Boolean = false) {
+        val shareMessage = "Join me on 3334Game and play Ring of Future! Use my Referral Code: REF334 to get bonus chips."
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_TEXT, shareMessage)
+            type = "text/plain"
+            if (whatsappOnly) {
+                setPackage("com.whatsapp")
+            }
+        }
+        try {
+            context.startActivity(if (whatsappOnly) sendIntent else Intent.createChooser(sendIntent, "Share Referral Code"))
+        } catch (e: Exception) {
+            context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                putExtra(Intent.EXTRA_TEXT, shareMessage)
+                type = "text/plain"
+            }, "Share Referral Code"))
+        }
     }
 
     Box(
@@ -62,7 +84,7 @@ fun ShareScreen(
                 .padding(bottom = 140.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
-            // 1. Top Header Row: "Refer & Earn" + Language Badge
+            // 1. Top Header Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,12 +100,11 @@ fun ShareScreen(
                     color = Color.White
                 )
 
-                // Language Badge
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(14.dp))
                         .background(Color(0xFF6B42F2))
-                        .clickable { /* Language */ }
+                        .clickable { Toast.makeText(context, "Language: English", Toast.LENGTH_SHORT).show() }
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -105,206 +126,68 @@ fun ShareScreen(
             ) {
                 Column {
                     Text(
-                        text = "Your Earnings",
-                        fontSize = 13.sp,
+                        text = "TOTAL EARNINGS",
+                        fontSize = 12.sp,
                         fontFamily = RubikFont,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF8E899B)
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF8E899B),
+                        letterSpacing = 0.5.sp
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = earnings,
-                        fontSize = 32.sp,
+                        fontSize = 28.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.W800,
                         color = Color.White
                     )
                 }
 
-                // Money Bag / Rewards Badge
-                Image(
-                    painter = painterResource(id = R.drawable.ic_sp_referral),
-                    contentDescription = "Refer Coin Badge",
-                    modifier = Modifier.height(50.dp)
-                )
-            }
-
-            // 3. Referral Breakdown Card
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(Color(0xFF1E0A30))
-                    .border(1.dp, Color(0xFF4B206E), RoundedCornerShape(18.dp))
-                    .padding(18.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                // Copy Code Box
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFF240E38))
+                        .border(1.dp, Color(0xFF4C206D), RoundedCornerShape(12.dp))
+                        .clickable {
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            val clip = android.content.ClipData.newPlainText("Referral Code", "REF334")
+                            clipboard.setPrimaryClip(clip)
+                            Toast.makeText(context, "Referral Code REF334 Copied!", Toast.LENGTH_SHORT).show()
+                        }
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
-                    // Header: 1 Referral = ₹1,000
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "1 Referral = ",
-                            fontSize = 18.sp,
-                            fontFamily = RubikFont,
-                            fontWeight = FontWeight.W800,
-                            color = Color(0xFFFFD700)
-                        )
-                        Text(
-                            text = "₹1,000",
-                            fontSize = 18.sp,
-                            fontFamily = RubikFont,
-                            fontWeight = FontWeight.W800,
-                            color = Color(0xFF00E676)
-                        )
-                    }
-
-                    // 3 Breakdown Columns with 3D Drawables
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Step 1: Signs Up
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(
-                                text = "₹15",
-                                fontSize = 18.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.W800,
-                                color = Color.White
-                            )
-                            Text(
-                                text = "signs up",
-                                fontSize = 11.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.Medium,
-                                color = Color(0xFF8E899B)
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_refer_signup),
-                                contentDescription = "Signs Up",
-                                modifier = Modifier.size(50.dp)
-                            )
-                        }
-
-                        Text(
-                            text = "+",
-                            fontSize = 18.sp,
-                            fontFamily = RubikFont,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF8E899B)
-                        )
-
-                        // Step 2: Adds Cash
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(
-                                text = "₹55",
-                                fontSize = 18.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.W800,
-                                color = Color.White
-                            )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(2.dp)
-                            ) {
-                                Text(
-                                    text = "adds cash",
-                                    fontSize = 11.sp,
-                                    fontFamily = RubikFont,
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color(0xFF8E899B)
-                                )
-                                Text(
-                                    text = "ⓘ",
-                                    fontSize = 10.sp,
-                                    fontFamily = RubikFont,
-                                    color = Color(0xFF8E899B)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_refer_addcash),
-                                contentDescription = "Adds Cash",
-                                modifier = Modifier.size(50.dp)
-                            )
-                        }
-
-                        Text(
-                            text = "+",
-                            fontSize = 18.sp,
-                            fontFamily = RubikFont,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF8E899B)
-                        )
-
-                        // Step 3: Play Games
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(
-                                text = "₹930",
-                                fontSize = 18.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.W800,
-                                color = Color.White
-                            )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(2.dp)
-                            ) {
-                                Text(
-                                    text = "play games",
-                                    fontSize = 11.sp,
-                                    fontFamily = RubikFont,
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color(0xFF8E899B)
-                                )
-                                Text(
-                                    text = "ⓘ",
-                                    fontSize = 10.sp,
-                                    fontFamily = RubikFont,
-                                    color = Color(0xFF8E899B)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_refer_playgames),
-                                contentDescription = "Play Games",
-                                modifier = Modifier.size(50.dp)
-                            )
-                        }
-                    }
+                    Text(
+                        text = "Code: REF334 📋",
+                        fontSize = 13.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFA78BFA)
+                    )
                 }
             }
 
-            // 4. Recent Referrals List Card
+            // 3. Referral List Card
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .background(Color(0xFF1E0A30))
-                    .border(1.dp, Color(0xFF4B206E), RoundedCornerShape(18.dp))
+                    .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(20.dp))
                     .padding(16.dp)
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    for (i in referrals.indices) {
-                        val user = referrals[i]
+                    Text(
+                        text = "YOUR REFERRED FRIENDS (${referrals.size})",
+                        fontSize = 12.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF8E899B),
+                        letterSpacing = 0.5.sp
+                    )
+
+                    referrals.forEachIndexed { i, user ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -312,38 +195,29 @@ fun ShareScreen(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Box(
+                                Image(
+                                    painter = painterResource(id = user.avatarRes),
+                                    contentDescription = user.name,
                                     modifier = Modifier
-                                        .size(46.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(0xFF380E54))
-                                        .border(1.dp, Color(0xFFFFD700), CircleShape),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = user.avatarRes),
-                                        contentDescription = user.name,
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
+                                        .size(36.dp)
+                                        .clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
 
                                 Column {
                                     Text(
                                         text = user.name,
-                                        fontSize = 15.sp,
+                                        fontSize = 14.5.sp,
                                         fontFamily = RubikFont,
-                                        fontWeight = FontWeight.W800,
+                                        fontWeight = FontWeight.Bold,
                                         color = Color.White
                                     )
-                                    Spacer(modifier = Modifier.height(2.dp))
                                     Text(
                                         text = user.date,
-                                        fontSize = 12.sp,
+                                        fontSize = 11.5.sp,
                                         fontFamily = RubikFont,
-                                        fontWeight = FontWeight.Medium,
                                         color = Color(0xFF8E899B)
                                     )
                                 }
@@ -354,7 +228,7 @@ fun ShareScreen(
                                 fontSize = 16.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.W800,
-                                color = Color.White
+                                color = Color(0xFF10B981)
                             )
                         }
 
@@ -362,42 +236,11 @@ fun ShareScreen(
                             HorizontalDivider(color = Color(0xFF2B1342), thickness = 1.dp)
                         }
                     }
-
-                    HorizontalDivider(color = Color(0xFF2B1342), thickness = 1.dp)
-
-                    // Bottom Link: View all referrals >
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { /* View all referrals */ }
-                            .padding(vertical = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Text(
-                                text = "View all referrals",
-                                fontSize = 13.5.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.W800,
-                                color = Color.White
-                            )
-                            Text(
-                                text = "›",
-                                fontSize = 16.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-                    }
                 }
             }
         }
 
-        // 5. Bottom Action Buttons Bar
+        // 4. Bottom Action Buttons Bar
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -422,7 +265,7 @@ fun ShareScreen(
                                 )
                             )
                         )
-                        .clickable { onShareClick() },
+                        .clickable { shareAppText(whatsappOnly = false) },
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
@@ -459,7 +302,7 @@ fun ShareScreen(
                                 )
                             )
                         )
-                        .clickable { onWhatsappShareClick() },
+                        .clickable { shareAppText(whatsappOnly = true) },
                     contentAlignment = Alignment.Center
                 ) {
                     Row(

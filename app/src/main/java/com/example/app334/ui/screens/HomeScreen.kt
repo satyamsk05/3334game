@@ -1,6 +1,9 @@
 package com.example.app334.ui.screens
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,11 +21,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app334.R
+import com.example.app334.game.ringoffuture.backend.WalletLedger
 import com.example.app334.ui.components.CustomBottomNavBar
 import com.example.app334.ui.components.TopHeader
 import com.example.app334.ui.navigation.NavItem
@@ -32,7 +37,6 @@ import com.example.app334.ui.theme.RubikFont
 data class FeaturedGame(
     val id: String,
     val title: String,
-    val activePlayers: String,
     @DrawableRes val logoRes: Int,
     val gradientColors: List<Color>
 )
@@ -65,26 +69,39 @@ sealed interface SubScreen {
 fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(NavItem.HOME) }
     var activeSubScreen by remember { mutableStateOf<SubScreen?>(null) }
+    var withdrawAmountInput by remember { mutableStateOf("500") }
 
-    var userBalance by remember { mutableStateOf("₹42.2") }
-    var winningsBalance by remember { mutableStateOf("₹34.2") }
-    var withdrawAmountInput by remember { mutableStateOf("10.00") }
+    val walletBalance by WalletLedger.walletBalance.collectAsState()
+    val userProfile by WalletLedger.userProfile.collectAsState()
+
+    // System Back Navigation Handling
+    BackHandler(enabled = activeSubScreen != null || selectedTab != NavItem.HOME) {
+        if (activeSubScreen != null) {
+            when (activeSubScreen) {
+                SubScreen.WithdrawDetails -> activeSubScreen = SubScreen.Withdraw
+                SubScreen.AdminDashboard -> activeSubScreen = SubScreen.RingOfFuture
+                SubScreen.DepositPayment -> activeSubScreen = SubScreen.RingOfFuture
+                else -> activeSubScreen = null
+            }
+        } else if (selectedTab != NavItem.HOME) {
+            selectedTab = NavItem.HOME
+        }
+    }
 
     val featuredGames = remember {
         listOf(
             FeaturedGame(
                 id = "classic_dice",
                 title = "Classic Dice",
-                activePlayers = "1.2M",
                 logoRes = R.drawable.logo_classic_dice,
                 gradientColors = listOf(Color(0xFF8B5CF6), Color(0xFF6D28D9))
             ),
             FeaturedGame(
                 id = "double",
                 title = "Double",
-                activePlayers = "850K",
                 logoRes = R.drawable.logo_double,
                 gradientColors = listOf(Color(0xFFEC4899), Color(0xFFBE185D))
             )
@@ -113,7 +130,7 @@ fun HomeScreen(
             ),
             GridGame(
                 id = "kino",
-                title = "Kino",
+                title = "Keno",
                 logoRes = R.drawable.logo_kino,
                 gradientColors = listOf(Color(0xFF10B981), Color(0xFF047857))
             ),
@@ -137,17 +154,26 @@ fun HomeScreen(
             ),
             GridGame(
                 id = "rings_of_future",
-                title = "Rings of Future",
+                title = "Ring of Future",
                 logoRes = R.drawable.logo_rings_of_future,
                 gradientColors = listOf(Color(0xFF14B8A6), Color(0xFF0F766E))
             )
         )
     }
 
+    fun onGameTileClick(gameId: String, title: String) {
+        if (gameId == "rings_of_future") {
+            activeSubScreen = SubScreen.RingOfFuture
+        } else {
+            Toast.makeText(context, "$title is Coming Soon!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(Color(0xFF15001F))
+            .windowInsetsPadding(WindowInsets.statusBars)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -231,15 +257,13 @@ fun HomeScreen(
                             onBackClick = { activeSubScreen = SubScreen.Withdraw },
                             onCompleteWithdrawal = { method ->
                                 activeSubScreen = null
-                                userBalance = "₹8.0"
-                                winningsBalance = "₹0.0"
                                 selectedTab = NavItem.PROFILE
                             }
                         )
                     }
                     SubScreen.Withdraw -> {
                         WithdrawScreen(
-                            winningsBalance = winningsBalance,
+                            winningsBalance = walletBalance.formattedWinnings,
                             onBackClick = { activeSubScreen = null },
                             onNextClick = { inputAmt ->
                                 withdrawAmountInput = inputAmt
@@ -249,9 +273,9 @@ fun HomeScreen(
                     }
                     SubScreen.ProfileDetails -> {
                         ProfileScreen(
-                            username = "ashu bhai",
-                            phone = "+91727*****82",
-                            balance = userBalance,
+                            username = userProfile.username,
+                            phone = userProfile.phone,
+                            balance = walletBalance.formattedTotal,
                             onBackClick = { activeSubScreen = null },
                             onWalletClick = {
                                 activeSubScreen = null
@@ -263,7 +287,7 @@ fun HomeScreen(
                         )
                     }
                     null -> {
-                        androidx.compose.animation.Crossfade(
+                        Crossfade(
                             targetState = selectedTab,
                             label = "TabCrossfade"
                         ) { tab ->
@@ -273,8 +297,8 @@ fun HomeScreen(
                                         modifier = Modifier.fillMaxSize()
                                     ) {
                                         TopHeader(
-                                            username = "ashu bhai",
-                                            balance = userBalance,
+                                            username = userProfile.username,
+                                            balance = walletBalance.formattedTotal,
                                             onProfileClick = { activeSubScreen = SubScreen.ProfileDetails },
                                             onWalletClick = { selectedTab = NavItem.PROFILE }
                                         )
@@ -323,14 +347,14 @@ fun HomeScreen(
                                                         items(featuredGames, key = { it.id }) { game ->
                                                             FeaturedGameCard(
                                                                 game = game,
-                                                                onPlayClick = { activeSubScreen = SubScreen.RingOfFuture }
+                                                                onPlayClick = { onGameTileClick(game.id, game.title) }
                                                             )
                                                         }
                                                     }
                                                 }
                                             }
 
-                                            // All Games Grid Section
+                                            // All Games Grid Section (160:230 Aspect Ratio, No Overlap)
                                             item {
                                                 Column(
                                                     modifier = Modifier.padding(horizontal = 14.dp)
@@ -355,13 +379,13 @@ fun HomeScreen(
                                                             GridGameCard(
                                                                 game = gridGames[i],
                                                                 modifier = Modifier.weight(1f),
-                                                                onPlayClick = { activeSubScreen = SubScreen.RingOfFuture }
+                                                                onPlayClick = { onGameTileClick(gridGames[i].id, gridGames[i].title) }
                                                             )
                                                             if (i + 1 < gridGames.size) {
                                                                 GridGameCard(
                                                                     game = gridGames[i + 1],
                                                                     modifier = Modifier.weight(1f),
-                                                                    onPlayClick = { activeSubScreen = SubScreen.RingOfFuture }
+                                                                    onPlayClick = { onGameTileClick(gridGames[i + 1].id, gridGames[i + 1].title) }
                                                                 )
                                                             } else {
                                                                 Spacer(modifier = Modifier.weight(1f))
@@ -384,9 +408,6 @@ fun HomeScreen(
                                 NavItem.REWARD -> {
                                     AddCashScreen(
                                         onAddCashSuccess = { addedAmount ->
-                                            val currentNum = userBalance.replace("₹", "").toDoubleOrNull() ?: 0.0
-                                            val addNum = addedAmount.toDoubleOrNull() ?: 0.0
-                                            userBalance = "₹${currentNum + addNum}"
                                             selectedTab = NavItem.PROFILE
                                         }
                                     )
@@ -394,8 +415,10 @@ fun HomeScreen(
 
                                 NavItem.PROFILE -> {
                                     WalletScreen(
-                                        balance = userBalance,
-                                        winningsBalance = winningsBalance,
+                                        balance = walletBalance.formattedTotal,
+                                        depositBalance = walletBalance.formattedDeposit,
+                                        winningsBalance = walletBalance.formattedWinnings,
+                                        rewardsBalance = walletBalance.formattedBonus,
                                         onAddCashClick = { selectedTab = NavItem.REWARD },
                                         onWithdrawClick = { activeSubScreen = SubScreen.Withdraw },
                                         onSettingsClick = { activeSubScreen = SubScreen.Settings },
@@ -431,7 +454,7 @@ private fun FeaturedGameCard(
 ) {
     Box(
         modifier = modifier
-            .size(280.dp)
+            .size(240.dp)
             .clip(RoundedCornerShape(18.dp))
     ) {
         Image(
@@ -471,18 +494,18 @@ private fun GridGameCard(
 ) {
     val themeColor = game.gradientColors.last()
 
-    Box(
+    // 160:230 Aspect Ratio with clean non-overlapping image and action footer
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(160f / 190f)
-            .clip(RoundedCornerShape(25.dp))
+            .aspectRatio(160f / 230f)
+            .clip(RoundedCornerShape(20.dp))
             .background(themeColor)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(150f / 190f)
-                .align(Alignment.TopCenter)
+                .weight(1f)
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(game.gradientColors.first(), themeColor)
@@ -498,59 +521,51 @@ private fun GridGameCard(
             )
         }
 
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(72f / 190f)
-                .align(Alignment.BottomCenter)
                 .background(themeColor)
-                .padding(horizontal = 10.dp, vertical = 4.dp),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalAlignment = Alignment.Start
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    text = game.title,
-                    fontSize = 14.5.sp,
-                    fontFamily = RubikFont,
-                    fontWeight = FontWeight.W800,
-                    color = Color.White,
-                    maxLines = 1,
-                    modifier = Modifier.padding(start = 2.dp)
-                )
+            Text(
+                text = game.title,
+                fontSize = 14.sp,
+                fontFamily = RubikFont,
+                fontWeight = FontWeight.W800,
+                color = Color.White,
+                maxLines = 1
+            )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.White)
-                        .clickable { onPlayClick() },
-                    contentAlignment = Alignment.Center
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.White)
+                    .clickable { onPlayClick() },
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_play_arrow),
-                            contentDescription = "Play",
-                            modifier = Modifier.size(16.dp),
-                            tint = Color(0xFF7C3AED)
-                        )
-                        Text(
-                            text = "PLAY NOW",
-                            fontSize = 15.sp,
-                            fontFamily = RubikFont,
-                            fontWeight = FontWeight.W800,
-                            color = Color(0xFF7C3AED),
-                            letterSpacing = 0.5.sp,
-                            maxLines = 1
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_play_arrow),
+                        contentDescription = "Play",
+                        modifier = Modifier.size(14.dp),
+                        tint = Color(0xFF7C3AED)
+                    )
+                    Text(
+                        text = "PLAY NOW",
+                        fontSize = 13.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.W800,
+                        color = Color(0xFF7C3AED),
+                        letterSpacing = 0.5.sp,
+                        maxLines = 1
+                    )
                 }
             }
         }

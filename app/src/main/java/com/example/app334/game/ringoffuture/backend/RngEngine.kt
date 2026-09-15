@@ -3,54 +3,42 @@ package com.example.app334.game.ringoffuture.backend
 import com.example.app334.game.ringoffuture.model.ColorType
 import com.example.app334.game.ringoffuture.model.WheelConfig
 import com.example.app334.game.ringoffuture.model.WheelSegment
-import java.security.MessageDigest
-import kotlin.random.Random
+import java.security.SecureRandom
 
 object RngEngine {
 
+    private val secureRandom = SecureRandom()
     val allSegments: List<WheelSegment> = buildSegments()
 
     private fun buildSegments(): List<WheelSegment> {
         val list = mutableListOf<WheelSegment>()
 
-        // Index 0 -> Green
-        list.add(WheelSegment(0, ColorType.GREEN, WheelConfig.COLOR_GREEN, WheelConfig.MULTIPLIER_GREEN, "32x"))
+        // Index 0 -> Green (30x multiplier for ~95% RTP)
+        list.add(WheelSegment(0, ColorType.GREEN, WheelConfig.COLOR_GREEN, WheelConfig.MULTIPLIER_GREEN, "30x"))
 
-        // Index 1..6 -> Red
+        // Index 1..6 -> Red (5.06x)
         for (i in 1..6) {
-            list.add(WheelSegment(i, ColorType.RED, WheelConfig.COLOR_RED, WheelConfig.MULTIPLIER_RED, "5.16x"))
+            list.add(WheelSegment(i, ColorType.RED, WheelConfig.COLOR_RED, WheelConfig.MULTIPLIER_RED, "5.06x"))
         }
 
-        // Index 7..16 -> Purple
+        // Index 7..16 -> Purple (3.04x)
         for (i in 7..16) {
-            list.add(WheelSegment(i, ColorType.PURPLE, WheelConfig.COLOR_PURPLE, WheelConfig.MULTIPLIER_PURPLE, "3.1x"))
+            list.add(WheelSegment(i, ColorType.PURPLE, WheelConfig.COLOR_PURPLE, WheelConfig.MULTIPLIER_PURPLE, "3.04x"))
         }
 
-        // Index 17..31 -> Grey
+        // Index 17..31 -> Grey (2.03x)
         for (i in 17..31) {
-            list.add(WheelSegment(i, ColorType.GREY, WheelConfig.COLOR_GREY, WheelConfig.MULTIPLIER_GREY, "2.06x"))
+            list.add(WheelSegment(i, ColorType.GREY, WheelConfig.COLOR_GREY, WheelConfig.MULTIPLIER_GREY, "2.03x"))
         }
 
         return list
     }
 
     /**
-     * Generates provably fair segment index using SHA-256 hash or Admin Override index.
+     * Generates unbiased random segment index (0..31) using SecureRandom.
      */
-    fun generateWinningSegmentIndex(
-        roundNumber: Long,
-        serverSeed: String,
-        adminOverrideIndex: Int = -1
-    ): Int {
-        if (adminOverrideIndex in 0 until WheelConfig.SEGMENT_COUNT) {
-            return adminOverrideIndex
-        }
-
-        val input = "$serverSeed:$roundNumber:${System.nanoTime()}"
-        val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
-        val hashInt = Math.abs(bytes.fold(0) { acc, byte -> (acc shl 8) + (byte.toInt() and 0xFF) })
-
-        return hashInt % WheelConfig.SEGMENT_COUNT
+    fun generateWinningSegmentIndex(): Int {
+        return secureRandom.nextInt(WheelConfig.SEGMENT_COUNT)
     }
 
     fun getSegment(index: Int): WheelSegment {

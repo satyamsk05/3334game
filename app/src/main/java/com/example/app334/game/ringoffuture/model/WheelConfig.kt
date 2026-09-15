@@ -24,11 +24,11 @@ object WheelConfig {
     val COLOR_SURFACE = Color(0xFF231238)
     val COLOR_CARD = Color(0xFF2D1947)
 
-    // Multipliers
-    const val MULTIPLIER_GREEN = 32.0f
-    const val MULTIPLIER_RED = 5.16f
-    const val MULTIPLIER_PURPLE = 3.10f
-    const val MULTIPLIER_GREY = 2.06f
+    // Multipliers (Enforces ~95% RTP across all colors)
+    const val MULTIPLIER_GREEN = 30.0f
+    const val MULTIPLIER_RED = 5.06f
+    const val MULTIPLIER_PURPLE = 3.04f
+    const val MULTIPLIER_GREY = 2.03f
 
     // Timers (Seconds)
     const val BETTING_TIME_SECONDS = 15

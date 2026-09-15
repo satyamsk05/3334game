@@ -1,5 +1,6 @@
 package com.example.app334.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,46 +21,36 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app334.R
+import com.example.app334.game.ringoffuture.backend.TransactionType
+import com.example.app334.game.ringoffuture.backend.WalletLedger
+import com.example.app334.game.ringoffuture.backend.WalletTransaction
 import com.example.app334.ui.theme.RubikFont
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-enum class TransactionType {
-    ALL, ADD_CASH, WITHDRAWAL, WINNINGS
+enum class TransactionFilterCategory {
+    ALL, DEPOSITS, WITHDRAWALS, WINNINGS
 }
-
-data class TransactionItem(
-    val id: String,
-    val title: String,
-    val type: TransactionType,
-    val amount: String,
-    val date: String,
-    val status: String,
-    val isPositive: Boolean
-)
 
 @Composable
 fun TransactionHistoryScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedFilter by remember { mutableStateOf(TransactionType.ALL) }
-
-    val allTransactions = remember {
-        listOf(
-            TransactionItem("TXN984321", "Add Cash (UPI)", TransactionType.ADD_CASH, "+₹500.00", "14 Sep 2026, 07:45 PM", "SUCCESS", true),
-            TransactionItem("TXN984320", "Withdrawal (Bank)", TransactionType.WITHDRAWAL, "-₹200.00", "14 Sep 2026, 05:20 PM", "SUCCESS", false),
-            TransactionItem("TXN984319", "Mines Game Win", TransactionType.WINNINGS, "+₹150.00", "14 Sep 2026, 03:10 PM", "SUCCESS", true),
-            TransactionItem("TXN984318", "Classic Dice Win", TransactionType.WINNINGS, "+₹80.00", "13 Sep 2026, 09:30 PM", "SUCCESS", true),
-            TransactionItem("TXN984317", "Add Cash (Card)", TransactionType.ADD_CASH, "+₹200.00", "13 Sep 2026, 02:15 PM", "SUCCESS", true),
-            TransactionItem("TXN984316", "Withdrawal (UPI)", TransactionType.WITHDRAWAL, "-₹100.00", "12 Sep 2026, 08:00 PM", "PENDING", false),
-            TransactionItem("TXN984315", "Double Game Win", TransactionType.WINNINGS, "+₹340.00", "12 Sep 2026, 11:45 AM", "SUCCESS", true)
-        )
+    BackHandler {
+        onBackClick()
     }
 
-    val filteredTransactions = remember(selectedFilter) {
-        if (selectedFilter == TransactionType.ALL) {
-            allTransactions
-        } else {
-            allTransactions.filter { it.type == selectedFilter }
+    var selectedFilter by remember { mutableStateOf(TransactionFilterCategory.ALL) }
+    val transactionsState by WalletLedger.transactions.collectAsState()
+
+    val filteredTransactions = remember(selectedFilter, transactionsState) {
+        when (selectedFilter) {
+            TransactionFilterCategory.ALL -> transactionsState
+            TransactionFilterCategory.DEPOSITS -> transactionsState.filter { it.type == TransactionType.DEPOSIT || it.type == TransactionType.BONUS_CREDIT }
+            TransactionFilterCategory.WITHDRAWALS -> transactionsState.filter { it.type == TransactionType.WITHDRAWAL }
+            TransactionFilterCategory.WINNINGS -> transactionsState.filter { it.type == TransactionType.WIN_PAYOUT }
         }
     }
 
@@ -108,13 +99,13 @@ fun TransactionHistoryScreen(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
-            items(TransactionType.entries.toTypedArray()) { filter ->
+            items(TransactionFilterCategory.entries.toTypedArray()) { filter ->
                 val isSelected = filter == selectedFilter
                 val filterText = when (filter) {
-                    TransactionType.ALL -> "All"
-                    TransactionType.ADD_CASH -> "Add Cash"
-                    TransactionType.WITHDRAWAL -> "Withdrawals"
-                    TransactionType.WINNINGS -> "Winnings"
+                    TransactionFilterCategory.ALL -> "All"
+                    TransactionFilterCategory.DEPOSITS -> "Deposits"
+                    TransactionFilterCategory.WITHDRAWALS -> "Withdrawals"
+                    TransactionFilterCategory.WINNINGS -> "Winnings"
                 }
 
                 Box(
@@ -167,7 +158,14 @@ fun TransactionHistoryScreen(
 }
 
 @Composable
-private fun TransactionCardItem(txn: TransactionItem) {
+private fun TransactionCardItem(txn: WalletTransaction) {
+    val dateStr = remember(txn.timestamp) {
+        val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+        sdf.format(Date(txn.timestamp))
+    }
+
+    val isPositive = txn.type != TransactionType.WITHDRAWAL && txn.type != TransactionType.BET_PLACED
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -185,7 +183,7 @@ private fun TransactionCardItem(txn: TransactionItem) {
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = txn.title,
+                    text = txn.description,
                     fontSize = 15.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Bold,
@@ -195,7 +193,7 @@ private fun TransactionCardItem(txn: TransactionItem) {
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = txn.date,
+                    text = dateStr,
                     fontSize = 12.sp,
                     fontFamily = RubikFont,
                     color = Color(0xFF9CA3AF)
@@ -204,7 +202,7 @@ private fun TransactionCardItem(txn: TransactionItem) {
                 Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
-                    text = "ID: ${txn.id}",
+                    text = "Ref: ${txn.referenceId}",
                     fontSize = 11.sp,
                     fontFamily = RubikFont,
                     color = Color(0xFF6B7280)
@@ -215,21 +213,21 @@ private fun TransactionCardItem(txn: TransactionItem) {
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = txn.amount,
+                    text = txn.amountRupeesFormatted,
                     fontSize = 16.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.ExtraBold,
-                    color = if (txn.isPositive) Color(0xFF10B981) else Color(0xFFEF4444)
+                    color = if (isPositive) Color(0xFF10B981) else Color(0xFFEF4444)
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
 
-                val statusBg = when (txn.status) {
+                val statusBg = when (txn.status.name) {
                     "SUCCESS" -> Color(0xFF065F46)
                     "PENDING" -> Color(0xFF92400E)
                     else -> Color(0xFF991B1B)
                 }
-                val statusTxt = when (txn.status) {
+                val statusTxt = when (txn.status.name) {
                     "SUCCESS" -> Color(0xFF34D399)
                     "PENDING" -> Color(0xFFFBBF24)
                     else -> Color(0xFFFCA5A5)
@@ -242,7 +240,7 @@ private fun TransactionCardItem(txn: TransactionItem) {
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
-                        text = txn.status,
+                        text = txn.status.name,
                         fontSize = 10.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,

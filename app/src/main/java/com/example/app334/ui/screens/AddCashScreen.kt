@@ -1,5 +1,6 @@
 package com.example.app334.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app334.R
+import com.example.app334.game.ringoffuture.backend.WalletLedger
 import com.example.app334.ui.theme.RubikFont
 
 import androidx.compose.foundation.shape.CircleShape
@@ -36,12 +39,12 @@ data class OfferItem(
 
 @Composable
 fun AddCashScreen(
-    totalBalance: String = "₹0.0",
     onAddCashSuccess: (String) -> Unit = {},
-    onDepositClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     var inputAmount by remember { mutableStateOf("200") }
+    val walletBalance by WalletLedger.walletBalance.collectAsState()
 
     val allOffers = remember {
         listOf(
@@ -51,6 +54,9 @@ fun AddCashScreen(
             OfferItem("100", "10")
         )
     }
+
+    val inputNum = inputAmount.toDoubleOrNull() ?: 0.0
+    val isAmountValid = inputNum > 0
 
     Column(
         modifier = modifier
@@ -68,13 +74,22 @@ fun AddCashScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Deposit Cash",
-                fontSize = 22.sp,
-                fontFamily = RubikFont,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            Column {
+                Text(
+                    text = "Add Play Chips",
+                    fontSize = 22.sp,
+                    fontFamily = RubikFont,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    text = "🎮 DEMO BALANCE",
+                    fontSize = 10.sp,
+                    fontFamily = RubikFont,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF10B981)
+                )
+            }
 
             Column(
                 horizontalAlignment = Alignment.End
@@ -86,383 +101,155 @@ fun AddCashScreen(
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF9CA3AF)
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = totalBalance,
-                        fontSize = 17.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
+                Text(
+                    text = walletBalance.formattedTotal,
+                    fontSize = 17.sp,
+                    fontFamily = RubikFont,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
             }
         }
 
-        // Promo Cashback Card
+        // Amount Input Box
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(115.dp)
-                .clip(RoundedCornerShape(18.dp))
-                .background(Color(0xFF7C3AED))
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color(0xFF220338))
+                .border(1.dp, Color(0xFF4C1D95), RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = "SPECIAL CASHBACK",
-                        fontSize = 10.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFFFFD700)
-                    )
-                    Text(
-                        text = "100% EXTRA CASH",
-                        fontSize = 18.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Get instant cashback on deposit",
-                        fontSize = 12.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFFE2E8F0)
-                    )
-                }
-
-                Image(
-                    painter = painterResource(id = R.drawable.cashback_wallet_ic),
-                    contentDescription = "Cashbag",
-                    modifier = Modifier.size(65.dp)
-                )
-            }
-        }
-
-        // Enter Amount Input Card (Matching Image 1 with 3D Depth & Bottom Cashback Bar)
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // 3D Bottom Depth Shadow Layer
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .offset(y = 6.dp)
-                    .clip(RoundedCornerShape(22.dp))
-                    .background(Color(0xFF220038))
-            )
-
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(22.dp))
-                    .background(Color(0xFF380054))
-                    .border(1.5.dp, Color(0xFF9D24D6).copy(alpha = 0.5f), RoundedCornerShape(22.dp))
-            ) {
-                // Top Main Purple Input Box
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 14.dp, bottomEnd = 14.dp))
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color(0xFF7B00C7),
-                                    Color(0xFF6B00B0)
-                                )
-                            )
-                        )
-                        .border(
-                            1.dp,
-                            Color(0xFFB44FFF),
-                            RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 14.dp, bottomEnd = 14.dp)
-                        )
-                        .padding(horizontal = 18.dp, vertical = 14.dp),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "₹ ",
-                            fontSize = 24.sp,
-                            fontFamily = RubikFont,
-                            fontWeight = FontWeight.W800,
-                            color = Color.White
-                        )
-
-                        BasicTextField(
-                            value = inputAmount,
-                            onValueChange = { newValue ->
-                                if (newValue.all { it.isDigit() } && newValue.length <= 6) {
-                                    inputAmount = newValue
-                                }
-                            },
-                            textStyle = TextStyle(
-                                fontSize = 24.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.W800,
-                                color = Color.White
-                            ),
-                            cursorBrush = SolidColor(Color.White),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            singleLine = true,
-                            decorationBox = { innerTextField ->
-                                Box(contentAlignment = Alignment.CenterStart) {
-                                    if (inputAmount.isEmpty()) {
-                                        Text(
-                                            text = "Enter Amount",
-                                            fontSize = 24.sp,
-                                            fontFamily = RubikFont,
-                                            fontWeight = FontWeight.W800,
-                                            color = Color.White.copy(alpha = 0.5f)
-                                        )
-                                    }
-                                    innerTextField()
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-
-                // Bottom Cashback Info Bar (Image 1)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Green % Badge Icon
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF00E676)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "%",
-                            fontSize = 11.sp,
-                            fontFamily = RubikFont,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF1B0626)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = "Add amount & get ",
-                        fontSize = 13.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-
-                    Text(
-                        text = "Cashback",
-                        fontSize = 13.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF00E676)
-                    )
-                }
-            }
-        }
-
-        // Offers Section
-        Column {
-            Text(
-                text = "SELECT AMOUNT",
-                fontSize = 13.sp,
-                fontFamily = RubikFont,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFA78BFA),
-                letterSpacing = 0.5.sp
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            for (i in allOffers.indices step 2) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    val offer1 = allOffers[i]
-                    OfferCard(
-                        offer = offer1,
-                        isSelected = inputAmount == offer1.amount,
-                        onClick = { inputAmount = offer1.amount },
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    if (i + 1 < allOffers.size) {
-                        val offer2 = allOffers[i + 1]
-                        OfferCard(
-                            offer = offer2,
-                            isSelected = inputAmount == offer2.amount,
-                            onClick = { inputAmount = offer2.amount },
-                            modifier = Modifier.weight(1f)
-                        )
-                    } else {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-                if (i + 2 < allOffers.size) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
-            }
-        }
-
-        // Action CTA Button with 3D Depth (Vibrant Green matching reference image)
-        val isAmountValid = inputAmount.isNotEmpty() && (inputAmount.toIntOrNull() ?: 0) > 0
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 20.dp)
-        ) {
-            // 3D Bottom Depth Shadow Layer (Dark Green)
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .offset(y = 5.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(if (isAmountValid) Color(0xFF003D1A) else Color(0xFF1E0030))
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(
-                        if (isAmountValid) {
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color(0xFF00E676),
-                                    Color(0xFF00B55B)
-                                )
-                            )
-                        } else {
-                            SolidColor(Color(0xFF2C0B42))
-                        }
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = if (isAmountValid) Color(0xFF00FF84).copy(alpha = 0.6f) else Color.Transparent,
-                        shape = RoundedCornerShape(18.dp)
-                    )
-                    .clickable(enabled = isAmountValid) {
-                        onAddCashSuccess(inputAmount)
-                        onDepositClick(inputAmount)
-                    },
-                contentAlignment = Alignment.Center
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = if (isAmountValid) "ADD ₹$inputAmount" else "ADD CASH",
-                    fontSize = 18.sp,
+                    text = "ENTER CHIP AMOUNT",
+                    fontSize = 12.sp,
                     fontFamily = RubikFont,
-                    fontWeight = FontWeight.W800,
-                    color = if (isAmountValid) Color.White else Color(0xFF8B5CF6),
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF9CA3AF),
                     letterSpacing = 0.5.sp
                 )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "₹ ",
+                        fontSize = 26.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                    BasicTextField(
+                        value = inputAmount,
+                        onValueChange = { inputAmount = it.filter { char -> char.isDigit() } },
+                        textStyle = TextStyle(
+                            fontSize = 26.sp,
+                            fontFamily = RubikFont,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        cursorBrush = SolidColor(Color(0xFF7C3AED)),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
-    }
-}
 
-@Composable
-fun OfferCard(
-    offer: OfferItem,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .padding(bottom = 6.dp)
-            .clickable { onClick() }
-    ) {
-        // 3D Bottom Depth Shadow
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .offset(y = 5.dp)
-                .clip(RoundedCornerShape(18.dp))
-                .background(Color(0xFF220038))
+        // Quick Offer Chips
+        Text(
+            text = "POPULAR CHIP OFFERS",
+            fontSize = 13.sp,
+            fontFamily = RubikFont,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFFA78BFA),
+            letterSpacing = 0.5.sp
         )
 
-        // Main Surface Card (Matching Image 2)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            allOffers.forEach { offer ->
+                val isSelected = inputAmount == offer.amount
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(if (isSelected) Color(0xFF7C3AED) else Color(0xFF220338))
+                        .border(1.dp, if (isSelected) Color(0xFFA78BFA) else Color(0xFF4C1D95), RoundedCornerShape(14.dp))
+                        .clickable { inputAmount = offer.amount }
+                        .padding(vertical = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = "₹${offer.amount}",
+                            fontSize = 16.sp,
+                            fontFamily = RubikFont,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "+₹${offer.cashback} Bonus",
+                            fontSize = 10.sp,
+                            fontFamily = RubikFont,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF10B981)
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // ADD DEMO CHIPS BUTTON
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(86.dp)
-                .clip(RoundedCornerShape(18.dp))
+                .height(52.dp)
+                .clip(RoundedCornerShape(14.dp))
                 .background(
-                    if (isSelected) {
-                        Brush.verticalGradient(
+                    brush = if (isAmountValid) {
+                        Brush.horizontalGradient(
                             colors = listOf(
-                                Color(0xFF7C00C7),
-                                Color(0xFF6B00B0)
+                                Color(0xFF10B981),
+                                Color(0xFF047857)
                             )
                         )
                     } else {
-                        Brush.verticalGradient(
+                        Brush.horizontalGradient(
                             colors = listOf(
-                                Color(0xFF4A0078),
-                                Color(0xFF3C0063)
+                                Color(0xFF4B5563),
+                                Color(0xFF374151)
                             )
                         )
                     }
                 )
-                .border(
-                    width = if (isSelected) 2.dp else 1.dp,
-                    color = if (isSelected) Color(0xFFB44FFF) else Color(0xFF7B00C7).copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(18.dp)
-                )
-                .padding(14.dp)
+                .clickable(enabled = isAmountValid) {
+                    val paise = WalletLedger.rupeesToPaise(inputNum)
+                    WalletLedger.addDemoCash(paise)
+                    Toast.makeText(context, "Added ₹${inputNum.toInt()} Demo Chips to your wallet!", Toast.LENGTH_SHORT).show()
+                    onAddCashSuccess(inputAmount)
+                },
+            contentAlignment = Alignment.Center
         ) {
-            // Plus '+' icon on top right (Image 2)
             Text(
-                text = "+",
-                fontSize = 24.sp,
+                text = if (isAmountValid) "ADD ₹$inputAmount DEMO CHIPS" else "ENTER CHIP AMOUNT",
+                fontSize = 16.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                modifier = Modifier.align(Alignment.TopEnd)
+                letterSpacing = 0.5.sp
             )
-
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "₹${offer.amount}",
-                    fontSize = 22.sp,
-                    fontFamily = RubikFont,
-                    fontWeight = FontWeight.W800,
-                    color = Color.White
-                )
-
-                Text(
-                    text = "₹${offer.cashback} Cashback",
-                    fontSize = 13.sp,
-                    fontFamily = RubikFont,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF00E676)
-                )
-            }
         }
     }
 }

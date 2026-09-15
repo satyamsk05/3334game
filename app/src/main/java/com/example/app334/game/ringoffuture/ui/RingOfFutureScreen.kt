@@ -1,6 +1,7 @@
 package com.example.app334.game.ringoffuture.ui
 
-import androidx.compose.animation.AnimatedVisibility
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.withInfiniteAnimationFrameMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,12 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app334.game.ringoffuture.backend.GameBackendRepository
-import com.example.app334.game.ringoffuture.backend.WalletBalance
+import com.example.app334.game.ringoffuture.backend.WalletLedger
 import com.example.app334.game.ringoffuture.components.SpinController
 import com.example.app334.game.ringoffuture.components.WheelCanvas
 import com.example.app334.game.ringoffuture.model.ColorType
@@ -37,13 +38,23 @@ fun RingOfFutureScreen(
     onOpenDepositScreen: () -> Unit,
     onOpenAdminDashboard: () -> Unit
 ) {
-    // Initialize Game Engine Loop
-    LaunchedEffect(Unit) {
+    val context = LocalContext.current
+
+    // System Back Handler
+    BackHandler {
+        onBackClick()
+    }
+
+    // Engine Lifecycle: Starts on enter, stops on dispose (refunds active bets if in BETTING)
+    DisposableEffect(Unit) {
         GameBackendRepository.initEngine()
+        onDispose {
+            GameBackendRepository.stopEngine()
+        }
     }
 
     val gameState by GameBackendRepository.gameState.collectAsState()
-    var walletBalance by remember { mutableStateOf(GameBackendRepository.getWalletBalance()) }
+    val walletBalance by WalletLedger.walletBalance.collectAsState()
 
     val spinController = remember { SpinController() }
     var rotationAngle by remember { mutableStateOf(0f) }
@@ -52,11 +63,6 @@ fun RingOfFutureScreen(
     var withdrawInput by remember { mutableStateOf("500") }
     var upiInput by remember { mutableStateOf("user@upi") }
     var withdrawMsg by remember { mutableStateOf<String?>(null) }
-
-    // Keep wallet in sync
-    LaunchedEffect(gameState.phase, gameState.userBets) {
-        walletBalance = GameBackendRepository.getWalletBalance()
-    }
 
     // Trigger Spin Controller on SPINNING phase
     LaunchedEffect(gameState.phase) {
@@ -103,7 +109,7 @@ fun RingOfFutureScreen(
                             ) {
                                 Text("💰 ", fontSize = 14.sp)
                                 Text(
-                                    "₹${String.format("%.2f", walletBalance.totalBalance)}",
+                                    walletBalance.formattedTotal,
                                     color = WheelConfig.COLOR_GOLD,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp
@@ -120,7 +126,6 @@ fun RingOfFutureScreen(
                     }
                 },
                 actions = {
-                    // Rules Info Button
                     IconButton(onClick = { showRulesModal = true }) {
                         Text("❓", fontSize = 18.sp)
                     }
@@ -139,7 +144,7 @@ fun RingOfFutureScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Live Status Banner / Countdown Pill
+            // Live Status Banner
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = when (gameState.phase) {
@@ -172,7 +177,7 @@ fun RingOfFutureScreen(
                 modifier = Modifier.size(260.dp)
             )
 
-            // Recent History Row (Last 10 Wins)
+            // Recent History Row
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text("RECENT OUTCOMES", color = Color.Gray, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(4.dp))
@@ -202,28 +207,34 @@ fun RingOfFutureScreen(
                 }
             }
 
-            // Color Betting Grid (Green 32x, Red 5.16x, Purple 3.1x, Grey 2.06x)
+            // Color Betting Grid (~95% RTP multipliers: Green 30x, Red 5.06x, Purple 3.04x, Grey 2.03x)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 BetSpotCard(
                     title = "GREEN",
-                    multiplier = "32x",
+                    multiplier = "30x",
                     color = WheelConfig.COLOR_GREEN,
                     betAmount = gameState.userBets.greenBet,
                     enabled = gameState.phase == GamePhase.BETTING,
-                    onClick = { GameBackendRepository.placeBet(ColorType.GREEN, gameState.selectedChip.toDouble()) },
+                    onClick = {
+                        val success = GameBackendRepository.placeBet(ColorType.GREEN, gameState.selectedChip.toDouble())
+                        if (!success) Toast.makeText(context, "Insufficient chips for bet!", Toast.LENGTH_SHORT).show()
+                    },
                     modifier = Modifier.weight(1f)
                 )
 
                 BetSpotCard(
                     title = "RED",
-                    multiplier = "5.16x",
+                    multiplier = "5.06x",
                     color = WheelConfig.COLOR_RED,
                     betAmount = gameState.userBets.redBet,
                     enabled = gameState.phase == GamePhase.BETTING,
-                    onClick = { GameBackendRepository.placeBet(ColorType.RED, gameState.selectedChip.toDouble()) },
+                    onClick = {
+                        val success = GameBackendRepository.placeBet(ColorType.RED, gameState.selectedChip.toDouble())
+                        if (!success) Toast.makeText(context, "Insufficient chips for bet!", Toast.LENGTH_SHORT).show()
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -234,21 +245,27 @@ fun RingOfFutureScreen(
             ) {
                 BetSpotCard(
                     title = "PURPLE",
-                    multiplier = "3.1x",
+                    multiplier = "3.04x",
                     color = WheelConfig.COLOR_PURPLE,
                     betAmount = gameState.userBets.purpleBet,
                     enabled = gameState.phase == GamePhase.BETTING,
-                    onClick = { GameBackendRepository.placeBet(ColorType.PURPLE, gameState.selectedChip.toDouble()) },
+                    onClick = {
+                        val success = GameBackendRepository.placeBet(ColorType.PURPLE, gameState.selectedChip.toDouble())
+                        if (!success) Toast.makeText(context, "Insufficient chips for bet!", Toast.LENGTH_SHORT).show()
+                    },
                     modifier = Modifier.weight(1f)
                 )
 
                 BetSpotCard(
                     title = "GREY",
-                    multiplier = "2.06x",
+                    multiplier = "2.03x",
                     color = WheelConfig.COLOR_GREY,
                     betAmount = gameState.userBets.greyBet,
                     enabled = gameState.phase == GamePhase.BETTING,
-                    onClick = { GameBackendRepository.placeBet(ColorType.GREY, gameState.selectedChip.toDouble()) },
+                    onClick = {
+                        val success = GameBackendRepository.placeBet(ColorType.GREY, gameState.selectedChip.toDouble())
+                        if (!success) Toast.makeText(context, "Insufficient chips for bet!", Toast.LENGTH_SHORT).show()
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -283,7 +300,7 @@ fun RingOfFutureScreen(
                 }
             }
 
-            // Action Buttons (Clear, 2X Double, Deposit, Withdraw)
+            // Action Buttons (Clear, 2X Double, Withdraw)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -299,7 +316,10 @@ fun RingOfFutureScreen(
                 }
 
                 Button(
-                    onClick = { GameBackendRepository.doubleBets() },
+                    onClick = {
+                        val success = GameBackendRepository.doubleBets()
+                        if (!success) Toast.makeText(context, "Insufficient chips to double bets!", Toast.LENGTH_SHORT).show()
+                    },
                     enabled = gameState.phase == GamePhase.BETTING && gameState.userBets.totalBet > 0,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8E24AA)),
                     shape = RoundedCornerShape(10.dp),
@@ -331,11 +351,11 @@ fun RingOfFutureScreen(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("• 32 Total Wheel Segments.", color = Color.LightGray)
-                    Text("• 🟢 GREEN (1 Segment): 32x Multiplier Payout", color = WheelConfig.COLOR_GREEN, fontWeight = FontWeight.Bold)
-                    Text("• 🔴 RED (6 Segments): 5.16x Multiplier Payout", color = WheelConfig.COLOR_RED, fontWeight = FontWeight.Bold)
-                    Text("• 🟣 PURPLE (10 Segments): 3.1x Multiplier Payout", color = WheelConfig.COLOR_PURPLE, fontWeight = FontWeight.Bold)
-                    Text("• ⚪ GREY (15 Segments): 2.06x Multiplier Payout", color = WheelConfig.COLOR_GREY, fontWeight = FontWeight.Bold)
-                    Text("• Provably Fair SHA-256 RNG Engine.", color = Color.Gray, fontSize = 12.sp)
+                    Text("• 🟢 GREEN (1 Segment): 30x Multiplier Payout", color = WheelConfig.COLOR_GREEN, fontWeight = FontWeight.Bold)
+                    Text("• 🔴 RED (6 Segments): 5.06x Multiplier Payout", color = WheelConfig.COLOR_RED, fontWeight = FontWeight.Bold)
+                    Text("• 🟣 PURPLE (10 Segments): 3.04x Multiplier Payout", color = WheelConfig.COLOR_PURPLE, fontWeight = FontWeight.Bold)
+                    Text("• ⚪ GREY (15 Segments): 2.03x Multiplier Payout", color = WheelConfig.COLOR_GREY, fontWeight = FontWeight.Bold)
+                    Text("• Target ~95% RTP Fair Play Mode.", color = Color.Gray, fontSize = 12.sp)
                 }
             },
             confirmButton = {
@@ -354,7 +374,7 @@ fun RingOfFutureScreen(
             title = { Text("Request Withdrawal 💸", color = Color.White, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Available Winnings: ₹${String.format("%.2f", walletBalance.winningBalance)}", color = WheelConfig.COLOR_GOLD, fontWeight = FontWeight.Bold)
+                    Text("Available Winnings: ${walletBalance.formattedWinnings}", color = WheelConfig.COLOR_GOLD, fontWeight = FontWeight.Bold)
 
                     OutlinedTextField(
                         value = withdrawInput,
@@ -387,6 +407,7 @@ fun RingOfFutureScreen(
                         if (res.first) {
                             showWithdrawModal = false
                             withdrawMsg = null
+                            Toast.makeText(context, res.second, Toast.LENGTH_SHORT).show()
                         } else {
                             withdrawMsg = res.second
                         }

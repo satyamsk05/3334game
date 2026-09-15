@@ -12,9 +12,13 @@ object GameBackendRepository {
         GameTimerEngine.startEngine()
     }
 
-    fun getWalletBalance(): WalletBalance = WalletLedger.getBalance()
+    fun stopEngine() {
+        GameTimerEngine.stopEngine()
+    }
 
-    fun getWalletTransactions(): List<WalletTransaction> = WalletLedger.getTransactions()
+    fun getWalletBalance(): WalletBalance = WalletLedger.walletBalance.value
+
+    fun getWalletTransactions(): List<WalletTransaction> = WalletLedger.transactions.value
 
     fun placeBet(colorType: ColorType, amount: Double): Boolean {
         return GameTimerEngine.placeBet(colorType, amount)
@@ -32,25 +36,14 @@ object GameBackendRepository {
         GameTimerEngine.setSelectedChip(chip)
     }
 
-    fun submitDepositRequest(amount: Double, utr: String): Boolean {
-        val tx = WalletLedger.processDepositRequest(amount, utr)
-        TelegramBotEngine.notifyDepositSubmitted("Satyam Kumar", "USR-304", amount, tx.referenceId)
+    fun submitDepositRequest(amountRupees: Double, utr: String): Boolean {
+        val paise = WalletLedger.rupeesToPaise(amountRupees)
+        WalletLedger.addDemoCash(paise, utr)
         return true
     }
 
-    fun submitWithdrawalRequest(amount: Double, upiId: String): Pair<Boolean, String> {
-        val riskCheck = RiskEngine.validateWithdrawalEligibility("USR-304", amount, 500.0, 3200.0)
-        if (!riskCheck.first) {
-            return Pair(false, riskCheck.second)
-        }
-
-        val result = WalletLedger.requestWithdrawal(amount, upiId)
-        if (result.first) {
-            val balance = WalletLedger.getBalance()
-            TelegramBotEngine.notifyWithdrawalRequested("Satyam Kumar", "USR-304", amount, upiId, balance.winningBalance)
-        }
-        return result
+    fun submitWithdrawalRequest(amountRupees: Double, upiId: String): Pair<Boolean, String> {
+        val paise = WalletLedger.rupeesToPaise(amountRupees)
+        return WalletLedger.requestWithdrawal(paise, upiId)
     }
-
-    fun getTelegramLogs() = TelegramBotEngine.getLogs()
 }
