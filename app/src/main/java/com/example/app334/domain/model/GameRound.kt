@@ -1,5 +1,7 @@
 package com.example.app334.domain.model
 
+import com.example.app334.game.ringoffuture.model.GamePhase
+
 data class GameRound(
     val id: String,
     val sequenceNumber: Long,

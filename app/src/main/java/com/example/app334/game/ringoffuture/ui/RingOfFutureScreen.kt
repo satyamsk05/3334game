@@ -35,8 +35,7 @@ import com.example.app334.game.ringoffuture.model.WheelConfig
 @Composable
 fun RingOfFutureScreen(
     onBackClick: () -> Unit,
-    onOpenDepositScreen: () -> Unit,
-    onOpenAdminDashboard: () -> Unit
+    onOpenDepositScreen: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -431,7 +430,7 @@ fun BetSpotCard(
     title: String,
     multiplier: String,
     color: Color,
-    betAmount: Double,
+    betAmount: Long,
     enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -463,7 +462,7 @@ fun BetSpotCard(
             Text(multiplier, color = WheelConfig.COLOR_GOLD, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                if (betAmount > 0) "Bet: ₹${String.format("%.0f", betAmount)}" else "Tap to Bet",
+                if (betAmount > 0) "Bet: ${WalletLedger.formatPaiseToRupees(betAmount)}" else "Tap to Bet",
                 color = if (betAmount > 0) Color.White else Color.Gray,
                 fontSize = 11.sp
             )

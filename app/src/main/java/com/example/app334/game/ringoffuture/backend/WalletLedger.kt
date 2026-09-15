@@ -175,7 +175,7 @@ object WalletLedger {
             amountPaise = amountPaise,
             balanceAfterPaise = newBalance.totalPaise,
             status = TransactionStatus.SUCCESS,
-            referenceId = "BET-${System.currentTimeMillis().toString().takeLast(6)}",
+            referenceId = "BET-${UUID.randomUUID()}",
             description = "Bet placed on Ring of Future"
         )
 
@@ -208,7 +208,7 @@ object WalletLedger {
                 amountPaise = totalRefund,
                 balanceAfterPaise = newBalance.totalPaise,
                 status = TransactionStatus.SUCCESS,
-                referenceId = "REF-${System.currentTimeMillis().toString().takeLast(6)}",
+                referenceId = "REF-${UUID.randomUUID()}",
                 description = "Bet refunded on Ring of Future"
             )
             _transactions.update { listOf(tx) + it }
@@ -228,7 +228,7 @@ object WalletLedger {
             amountPaise = winPayoutPaise,
             balanceAfterPaise = newBalance.totalPaise,
             status = TransactionStatus.SUCCESS,
-            referenceId = "WIN-${System.currentTimeMillis().toString().takeLast(6)}",
+            referenceId = "WIN-${UUID.randomUUID()}",
             description = "Win Payout ($multiplierLabel)"
         )
         _transactions.update { listOf(tx) + it }
@@ -246,7 +246,7 @@ object WalletLedger {
             amountPaise = amountPaise,
             balanceAfterPaise = newBalance.totalPaise,
             status = TransactionStatus.SUCCESS,
-            referenceId = utr.ifEmpty { "DEMO-UPI-${System.currentTimeMillis().toString().takeLast(8)}" },
+            referenceId = utr.ifEmpty { "DEMO-UPI-${UUID.randomUUID()}" },
             description = "Demo Play Chips Added"
         )
         _transactions.update { listOf(tx) + it }
@@ -280,7 +280,7 @@ object WalletLedger {
             amountPaise = amountPaise,
             balanceAfterPaise = newBalance.totalPaise,
             status = TransactionStatus.SUCCESS,
-            referenceId = "WD-${System.currentTimeMillis().toString().takeLast(6)}",
+            referenceId = "WD-${UUID.randomUUID()}",
             description = "Demo Withdrawal to UPI: $upiId"
         )
         _transactions.update { listOf(tx) + it }
@@ -293,5 +293,27 @@ object WalletLedger {
 
     fun resetDemoBalance() {
         _walletBalance.value = WalletBalance()
+        _transactions.value = listOf(
+            WalletTransaction(
+                id = "TX1001",
+                userId = "USR-304",
+                type = TransactionType.DEPOSIT,
+                amountPaise = 50000L,
+                balanceAfterPaise = 185000L,
+                status = TransactionStatus.SUCCESS,
+                referenceId = "UPI-49302198421",
+                description = "Demo Initial Deposit via UPI"
+            ),
+            WalletTransaction(
+                id = "TX1000",
+                userId = "USR-304",
+                type = TransactionType.BONUS_CREDIT,
+                amountPaise = 10000L,
+                balanceAfterPaise = 135000L,
+                status = TransactionStatus.SUCCESS,
+                referenceId = "BONUS-WELCOME",
+                description = "Welcome Demo Bonus"
+            )
+        )
     }
 }

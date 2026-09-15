@@ -117,31 +117,16 @@ fun MetricCard(title: String, value: String, accentColor: Color, modifier: Modif
 
 @Composable
 fun AdminGameControlTab() {
-    var selectedRtp by remember { mutableStateOf(AdminEngine.activeRtpMode) }
-
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text("Game & RTP Controls", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Text("Game & RTP Configuration", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
 
         Card(colors = CardDefaults.cardColors(containerColor = WheelConfig.COLOR_CARD), modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Select Return To Player (RTP) Mode:", color = Color.LightGray, fontSize = 14.sp)
-                RtpMode.entries.forEach { mode ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                selectedRtp = mode
-                                AdminEngine.activeRtpMode = mode
-                            }
-                    ) {
-                        RadioButton(selected = selectedRtp == mode, onClick = {
-                            selectedRtp = mode
-                            AdminEngine.activeRtpMode = mode
-                        })
-                        Text(mode.name, color = Color.White, fontWeight = FontWeight.SemiBold)
-                    }
-                }
+                Text("Standard RTP Mode Active: ~95% Verified RTP", color = Color.Green, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text("• Green (1/32): 30.0x Payout", color = Color.White, fontSize = 13.sp)
+                Text("• Red (6/32): 5.06x Payout", color = Color.White, fontSize = 13.sp)
+                Text("• Purple (10/32): 3.04x Payout", color = Color.White, fontSize = 13.sp)
+                Text("• Grey (15/32): 2.03x Payout", color = Color.White, fontSize = 13.sp)
             }
         }
     }

@@ -44,4 +44,9 @@ object SoundFXEngine {
             Log.e(TAG, "Error playing chip click tone: ${e.message}")
         }
     }
+
+    fun release() {
+        toneGenerator?.release()
+        toneGenerator = null
+    }
 }

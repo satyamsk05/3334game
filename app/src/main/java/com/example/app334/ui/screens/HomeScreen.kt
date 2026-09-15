@@ -61,7 +61,6 @@ sealed interface SubScreen {
     object ContactUs : SubScreen
     object FairPlay : SubScreen
     object RingOfFuture : SubScreen
-    object AdminDashboard : SubScreen
     object DepositPayment : SubScreen
 }
 
@@ -82,7 +81,6 @@ fun HomeScreen(
         if (activeSubScreen != null) {
             when (activeSubScreen) {
                 SubScreen.WithdrawDetails -> activeSubScreen = SubScreen.Withdraw
-                SubScreen.AdminDashboard -> activeSubScreen = SubScreen.RingOfFuture
                 SubScreen.DepositPayment -> activeSubScreen = SubScreen.RingOfFuture
                 else -> activeSubScreen = null
             }
@@ -187,13 +185,7 @@ fun HomeScreen(
                     SubScreen.RingOfFuture -> {
                         com.example.app334.game.ringoffuture.ui.RingOfFutureScreen(
                             onBackClick = { activeSubScreen = null },
-                            onOpenDepositScreen = { activeSubScreen = SubScreen.DepositPayment },
-                            onOpenAdminDashboard = { activeSubScreen = SubScreen.AdminDashboard }
-                        )
-                    }
-                    SubScreen.AdminDashboard -> {
-                        com.example.app334.game.ringoffuture.admin.AdminDashboardScreen(
-                            onBackClick = { activeSubScreen = SubScreen.RingOfFuture }
+                            onOpenDepositScreen = { activeSubScreen = SubScreen.DepositPayment }
                         )
                     }
                     SubScreen.DepositPayment -> {

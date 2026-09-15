@@ -1,9 +1,5 @@
 package com.example.app334.game.ringoffuture.backend
 
-enum class RtpMode {
-    FAIR_RNG,
-    TARGET_RTP_95
-}
 
 data class AdminAnalytics(
     val totalActivePlayers: Int = 1,
@@ -23,7 +19,6 @@ data class UserProfileAdmin(
 
 object AdminEngine {
 
-    var activeRtpMode: RtpMode = RtpMode.FAIR_RNG
     var minBetAmount: Double = 10.0
     var maxBetAmount: Double = 10000.0
 

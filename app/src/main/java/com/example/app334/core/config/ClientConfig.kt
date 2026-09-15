@@ -1,15 +1,25 @@
 package com.example.app334.core.config
 
 /**
- * Public client-side configuration.
- * Must NOT contain backend database credentials, private keys, admin secrets, or bot tokens.
+ * Public Client Configuration for 334Game Android App.
+ * Specifies the remote EC2 backend server endpoints.
  */
 object ClientConfig {
-    const val API_BASE_URL: String = "https://api.3334game.com/v1"
-    const val WS_BASE_URL: String = "wss://api.3334game.com/v1/game/ws"
+
+    /**
+     * Set your EC2 public IP or domain here (e.g., "http://13.233.100.50:4000" or "http://10.0.2.2:4000" for emulator)
+     * Leave blank or empty string to use local simulated mode.
+     */
+    var SERVER_BASE_URL: String = "http://10.0.2.2:4000"
+
     const val APP_VERSION: String = "1.0.0"
-    
-    // Public Feature Flags
-    const val ENABLE_REALTIME_WS: Boolean = true
-    const val ENABLE_FAIRNESS_VERIFICATION: Boolean = true
+
+    val API_BASE_URL: String
+        get() = if (SERVER_BASE_URL.endsWith("/")) "${SERVER_BASE_URL}api/v1" else "$SERVER_BASE_URL/api/v1"
+
+    val WEBSOCKET_URL: String
+        get() = SERVER_BASE_URL.replace("http://", "ws://").replace("https://", "wss://") + "/ws"
+
+    val IS_REMOTE_SERVER_ENABLED: Boolean
+        get() = SERVER_BASE_URL.isNotBlank() && SERVER_BASE_URL != "OFFLINE"
 }

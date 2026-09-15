@@ -1,6 +1,6 @@
 package com.example.app334.presentation
 
-import com.example.app334.domain.model.GamePhase
+import com.example.app334.game.ringoffuture.model.GamePhase
 import com.example.app334.game.ringoffuture.presentation.RingOfFutureViewModel
 import com.example.app334.game.ringoffuture.wheel.WheelGeometry
 import org.junit.Assert.assertEquals

@@ -8,12 +8,12 @@ enum class GamePhase {
 }
 
 data class UserBets(
-    val greenBet: Double = 0.0,
-    val redBet: Double = 0.0,
-    val purpleBet: Double = 0.0,
-    val greyBet: Double = 0.0
+    val greenBet: Long = 0L,   // in paise
+    val redBet: Long = 0L,
+    val purpleBet: Long = 0L,
+    val greyBet: Long = 0L
 ) {
-    val totalBet: Double get() = greenBet + redBet + purpleBet + greyBet
+    val totalBet: Long get() = greenBet + redBet + purpleBet + greyBet
 
     fun reset(): UserBets = UserBets()
 
@@ -41,13 +41,7 @@ data class RingOfFutureGameState(
     val selectedChip: Int = 50,
     val winningSegmentIndex: Int = 0,
     val winningSegment: WheelSegment? = null,
-    val lastWinAmount: Double = 0.0,
+    val lastWinAmount: Long = 0L,  // in paise
     val history: List<SpinResult> = emptyList(),
-    val soundEnabled: Boolean = true,
-    val totalPoolBets: Map<ColorType, Double> = mapOf(
-        ColorType.GREEN to 1200.0,
-        ColorType.RED to 8500.0,
-        ColorType.PURPLE to 14200.0,
-        ColorType.GREY to 21000.0
-    )
+    val soundEnabled: Boolean = true
 )

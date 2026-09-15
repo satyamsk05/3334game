@@ -13,7 +13,7 @@ object GameTimerEngine {
     val gameState: StateFlow<RingOfFutureGameState> = _gameState.asStateFlow()
 
     private var timerJob: Job? = null
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private var scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     // Tracks bucket debits per placed bet in current round
     private var activeBetDebits = mutableListOf<BetDebitBreakdown>()
@@ -43,6 +43,9 @@ object GameTimerEngine {
         }
         timerJob?.cancel()
         timerJob = null
+        scope.cancel()
+        scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        SoundFXEngine.release()
     }
 
     private suspend fun runBettingPhase() {
@@ -51,7 +54,7 @@ object GameTimerEngine {
             it.copy(
                 phase = GamePhase.BETTING,
                 secondsRemaining = WheelConfig.BETTING_TIME_SECONDS,
-                lastWinAmount = 0.0,
+                lastWinAmount = 0L,
                 userBets = UserBets()
             )
         }
@@ -59,6 +62,7 @@ object GameTimerEngine {
         for (sec in WheelConfig.BETTING_TIME_SECONDS downTo 1) {
             if (!scope.isActive) break
             _gameState.update { it.copy(secondsRemaining = sec) }
+            SoundFXEngine.playTick()
             delay(1000L)
         }
     }
@@ -96,20 +100,20 @@ object GameTimerEngine {
         val currentState = _gameState.value
         val winningSegment = currentState.winningSegment ?: RngEngine.getSegment(0)
 
-        // Calculate user win payout
+        // Calculate user win payout entirely in paise
         val userBets = currentState.userBets
-        val betOnWinningColorRupees = when (winningSegment.colorType) {
+        val betOnWinningColorPaise = when (winningSegment.colorType) {
             ColorType.GREEN -> userBets.greenBet
             ColorType.RED -> userBets.redBet
             ColorType.PURPLE -> userBets.purpleBet
             ColorType.GREY -> userBets.greyBet
         }
 
-        val winAmountRupees = betOnWinningColorRupees * winningSegment.multiplier
-        val winAmountPaise = WalletLedger.rupeesToPaise(winAmountRupees)
+        val winAmountPaise = (betOnWinningColorPaise * winningSegment.multiplier).toLong()
 
         if (winAmountPaise > 0L) {
             WalletLedger.creditWin(winAmountPaise, "${winningSegment.multiplier}x")
+            SoundFXEngine.playWinSound()
         }
 
         val newHistoryItem = SpinResult(
@@ -124,7 +128,7 @@ object GameTimerEngine {
         _gameState.update {
             it.copy(
                 phase = GamePhase.RESULT_SHOW,
-                lastWinAmount = winAmountRupees,
+                lastWinAmount = winAmountPaise,
                 history = updatedHistory
             )
         }
@@ -143,10 +147,9 @@ object GameTimerEngine {
         }
     }
 
-    fun placeBet(colorType: ColorType, amountRupees: Double): Boolean {
-        if (_gameState.value.phase != GamePhase.BETTING || amountRupees <= 0) return false
+    fun placeBet(colorType: ColorType, amountPaise: Long): Boolean {
+        if (_gameState.value.phase != GamePhase.BETTING || amountPaise <= 0) return false
 
-        val amountPaise = WalletLedger.rupeesToPaise(amountRupees)
         val debitBreakdown = WalletLedger.placeBet(amountPaise)
         if (!debitBreakdown.success) return false
 
@@ -155,10 +158,10 @@ object GameTimerEngine {
         _gameState.update { current ->
             val oldBets = current.userBets
             val newBets = when (colorType) {
-                ColorType.GREEN -> oldBets.copy(greenBet = oldBets.greenBet + amountRupees)
-                ColorType.RED -> oldBets.copy(redBet = oldBets.redBet + amountRupees)
-                ColorType.PURPLE -> oldBets.copy(purpleBet = oldBets.purpleBet + amountRupees)
-                ColorType.GREY -> oldBets.copy(greyBet = oldBets.greyBet + amountRupees)
+                ColorType.GREEN -> oldBets.copy(greenBet = oldBets.greenBet + amountPaise)
+                ColorType.RED -> oldBets.copy(redBet = oldBets.redBet + amountPaise)
+                ColorType.PURPLE -> oldBets.copy(purpleBet = oldBets.purpleBet + amountPaise)
+                ColorType.GREY -> oldBets.copy(greyBet = oldBets.greyBet + amountPaise)
             }
             current.copy(userBets = newBets)
         }

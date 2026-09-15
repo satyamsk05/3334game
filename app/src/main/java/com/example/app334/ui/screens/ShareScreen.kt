@@ -40,17 +40,11 @@ data class ReferralUser(
 
 @Composable
 fun ShareScreen(
-    earnings: String = "₹30",
+    earnings: String = "₹0",
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val referrals = remember {
-        listOf(
-            ReferralUser("Dh animation", "09 Dec", "₹15", R.drawable.avatar_1),
-            ReferralUser("Harshthakur", "08 Dec", "₹15", R.drawable.avatar_2),
-            ReferralUser("RAHUL", "07 Dec", "₹15", R.drawable.avatar_3)
-        )
-    }
+    val referrals = remember { emptyList<ReferralUser>() }
 
     fun shareAppText(whatsappOnly: Boolean = false) {
         val shareMessage = "Join me on 3334Game and play Ring of Future! Use my Referral Code: REF334 to get bonus chips."
@@ -88,7 +82,8 @@ fun ShareScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 45.dp),
+                    .statusBarsPadding()
+                    .padding(top = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -187,7 +182,16 @@ fun ShareScreen(
                         letterSpacing = 0.5.sp
                     )
 
-                    referrals.forEachIndexed { i, user ->
+                    if (referrals.isEmpty()) {
+                        Text(
+                            text = "No friends referred yet. Share your code below to invite friends and earn bonus play chips!",
+                            fontSize = 13.sp,
+                            fontFamily = RubikFont,
+                            color = Color(0xFF9CA3AF),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    } else {
+                        referrals.forEachIndexed { i, user ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -238,6 +242,7 @@ fun ShareScreen(
                     }
                 }
             }
+        }
         }
 
         // 4. Bottom Action Buttons Bar

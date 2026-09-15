@@ -164,17 +164,16 @@ fun DepositPaymentScreen(
                 }
             }
 
-            // UPI ID & QR Info Box
+            // Demo Chips Banner Info Box
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF2A1545)),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
-                    Text("Official Pay UPI ID", color = Color.Gray, fontSize = 12.sp)
-                    Text("334game.official@upi", color = WheelConfig.COLOR_GOLD, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text("Pay to above UPI ID and enter 12-Digit UTR/TxID below:", color = Color.LightGray, fontSize = 12.sp)
+                    Text("🎮 Demo Play Chips Top-up", color = WheelConfig.COLOR_GOLD, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("Select your desired amount below to credit instant demo chips to your balance.", color = Color.LightGray, fontSize = 12.sp)
                 }
             }
 

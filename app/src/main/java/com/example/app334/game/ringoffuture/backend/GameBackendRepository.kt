@@ -10,18 +10,21 @@ object GameBackendRepository {
 
     fun initEngine() {
         GameTimerEngine.startEngine()
+        com.example.app334.data.remote.RemoteApiClient.connectWebSocket()
     }
 
     fun stopEngine() {
         GameTimerEngine.stopEngine()
+        com.example.app334.data.remote.RemoteApiClient.disconnectWebSocket()
     }
 
     fun getWalletBalance(): WalletBalance = WalletLedger.walletBalance.value
 
     fun getWalletTransactions(): List<WalletTransaction> = WalletLedger.transactions.value
 
-    fun placeBet(colorType: ColorType, amount: Double): Boolean {
-        return GameTimerEngine.placeBet(colorType, amount)
+    fun placeBet(colorType: ColorType, amountRupees: Double): Boolean {
+        val amountPaise = WalletLedger.rupeesToPaise(amountRupees)
+        return GameTimerEngine.placeBet(colorType, amountPaise)
     }
 
     fun clearBets() {

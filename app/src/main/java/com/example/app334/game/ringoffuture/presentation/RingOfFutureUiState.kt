@@ -1,6 +1,6 @@
 package com.example.app334.game.ringoffuture.presentation
 
-import com.example.app334.domain.model.GamePhase
+import com.example.app334.game.ringoffuture.model.GamePhase
 import com.example.app334.domain.model.GameResult
 import com.example.app334.domain.model.WalletState
 

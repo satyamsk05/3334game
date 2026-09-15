@@ -22,12 +22,8 @@ class SpinController {
         elapsedTime = 0f
         startRotation = currentRotation % WheelConfig.FULL_CIRCLE
 
-        val segmentAngle = WheelConfig.SEGMENT_ANGLE
-        val targetSegmentAngle = winningSegmentIndex * segmentAngle + (segmentAngle / 2f)
-
-        // 6 Full Rotations (360 * 6) + Angle to align winning segment with top pointer
-        val extraRotations = WheelConfig.FULL_CIRCLE * 6f
-        targetRotation = startRotation + extraRotations + (WheelConfig.FULL_CIRCLE - targetSegmentAngle)
+        val targetBase = com.example.app334.game.ringoffuture.wheel.WheelGeometry.calculateTargetRotation(winningSegmentIndex, fullRotations = 5)
+        targetRotation = startRotation + targetBase
     }
 
     fun update(deltaSeconds: Float): Float {
