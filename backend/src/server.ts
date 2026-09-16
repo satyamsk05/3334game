@@ -38,6 +38,7 @@ async function bootstrap() {
   });
 
   // Mount API Routers
+  app.use('/admin', adminRouter);
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/user', userRouter);
   app.use('/api/v1/game', gameRouter);

@@ -1,7 +1,7 @@
 # Graph Report - /Users/satyamkumar/Desktop/334game  (2026-09-16)
 
 ## Corpus Check
-- 69 files · ~3,010,903 words
+- 69 files · ~3,010,997 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
