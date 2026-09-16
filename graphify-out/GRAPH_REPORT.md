@@ -1,11 +1,11 @@
-# Graph Report - /Users/satyamkumar/Desktop/334game  (2026-09-15)
+# Graph Report - /Users/satyamkumar/Desktop/334game  (2026-09-16)
 
 ## Corpus Check
-- 69 files · ~3,006,624 words
+- 69 files · ~3,010,903 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 291 nodes · 243 edges · 65 communities detected
+- 293 nodes · 245 edges · 64 communities detected
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -74,7 +74,6 @@
 - [[_COMMUNITY_Community 61|Community 61]]
 - [[_COMMUNITY_Community 62|Community 62]]
 - [[_COMMUNITY_Community 63|Community 63]]
-- [[_COMMUNITY_Community 64|Community 64]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `GameLoopEngine` - 14 edges
@@ -84,9 +83,9 @@
 5. `RngEngine` - 8 edges
 6. `WalletLedgerTest` - 7 edges
 7. `TelegramBotEngine` - 7 edges
-8. `SessionManager` - 5 edges
-9. `WheelGeometry` - 5 edges
-10. `RiskEngine` - 5 edges
+8. `RingOfFutureViewModelTest` - 5 edges
+9. `SessionManager` - 5 edges
+10. `WheelGeometry` - 5 edges
 
 ## Surprising Connections (you probably didn't know these)
 - None detected - all connections are within the same source files.
@@ -94,8 +93,8 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.14
-Nodes (2): GameLoopEngine, RngEngine
+Cohesion: 0.11
+Nodes (3): GameLoopEngine, GameWebSocketServer, RngEngine
 
 ### Community 1 - "Community 1"
 Cohesion: 0.11
@@ -135,43 +134,43 @@ Nodes (4): GamePhase, RingOfFutureGameState, SpinResult, UserBets
 
 ### Community 10 - "Community 10"
 Cohesion: 0.33
-Nodes (5): Expired, Refreshing, SessionState, SignedIn, SignedOut
+Nodes (1): RingOfFutureViewModelTest
 
 ### Community 11 - "Community 11"
 Cohesion: 0.33
-Nodes (1): SessionManager
+Nodes (5): Expired, Refreshing, SessionState, SignedIn, SignedOut
 
 ### Community 12 - "Community 12"
 Cohesion: 0.33
-Nodes (1): WheelGeometry
+Nodes (1): SessionManager
 
 ### Community 13 - "Community 13"
 Cohesion: 0.33
-Nodes (1): RiskEngine
+Nodes (1): WheelGeometry
 
 ### Community 14 - "Community 14"
 Cohesion: 0.33
-Nodes (3): AdminAnalytics, AdminEngine, UserProfileAdmin
+Nodes (1): RiskEngine
 
 ### Community 15 - "Community 15"
 Cohesion: 0.33
-Nodes (1): RemoteApiClient
+Nodes (3): AdminAnalytics, AdminEngine, UserProfileAdmin
 
 ### Community 16 - "Community 16"
 Cohesion: 0.33
-Nodes (1): AccountRepository
+Nodes (1): RemoteApiClient
 
 ### Community 17 - "Community 17"
 Cohesion: 0.33
-Nodes (1): GameRepository
+Nodes (1): AccountRepository
 
 ### Community 18 - "Community 18"
-Cohesion: 0.4
-Nodes (1): WheelGeometryTest
+Cohesion: 0.33
+Nodes (1): GameRepository
 
 ### Community 19 - "Community 19"
 Cohesion: 0.4
-Nodes (1): RingOfFutureViewModelTest
+Nodes (1): WheelGeometryTest
 
 ### Community 20 - "Community 20"
 Cohesion: 0.4
@@ -182,12 +181,12 @@ Cohesion: 0.4
 Nodes (1): RingOfFutureViewModel
 
 ### Community 22 - "Community 22"
-Cohesion: 0.4
-Nodes (1): GameWebSocketServer
+Cohesion: 0.5
+Nodes (1): TransactionFilterCategory
 
 ### Community 23 - "Community 23"
 Cohesion: 0.5
-Nodes (1): TransactionFilterCategory
+Nodes (0): 
 
 ### Community 24 - "Community 24"
 Cohesion: 0.67
@@ -231,19 +230,19 @@ Nodes (0):
 
 ### Community 34 - "Community 34"
 Cohesion: 0.67
-Nodes (0): 
+Nodes (2): ColorType, WheelSegment
 
 ### Community 35 - "Community 35"
 Cohesion: 0.67
-Nodes (2): ColorType, WheelSegment
+Nodes (1): TelegramBotService
 
 ### Community 36 - "Community 36"
-Cohesion: 0.67
-Nodes (1): TelegramBotService
+Cohesion: 1.0
+Nodes (1): NavItem
 
 ### Community 37 - "Community 37"
 Cohesion: 1.0
-Nodes (1): NavItem
+Nodes (0): 
 
 ### Community 38 - "Community 38"
 Cohesion: 1.0
@@ -275,39 +274,39 @@ Nodes (0):
 
 ### Community 45 - "Community 45"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): ClientConfig
 
 ### Community 46 - "Community 46"
 Cohesion: 1.0
-Nodes (1): ClientConfig
+Nodes (0): 
 
 ### Community 47 - "Community 47"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): EnvConfig
 
 ### Community 48 - "Community 48"
 Cohesion: 1.0
-Nodes (1): EnvConfig
+Nodes (1): WheelConfig
 
 ### Community 49 - "Community 49"
 Cohesion: 1.0
-Nodes (1): WheelConfig
+Nodes (1): RingOfFutureUiState
 
 ### Community 50 - "Community 50"
 Cohesion: 1.0
-Nodes (1): RingOfFutureUiState
+Nodes (1): WalletState
 
 ### Community 51 - "Community 51"
 Cohesion: 1.0
-Nodes (1): WalletState
+Nodes (1): GameRound
 
 ### Community 52 - "Community 52"
 Cohesion: 1.0
-Nodes (1): GameRound
+Nodes (1): GameResult
 
 ### Community 53 - "Community 53"
 Cohesion: 1.0
-Nodes (1): GameResult
+Nodes (0): 
 
 ### Community 54 - "Community 54"
 Cohesion: 1.0
@@ -349,81 +348,75 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 64 - "Community 64"
-Cohesion: 1.0
-Nodes (0): 
-
 ## Knowledge Gaps
 - **47 isolated node(s):** `NavItem`, `OfferItem`, `ReferralUser`, `FeaturedGame`, `GridGame` (+42 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 37`** (2 nodes): `NavItem`, `NavItem.kt`
+- **Thin community `Community 36`** (2 nodes): `NavItem`, `NavItem.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (2 nodes): `WalletScreen.kt`, `WalletScreen()`
+- **Thin community `Community 37`** (2 nodes): `WalletScreen.kt`, `WalletScreen()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (2 nodes): `WithdrawDetailsScreen.kt`, `WithdrawDetailsScreen()`
+- **Thin community `Community 38`** (2 nodes): `WithdrawDetailsScreen.kt`, `WithdrawDetailsScreen()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (2 nodes): `SplashScreen()`, `SplashScreen.kt`
+- **Thin community `Community 39`** (2 nodes): `SplashScreen()`, `SplashScreen.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (2 nodes): `WithdrawScreen.kt`, `WithdrawScreen()`
+- **Thin community `Community 40`** (2 nodes): `WithdrawScreen.kt`, `WithdrawScreen()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (2 nodes): `ProfileScreen()`, `ProfileScreen.kt`
+- **Thin community `Community 41`** (2 nodes): `ProfileScreen()`, `ProfileScreen.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (2 nodes): `TopHeader()`, `TopHeader.kt`
+- **Thin community `Community 42`** (2 nodes): `TopHeader()`, `TopHeader.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (2 nodes): `CustomBottomNavBar()`, `CustomBottomNavBar.kt`
+- **Thin community `Community 43`** (2 nodes): `CustomBottomNavBar()`, `CustomBottomNavBar.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (2 nodes): `App334Theme()`, `Theme.kt`
+- **Thin community `Community 44`** (2 nodes): `App334Theme()`, `Theme.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (2 nodes): `ClientConfig`, `ClientConfig.kt`
+- **Thin community `Community 45`** (2 nodes): `ClientConfig`, `ClientConfig.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (2 nodes): `DepositPaymentScreen()`, `DepositPaymentScreen.kt`
+- **Thin community `Community 46`** (2 nodes): `DepositPaymentScreen()`, `DepositPaymentScreen.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (2 nodes): `EnvConfig`, `EnvConfig.kt`
+- **Thin community `Community 47`** (2 nodes): `EnvConfig`, `EnvConfig.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (2 nodes): `WheelConfig.kt`, `WheelConfig`
+- **Thin community `Community 48`** (2 nodes): `WheelConfig.kt`, `WheelConfig`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (2 nodes): `RingOfFutureUiState`, `RingOfFutureUiState.kt`
+- **Thin community `Community 49`** (2 nodes): `RingOfFutureUiState`, `RingOfFutureUiState.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (2 nodes): `WalletState.kt`, `WalletState`
+- **Thin community `Community 50`** (2 nodes): `WalletState.kt`, `WalletState`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (2 nodes): `GameRound`, `GameRound.kt`
+- **Thin community `Community 51`** (2 nodes): `GameRound`, `GameRound.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (2 nodes): `GameResult`, `GameResult.kt`
+- **Thin community `Community 52`** (2 nodes): `GameResult`, `GameResult.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (1 nodes): `build.gradle.kts`
+- **Thin community `Community 53`** (1 nodes): `build.gradle.kts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (1 nodes): `settings.gradle.kts`
+- **Thin community `Community 54`** (1 nodes): `settings.gradle.kts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `build.gradle.kts`
+- **Thin community `Community 55`** (1 nodes): `build.gradle.kts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `RubikFont.kt`
+- **Thin community `Community 56`** (1 nodes): `RubikFont.kt`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `pm2.config.js`
+- **Thin community `Community 57`** (1 nodes): `pm2.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (1 nodes): `env.ts`
+- **Thin community `Community 58`** (1 nodes): `env.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (1 nodes): `wallet.ts`
+- **Thin community `Community 59`** (1 nodes): `wallet.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 61`** (1 nodes): `admin.ts`
+- **Thin community `Community 60`** (1 nodes): `admin.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 62`** (1 nodes): `game.ts`
+- **Thin community `Community 61`** (1 nodes): `game.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 63`** (1 nodes): `user.ts`
+- **Thin community `Community 62`** (1 nodes): `user.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 64`** (1 nodes): `auth.ts`
+- **Thin community `Community 63`** (1 nodes): `auth.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GameLoopEngine` connect `Community 0` to `Community 22`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Why does `bootstrap()` connect `Community 3` to `Community 0`?**
   _High betweenness centrality (0.009) - this node is a cross-community bridge._
 - **What connects `NavItem`, `OfferItem`, `ReferralUser` to the rest of the system?**
   _47 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.14 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.11 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**

@@ -8,20 +8,23 @@ enum class GamePhase {
 }
 
 data class UserBets(
-    val greenBet: Long = 0L,   // in paise
-    val redBet: Long = 0L,
-    val purpleBet: Long = 0L,
-    val greyBet: Long = 0L
+    val blackBet: Long = 0L,   // in paise (Black 2x)
+    val redBet: Long = 0L,     // in paise (Red 3x)
+    val blueBet: Long = 0L,    // in paise (Blue 5x)
+    val greenBet: Long = 0L    // in paise (Green 50x)
 ) {
-    val totalBet: Long get() = greenBet + redBet + purpleBet + greyBet
+    val purpleBet: Long get() = blueBet
+    val greyBet: Long get() = blackBet
+
+    val totalBet: Long get() = blackBet + redBet + blueBet + greenBet
 
     fun reset(): UserBets = UserBets()
 
     fun doubleBets(): UserBets = UserBets(
-        greenBet = greenBet * 2,
+        blackBet = blackBet * 2,
         redBet = redBet * 2,
-        purpleBet = purpleBet * 2,
-        greyBet = greyBet * 2
+        blueBet = blueBet * 2,
+        greenBet = greenBet * 2
     )
 }
 

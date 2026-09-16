@@ -9,29 +9,39 @@ object WheelConfig {
 
     // Segment Distribution
     const val GREEN_COUNT = 1
-    const val RED_COUNT = 6
-    const val PURPLE_COUNT = 10
-    const val GREY_COUNT = 15
+    const val BLUE_COUNT = 6
+    const val RED_COUNT = 10
+    const val BLACK_COUNT = 15
 
-    // Color Definitions
-    val COLOR_GREEN = Color(0xFF4CAF50)
-    val COLOR_RED = Color(0xFFF44336)
-    val COLOR_PURPLE = Color(0xFF9C27B0)
-    val COLOR_GREY = Color(0xFF9E9E9E)
+    // Color Definitions (Matching Board.png)
+    val COLOR_BLACK = Color(0xFF2C3240)
+    val COLOR_RED = Color(0xFFED4B5E)
+    val COLOR_BLUE = Color(0xFF3B93FF)
+    val COLOR_GREEN = Color(0xFF5CC62F)
+
+    // Aliases for backwards compatibility
+    val COLOR_PURPLE = COLOR_BLUE
+    val COLOR_GREY = COLOR_BLACK
 
     val COLOR_GOLD = Color(0xFFFFD700)
-    val COLOR_DARK_BACKGROUND = Color(0xFF150A21)
-    val COLOR_SURFACE = Color(0xFF231238)
-    val COLOR_CARD = Color(0xFF2D1947)
+    val COLOR_DARK_BACKGROUND = Color(0xFF140C24)
+    val COLOR_SURFACE = Color(0xFF1F1535)
+    val COLOR_CARD = Color(0xFF281C44)
 
-    // Multipliers (Enforces ~95% RTP across all colors)
-    const val MULTIPLIER_GREEN = 30.0f
-    const val MULTIPLIER_RED = 5.06f
-    const val MULTIPLIER_PURPLE = 3.04f
-    const val MULTIPLIER_GREY = 2.03f
+    // Multipliers & Service Fee
+    const val MULTIPLIER_BLACK = 2.0f
+    const val MULTIPLIER_RED = 3.0f
+    const val MULTIPLIER_BLUE = 5.0f
+    const val MULTIPLIER_GREEN = 50.0f
+
+    // Aliases for backwards compatibility
+    const val MULTIPLIER_PURPLE = MULTIPLIER_BLUE
+    const val MULTIPLIER_GREY = MULTIPLIER_BLACK
+
+    const val SERVICE_FEE_PERCENT = 0.02f // 2% service fee (₹2 per ₹100 trade)
 
     // Timers (Seconds)
-    const val BETTING_TIME_SECONDS = 15
+    const val BETTING_TIME_SECONDS = 20
     const val LOCKED_TIME_SECONDS = 2
     const val SPIN_DURATION_SECONDS = 4.5f
     const val RESULT_SHOW_SECONDS = 3.5f

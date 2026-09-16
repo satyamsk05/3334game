@@ -3,6 +3,8 @@ import crypto from 'crypto';
 export enum ColorType {
   GREEN = 'GREEN',
   RED = 'RED',
+  BLUE = 'BLUE',
+  BLACK = 'BLACK',
   PURPLE = 'PURPLE',
   GREY = 'GREY'
 }
@@ -16,48 +18,50 @@ export interface SegmentInfo {
 export class RngEngine {
   public static readonly SEGMENT_COUNT = 32;
 
-  // 32-Segment Wheel Configuration (Matching 95% RTP Target)
+  // 32-Segment Wheel Configuration (Green 1/32, Blue 6/32, Red 10/32, Black 15/32)
   public static readonly SEGMENT_COLORS: ColorType[] = [
-    ColorType.GREEN,  // Index 0 (1/32) -> 30.0x
-    ColorType.GREY,   // 1
+    ColorType.GREEN,  // Index 0 (1/32) -> 50.0x
+    ColorType.BLACK,  // 1
     ColorType.RED,    // 2
-    ColorType.PURPLE, // 3
-    ColorType.GREY,   // 4
+    ColorType.BLUE,   // 3
+    ColorType.BLACK,  // 4
     ColorType.RED,    // 5
-    ColorType.PURPLE, // 6
-    ColorType.GREY,   // 7
+    ColorType.BLUE,   // 6
+    ColorType.BLACK,  // 7
     ColorType.RED,    // 8
-    ColorType.PURPLE, // 9
-    ColorType.GREY,   // 10
+    ColorType.BLUE,   // 9
+    ColorType.BLACK,  // 10
     ColorType.RED,    // 11
-    ColorType.PURPLE, // 12
-    ColorType.GREY,   // 13
+    ColorType.BLUE,   // 12
+    ColorType.BLACK,  // 13
     ColorType.RED,    // 14
-    ColorType.PURPLE, // 15
-    ColorType.GREY,   // 16
-    ColorType.PURPLE, // 17
-    ColorType.GREY,   // 18
-    ColorType.PURPLE, // 19
-    ColorType.GREY,   // 20
-    ColorType.PURPLE, // 21
-    ColorType.GREY,   // 22
-    ColorType.PURPLE, // 23
-    ColorType.GREY,   // 24
-    ColorType.PURPLE, // 25
-    ColorType.GREY,   // 26
-    ColorType.RED,    // 27
-    ColorType.GREY,   // 28
-    ColorType.GREY,   // 29
-    ColorType.GREY,   // 30
-    ColorType.GREY    // 31
+    ColorType.BLUE,   // 15
+    ColorType.BLACK,  // 16
+    ColorType.RED,    // 17
+    ColorType.BLACK,  // 18
+    ColorType.RED,    // 19
+    ColorType.BLACK,  // 20
+    ColorType.RED,    // 21
+    ColorType.BLACK,  // 22
+    ColorType.RED,    // 23
+    ColorType.BLACK,  // 24
+    ColorType.RED,    // 25
+    ColorType.BLACK,  // 26
+    ColorType.BLUE,   // 27
+    ColorType.BLACK,  // 28
+    ColorType.BLACK,  // 29
+    ColorType.BLACK,  // 30
+    ColorType.BLACK   // 31
   ];
 
   public static getMultiplierForColor(color: ColorType): number {
     switch (color) {
-      case ColorType.GREEN: return 30.0;
-      case ColorType.RED: return 5.06;
-      case ColorType.PURPLE: return 3.04;
-      case ColorType.GREY: return 2.03;
+      case ColorType.GREEN: return 50.0;
+      case ColorType.RED: return 3.0;
+      case ColorType.BLUE:
+      case ColorType.PURPLE: return 5.0;
+      case ColorType.BLACK:
+      case ColorType.GREY: return 2.0;
     }
   }
 

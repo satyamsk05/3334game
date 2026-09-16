@@ -24,7 +24,13 @@ object GameBackendRepository {
 
     fun placeBet(colorType: ColorType, amountRupees: Double): Boolean {
         val amountPaise = WalletLedger.rupeesToPaise(amountRupees)
-        return GameTimerEngine.placeBet(colorType, amountPaise)
+        val localSuccess = GameTimerEngine.placeBet(colorType, amountPaise)
+        if (localSuccess) {
+            com.example.app334.data.remote.RemoteApiClient.placeBetRemote(colorType, amountPaise) { success ->
+                // Remote server bet acknowledged
+            }
+        }
+        return localSuccess
     }
 
     fun clearBets() {

@@ -13,22 +13,22 @@ object RngEngine {
     private fun buildSegments(): List<WheelSegment> {
         val list = mutableListOf<WheelSegment>()
 
-        // Index 0 -> Green (30x multiplier for ~95% RTP)
-        list.add(WheelSegment(0, ColorType.GREEN, WheelConfig.COLOR_GREEN, WheelConfig.MULTIPLIER_GREEN, "30x"))
+        // Index 0 -> Green (50x)
+        list.add(WheelSegment(0, ColorType.GREEN, WheelConfig.COLOR_GREEN, WheelConfig.MULTIPLIER_GREEN, "50x"))
 
-        // Index 1..6 -> Red (5.06x)
+        // Index 1..6 -> Blue (5x)
         for (i in 1..6) {
-            list.add(WheelSegment(i, ColorType.RED, WheelConfig.COLOR_RED, WheelConfig.MULTIPLIER_RED, "5.06x"))
+            list.add(WheelSegment(i, ColorType.BLUE, WheelConfig.COLOR_BLUE, WheelConfig.MULTIPLIER_BLUE, "5x"))
         }
 
-        // Index 7..16 -> Purple (3.04x)
+        // Index 7..16 -> Red (3x)
         for (i in 7..16) {
-            list.add(WheelSegment(i, ColorType.PURPLE, WheelConfig.COLOR_PURPLE, WheelConfig.MULTIPLIER_PURPLE, "3.04x"))
+            list.add(WheelSegment(i, ColorType.RED, WheelConfig.COLOR_RED, WheelConfig.MULTIPLIER_RED, "3x"))
         }
 
-        // Index 17..31 -> Grey (2.03x)
+        // Index 17..31 -> Black (2x)
         for (i in 17..31) {
-            list.add(WheelSegment(i, ColorType.GREY, WheelConfig.COLOR_GREY, WheelConfig.MULTIPLIER_GREY, "2.03x"))
+            list.add(WheelSegment(i, ColorType.BLACK, WheelConfig.COLOR_BLACK, WheelConfig.MULTIPLIER_BLACK, "2x"))
         }
 
         return list

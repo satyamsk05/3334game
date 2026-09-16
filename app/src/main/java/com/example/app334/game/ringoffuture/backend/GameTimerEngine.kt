@@ -100,16 +100,17 @@ object GameTimerEngine {
         val currentState = _gameState.value
         val winningSegment = currentState.winningSegment ?: RngEngine.getSegment(0)
 
-        // Calculate user win payout entirely in paise
+        // Calculate user win payout entirely in paise (with 2% service fee deducted from contract)
         val userBets = currentState.userBets
         val betOnWinningColorPaise = when (winningSegment.colorType) {
             ColorType.GREEN -> userBets.greenBet
             ColorType.RED -> userBets.redBet
-            ColorType.PURPLE -> userBets.purpleBet
-            ColorType.GREY -> userBets.greyBet
+            ColorType.BLUE, ColorType.PURPLE -> userBets.blueBet
+            ColorType.BLACK, ColorType.GREY -> userBets.blackBet
         }
 
-        val winAmountPaise = (betOnWinningColorPaise * winningSegment.multiplier).toLong()
+        val contractPaise = (betOnWinningColorPaise * 98L) / 100L
+        val winAmountPaise = (contractPaise * winningSegment.multiplier).toLong()
 
         if (winAmountPaise > 0L) {
             WalletLedger.creditWin(winAmountPaise, "${winningSegment.multiplier}x")
@@ -160,8 +161,8 @@ object GameTimerEngine {
             val newBets = when (colorType) {
                 ColorType.GREEN -> oldBets.copy(greenBet = oldBets.greenBet + amountPaise)
                 ColorType.RED -> oldBets.copy(redBet = oldBets.redBet + amountPaise)
-                ColorType.PURPLE -> oldBets.copy(purpleBet = oldBets.purpleBet + amountPaise)
-                ColorType.GREY -> oldBets.copy(greyBet = oldBets.greyBet + amountPaise)
+                ColorType.BLUE, ColorType.PURPLE -> oldBets.copy(blueBet = oldBets.blueBet + amountPaise)
+                ColorType.BLACK, ColorType.GREY -> oldBets.copy(blackBet = oldBets.blackBet + amountPaise)
             }
             current.copy(userBets = newBets)
         }
@@ -205,11 +206,11 @@ object GameTimerEngine {
         if (userBets.redBet > 0) {
             allSuccess = allSuccess && placeBet(ColorType.RED, userBets.redBet)
         }
-        if (userBets.purpleBet > 0) {
-            allSuccess = allSuccess && placeBet(ColorType.PURPLE, userBets.purpleBet)
+        if (userBets.blueBet > 0) {
+            allSuccess = allSuccess && placeBet(ColorType.BLUE, userBets.blueBet)
         }
-        if (userBets.greyBet > 0) {
-            allSuccess = allSuccess && placeBet(ColorType.GREY, userBets.greyBet)
+        if (userBets.blackBet > 0) {
+            allSuccess = allSuccess && placeBet(ColorType.BLACK, userBets.blackBet)
         }
 
         return allSuccess

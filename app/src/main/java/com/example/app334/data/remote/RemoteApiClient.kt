@@ -115,7 +115,7 @@ object RemoteApiClient {
                     phase = phase,
                     secondsRemaining = secondsRemaining,
                     winningSegmentIndex = winningSegmentIndex,
-                    userBets = UserBets(greenBet = greenBet, redBet = redBet, purpleBet = purpleBet, greyBet = greyBet),
+                    userBets = UserBets(blackBet = greyBet, redBet = redBet, blueBet = purpleBet, greenBet = greenBet),
                     lastWinAmount = lastWinAmount
                 )
 

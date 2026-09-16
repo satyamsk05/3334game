@@ -10,10 +10,12 @@ export enum GamePhase {
 }
 
 export interface UserBets {
-  greenBet: number;   // in paise
-  redBet: number;
-  purpleBet: number;
-  greyBet: number;
+  blackBet: number;   // in paise (Black 2x)
+  redBet: number;     // in paise (Red 3x)
+  blueBet: number;    // in paise (Blue 5x)
+  greenBet: number;   // in paise (Green 50x)
+  purpleBet?: number; // alias
+  greyBet?: number;   // alias
   totalBet: number;
 }
 
@@ -48,7 +50,7 @@ export class GameLoopEngine {
   private static roundSequence = 1001;
   private static currentRoundId = `RD-${Date.now()}`;
   private static currentPhase = GamePhase.BETTING;
-  private static secondsRemaining = 15;
+  private static secondsRemaining = 20;
   private static winningSegmentIndex = 0;
   private static recentResults: number[] = [0, 4, 12, 1, 8, 15, 3, 22, 6, 2];
   
@@ -95,7 +97,7 @@ export class GameLoopEngine {
     switch (GameLoopEngine.currentPhase) {
       case GamePhase.BETTING:
         GameLoopEngine.currentPhase = GamePhase.LOCKED;
-        GameLoopEngine.secondsRemaining = 3;
+        GameLoopEngine.secondsRemaining = 2;
         GameLoopEngine.winningSegmentIndex = RngEngine.generateRandomSegmentIndex();
         break;
 
@@ -106,7 +108,7 @@ export class GameLoopEngine {
 
       case GamePhase.SPINNING:
         GameLoopEngine.currentPhase = GamePhase.RESULT_SHOW;
-        GameLoopEngine.secondsRemaining = 5;
+        GameLoopEngine.secondsRemaining = 4;
         await GameLoopEngine.processRoundPayouts();
         break;
 
@@ -117,7 +119,7 @@ export class GameLoopEngine {
         GameLoopEngine.activeBetsMap.clear();
         GameLoopEngine.activeBetDebitsMap.clear();
         GameLoopEngine.currentPhase = GamePhase.BETTING;
-        GameLoopEngine.secondsRemaining = 15;
+        GameLoopEngine.secondsRemaining = 20;
         break;
     }
   }
@@ -225,11 +227,11 @@ export class GameLoopEngine {
     });
 
     // Track active bet & debits
-    const existing = GameLoopEngine.activeBetsMap.get(userId) || { greenBet: 0, redBet: 0, purpleBet: 0, greyBet: 0, totalBet: 0 };
+    const existing = GameLoopEngine.activeBetsMap.get(userId) || { blackBet: 0, redBet: 0, blueBet: 0, greenBet: 0, totalBet: 0 };
     if (color === ColorType.GREEN) existing.greenBet += amountPaise;
     if (color === ColorType.RED) existing.redBet += amountPaise;
-    if (color === ColorType.PURPLE) existing.purpleBet += amountPaise;
-    if (color === ColorType.GREY) existing.greyBet += amountPaise;
+    if (color === ColorType.BLUE || color === ColorType.PURPLE) existing.blueBet += amountPaise;
+    if (color === ColorType.BLACK || color === ColorType.GREY) existing.blackBet += amountPaise;
     existing.totalBet += amountPaise;
     GameLoopEngine.activeBetsMap.set(userId, existing);
 
@@ -252,11 +254,13 @@ export class GameLoopEngine {
       let winBetAmount = 0;
       if (winnerSegment.color === ColorType.GREEN) winBetAmount = bets.greenBet;
       if (winnerSegment.color === ColorType.RED) winBetAmount = bets.redBet;
-      if (winnerSegment.color === ColorType.PURPLE) winBetAmount = bets.purpleBet;
-      if (winnerSegment.color === ColorType.GREY) winBetAmount = bets.greyBet;
+      if (winnerSegment.color === ColorType.BLUE || winnerSegment.color === ColorType.PURPLE) winBetAmount = bets.blueBet;
+      if (winnerSegment.color === ColorType.BLACK || winnerSegment.color === ColorType.GREY) winBetAmount = bets.blackBet;
 
       if (winBetAmount > 0) {
-        const winPayout = Math.round(winBetAmount * winnerSegment.multiplier);
+        // 2% service fee: Contract amount = 98% of trade amount
+        const contractPaise = Math.round((winBetAmount * 98) / 100);
+        const winPayout = Math.round(contractPaise * winnerSegment.multiplier);
         const currentBal = GameLoopEngine.getUserBalance(userId);
         
         // Rule 6 Invariant: Wins credit WINNINGS balance ONLY

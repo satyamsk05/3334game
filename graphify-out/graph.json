@@ -9,7 +9,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/build.gradle.kts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_build_gradle_kts",
-      "community": 54,
+      "community": 53,
       "norm_label": "build.gradle.kts"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/settings.gradle.kts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_settings_gradle_kts",
-      "community": 55,
+      "community": 54,
       "norm_label": "settings.gradle.kts"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/build.gradle.kts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_build_gradle_kts",
-      "community": 56,
+      "community": 55,
       "norm_label": "build.gradle.kts"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/wheel/WheelGeometryTest.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_test_java_com_example_app334_wheel_wheelgeometrytest_kt",
-      "community": 18,
+      "community": 19,
       "norm_label": "wheelgeometrytest.kt"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/wheel/WheelGeometryTest.kt",
       "source_location": "L7",
       "id": "wheelgeometrytest_wheelgeometrytest",
-      "community": 18,
+      "community": 19,
       "norm_label": "wheelgeometrytest"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/wheel/WheelGeometryTest.kt",
       "source_location": "L9",
       "id": "wheelgeometrytest_wheelgeometrytest_testsegmentcountandangle",
-      "community": 18,
+      "community": 19,
       "norm_label": ".testsegmentcountandangle()"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/wheel/WheelGeometryTest.kt",
       "source_location": "L15",
       "id": "wheelgeometrytest_wheelgeometrytest_testtargetrotationaccuracy",
-      "community": 18,
+      "community": 19,
       "norm_label": ".testtargetrotationaccuracy()"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/wheel/WheelGeometryTest.kt",
       "source_location": "L24",
       "id": "wheelgeometrytest_wheelgeometrytest_testboundarysegments",
-      "community": 18,
+      "community": 19,
       "norm_label": ".testboundarysegments()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/presentation/RingOfFutureViewModelTest.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_test_java_com_example_app334_presentation_ringoffutureviewmodeltest_kt",
-      "community": 19,
+      "community": 10,
       "norm_label": "ringoffutureviewmodeltest.kt"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/presentation/RingOfFutureViewModelTest.kt",
       "source_location": "L10",
       "id": "ringoffutureviewmodeltest_ringoffutureviewmodeltest",
-      "community": 19,
+      "community": 10,
       "norm_label": "ringoffutureviewmodeltest"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/presentation/RingOfFutureViewModelTest.kt",
       "source_location": "L14",
       "id": "ringoffutureviewmodeltest_ringoffutureviewmodeltest_setup",
-      "community": 19,
+      "community": 10,
       "norm_label": ".setup()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/presentation/RingOfFutureViewModelTest.kt",
       "source_location": "L19",
       "id": "ringoffutureviewmodeltest_ringoffutureviewmodeltest_testselectchipupdatesstate",
-      "community": 19,
+      "community": 10,
       "norm_label": ".testselectchipupdatesstate()"
     },
     {
@@ -189,8 +189,17 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/presentation/RingOfFutureViewModelTest.kt",
       "source_location": "L25",
       "id": "ringoffutureviewmodeltest_ringoffutureviewmodeltest_testtriggerspincalculatestargetrotation",
-      "community": 19,
+      "community": 10,
       "norm_label": ".testtriggerspincalculatestargetrotation()"
+    },
+    {
+      "label": ".testContractFeeAndPayoutCalculations()",
+      "file_type": "code",
+      "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/presentation/RingOfFutureViewModelTest.kt",
+      "source_location": "L35",
+      "id": "ringoffutureviewmodeltest_ringoffutureviewmodeltest_testcontractfeeandpayoutcalculations",
+      "community": 10,
+      "norm_label": ".testcontractfeeandpayoutcalculations()"
     },
     {
       "label": "MainActivity.kt",
@@ -225,7 +234,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/navigation/NavItem.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_navigation_navitem_kt",
-      "community": 37,
+      "community": 36,
       "norm_label": "navitem.kt"
     },
     {
@@ -234,7 +243,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/navigation/NavItem.kt",
       "source_location": "L6",
       "id": "navitem_navitem",
-      "community": 37,
+      "community": 36,
       "norm_label": "navitem"
     },
     {
@@ -270,7 +279,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/WalletScreen.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_screens_walletscreen_kt",
-      "community": 38,
+      "community": 37,
       "norm_label": "walletscreen.kt"
     },
     {
@@ -279,7 +288,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/WalletScreen.kt",
       "source_location": "L26",
       "id": "walletscreen_walletscreen",
-      "community": 38,
+      "community": 37,
       "norm_label": "walletscreen()"
     },
     {
@@ -315,7 +324,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/WithdrawDetailsScreen.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_screens_withdrawdetailsscreen_kt",
-      "community": 39,
+      "community": 38,
       "norm_label": "withdrawdetailsscreen.kt"
     },
     {
@@ -324,7 +333,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/WithdrawDetailsScreen.kt",
       "source_location": "L29",
       "id": "withdrawdetailsscreen_withdrawdetailsscreen",
-      "community": 39,
+      "community": 38,
       "norm_label": "withdrawdetailsscreen()"
     },
     {
@@ -639,7 +648,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/SplashScreen.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_screens_splashscreen_kt",
-      "community": 40,
+      "community": 39,
       "norm_label": "splashscreen.kt"
     },
     {
@@ -648,7 +657,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/SplashScreen.kt",
       "source_location": "L20",
       "id": "splashscreen_splashscreen",
-      "community": 40,
+      "community": 39,
       "norm_label": "splashscreen()"
     },
     {
@@ -657,7 +666,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/WithdrawScreen.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_screens_withdrawscreen_kt",
-      "community": 41,
+      "community": 40,
       "norm_label": "withdrawscreen.kt"
     },
     {
@@ -666,7 +675,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/WithdrawScreen.kt",
       "source_location": "L31",
       "id": "withdrawscreen_withdrawscreen",
-      "community": 41,
+      "community": 40,
       "norm_label": "withdrawscreen()"
     },
     {
@@ -702,7 +711,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/TransactionHistoryScreen.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_screens_transactionhistoryscreen_kt",
-      "community": 23,
+      "community": 22,
       "norm_label": "transactionhistoryscreen.kt"
     },
     {
@@ -711,7 +720,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/TransactionHistoryScreen.kt",
       "source_location": "L32",
       "id": "transactionhistoryscreen_transactionfiltercategory",
-      "community": 23,
+      "community": 22,
       "norm_label": "transactionfiltercategory"
     },
     {
@@ -720,7 +729,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/TransactionHistoryScreen.kt",
       "source_location": "L36",
       "id": "transactionhistoryscreen_transactionhistoryscreen",
-      "community": 23,
+      "community": 22,
       "norm_label": "transactionhistoryscreen()"
     },
     {
@@ -729,7 +738,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/TransactionHistoryScreen.kt",
       "source_location": "L160",
       "id": "transactionhistoryscreen_transactioncarditem",
-      "community": 23,
+      "community": 22,
       "norm_label": "transactioncarditem()"
     },
     {
@@ -738,7 +747,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/ProfileScreen.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_screens_profilescreen_kt",
-      "community": 42,
+      "community": 41,
       "norm_label": "profilescreen.kt"
     },
     {
@@ -747,7 +756,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/screens/ProfileScreen.kt",
       "source_location": "L30",
       "id": "profilescreen_profilescreen",
-      "community": 42,
+      "community": 41,
       "norm_label": "profilescreen()"
     },
     {
@@ -756,7 +765,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/components/TopHeader.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_components_topheader_kt",
-      "community": 43,
+      "community": 42,
       "norm_label": "topheader.kt"
     },
     {
@@ -765,7 +774,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/components/TopHeader.kt",
       "source_location": "L26",
       "id": "topheader_topheader",
-      "community": 43,
+      "community": 42,
       "norm_label": "topheader()"
     },
     {
@@ -774,7 +783,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/components/CustomBottomNavBar.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_components_custombottomnavbar_kt",
-      "community": 44,
+      "community": 43,
       "norm_label": "custombottomnavbar.kt"
     },
     {
@@ -783,7 +792,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/components/CustomBottomNavBar.kt",
       "source_location": "L27",
       "id": "custombottomnavbar_custombottomnavbar",
-      "community": 44,
+      "community": 43,
       "norm_label": "custombottomnavbar()"
     },
     {
@@ -792,7 +801,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/theme/RubikFont.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_theme_rubikfont_kt",
-      "community": 57,
+      "community": 56,
       "norm_label": "rubikfont.kt"
     },
     {
@@ -801,7 +810,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/theme/Theme.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_ui_theme_theme_kt",
-      "community": 45,
+      "community": 44,
       "norm_label": "theme.kt"
     },
     {
@@ -810,7 +819,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/ui/theme/Theme.kt",
       "source_location": "L14",
       "id": "theme_app334theme",
-      "community": 45,
+      "community": 44,
       "norm_label": "app334theme()"
     },
     {
@@ -819,7 +828,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/config/ClientConfig.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_core_config_clientconfig_kt",
-      "community": 46,
+      "community": 45,
       "norm_label": "clientconfig.kt"
     },
     {
@@ -828,7 +837,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/config/ClientConfig.kt",
       "source_location": "L7",
       "id": "clientconfig_clientconfig",
-      "community": 46,
+      "community": 45,
       "norm_label": "clientconfig"
     },
     {
@@ -837,7 +846,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionState.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_core_session_sessionstate_kt",
-      "community": 10,
+      "community": 11,
       "norm_label": "sessionstate.kt"
     },
     {
@@ -846,7 +855,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionState.kt",
       "source_location": "L3",
       "id": "sessionstate_sessionstate",
-      "community": 10,
+      "community": 11,
       "norm_label": "sessionstate"
     },
     {
@@ -855,7 +864,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionState.kt",
       "source_location": "L4",
       "id": "sessionstate_signedout",
-      "community": 10,
+      "community": 11,
       "norm_label": "signedout"
     },
     {
@@ -864,7 +873,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionState.kt",
       "source_location": "L5",
       "id": "sessionstate_signedin",
-      "community": 10,
+      "community": 11,
       "norm_label": "signedin"
     },
     {
@@ -873,7 +882,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionState.kt",
       "source_location": "L10",
       "id": "sessionstate_expired",
-      "community": 10,
+      "community": 11,
       "norm_label": "expired"
     },
     {
@@ -882,7 +891,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionState.kt",
       "source_location": "L11",
       "id": "sessionstate_refreshing",
-      "community": 10,
+      "community": 11,
       "norm_label": "refreshing"
     },
     {
@@ -891,7 +900,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionManager.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_core_session_sessionmanager_kt",
-      "community": 11,
+      "community": 12,
       "norm_label": "sessionmanager.kt"
     },
     {
@@ -900,7 +909,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionManager.kt",
       "source_location": "L11",
       "id": "sessionmanager_sessionmanager",
-      "community": 11,
+      "community": 12,
       "norm_label": "sessionmanager"
     },
     {
@@ -909,7 +918,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionManager.kt",
       "source_location": "L16",
       "id": "sessionmanager_sessionmanager_signin",
-      "community": 11,
+      "community": 12,
       "norm_label": ".signin()"
     },
     {
@@ -918,7 +927,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionManager.kt",
       "source_location": "L24",
       "id": "sessionmanager_sessionmanager_signout",
-      "community": 11,
+      "community": 12,
       "norm_label": ".signout()"
     },
     {
@@ -927,7 +936,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionManager.kt",
       "source_location": "L28",
       "id": "sessionmanager_sessionmanager_currentuserid",
-      "community": 11,
+      "community": 12,
       "norm_label": ".currentuserid()"
     },
     {
@@ -936,7 +945,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/core/session/SessionManager.kt",
       "source_location": "L35",
       "id": "sessionmanager_sessionmanager_authtoken",
-      "community": 11,
+      "community": 12,
       "norm_label": ".authtoken()"
     },
     {
@@ -945,7 +954,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/ui/DepositPaymentScreen.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_ui_depositpaymentscreen_kt",
-      "community": 47,
+      "community": 46,
       "norm_label": "depositpaymentscreen.kt"
     },
     {
@@ -954,7 +963,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/ui/DepositPaymentScreen.kt",
       "source_location": "L23",
       "id": "depositpaymentscreen_depositpaymentscreen",
-      "community": 47,
+      "community": 46,
       "norm_label": "depositpaymentscreen()"
     },
     {
@@ -963,26 +972,35 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/ui/RingOfFutureScreen.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_ui_ringoffuturescreen_kt",
-      "community": 33,
+      "community": 23,
       "norm_label": "ringoffuturescreen.kt"
     },
     {
       "label": "RingOfFutureScreen()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/ui/RingOfFutureScreen.kt",
-      "source_location": "L34",
+      "source_location": "L39",
       "id": "ringoffuturescreen_ringoffuturescreen",
-      "community": 33,
+      "community": 23,
       "norm_label": "ringoffuturescreen()"
     },
     {
-      "label": "BetSpotCard()",
+      "label": "DigitBox()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/ui/RingOfFutureScreen.kt",
-      "source_location": "L428",
-      "id": "ringoffuturescreen_betspotcard",
-      "community": 33,
-      "norm_label": "betspotcard()"
+      "source_location": "L385",
+      "id": "ringoffuturescreen_digitbox",
+      "community": 23,
+      "norm_label": "digitbox()"
+    },
+    {
+      "label": "ColorBetCard()",
+      "file_type": "code",
+      "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/ui/RingOfFutureScreen.kt",
+      "source_location": "L403",
+      "id": "ringoffuturescreen_colorbetcard",
+      "community": 23,
+      "norm_label": "colorbetcard()"
     },
     {
       "label": "AdminDashboardScreen.kt",
@@ -1062,7 +1080,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/wheel/WheelGeometry.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_wheel_wheelgeometry_kt",
-      "community": 12,
+      "community": 13,
       "norm_label": "wheelgeometry.kt"
     },
     {
@@ -1071,7 +1089,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/wheel/WheelGeometry.kt",
       "source_location": "L9",
       "id": "wheelgeometry_wheelgeometry",
-      "community": 12,
+      "community": 13,
       "norm_label": "wheelgeometry"
     },
     {
@@ -1080,7 +1098,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/wheel/WheelGeometry.kt",
       "source_location": "L17",
       "id": "wheelgeometry_wheelgeometry_segmentstartangle",
-      "community": 12,
+      "community": 13,
       "norm_label": ".segmentstartangle()"
     },
     {
@@ -1089,7 +1107,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/wheel/WheelGeometry.kt",
       "source_location": "L25",
       "id": "wheelgeometry_wheelgeometry_segmentcenterangle",
-      "community": 12,
+      "community": 13,
       "norm_label": ".segmentcenterangle()"
     },
     {
@@ -1098,7 +1116,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/wheel/WheelGeometry.kt",
       "source_location": "L36",
       "id": "wheelgeometry_wheelgeometry_calculatetargetrotation",
-      "community": 12,
+      "community": 13,
       "norm_label": ".calculatetargetrotation()"
     },
     {
@@ -1107,7 +1125,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/wheel/WheelGeometry.kt",
       "source_location": "L47",
       "id": "wheelgeometry_wheelgeometry_segmentatpointer",
-      "community": 12,
+      "community": 13,
       "norm_label": ".segmentatpointer()"
     },
     {
@@ -1116,7 +1134,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/EnvConfig.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_backend_envconfig_kt",
-      "community": 48,
+      "community": 47,
       "norm_label": "envconfig.kt"
     },
     {
@@ -1125,7 +1143,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/EnvConfig.kt",
       "source_location": "L9",
       "id": "envconfig_envconfig",
-      "community": 48,
+      "community": 47,
       "norm_label": "envconfig"
     },
     {
@@ -1134,7 +1152,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/RiskEngine.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_backend_riskengine_kt",
-      "community": 13,
+      "community": 14,
       "norm_label": "riskengine.kt"
     },
     {
@@ -1143,7 +1161,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/RiskEngine.kt",
       "source_location": "L3",
       "id": "riskengine_riskengine",
-      "community": 13,
+      "community": 14,
       "norm_label": "riskengine"
     },
     {
@@ -1152,7 +1170,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/RiskEngine.kt",
       "source_location": "L11",
       "id": "riskengine_riskengine_isuserbanned",
-      "community": 13,
+      "community": 14,
       "norm_label": ".isuserbanned()"
     },
     {
@@ -1161,7 +1179,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/RiskEngine.kt",
       "source_location": "L15",
       "id": "riskengine_riskengine_banuser",
-      "community": 13,
+      "community": 14,
       "norm_label": ".banuser()"
     },
     {
@@ -1170,7 +1188,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/RiskEngine.kt",
       "source_location": "L19",
       "id": "riskengine_riskengine_unbanuser",
-      "community": 13,
+      "community": 14,
       "norm_label": ".unbanuser()"
     },
     {
@@ -1179,7 +1197,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/RiskEngine.kt",
       "source_location": "L23",
       "id": "riskengine_riskengine_validatewithdrawaleligibility",
-      "community": 13,
+      "community": 14,
       "norm_label": ".validatewithdrawaleligibility()"
     },
     {
@@ -1395,7 +1413,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/AdminEngine.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_backend_adminengine_kt",
-      "community": 14,
+      "community": 15,
       "norm_label": "adminengine.kt"
     },
     {
@@ -1404,7 +1422,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/AdminEngine.kt",
       "source_location": "L4",
       "id": "adminengine_adminanalytics",
-      "community": 14,
+      "community": 15,
       "norm_label": "adminanalytics"
     },
     {
@@ -1413,7 +1431,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/AdminEngine.kt",
       "source_location": "L11",
       "id": "adminengine_userprofileadmin",
-      "community": 14,
+      "community": 15,
       "norm_label": "userprofileadmin"
     },
     {
@@ -1422,7 +1440,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/AdminEngine.kt",
       "source_location": "L20",
       "id": "adminengine_adminengine",
-      "community": 14,
+      "community": 15,
       "norm_label": "adminengine"
     },
     {
@@ -1431,7 +1449,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/AdminEngine.kt",
       "source_location": "L25",
       "id": "adminengine_adminengine_getanalytics",
-      "community": 14,
+      "community": 15,
       "norm_label": ".getanalytics()"
     },
     {
@@ -1440,7 +1458,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/AdminEngine.kt",
       "source_location": "L27",
       "id": "adminengine_adminengine_getusers",
-      "community": 14,
+      "community": 15,
       "norm_label": ".getusers()"
     },
     {
@@ -1519,7 +1537,7 @@
       "label": ".placeBet()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L150",
+      "source_location": "L151",
       "id": "gametimerengine_gametimerengine_placebet",
       "community": 4,
       "norm_label": ".placebet()"
@@ -1528,7 +1546,7 @@
       "label": ".clearBets()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L171",
+      "source_location": "L172",
       "id": "gametimerengine_gametimerengine_clearbets",
       "community": 4,
       "norm_label": ".clearbets()"
@@ -1537,7 +1555,7 @@
       "label": ".refundAllCurrentBets()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L176",
+      "source_location": "L177",
       "id": "gametimerengine_gametimerengine_refundallcurrentbets",
       "community": 4,
       "norm_label": ".refundallcurrentbets()"
@@ -1546,7 +1564,7 @@
       "label": ".doubleBets()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L195",
+      "source_location": "L196",
       "id": "gametimerengine_gametimerengine_doublebets",
       "community": 4,
       "norm_label": ".doublebets()"
@@ -1555,7 +1573,7 @@
       "label": ".setSelectedChip()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L218",
+      "source_location": "L219",
       "id": "gametimerengine_gametimerengine_setselectedchip",
       "community": 4,
       "norm_label": ".setselectedchip()"
@@ -1800,7 +1818,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/components/WheelCanvas.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_components_wheelcanvas_kt",
-      "community": 34,
+      "community": 33,
       "norm_label": "wheelcanvas.kt"
     },
     {
@@ -1809,7 +1827,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/components/WheelCanvas.kt",
       "source_location": "L25",
       "id": "wheelcanvas_wheelcanvas",
-      "community": 34,
+      "community": 33,
       "norm_label": "wheelcanvas()"
     },
     {
@@ -1818,7 +1836,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/components/WheelCanvas.kt",
       "source_location": "L140",
       "id": "wheelcanvas_drawtoppointer",
-      "community": 34,
+      "community": 33,
       "norm_label": "drawtoppointer()"
     },
     {
@@ -1872,7 +1890,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/WheelSegment.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_model_wheelsegment_kt",
-      "community": 35,
+      "community": 34,
       "norm_label": "wheelsegment.kt"
     },
     {
@@ -1881,16 +1899,16 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/WheelSegment.kt",
       "source_location": "L5",
       "id": "wheelsegment_colortype",
-      "community": 35,
+      "community": 34,
       "norm_label": "colortype"
     },
     {
       "label": "WheelSegment",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/WheelSegment.kt",
-      "source_location": "L12",
+      "source_location": "L14",
       "id": "wheelsegment_wheelsegment",
-      "community": 35,
+      "community": 34,
       "norm_label": "wheelsegment"
     },
     {
@@ -1899,7 +1917,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/WheelConfig.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_model_wheelconfig_kt",
-      "community": 49,
+      "community": 48,
       "norm_label": "wheelconfig.kt"
     },
     {
@@ -1908,7 +1926,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/WheelConfig.kt",
       "source_location": "L5",
       "id": "wheelconfig_wheelconfig",
-      "community": 49,
+      "community": 48,
       "norm_label": "wheelconfig"
     },
     {
@@ -1942,7 +1960,7 @@
       "label": ".reset()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/RingOfFutureState.kt",
-      "source_location": "L18",
+      "source_location": "L21",
       "id": "ringoffuturestate_userbets_reset",
       "community": 9,
       "norm_label": ".reset()"
@@ -1951,7 +1969,7 @@
       "label": ".doubleBets()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/RingOfFutureState.kt",
-      "source_location": "L20",
+      "source_location": "L23",
       "id": "ringoffuturestate_userbets_doublebets",
       "community": 9,
       "norm_label": ".doublebets()"
@@ -1960,7 +1978,7 @@
       "label": "SpinResult",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/RingOfFutureState.kt",
-      "source_location": "L28",
+      "source_location": "L31",
       "id": "ringoffuturestate_spinresult",
       "community": 9,
       "norm_label": "spinresult"
@@ -1969,7 +1987,7 @@
       "label": "RingOfFutureGameState",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/RingOfFutureState.kt",
-      "source_location": "L36",
+      "source_location": "L39",
       "id": "ringoffuturestate_ringoffuturegamestate",
       "community": 9,
       "norm_label": "ringoffuturegamestate"
@@ -1980,7 +1998,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/presentation/RingOfFutureUiState.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_presentation_ringoffutureuistate_kt",
-      "community": 50,
+      "community": 49,
       "norm_label": "ringoffutureuistate.kt"
     },
     {
@@ -1989,7 +2007,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/presentation/RingOfFutureUiState.kt",
       "source_location": "L7",
       "id": "ringoffutureuistate_ringoffutureuistate",
-      "community": 50,
+      "community": 49,
       "norm_label": "ringoffutureuistate"
     },
     {
@@ -2043,43 +2061,43 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_data_remote_remoteapiclient_kt",
-      "community": 15,
+      "community": 16,
       "norm_label": "remoteapiclient.kt"
     },
     {
       "label": "RemoteApiClient",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
-      "source_location": "L20",
+      "source_location": "L21",
       "id": "remoteapiclient_remoteapiclient",
-      "community": 15,
+      "community": 16,
       "norm_label": "remoteapiclient"
     },
     {
       "label": ".connectWebSocket()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
-      "source_location": "L39",
+      "source_location": "L40",
       "id": "remoteapiclient_remoteapiclient_connectwebsocket",
-      "community": 15,
+      "community": 16,
       "norm_label": ".connectwebsocket()"
     },
     {
       "label": ".disconnectWebSocket()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
-      "source_location": "L73",
+      "source_location": "L74",
       "id": "remoteapiclient_remoteapiclient_disconnectwebsocket",
-      "community": 15,
+      "community": 16,
       "norm_label": ".disconnectwebsocket()"
     },
     {
       "label": ".parseWebSocketMessage()",
       "file_type": "code",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
-      "source_location": "L79",
+      "source_location": "L80",
       "id": "remoteapiclient_remoteapiclient_parsewebsocketmessage",
-      "community": 15,
+      "community": 16,
       "norm_label": ".parsewebsocketmessage()"
     },
     {
@@ -2088,7 +2106,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
       "source_location": "L129",
       "id": "remoteapiclient_remoteapiclient_placebetremote",
-      "community": 15,
+      "community": 16,
       "norm_label": ".placebetremote()"
     },
     {
@@ -2097,7 +2115,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/AccountRepository.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_domain_repository_accountrepository_kt",
-      "community": 16,
+      "community": 17,
       "norm_label": "accountrepository.kt"
     },
     {
@@ -2106,7 +2124,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/AccountRepository.kt",
       "source_location": "L7",
       "id": "accountrepository_accountrepository",
-      "community": 16,
+      "community": 17,
       "norm_label": "accountrepository"
     },
     {
@@ -2115,7 +2133,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/AccountRepository.kt",
       "source_location": "L8",
       "id": "accountrepository_accountrepository_observewalletstate",
-      "community": 16,
+      "community": 17,
       "norm_label": ".observewalletstate()"
     },
     {
@@ -2124,7 +2142,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/AccountRepository.kt",
       "source_location": "L9",
       "id": "accountrepository_accountrepository_observetransactionhistory",
-      "community": 16,
+      "community": 17,
       "norm_label": ".observetransactionhistory()"
     },
     {
@@ -2133,7 +2151,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/AccountRepository.kt",
       "source_location": "L10",
       "id": "accountrepository_accountrepository_requestdeposit",
-      "community": 16,
+      "community": 17,
       "norm_label": ".requestdeposit()"
     },
     {
@@ -2142,7 +2160,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/AccountRepository.kt",
       "source_location": "L11",
       "id": "accountrepository_accountrepository_requestwithdrawal",
-      "community": 16,
+      "community": 17,
       "norm_label": ".requestwithdrawal()"
     },
     {
@@ -2151,7 +2169,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/GameRepository.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_domain_repository_gamerepository_kt",
-      "community": 17,
+      "community": 18,
       "norm_label": "gamerepository.kt"
     },
     {
@@ -2160,7 +2178,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/GameRepository.kt",
       "source_location": "L7",
       "id": "gamerepository_gamerepository",
-      "community": 17,
+      "community": 18,
       "norm_label": "gamerepository"
     },
     {
@@ -2169,7 +2187,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/GameRepository.kt",
       "source_location": "L8",
       "id": "gamerepository_gamerepository_observecurrentround",
-      "community": 17,
+      "community": 18,
       "norm_label": ".observecurrentround()"
     },
     {
@@ -2178,7 +2196,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/GameRepository.kt",
       "source_location": "L9",
       "id": "gamerepository_gamerepository_observerecentresults",
-      "community": 17,
+      "community": 18,
       "norm_label": ".observerecentresults()"
     },
     {
@@ -2187,7 +2205,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/GameRepository.kt",
       "source_location": "L10",
       "id": "gamerepository_gamerepository_placebet",
-      "community": 17,
+      "community": 18,
       "norm_label": ".placebet()"
     },
     {
@@ -2196,7 +2214,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/repository/GameRepository.kt",
       "source_location": "L11",
       "id": "gamerepository_gamerepository_fetchcurrentround",
-      "community": 17,
+      "community": 18,
       "norm_label": ".fetchcurrentround()"
     },
     {
@@ -2205,7 +2223,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/model/WalletState.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_domain_model_walletstate_kt",
-      "community": 51,
+      "community": 50,
       "norm_label": "walletstate.kt"
     },
     {
@@ -2214,7 +2232,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/model/WalletState.kt",
       "source_location": "L3",
       "id": "walletstate_walletstate",
-      "community": 51,
+      "community": 50,
       "norm_label": "walletstate"
     },
     {
@@ -2223,7 +2241,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/model/GameRound.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_domain_model_gameround_kt",
-      "community": 52,
+      "community": 51,
       "norm_label": "gameround.kt"
     },
     {
@@ -2232,7 +2250,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/model/GameRound.kt",
       "source_location": "L5",
       "id": "gameround_gameround",
-      "community": 52,
+      "community": 51,
       "norm_label": "gameround"
     },
     {
@@ -2241,7 +2259,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/model/GameResult.kt",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_domain_model_gameresult_kt",
-      "community": 53,
+      "community": 52,
       "norm_label": "gameresult.kt"
     },
     {
@@ -2250,7 +2268,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/domain/model/GameResult.kt",
       "source_location": "L3",
       "id": "gameresult_gameresult",
-      "community": 53,
+      "community": 52,
       "norm_label": "gameresult"
     },
     {
@@ -2259,7 +2277,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/pm2.config.js",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_backend_pm2_config_js",
-      "community": 58,
+      "community": 57,
       "norm_label": "pm2.config.js"
     },
     {
@@ -2286,7 +2304,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/websocket/GameWebSocketServer.ts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_backend_src_websocket_gamewebsocketserver_ts",
-      "community": 22,
+      "community": 0,
       "norm_label": "gamewebsocketserver.ts"
     },
     {
@@ -2295,7 +2313,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/websocket/GameWebSocketServer.ts",
       "source_location": "L5",
       "id": "gamewebsocketserver_gamewebsocketserver",
-      "community": 22,
+      "community": 0,
       "norm_label": "gamewebsocketserver"
     },
     {
@@ -2304,7 +2322,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/websocket/GameWebSocketServer.ts",
       "source_location": "L8",
       "id": "gamewebsocketserver_gamewebsocketserver_init",
-      "community": 22,
+      "community": 0,
       "norm_label": ".init()"
     },
     {
@@ -2313,7 +2331,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/websocket/GameWebSocketServer.ts",
       "source_location": "L42",
       "id": "gamewebsocketserver_gamewebsocketserver_broadcast",
-      "community": 22,
+      "community": 0,
       "norm_label": ".broadcast()"
     },
     {
@@ -2322,7 +2340,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/config/env.ts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_backend_src_config_env_ts",
-      "community": 59,
+      "community": 58,
       "norm_label": "env.ts"
     },
     {
@@ -2394,7 +2412,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/game/GameLoopEngine.ts",
       "source_location": "L73",
       "id": "gameloopengine_gameloopengine_onstateupdate",
-      "community": 22,
+      "community": 0,
       "norm_label": ".onstateupdate()"
     },
     {
@@ -2556,7 +2574,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/routes/wallet.ts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_backend_src_routes_wallet_ts",
-      "community": 60,
+      "community": 59,
       "norm_label": "wallet.ts"
     },
     {
@@ -2565,7 +2583,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/routes/admin.ts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_backend_src_routes_admin_ts",
-      "community": 61,
+      "community": 60,
       "norm_label": "admin.ts"
     },
     {
@@ -2574,7 +2592,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/routes/game.ts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_backend_src_routes_game_ts",
-      "community": 62,
+      "community": 61,
       "norm_label": "game.ts"
     },
     {
@@ -2583,7 +2601,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/routes/user.ts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_backend_src_routes_user_ts",
-      "community": 63,
+      "community": 62,
       "norm_label": "user.ts"
     },
     {
@@ -2592,7 +2610,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/routes/auth.ts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_backend_src_routes_auth_ts",
-      "community": 64,
+      "community": 63,
       "norm_label": "auth.ts"
     },
     {
@@ -2601,7 +2619,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/services/TelegramBotService.ts",
       "source_location": "L1",
       "id": "users_satyamkumar_desktop_334game_backend_src_services_telegrambotservice_ts",
-      "community": 36,
+      "community": 35,
       "norm_label": "telegrambotservice.ts"
     },
     {
@@ -2610,7 +2628,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/services/TelegramBotService.ts",
       "source_location": "L4",
       "id": "telegrambotservice_telegrambotservice",
-      "community": 36,
+      "community": 35,
       "norm_label": "telegrambotservice"
     },
     {
@@ -2619,7 +2637,7 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/services/TelegramBotService.ts",
       "source_location": "L5",
       "id": "telegrambotservice_telegrambotservice_sendalert",
-      "community": 36,
+      "community": 35,
       "norm_label": ".sendalert()"
     }
   ],
@@ -2802,6 +2820,18 @@
       "_tgt": "ringoffutureviewmodeltest_ringoffutureviewmodeltest_testtriggerspincalculatestargetrotation",
       "source": "ringoffutureviewmodeltest_ringoffutureviewmodeltest",
       "target": "ringoffutureviewmodeltest_ringoffutureviewmodeltest_testtriggerspincalculatestargetrotation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/satyamkumar/Desktop/334game/app/src/test/java/com/example/app334/presentation/RingOfFutureViewModelTest.kt",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_src": "ringoffutureviewmodeltest_ringoffutureviewmodeltest",
+      "_tgt": "ringoffutureviewmodeltest_ringoffutureviewmodeltest_testcontractfeeandpayoutcalculations",
+      "source": "ringoffutureviewmodeltest_ringoffutureviewmodeltest",
+      "target": "ringoffutureviewmodeltest_ringoffutureviewmodeltest_testcontractfeeandpayoutcalculations",
       "confidence_score": 1.0
     },
     {
@@ -3528,7 +3558,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/ui/RingOfFutureScreen.kt",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0,
       "_src": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_ui_ringoffuturescreen_kt",
       "_tgt": "ringoffuturescreen_ringoffuturescreen",
@@ -3540,12 +3570,24 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/ui/RingOfFutureScreen.kt",
-      "source_location": "L428",
+      "source_location": "L385",
       "weight": 1.0,
       "_src": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_ui_ringoffuturescreen_kt",
-      "_tgt": "ringoffuturescreen_betspotcard",
+      "_tgt": "ringoffuturescreen_digitbox",
       "source": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_ui_ringoffuturescreen_kt",
-      "target": "ringoffuturescreen_betspotcard",
+      "target": "ringoffuturescreen_digitbox",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/ui/RingOfFutureScreen.kt",
+      "source_location": "L403",
+      "weight": 1.0,
+      "_src": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_ui_ringoffuturescreen_kt",
+      "_tgt": "ringoffuturescreen_colorbetcard",
+      "source": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_ui_ringoffuturescreen_kt",
+      "target": "ringoffuturescreen_colorbetcard",
       "confidence_score": 1.0
     },
     {
@@ -4023,8 +4065,8 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/db/database.ts",
       "source_location": "L27",
       "weight": 1.0,
-      "_src": "database_database_init",
-      "_tgt": "soundfxengine_soundfxengine_release",
+      "_src": "soundfxengine_soundfxengine_release",
+      "_tgt": "database_database_init",
       "source": "soundfxengine_soundfxengine_release",
       "target": "database_database_init"
     },
@@ -4176,7 +4218,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L150",
+      "source_location": "L151",
       "weight": 1.0,
       "_src": "gametimerengine_gametimerengine",
       "_tgt": "gametimerengine_gametimerengine_placebet",
@@ -4188,7 +4230,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L171",
+      "source_location": "L172",
       "weight": 1.0,
       "_src": "gametimerengine_gametimerengine",
       "_tgt": "gametimerengine_gametimerengine_clearbets",
@@ -4200,7 +4242,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L176",
+      "source_location": "L177",
       "weight": 1.0,
       "_src": "gametimerengine_gametimerengine",
       "_tgt": "gametimerengine_gametimerengine_refundallcurrentbets",
@@ -4212,7 +4254,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L195",
+      "source_location": "L196",
       "weight": 1.0,
       "_src": "gametimerengine_gametimerengine",
       "_tgt": "gametimerengine_gametimerengine_doublebets",
@@ -4224,7 +4266,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/backend/GameTimerEngine.kt",
-      "source_location": "L218",
+      "source_location": "L219",
       "weight": 1.0,
       "_src": "gametimerengine_gametimerengine",
       "_tgt": "gametimerengine_gametimerengine_setselectedchip",
@@ -4644,7 +4686,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/WheelSegment.kt",
-      "source_location": "L12",
+      "source_location": "L14",
       "weight": 1.0,
       "_src": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_model_wheelsegment_kt",
       "_tgt": "wheelsegment_wheelsegment",
@@ -4692,7 +4734,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/RingOfFutureState.kt",
-      "source_location": "L28",
+      "source_location": "L31",
       "weight": 1.0,
       "_src": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_model_ringoffuturestate_kt",
       "_tgt": "ringoffuturestate_spinresult",
@@ -4704,7 +4746,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/RingOfFutureState.kt",
-      "source_location": "L36",
+      "source_location": "L39",
       "weight": 1.0,
       "_src": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_game_ringoffuture_model_ringoffuturestate_kt",
       "_tgt": "ringoffuturestate_ringoffuturegamestate",
@@ -4716,7 +4758,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/RingOfFutureState.kt",
-      "source_location": "L18",
+      "source_location": "L21",
       "weight": 1.0,
       "_src": "ringoffuturestate_userbets",
       "_tgt": "ringoffuturestate_userbets_reset",
@@ -4728,7 +4770,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/game/ringoffuture/model/RingOfFutureState.kt",
-      "source_location": "L20",
+      "source_location": "L23",
       "weight": 1.0,
       "_src": "ringoffuturestate_userbets",
       "_tgt": "ringoffuturestate_userbets_doublebets",
@@ -4800,7 +4842,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "_src": "users_satyamkumar_desktop_334game_app_src_main_java_com_example_app334_data_remote_remoteapiclient_kt",
       "_tgt": "remoteapiclient_remoteapiclient",
@@ -4812,7 +4854,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0,
       "_src": "remoteapiclient_remoteapiclient",
       "_tgt": "remoteapiclient_remoteapiclient_connectwebsocket",
@@ -4824,7 +4866,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
-      "source_location": "L73",
+      "source_location": "L74",
       "weight": 1.0,
       "_src": "remoteapiclient_remoteapiclient",
       "_tgt": "remoteapiclient_remoteapiclient_disconnectwebsocket",
@@ -4836,7 +4878,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/satyamkumar/Desktop/334game/app/src/main/java/com/example/app334/data/remote/RemoteApiClient.kt",
-      "source_location": "L79",
+      "source_location": "L80",
       "weight": 1.0,
       "_src": "remoteapiclient_remoteapiclient",
       "_tgt": "remoteapiclient_remoteapiclient_parsewebsocketmessage",
@@ -5115,8 +5157,8 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/game/GameLoopEngine.ts",
       "source_location": "L99",
       "weight": 1.0,
-      "_src": "gameloopengine_gameloopengine_advancephase",
-      "_tgt": "rngengine_rngengine_generaterandomsegmentindex",
+      "_src": "rngengine_rngengine_generaterandomsegmentindex",
+      "_tgt": "gameloopengine_gameloopengine_advancephase",
       "source": "rngengine_rngengine_generaterandomsegmentindex",
       "target": "gameloopengine_gameloopengine_advancephase"
     },
@@ -5127,8 +5169,8 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/game/GameLoopEngine.ts",
       "source_location": "L136",
       "weight": 1.0,
-      "_src": "gameloopengine_gameloopengine_getsnapshotforuser",
-      "_tgt": "rngengine_rngengine_getsegmentinfo",
+      "_src": "rngengine_rngengine_getsegmentinfo",
+      "_tgt": "gameloopengine_gameloopengine_getsnapshotforuser",
       "source": "rngengine_rngengine_getsegmentinfo",
       "target": "gameloopengine_gameloopengine_getsnapshotforuser"
     },
@@ -5139,8 +5181,8 @@
       "source_file": "/Users/satyamkumar/Desktop/334game/backend/src/game/GameLoopEngine.ts",
       "source_location": "L249",
       "weight": 1.0,
-      "_src": "gameloopengine_gameloopengine_processroundpayouts",
-      "_tgt": "rngengine_rngengine_getsegmentinfo",
+      "_src": "rngengine_rngengine_getsegmentinfo",
+      "_tgt": "gameloopengine_gameloopengine_processroundpayouts",
       "source": "rngengine_rngengine_getsegmentinfo",
       "target": "gameloopengine_gameloopengine_processroundpayouts"
     },

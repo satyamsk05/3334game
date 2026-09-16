@@ -31,4 +31,21 @@ class RingOfFutureViewModelTest {
         assertEquals(GamePhase.SPINNING, viewModel.uiState.value.gamePhase)
         assertEquals(expectedRotation, viewModel.uiState.value.targetWheelRotation, 0.001f)
     }
+
+    @Test
+    fun testContractFeeAndPayoutCalculations() {
+        val betPaise = 10000L // ₹100
+        val contractPaise = (betPaise * 98L) / 100L // ₹98
+        assertEquals(9800L, contractPaise)
+
+        val blackWin = (contractPaise * 2.0f).toLong() // ₹196
+        val redWin = (contractPaise * 3.0f).toLong()   // ₹294
+        val blueWin = (contractPaise * 5.0f).toLong()  // ₹490
+        val greenWin = (contractPaise * 50.0f).toLong()// ₹4900
+
+        assertEquals(19600L, blackWin)
+        assertEquals(29400L, redWin)
+        assertEquals(49000L, blueWin)
+        assertEquals(490000L, greenWin)
+    }
 }

@@ -5,6 +5,8 @@ import androidx.compose.ui.graphics.Color
 enum class ColorType {
     GREEN,
     RED,
+    BLUE,
+    BLACK,
     PURPLE,
     GREY
 }
