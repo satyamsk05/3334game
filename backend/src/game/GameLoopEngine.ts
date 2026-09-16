@@ -14,8 +14,8 @@ export interface UserBets {
   redBet: number;     // in paise (Red 3x)
   blueBet: number;    // in paise (Blue 5x)
   greenBet: number;   // in paise (Green 50x)
-  purpleBet?: number; // alias
-  greyBet?: number;   // alias
+  purpleBet: number;  // alias
+  greyBet: number;    // alias
   totalBet: number;
 }
 
@@ -125,9 +125,11 @@ export class GameLoopEngine {
   }
 
   public static getSnapshotForUser(userId: string): GameState {
-    const userBets = GameLoopEngine.activeBetsMap.get(userId) || {
-      greenBet: 0,
+    const userBets: UserBets = GameLoopEngine.activeBetsMap.get(userId) || {
+      blackBet: 0,
       redBet: 0,
+      blueBet: 0,
+      greenBet: 0,
       purpleBet: 0,
       greyBet: 0,
       totalBet: 0
@@ -139,9 +141,11 @@ export class GameLoopEngine {
       let betOnWinner = 0;
       if (segmentInfo.color === ColorType.GREEN) betOnWinner = userBets.greenBet;
       if (segmentInfo.color === ColorType.RED) betOnWinner = userBets.redBet;
-      if (segmentInfo.color === ColorType.PURPLE) betOnWinner = userBets.purpleBet;
-      if (segmentInfo.color === ColorType.GREY) betOnWinner = userBets.greyBet;
-      lastWinAmount = Math.round(betOnWinner * segmentInfo.multiplier);
+      if (segmentInfo.color === ColorType.BLUE || segmentInfo.color === ColorType.PURPLE) betOnWinner = userBets.blueBet;
+      if (segmentInfo.color === ColorType.BLACK || segmentInfo.color === ColorType.GREY) betOnWinner = userBets.blackBet;
+
+      const contractPaise = Math.round((betOnWinner * 98) / 100);
+      lastWinAmount = Math.round(contractPaise * segmentInfo.multiplier);
     }
 
     return {
@@ -227,11 +231,17 @@ export class GameLoopEngine {
     });
 
     // Track active bet & debits
-    const existing = GameLoopEngine.activeBetsMap.get(userId) || { blackBet: 0, redBet: 0, blueBet: 0, greenBet: 0, totalBet: 0 };
+    const existing: UserBets = GameLoopEngine.activeBetsMap.get(userId) || { blackBet: 0, redBet: 0, blueBet: 0, greenBet: 0, purpleBet: 0, greyBet: 0, totalBet: 0 };
     if (color === ColorType.GREEN) existing.greenBet += amountPaise;
     if (color === ColorType.RED) existing.redBet += amountPaise;
-    if (color === ColorType.BLUE || color === ColorType.PURPLE) existing.blueBet += amountPaise;
-    if (color === ColorType.BLACK || color === ColorType.GREY) existing.blackBet += amountPaise;
+    if (color === ColorType.BLUE || color === ColorType.PURPLE) {
+      existing.blueBet += amountPaise;
+      existing.purpleBet += amountPaise;
+    }
+    if (color === ColorType.BLACK || color === ColorType.GREY) {
+      existing.blackBet += amountPaise;
+      existing.greyBet += amountPaise;
+    }
     existing.totalBet += amountPaise;
     GameLoopEngine.activeBetsMap.set(userId, existing);
 
