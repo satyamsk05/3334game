@@ -1,6 +1,11 @@
 package com.example.app334.domain.model
 
-import com.example.app334.game.ringoffuture.model.GamePhase
+enum class GamePhase {
+    BETTING,
+    LOCKED,
+    SPINNING,
+    RESULT_SHOW
+}
 
 data class GameRound(
     val id: String,

@@ -4,33 +4,42 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.util.UUID
+import java.util.Locale
+
+// Integer Paise Invariants (Rule 1 & 2): 100 paise = ₹1
+data class WalletBalance(
+    val depositPaise: Long = 0L,   // ₹0.00
+    val winningPaise: Long = 0L,  // ₹0.00
+    val bonusPaise: Long = 0L      // ₹0.00
+) {
+    val totalPaise: Long get() = depositPaise + winningPaise + bonusPaise
+    val totalRupees: Double get() = totalPaise / 100.0
+    val depositRupees: Double get() = depositPaise / 100.0
+    val winningRupees: Double get() = winningPaise / 100.0
+    val bonusRupees: Double get() = bonusPaise / 100.0
+
+    val formattedTotal: String get() = String.format(Locale.getDefault(), "₹%.2f", totalRupees)
+    val formattedDeposit: String get() = String.format(Locale.getDefault(), "₹%.2f", depositRupees)
+    val formattedWinnings: String get() = String.format(Locale.getDefault(), "₹%.2f", winningRupees)
+    val formattedBonus: String get() = String.format(Locale.getDefault(), "₹%.2f", bonusRupees)
+}
 
 enum class TransactionType {
     DEPOSIT,
     WITHDRAWAL,
     BET_PLACED,
-    BET_REFUND,
     WIN_PAYOUT,
-    BONUS_CREDIT
+    BET_REFUND
 }
 
 enum class TransactionStatus {
     SUCCESS,
     PENDING,
-    FAILED,
     REJECTED
 }
 
-data class UserProfile(
-    val userId: String = "USR-304",
-    val username: String = "Satyam Kumar",
-    val phone: String = "+91 98765 43210",
-    val avatarResId: Int = 0
-)
-
 data class WalletTransaction(
-    val id: String = "TX-${UUID.randomUUID().toString().replace("-", "").take(10).uppercase()}",
+    val id: String = "TX-${System.currentTimeMillis()}-${(100..999).random()}",
     val userId: String,
     val type: TransactionType,
     val amountPaise: Long,
@@ -40,31 +49,16 @@ data class WalletTransaction(
     val description: String,
     val timestamp: Long = System.currentTimeMillis()
 ) {
-    val amountRupeesFormatted: String
-        get() {
-            val rupees = amountPaise / 100.0
-            val prefix = if (type == TransactionType.WITHDRAWAL || type == TransactionType.BET_PLACED) "-" else "+"
-            return "$prefix₹${String.format("%.2f", rupees)}"
-        }
+    val amountRupees: Double get() = amountPaise / 100.0
+    val amountRupeesFormatted: String get() = String.format(Locale.getDefault(), "₹%.2f", amountRupees)
 }
 
-data class WalletBalance(
-    val depositPaise: Long = 50000L,   // ₹500.00 demo deposit
-    val winningPaise: Long = 125000L,  // ₹1250.00 demo winnings
-    val bonusPaise: Long = 10000L      // ₹100.00 demo bonus
-) {
-    val totalPaise: Long get() = depositPaise + winningPaise + bonusPaise
-
-    val depositRupees: Double get() = depositPaise / 100.0
-    val winningRupees: Double get() = winningPaise / 100.0
-    val bonusRupees: Double get() = bonusPaise / 100.0
-    val totalRupees: Double get() = totalPaise / 100.0
-
-    val formattedTotal: String get() = WalletLedger.formatPaiseToRupees(totalPaise)
-    val formattedDeposit: String get() = WalletLedger.formatPaiseToRupees(depositPaise)
-    val formattedWinnings: String get() = WalletLedger.formatPaiseToRupees(winningPaise)
-    val formattedBonus: String get() = WalletLedger.formatPaiseToRupees(bonusPaise)
-}
+data class UserProfile(
+    val userId: String = "USR-304",
+    val username: String = "Satyam Kumar",
+    val phone: String = "+91 98765 43210",
+    val avatarRes: Int = 1
+)
 
 data class BetDebitBreakdown(
     val depositDebited: Long = 0L,
@@ -75,56 +69,27 @@ data class BetDebitBreakdown(
 )
 
 object WalletLedger {
+    private val _walletBalance = MutableStateFlow(WalletBalance())
+    val walletBalance: StateFlow<WalletBalance> = _walletBalance.asStateFlow()
 
     private val _userProfile = MutableStateFlow(UserProfile())
     val userProfile: StateFlow<UserProfile> = _userProfile.asStateFlow()
 
-    private val _walletBalance = MutableStateFlow(WalletBalance())
-    val walletBalance: StateFlow<WalletBalance> = _walletBalance.asStateFlow()
-
-    private val _transactions = MutableStateFlow<List<WalletTransaction>>(
-        listOf(
-            WalletTransaction(
-                id = "TX1001",
-                userId = "USR-304",
-                type = TransactionType.DEPOSIT,
-                amountPaise = 50000L,
-                balanceAfterPaise = 185000L,
-                status = TransactionStatus.SUCCESS,
-                referenceId = "UPI-49302198421",
-                description = "Demo Initial Deposit via UPI"
-            ),
-            WalletTransaction(
-                id = "TX1000",
-                userId = "USR-304",
-                type = TransactionType.BONUS_CREDIT,
-                amountPaise = 10000L,
-                balanceAfterPaise = 135000L,
-                status = TransactionStatus.SUCCESS,
-                referenceId = "BONUS-WELCOME",
-                description = "Welcome Demo Bonus"
-            )
-        )
-    )
+    private val _transactions = MutableStateFlow<List<WalletTransaction>>(emptyList())
     val transactions: StateFlow<List<WalletTransaction>> = _transactions.asStateFlow()
 
-    fun formatPaiseToRupees(paise: Long): String {
-        val rupees = paise / 100.0
-        return if (paise % 100L == 0L) {
-            "₹${paise / 100}"
-        } else {
-            "₹${String.format("%.2f", rupees)}"
-        }
+    init {
+        // Initial transaction records empty
+        _transactions.value = emptyList()
     }
 
-    fun rupeesToPaise(rupees: Double): Long {
-        return kotlin.math.round(rupees * 100).toLong()
-    }
+    fun rupeesToPaise(rupees: Double): Long = Math.round(rupees * 100)
+    fun formatPaiseToRupees(paise: Long): String = String.format(Locale.getDefault(), "₹%.2f", paise / 100.0)
 
     @Synchronized
     fun placeBet(amountPaise: Long): BetDebitBreakdown {
         val current = _walletBalance.value
-        if (current.totalPaise < amountPaise || amountPaise <= 0L) {
+        if (amountPaise <= 0L || current.totalPaise < amountPaise) {
             return BetDebitBreakdown(success = false)
         }
 
@@ -137,7 +102,7 @@ object WalletLedger {
         var winDebited = 0L
         var bonDebited = 0L
 
-        // Order of debit: deposit -> winnings -> bonus
+        // Debit order: deposit -> winnings -> bonus
         if (dep >= remaining) {
             depDebited = remaining
             dep -= remaining
@@ -175,8 +140,8 @@ object WalletLedger {
             amountPaise = amountPaise,
             balanceAfterPaise = newBalance.totalPaise,
             status = TransactionStatus.SUCCESS,
-            referenceId = "BET-${UUID.randomUUID()}",
-            description = "Bet placed on Ring of Future"
+            referenceId = "BET-${System.currentTimeMillis().toString().takeLast(6)}",
+            description = "Game Bet Placed"
         )
 
         _transactions.update { listOf(tx) + it }
@@ -208,8 +173,8 @@ object WalletLedger {
                 amountPaise = totalRefund,
                 balanceAfterPaise = newBalance.totalPaise,
                 status = TransactionStatus.SUCCESS,
-                referenceId = "REF-${UUID.randomUUID()}",
-                description = "Bet refunded on Ring of Future"
+                referenceId = "REF-${System.currentTimeMillis().toString().takeLast(6)}",
+                description = "Bet Refunded"
             )
             _transactions.update { listOf(tx) + it }
         }
@@ -218,7 +183,6 @@ object WalletLedger {
     @Synchronized
     fun creditWin(winPayoutPaise: Long, multiplierLabel: String) {
         val current = _walletBalance.value
-        // Wins credit winnings ONLY
         val newBalance = current.copy(winningPaise = current.winningPaise + winPayoutPaise)
         _walletBalance.value = newBalance
 
@@ -228,14 +192,14 @@ object WalletLedger {
             amountPaise = winPayoutPaise,
             balanceAfterPaise = newBalance.totalPaise,
             status = TransactionStatus.SUCCESS,
-            referenceId = "WIN-${UUID.randomUUID()}",
+            referenceId = "WIN-${System.currentTimeMillis().toString().takeLast(6)}",
             description = "Win Payout ($multiplierLabel)"
         )
         _transactions.update { listOf(tx) + it }
     }
 
     @Synchronized
-    fun addDemoCash(amountPaise: Long, utr: String = ""): WalletTransaction {
+    fun addDepositCash(amountPaise: Long, utr: String = ""): WalletTransaction {
         val current = _walletBalance.value
         val newBalance = current.copy(depositPaise = current.depositPaise + amountPaise)
         _walletBalance.value = newBalance
@@ -246,18 +210,19 @@ object WalletLedger {
             amountPaise = amountPaise,
             balanceAfterPaise = newBalance.totalPaise,
             status = TransactionStatus.SUCCESS,
-            referenceId = utr.ifEmpty { "DEMO-UPI-${UUID.randomUUID()}" },
-            description = "Demo Play Chips Added"
+            referenceId = utr.ifEmpty { "DEP-UPI-${System.currentTimeMillis().toString().takeLast(8)}" },
+            description = "Cash Deposit"
         )
         _transactions.update { listOf(tx) + it }
         return tx
     }
 
+    // Alias for compatibility
+    fun addDemoCash(amountPaise: Long, utr: String = ""): WalletTransaction = addDepositCash(amountPaise, utr)
+
     @Synchronized
     fun requestWithdrawal(amountPaise: Long, upiId: String): Pair<Boolean, String> {
         val current = _walletBalance.value
-        
-        // Rule: Min ₹25 (2500 paise), Max ₹5000 (500000 paise)
         val minPaise = 2500L
         val maxPaise = 500000L
 
@@ -280,8 +245,8 @@ object WalletLedger {
             amountPaise = amountPaise,
             balanceAfterPaise = newBalance.totalPaise,
             status = TransactionStatus.SUCCESS,
-            referenceId = "WD-${UUID.randomUUID()}",
-            description = "Demo Withdrawal to UPI: $upiId"
+            referenceId = "WD-${System.currentTimeMillis().toString().takeLast(6)}",
+            description = "Withdrawal to UPI: $upiId"
         )
         _transactions.update { listOf(tx) + it }
         return Pair(true, "Withdrawal of ${formatPaiseToRupees(amountPaise)} processed successfully!")
@@ -289,31 +254,5 @@ object WalletLedger {
 
     fun updateProfile(name: String, phone: String) {
         _userProfile.update { it.copy(username = name, phone = phone) }
-    }
-
-    fun resetDemoBalance() {
-        _walletBalance.value = WalletBalance()
-        _transactions.value = listOf(
-            WalletTransaction(
-                id = "TX1001",
-                userId = "USR-304",
-                type = TransactionType.DEPOSIT,
-                amountPaise = 50000L,
-                balanceAfterPaise = 185000L,
-                status = TransactionStatus.SUCCESS,
-                referenceId = "UPI-49302198421",
-                description = "Demo Initial Deposit via UPI"
-            ),
-            WalletTransaction(
-                id = "TX1000",
-                userId = "USR-304",
-                type = TransactionType.BONUS_CREDIT,
-                amountPaise = 10000L,
-                balanceAfterPaise = 135000L,
-                status = TransactionStatus.SUCCESS,
-                referenceId = "BONUS-WELCOME",
-                description = "Welcome Demo Bonus"
-            )
-        )
     }
 }

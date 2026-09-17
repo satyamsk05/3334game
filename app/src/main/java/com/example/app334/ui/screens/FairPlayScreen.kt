@@ -87,7 +87,7 @@ fun FairPlayScreen(
             iconRes = R.drawable.ic_settings_issues
         )
 
-        // Section 3: Transparent Ledger & Demo Accounting
+        // Section 3: Transparent Ledger & Wallet Accounting
         FairPlayCard(
             title = "Transparent Ledger Accounting",
             description = "All bet debits, refunds, wins, and withdrawals are recorded synchronously in the application ledger in integer paise to eliminate rounding discrepancies.",

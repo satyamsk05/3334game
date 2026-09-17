@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
-import { GameLoopEngine } from '../game/GameLoopEngine';
+import { WalletLedger } from '../services/WalletLedger';
 import { TelegramBotService } from '../services/TelegramBotService';
 
 export const walletRouter = Router();
 
 walletRouter.get('/transactions', (req: Request, res: Response) => {
   const userId = (req.query.userId as string) || 'USR-304';
-  const transactions = GameLoopEngine.getTransactions(userId);
+  const transactions = WalletLedger.getTransactions(userId);
   res.json({ success: true, data: transactions });
 });
 
@@ -18,14 +18,14 @@ walletRouter.post('/deposit', async (req: Request, res: Response) => {
     return res.status(400).json({ success: false, message: 'Invalid deposit amount' });
   }
 
-  const updatedBalance = GameLoopEngine.addDemoCash(userId, paise, utr);
+  const updatedBalance = WalletLedger.addDepositCash(userId, paise, utr);
 
   // Send Telegram notification
-  await TelegramBotService.sendAlert(`💰 *Deposit Request Submitted*\nUser: \`${userId}\`\nAmount: ₹${(paise / 100).toFixed(2)}\nUTR: \`${utr || 'DEMO'}\``);
+  await TelegramBotService.sendAlert(`💰 *Deposit Request Submitted*\nUser: \`${userId}\`\nAmount: ₹${(paise / 100).toFixed(2)}\nUTR: \`${utr || 'N/A'}\``);
 
   res.json({
     success: true,
-    message: `Demo play chips of ₹${(paise / 100).toFixed(2)} credited!`,
+    message: `₹${(paise / 100).toFixed(2)} added to wallet successfully!`,
     data: { walletBalance: updatedBalance }
   });
 });
@@ -38,7 +38,7 @@ walletRouter.post('/withdraw', async (req: Request, res: Response) => {
     return res.status(400).json({ success: false, message: 'Please enter a valid UPI ID' });
   }
 
-  const result = GameLoopEngine.requestWithdrawal(userId, paise, upiId);
+  const result = WalletLedger.requestWithdrawal(userId, paise, upiId);
   if (!result.success) {
     return res.status(400).json({ success: false, message: result.message });
   }
@@ -46,7 +46,7 @@ walletRouter.post('/withdraw', async (req: Request, res: Response) => {
   // Send Telegram notification
   await TelegramBotService.sendAlert(`💸 *Withdrawal Requested*\nUser: \`${userId}\`\nAmount: ₹${(paise / 100).toFixed(2)}\nUPI ID: \`${upiId}\``);
 
-  const updatedBalance = GameLoopEngine.getUserBalance(userId);
+  const updatedBalance = WalletLedger.getUserBalance(userId);
   res.json({
     success: true,
     message: result.message,

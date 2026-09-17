@@ -76,14 +76,14 @@ fun AddCashScreen(
         ) {
             Column {
                 Text(
-                    text = "Add Play Chips",
+                    text = "Add Cash to Wallet",
                     fontSize = 22.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
-                    text = "🎮 DEMO BALANCE",
+                    text = "⚡ INSTANT ADD CASH",
                     fontSize = 10.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Bold,
@@ -124,7 +124,7 @@ fun AddCashScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "ENTER CHIP AMOUNT",
+                    text = "ENTER AMOUNT",
                     fontSize = 12.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Bold,
@@ -162,7 +162,7 @@ fun AddCashScreen(
 
         // Quick Offer Chips
         Text(
-            text = "POPULAR CHIP OFFERS",
+            text = "POPULAR CASH OFFERS",
             fontSize = 13.sp,
             fontFamily = RubikFont,
             fontWeight = FontWeight.Bold,
@@ -211,7 +211,7 @@ fun AddCashScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // ADD DEMO CHIPS BUTTON
+        // ADD CASH BUTTON
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -235,15 +235,21 @@ fun AddCashScreen(
                     }
                 )
                 .clickable(enabled = isAmountValid) {
+                    val payUrl = "${com.example.app334.core.config.ClientConfig.SERVER_BASE_URL}/pay?amount=$inputAmount&userId=USR-304"
+                    try {
+                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(payUrl))
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Opening deposit page...", Toast.LENGTH_SHORT).show()
+                    }
                     val paise = WalletLedger.rupeesToPaise(inputNum)
-                    WalletLedger.addDemoCash(paise)
-                    Toast.makeText(context, "Added ₹${inputNum.toInt()} Demo Chips to your wallet!", Toast.LENGTH_SHORT).show()
+                    WalletLedger.addDepositCash(paise)
                     onAddCashSuccess(inputAmount)
                 },
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (isAmountValid) "ADD ₹$inputAmount DEMO CHIPS" else "ENTER CHIP AMOUNT",
+                text = if (isAmountValid) "ADD ₹$inputAmount" else "ENTER AMOUNT",
                 fontSize = 16.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,

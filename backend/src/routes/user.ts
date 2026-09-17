@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { GameLoopEngine } from '../game/GameLoopEngine';
+import { WalletLedger } from '../services/WalletLedger';
 
 export const userRouter = Router();
 
 userRouter.get('/profile', (req: Request, res: Response) => {
   const userId = (req.query.userId as string) || 'USR-304';
-  const balance = GameLoopEngine.getUserBalance(userId);
+  const balance = WalletLedger.getUserBalance(userId);
 
   res.json({
     success: true,

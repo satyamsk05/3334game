@@ -48,7 +48,7 @@ fun TransactionHistoryScreen(
     val filteredTransactions = remember(selectedFilter, transactionsState) {
         when (selectedFilter) {
             TransactionFilterCategory.ALL -> transactionsState
-            TransactionFilterCategory.DEPOSITS -> transactionsState.filter { it.type == TransactionType.DEPOSIT || it.type == TransactionType.BONUS_CREDIT }
+            TransactionFilterCategory.DEPOSITS -> transactionsState.filter { it.type == TransactionType.DEPOSIT }
             TransactionFilterCategory.WITHDRAWALS -> transactionsState.filter { it.type == TransactionType.WITHDRAWAL }
             TransactionFilterCategory.WINNINGS -> transactionsState.filter { it.type == TransactionType.WIN_PAYOUT }
         }

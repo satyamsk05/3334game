@@ -5,7 +5,7 @@ export function getAdminDashboardHtml(): string {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>334GAME - SuperAdmin Control Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
         body { background-color: #120924; color: #FFFFFF; min-height: 100vh; padding: 20px; }
@@ -25,15 +25,22 @@ export function getAdminDashboardHtml(): string {
         .card .value { font-size: 26px; font-weight: 700; color: #FFF; }
         .card .value.gold { color: #FFD700; }
         .card .value.green { color: #4ADE80; }
+        .card .value.red { color: #F87171; }
         
-        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; color: #FFD700; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; color: #FFD700; display: flex; justify-content: space-between; align-items: center; }
         .table-container { background: #1D1236; border: 1px solid #2F1E52; border-radius: 14px; padding: 16px; margin-bottom: 24px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 12px; border-bottom: 1px solid #2A1A45; font-size: 14px; }
         th { color: #A098B2; font-weight: 600; }
         .badge-success { background: #1E3A29; color: #4ADE80; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+        .badge-pending { background: #3B2700; color: #FBBF24; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+        .badge-danger { background: #3B1212; color: #F87171; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; }
         
+        .btn-action { border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; margin-right: 6px; }
+        .btn-approve { background: #10B981; color: #FFF; }
+        .btn-reject { background: #EF4444; color: #FFF; }
         .btn-refresh { background: #3B2968; color: #FFF; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .utr-tag { font-family: monospace; font-size: 13px; font-weight: 700; color: #DDD6FE; background: #2A1647; padding: 4px 8px; border-radius: 6px; }
     </style>
 </head>
 <body>
@@ -50,7 +57,7 @@ export function getAdminDashboardHtml(): string {
         <div class="header">
             <div>
                 <h1>👑 334GAME SuperAdmin Panel</h1>
-                <p style="color: #A098B2; font-size: 13px;">Authoritative Backend Engine Status</p>
+                <p style="color: #A098B2; font-size: 13px;">Authoritative Financial & Control Engine</p>
             </div>
             <div>
                 <span class="status-badge">● LIVE SERVER ONLINE</span>
@@ -60,6 +67,14 @@ export function getAdminDashboardHtml(): string {
 
         <div class="grid-cards">
             <div class="card">
+                <div class="title">PENDING DEPOSITS</div>
+                <div class="value gold" id="pendingDepCount">0</div>
+            </div>
+            <div class="card">
+                <div class="title">PENDING WITHDRAWALS</div>
+                <div class="value red" id="pendingWdCount">0</div>
+            </div>
+            <div class="card">
                 <div class="title">ACTIVE PLAYERS</div>
                 <div class="value green" id="activePlayers">1 Live 🟢</div>
             </div>
@@ -67,56 +82,57 @@ export function getAdminDashboardHtml(): string {
                 <div class="title">NET HOUSE PROFIT</div>
                 <div class="value gold" id="houseProfit">₹18,450.00</div>
             </div>
-            <div class="card">
-                <div class="title">CURRENT ROUND</div>
-                <div class="value" id="currentRound">#1001</div>
-            </div>
-            <div class="card">
-                <div class="title">PHASE & COUNTDOWN</div>
-                <div class="value green" id="gamePhase">BETTING (20s)</div>
-            </div>
         </div>
 
-        <div class="section-title">📊 Live Platform Analytics & RTP</div>
+        <!-- 1. PENDING DEPOSITS QUEUE -->
+        <div class="section-title">
+            <span>📥 Pending Deposits Queue (UTR Review)</span>
+            <span class="badge-pending" id="depQueueBadge">0 Pending</span>
+        </div>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Metric</th>
-                        <th>Target Spec</th>
-                        <th>Live Status</th>
+                        <th>Order ID</th>
+                        <th>User ID</th>
+                        <th>Amount (₹)</th>
+                        <th>Submitted UTR</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Verified RTP Target</td>
-                        <td>~95.0% Fair Play</td>
-                        <td><span class="badge-success">VERIFIED 95.0%</span></td>
-                    </tr>
-                    <tr>
-                        <td>Black Multiplier (15/32)</td>
-                        <td>2.0x (Contract Fee: 2%)</td>
-                        <td>2.0x Active</td>
-                    </tr>
-                    <tr>
-                        <td>Red Multiplier (10/32)</td>
-                        <td>3.0x (Contract Fee: 2%)</td>
-                        <td>3.0x Active</td>
-                    </tr>
-                    <tr>
-                        <td>Blue Multiplier (6/32)</td>
-                        <td>5.0x (Contract Fee: 2%)</td>
-                        <td>5.0x Active</td>
-                    </tr>
-                    <tr>
-                        <td>Green Multiplier (1/32)</td>
-                        <td>50.0x (Contract Fee: 2%)</td>
-                        <td>50.0x Active</td>
-                    </tr>
+                <tbody id="depositsTableBody">
+                    <tr><td colspan="7" style="text-align: center; color: #9CA3AF;">No pending deposits</td></tr>
                 </tbody>
             </table>
         </div>
 
+        <!-- 2. PENDING WITHDRAWALS QUEUE -->
+        <div class="section-title">
+            <span>💸 Pending Withdrawals Queue (Payout Review)</span>
+            <span class="badge-pending" id="wdQueueBadge">0 Pending</span>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Withdrawal ID</th>
+                        <th>User ID</th>
+                        <th>Amount (₹)</th>
+                        <th>UPI ID</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="withdrawalsTableBody">
+                    <tr><td colspan="7" style="text-align: center; color: #9CA3AF;">No pending withdrawals</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 3. USER BALANCES -->
         <div class="section-title">👥 Registered Users & Live Balances</div>
         <div class="table-container">
             <table>
@@ -157,6 +173,7 @@ export function getAdminDashboardHtml(): string {
 
         async function fetchDashboardData() {
             try {
+                // Fetch Analytics
                 const res = await fetch('/api/v1/admin/analytics?secret=' + encodeURIComponent(adminSecret));
                 const data = await res.json();
                 if (data.success) {
@@ -165,20 +182,111 @@ export function getAdminDashboardHtml(): string {
                     
                     document.getElementById('activePlayers').innerText = (data.data.totalActivePlayers || 1) + ' Live 🟢';
                     document.getElementById('houseProfit').innerText = '₹' + (data.data.netHouseProfitRupees || 18450).toFixed(2);
-                    
-                    // Fetch current game state
-                    const gameRes = await fetch('/api/v1/game/current');
-                    const gameData = await gameRes.json();
-                    if (gameData.success && gameData.data) {
-                        document.getElementById('currentRound').innerText = '#' + gameData.data.roundNumber;
-                        document.getElementById('gamePhase').innerText = gameData.data.phase + ' (' + gameData.data.secondsRemaining + 's)';
-                    }
                 } else {
                     document.getElementById('errorMsg').innerText = 'Invalid Admin Secret Key!';
                     document.getElementById('errorMsg').style.display = 'block';
+                    return;
+                }
+
+                // Fetch Pending Deposits
+                const depRes = await fetch('/api/v1/admin/deposits/pending?secret=' + encodeURIComponent(adminSecret));
+                const depData = await depRes.json();
+                if (depData.success) {
+                    renderDepositsTable(depData.data || []);
+                }
+
+                // Fetch Pending Withdrawals
+                const wdRes = await fetch('/api/v1/admin/withdrawals/pending?secret=' + encodeURIComponent(adminSecret));
+                const wdData = await wdRes.json();
+                if (wdData.success) {
+                    renderWithdrawalsTable(wdData.data || []);
                 }
             } catch (e) {
                 console.error(e);
+            }
+        }
+
+        function renderDepositsTable(deposits) {
+            const tbody = document.getElementById('depositsTableBody');
+            document.getElementById('pendingDepCount').innerText = deposits.length;
+            document.getElementById('depQueueBadge').innerText = deposits.length + ' Pending';
+
+            if (deposits.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #9CA3AF;">No pending deposits</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = deposits.map(d => \`
+                <tr>
+                    <td style="font-family: monospace;">\${d.depositId}</td>
+                    <td>\${d.userId}</td>
+                    <td style="color: #4ADE80; font-weight: 700;">₹\${d.amountRupees.toFixed(2)}</td>
+                    <td><span class="utr-tag">\${d.utr || 'Not Submitted'}</span></td>
+                    <td>\${new Date(d.createdAt).toLocaleString()}</td>
+                    <td><span class="badge-pending">\${d.status}</span></td>
+                    <td>
+                        <button class="btn-action btn-approve" onclick="handleDepositAction('\${d.depositId}', 'APPROVE')">✓ APPROVE</button>
+                        <button class="btn-action btn-reject" onclick="handleDepositAction('\${d.depositId}', 'REJECT')">✕ REJECT</button>
+                    </td>
+                </tr>
+            \`).join('');
+        }
+
+        function renderWithdrawalsTable(withdrawals) {
+            const tbody = document.getElementById('withdrawalsTableBody');
+            document.getElementById('pendingWdCount').innerText = withdrawals.length;
+            document.getElementById('wdQueueBadge').innerText = withdrawals.length + ' Pending';
+
+            if (withdrawals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #9CA3AF;">No pending withdrawals</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = withdrawals.map(w => \`
+                <tr>
+                    <td style="font-family: monospace;">\${w.withdrawalId}</td>
+                    <td>\${w.userId}</td>
+                    <td style="color: #F87171; font-weight: 700;">₹\${w.amountRupees.toFixed(2)}</td>
+                    <td style="font-family: monospace; color: #DDD6FE;">\${w.upiId}</td>
+                    <td>\${new Date(w.createdAt).toLocaleString()}</td>
+                    <td><span class="badge-pending">\${w.status}</span></td>
+                    <td>
+                        <button class="btn-action btn-approve" onclick="handleWithdrawalAction('\${w.withdrawalId}', 'APPROVE')">✓ APPROVE</button>
+                        <button class="btn-action btn-reject" onclick="handleWithdrawalAction('\${w.withdrawalId}', 'REJECT')">✕ REJECT</button>
+                    </td>
+                </tr>
+            \`).join('');
+        }
+
+        async function handleDepositAction(depositId, action) {
+            if (!confirm('Are you sure you want to ' + action + ' deposit ' + depositId + '?')) return;
+            try {
+                const res = await fetch('/api/v1/admin/deposits/action?secret=' + encodeURIComponent(adminSecret), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ depositId, action })
+                });
+                const data = await res.json();
+                alert(data.message);
+                fetchDashboardData();
+            } catch (e) {
+                alert('Action failed');
+            }
+        }
+
+        async function handleWithdrawalAction(withdrawalId, action) {
+            if (!confirm('Are you sure you want to ' + action + ' withdrawal ' + withdrawalId + '?')) return;
+            try {
+                const res = await fetch('/api/v1/admin/withdrawals/action?secret=' + encodeURIComponent(adminSecret), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ withdrawalId, action })
+                });
+                const data = await res.json();
+                alert(data.message);
+                fetchDashboardData();
+            } catch (e) {
+                alert('Action failed');
             }
         }
 
@@ -187,12 +295,12 @@ export function getAdminDashboardHtml(): string {
             fetchDashboardData();
         }
 
-        // Auto refresh stats every 2s
+        // Auto refresh stats every 3s
         setInterval(() => {
             if (document.getElementById('dashboardSection').style.display === 'block') {
                 fetchDashboardData();
             }
-        }, 2000);
+        }, 3000);
     </script>
 </body>
 </html>`;

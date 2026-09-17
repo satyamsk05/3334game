@@ -185,11 +185,10 @@ fun SettingsScreen(
             )
 
             SettingsRow(
-                title = "Reset Demo Data",
+                title = "Logout Account",
                 iconRes = R.drawable.ic_settings_logout,
                 onClick = {
-                    WalletLedger.resetDemoBalance()
-                    Toast.makeText(context, "Demo balance reset to default!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
                     onLogoutClick()
                 }
             )

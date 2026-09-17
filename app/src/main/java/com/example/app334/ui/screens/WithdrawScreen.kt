@@ -208,7 +208,7 @@ fun WithdrawScreen(
                     tint = Color(0xFF8E899B)
                 )
                 Text(
-                    text = "Demo Withdrawal System",
+                    text = "Instant 24x7 UPI Withdrawals",
                     fontSize = 12.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Medium,

@@ -1,6 +1,5 @@
 import WebSocket, { WebSocketServer } from 'ws';
 import { Server as HttpServer } from 'http';
-import { GameLoopEngine, GameState } from '../game/GameLoopEngine';
 
 export class GameWebSocketServer {
   private static wss: WebSocketServer | null = null;
@@ -9,11 +8,7 @@ export class GameWebSocketServer {
     GameWebSocketServer.wss = new WebSocketServer({ server, path: '/ws' });
 
     GameWebSocketServer.wss.on('connection', (ws: WebSocket) => {
-      console.log('📡 Client connected to Game WebSocket Server');
-
-      // Send initial state upon connection
-      const initialState = GameLoopEngine.getSnapshotForUser('default_user');
-      ws.send(JSON.stringify({ type: 'GAME_STATE', payload: initialState }));
+      console.log('📡 Client connected to WebSocket Server');
 
       ws.on('message', (message: string) => {
         try {
@@ -29,11 +24,6 @@ export class GameWebSocketServer {
       ws.on('close', () => {
         console.log('📡 Client disconnected from WebSocket');
       });
-    });
-
-    // Subscribe to state updates from GameLoopEngine
-    GameLoopEngine.onStateUpdate((state: GameState) => {
-      GameWebSocketServer.broadcast('GAME_STATE', state);
     });
 
     console.log('✅ WebSocket Server listening on /ws');
