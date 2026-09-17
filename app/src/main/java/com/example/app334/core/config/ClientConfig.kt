@@ -8,7 +8,7 @@ import com.example.app334.BuildConfig
  */
 object ClientConfig {
 
-    var SERVER_BASE_URL: String = "http://3.7.73.109:4000"
+    var SERVER_BASE_URL: String = "http://3.7.73.109:4001"
 
     const val APP_VERSION: String = "1.0.0"
 
