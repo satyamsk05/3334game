@@ -1,33 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-geist: 'Geist', 'Geist Fallback', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-geist-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Roboto Mono, Menlo, monospace;
+
+  /* Premation DESIGN.md Tokens */
+  --surface-base: #000000;
+  --surface-muted: #212123;
+  --surface-raised: rgba(255, 255, 255, 0.04);
+  --surface-strong: #2988ff;
+  --text-primary: #a6a6a6;
+  --text-secondary: #e1e1e1;
+  --text-inverse: #8c8c8c;
+  --border-muted: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  font-family: var(--font-inter);
-  background-color: #09090b;
-  color: #fafafa;
+  font-family: var(--font-geist);
+  background-color: var(--surface-base);
+  color: var(--text-secondary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Dub.co styled scrollbar */
+/* Premation Studio Focus & Keyboard Accessibility */
+:focus-visible {
+  outline: 2px solid #2988ff;
+  outline-offset: 1px;
+}
+
+/* Custom Sleek Premation Studio Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: #000000;
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 9999px;
+  background: #212123;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #38383c;
+}
+
+/* Smooth motion utilities */
+.motion-instant {
+  transition-duration: 150ms;
+}
+.motion-fast {
+  transition-duration: 200ms;
+}
+.motion-normal {
+  transition-duration: 300ms;
 }

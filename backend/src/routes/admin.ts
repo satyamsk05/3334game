@@ -16,9 +16,19 @@ adminRouter.get('/ui', (req: Request, res: Response) => {
 
 // Secret protection middleware for JSON API endpoints
 adminRouter.use((req: Request, res: Response, next) => {
-  const secret = req.headers['x-admin-secret'] || req.query.secret;
-  if (secret !== config.adminSecretKey) {
-    return res.status(401).json({ success: false, message: 'Unauthorized: Invalid Admin Secret' });
+  if (req.query.secret) {
+    return res.status(400).json({ success: false, message: 'Forbidden: Admin authentication via query parameters is disabled' });
+  }
+
+  const secret = req.headers['x-admin-secret'] as string;
+  const configuredSecret = process.env.ADMIN_SECRET_KEY || process.env.ADMIN_PASSWORD;
+
+  if (!configuredSecret) {
+    return res.status(500).json({ success: false, message: 'Server configuration error: ADMIN_SECRET_KEY is not configured in .env' });
+  }
+
+  if (!secret || secret !== configuredSecret) {
+    return res.status(401).json({ success: false, message: 'Unauthorized: Invalid Admin Secret Header' });
   }
   next();
 });

@@ -2,8 +2,6 @@ package com.example.app334.data.remote
 
 import android.util.Log
 import com.example.app334.core.config.ClientConfig
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +19,6 @@ object RemoteApiClient {
         .build()
 
     private var webSocket: WebSocket? = null
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()

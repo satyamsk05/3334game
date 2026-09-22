@@ -25,10 +25,10 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
   if (!authorized && pathname !== '/login') {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-zinc-950 text-xs text-zinc-500">
-        <div className="flex items-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
-          <span>Verifying Admin Authorization...</span>
+      <div className="flex h-screen w-full items-center justify-center bg-black text-[12px] text-[#8c8c8c]">
+        <div className="flex items-center gap-2 rounded-[4px] border border-white/[0.08] bg-[#212123] px-3.5 py-2 shadow-sm">
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-[#2988ff]" />
+          <span>Verifying Studio Authorization...</span>
         </div>
       </div>
     );

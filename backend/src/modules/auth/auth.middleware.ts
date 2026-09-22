@@ -5,22 +5,51 @@ import { ResponseHandler } from '../../utils/responseHandler';
 
 export function authenticateJwt(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    // If no header, allow dev default user header fallback if present
-    const devUserId = req.headers['x-user-id'] as string;
-    if (devUserId) {
-      (req as any).user = { userId: devUserId };
-      return next();
-    }
     return ResponseHandler.error(res, 'Authentication token missing', 401);
   }
 
-  const token = authHeader.split(' ')[1];
+  const token = authHeader.slice('Bearer '.length).trim();
+
+  if (!token) {
+    return ResponseHandler.error(res, 'Authentication token missing', 401);
+  }
+
   try {
     const decoded = jwt.verify(token, envConfig.jwtSecret);
     (req as any).user = decoded;
-    next();
+    return next();
   } catch (err) {
     return ResponseHandler.error(res, 'Invalid or expired token', 401);
   }
+}
+
+export function authenticateAdmin(req: Request, res: Response, next: NextFunction) {
+  if (req.query.secret) {
+    return ResponseHandler.error(res, 'Authentication via URL query parameters is forbidden', 400);
+  }
+
+  const adminSecret = req.headers['x-admin-secret'];
+  const configuredSecret = process.env.ADMIN_SECRET_KEY || envConfig.adminPassword;
+
+  if (configuredSecret && adminSecret && adminSecret === configuredSecret) {
+    return next();
+  }
+
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, envConfig.adminJwtSecret || envConfig.jwtSecret) as any;
+      if (decoded.role === 'ADMIN') {
+        (req as any).admin = decoded;
+        return next();
+      }
+    } catch (e) {
+      // invalid admin token
+    }
+  }
+
+  return ResponseHandler.error(res, 'Unauthorized: Admin privileges required', 403);
 }

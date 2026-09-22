@@ -18,6 +18,7 @@ export default function DepositsQueuePage() {
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const fetchDeposits = async () => {
     try {
@@ -41,29 +42,41 @@ export default function DepositsQueuePage() {
     fetchDeposits();
   }, []);
 
-  const handleApprove = async (depositId: string) => {
+  const handleApprove = async (depositId: string, amount: number) => {
+    if (!window.confirm(`Are you sure you want to APPROVE deposit of ₹${amount.toFixed(2)} (${depositId}) and credit player wallet?`)) {
+      return;
+    }
     try {
+      setProcessingId(depositId);
       const res = await paymentService.approveDeposit(depositId);
       if (res.success) {
-        fetchDeposits();
+        await fetchDeposits();
       } else {
-        alert(res.message);
+        alert(res.message || 'Approval failed');
       }
     } catch (err: any) {
       alert(`Approval failed: ${err.message}`);
+    } finally {
+      setProcessingId(null);
     }
   };
 
   const handleReject = async (depositId: string) => {
+    if (!window.confirm(`Are you sure you want to REJECT deposit (${depositId})?`)) {
+      return;
+    }
     try {
+      setProcessingId(depositId);
       const res = await paymentService.rejectDeposit(depositId);
       if (res.success) {
-        fetchDeposits();
+        await fetchDeposits();
       } else {
-        alert(res.message);
+        alert(res.message || 'Rejection failed');
       }
     } catch (err: any) {
       alert(`Rejection failed: ${err.message}`);
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -78,30 +91,30 @@ export default function DepositsQueuePage() {
   return (
     <div className="space-y-6">
       
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-800/60 pb-6">
+      {/* Studio Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.08] pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Deposit Approval Queue</h1>
-          <p className="text-xs text-zinc-400 mt-1">Live UTR verification connected directly to user integer paise wallet ledgers</p>
+          <h1 className="text-lg font-semibold tracking-tight text-[#e1e1e1]">Deposit Verification Queue</h1>
+          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Live UTR ledger verification linked to player integer paise balances</p>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-900/60 p-1 text-xs font-medium text-zinc-400">
+        {/* Filter Segmented Control */}
+        <div className="flex items-center rounded-[4px] border border-white/[0.08] bg-[#212123] p-0.5 text-[11px] font-medium text-[#a6a6a6]">
           <button
             onClick={() => setFilter('PENDING')}
-            className={`rounded px-3 py-1 transition ${filter === 'PENDING' ? 'text-amber-400 bg-amber-500/10 border border-amber-500/20 font-semibold' : 'hover:text-white'}`}
+            className={`rounded-[3px] px-2.5 py-0.5 transition-colors ${filter === 'PENDING' ? 'text-amber-400 bg-amber-500/10 border border-amber-500/20 font-medium' : 'hover:text-[#e1e1e1]'}`}
           >
             Pending ({deposits.filter((d) => d.status === 'PENDING').length})
           </button>
           <button
             onClick={() => setFilter('APPROVED')}
-            className={`rounded px-3 py-1 transition ${filter === 'APPROVED' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-semibold' : 'hover:text-white'}`}
+            className={`rounded-[3px] px-2.5 py-0.5 transition-colors ${filter === 'APPROVED' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-medium' : 'hover:text-[#e1e1e1]'}`}
           >
             Approved
           </button>
           <button
             onClick={() => setFilter('REJECTED')}
-            className={`rounded px-3 py-1 transition ${filter === 'REJECTED' ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20 font-semibold' : 'hover:text-white'}`}
+            className={`rounded-[3px] px-2.5 py-0.5 transition-colors ${filter === 'REJECTED' ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20 font-medium' : 'hover:text-[#e1e1e1]'}`}
           >
             Rejected
           </button>
@@ -110,109 +123,125 @@ export default function DepositsQueuePage() {
 
       {/* Error state */}
       {error && (
-        <div className="rounded-lg border border-rose-500/20 bg-rose-500/10 p-4 text-xs text-rose-400 flex items-center justify-between">
+        <div className="rounded-[4px] border border-red-500/20 bg-red-500/10 p-3 text-[12px] text-red-400 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4" />
-            <span>Backend Connection Error: {error}</span>
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>Backend Server Connection Error: {error}</span>
           </div>
-          <button onClick={fetchDeposits} className="rounded bg-rose-500/20 px-2.5 py-1 font-semibold hover:bg-rose-500/30">Retry</button>
+          <button onClick={fetchDeposits} className="rounded-[3px] bg-red-500/20 px-2 py-0.5 font-medium hover:bg-red-500/30">Retry</button>
         </div>
       )}
 
       {/* Loading state */}
       {loading ? (
-        <div className="py-12 text-center text-xs text-zinc-500 flex items-center justify-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
-          <span>Fetching deposit records from backend API...</span>
+        <div className="py-12 text-center text-[12px] text-[#8c8c8c] flex items-center justify-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin text-[#2988ff]" />
+          <span>Synchronizing deposit queue telemetry...</span>
         </div>
       ) : (
         /* Table */
-        <div className="overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/40">
-          <table className="w-full text-left text-xs text-zinc-300">
-            <thead className="border-b border-zinc-800 bg-zinc-950/60 text-zinc-400 uppercase text-[10px] font-semibold tracking-wider">
+        <div className="overflow-hidden rounded-[8px] border border-white/[0.08] bg-[#212123]">
+          <table className="w-full text-left text-[12px] text-[#a6a6a6]">
+            <thead className="border-b border-white/[0.08] bg-black text-[#8c8c8c] uppercase text-[10px] font-mono tracking-wider">
               <tr>
-                <th className="px-4 py-3">Order ID</th>
-                <th className="px-4 py-3">User ID</th>
-                <th className="px-4 py-3">Deposit Amount</th>
-                <th className="px-4 py-3">UTR / Ref Number</th>
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Verification Action</th>
+                <th className="px-4 py-2.5">Order ID</th>
+                <th className="px-4 py-2.5">User ID</th>
+                <th className="px-4 py-2.5">Amount</th>
+                <th className="px-4 py-2.5">UTR / Reference</th>
+                <th className="px-4 py-2.5">Date</th>
+                <th className="px-4 py-2.5">Status</th>
+                <th className="px-4 py-2.5 text-right">Verification Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60 font-sans text-xs">
+            <tbody className="divide-y divide-white/[0.06] text-[12px]">
               {filteredDeposits.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-zinc-500 text-xs">
-                    No {filter.toLowerCase()} deposit requests in system.
+                  <td colSpan={7} className="px-4 py-8 text-center text-[#8c8c8c] text-[12px]">
+                    No {filter.toLowerCase()} deposit requests in queue.
                   </td>
                 </tr>
               ) : (
                 filteredDeposits.map((d) => (
-                  <tr key={d.depositId} className="hover:bg-zinc-900/60 transition">
+                  <tr key={d.depositId} className="hover:bg-white/[0.02] transition-colors duration-150">
                     
-                    <td className="px-4 py-3 font-mono text-zinc-200">
+                    <td className="px-4 py-2.5 font-mono text-[11.5px] text-[#e1e1e1]">
                       <div className="flex items-center gap-1">
-                        <span>{d.depositId}</span>
-                        <button onClick={() => copyToClipboard(d.depositId)} className="text-zinc-500 hover:text-zinc-300">
+                        <span className="truncate max-w-[120px]">{d.depositId}</span>
+                        <button 
+                          onClick={() => copyToClipboard(d.depositId)} 
+                          className="text-[#8c8c8c] hover:text-[#e1e1e1] transition-colors"
+                          title="Copy Order ID"
+                        >
                           {copiedId === d.depositId ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
                         </button>
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 font-mono text-zinc-400">{d.userId}</td>
+                    <td className="px-4 py-2.5 font-mono text-[11.5px] text-[#a6a6a6]">{d.userId}</td>
 
-                    <td className="px-4 py-3 font-mono font-bold text-sm text-emerald-400">
+                    <td className="px-4 py-2.5 font-mono font-semibold text-[13px] text-emerald-400">
                       ₹{d.amountRupees.toFixed(2)}
                     </td>
 
-                    <td className="px-4 py-3 font-mono text-zinc-300">
+                    <td className="px-4 py-2.5 font-mono text-[11.5px] text-[#e1e1e1]">
                       <div className="flex items-center gap-1">
-                        <span className="rounded bg-zinc-800 px-2 py-0.5 text-[11px] border border-zinc-700">{d.utr || 'NOT_SUBMITTED'}</span>
+                        <span className="rounded-[3px] bg-white/[0.04] px-1.5 py-0.5 text-[11px] border border-white/[0.08]">{d.utr || 'NOT_SUBMITTED'}</span>
                         {d.utr && (
-                          <button onClick={() => copyToClipboard(d.utr!)} className="text-zinc-500 hover:text-zinc-300">
+                          <button onClick={() => copyToClipboard(d.utr!)} className="text-[#8c8c8c] hover:text-[#e1e1e1] transition-colors">
                             {copiedId === d.utr ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
                           </button>
                         )}
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 text-zinc-500 text-[11px]">
+                    <td className="px-4 py-2.5 text-[#8c8c8c] text-[11px] font-mono">
                       {d.createdAt ? new Date(d.createdAt).toLocaleDateString() : 'Today'}
                     </td>
 
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       {d.status === 'PENDING' && (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-amber-400">
-                          <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" /> PENDING
+                        <span className="inline-flex items-center gap-1 rounded-[3px] border border-amber-500/20 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-amber-400">
+                          <span className="h-1 w-1 rounded-full bg-amber-400 animate-pulse" /> PENDING
                         </span>
                       )}
                       {d.status === 'APPROVED' && (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-400">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> CREDITED
+                        <span className="inline-flex items-center gap-1 rounded-[3px] border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-emerald-400">
+                          <span className="h-1 w-1 rounded-full bg-emerald-400" /> CREDITED
                         </span>
                       )}
                       {d.status === 'REJECTED' && (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-rose-400">
-                          <span className="h-1.5 w-1.5 rounded-full bg-rose-400" /> REJECTED
+                        <span className="inline-flex items-center gap-1 rounded-[3px] border border-rose-500/20 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-rose-400">
+                          <span className="h-1 w-1 rounded-full bg-rose-400" /> REJECTED
                         </span>
                       )}
                     </td>
 
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-2.5 text-right">
                       {d.status === 'PENDING' && (
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
                           <button
-                            onClick={() => handleApprove(d.depositId)}
-                            className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition"
+                            disabled={processingId === d.depositId}
+                            onClick={() => handleApprove(d.depositId, d.amountRupees)}
+                            className="inline-flex items-center gap-1 rounded-[4px] border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[11px] font-medium text-emerald-400 hover:bg-emerald-500/20 transition-all disabled:opacity-50"
                           >
-                            <CheckCircle2 className="h-3.5 w-3.5" /> Approve & Credit
+                            {processingId === d.depositId ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <CheckCircle2 className="h-3 w-3" />
+                            )}
+                            <span>Approve & Credit</span>
                           </button>
                           <button
+                            disabled={processingId === d.depositId}
                             onClick={() => handleReject(d.depositId)}
-                            className="inline-flex items-center gap-1 rounded-lg border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 text-xs font-semibold text-rose-400 hover:bg-rose-500/20 transition"
+                            className="inline-flex items-center gap-1 rounded-[4px] border border-white/[0.08] bg-white/[0.03] px-2 py-1 text-[11px] font-medium text-[#8c8c8c] hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 transition-all disabled:opacity-50"
                           >
-                            <XCircle className="h-3.5 w-3.5" /> Reject
+                            {processingId === d.depositId ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <XCircle className="h-3 w-3" />
+                            )}
+                            <span>Reject</span>
                           </button>
                         </div>
                       )}

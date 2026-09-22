@@ -9,20 +9,38 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        dub: {
-          bg: '#09090b',
-          card: '#121215',
-          surface: '#18181b',
-          border: '#27272a',
-          muted: '#a1a1aa',
-          dim: '#71717a',
-          brand: '#3b82f6',
-          brandHover: '#2563eb'
-        }
+        premation: {
+          base: '#000000',
+          muted: '#212123',
+          raised: 'rgba(255, 255, 255, 0.04)',
+          border: 'rgba(255, 255, 255, 0.08)',
+          borderHover: 'rgba(255, 255, 255, 0.16)',
+          accent: '#2988ff',
+          accentHover: '#1f73dc',
+          accentSoft: 'rgba(41, 136, 255, 0.12)',
+          textPrimary: '#a6a6a6',
+          textSecondary: '#e1e1e1',
+          textInverse: '#8c8c8c',
+        },
+      },
+      borderRadius: {
+        xs: '3px',
+        sm: '4px',
+        md: '8px',
+      },
+      boxShadow: {
+        'accent-inset': 'rgb(41, 136, 255) 2px 0px 0px 0px inset',
+        'accent-bottom': 'rgb(41, 136, 255) 0px -2px 0px 0px inset',
+      },
+      transitionDuration: {
+        instant: '150ms',
+        fast: '200ms',
+        normal: '300ms',
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif']
-      }
+        sans: ['var(--font-geist)', 'Geist', 'Geist Fallback', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'Geist Mono', 'ui-monospace', 'monospace'],
+      },
     },
   },
   plugins: [],

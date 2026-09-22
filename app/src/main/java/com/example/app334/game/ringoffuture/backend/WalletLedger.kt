@@ -252,7 +252,13 @@ object WalletLedger {
         return Pair(true, "Withdrawal of ${formatPaiseToRupees(amountPaise)} processed successfully!")
     }
 
-    fun updateProfile(name: String, phone: String) {
-        _userProfile.update { it.copy(username = name, phone = phone) }
+    fun updateProfile(name: String, phone: String, userId: String? = null) {
+        _userProfile.update { current ->
+            current.copy(
+                username = name,
+                phone = phone,
+                userId = userId ?: current.userId
+            )
+        }
     }
 }

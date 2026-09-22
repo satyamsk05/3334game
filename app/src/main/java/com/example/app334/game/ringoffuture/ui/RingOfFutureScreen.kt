@@ -18,12 +18,22 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.app334.core.config.ClientConfig
 import com.example.app334.ui.theme.RubikFont
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.example.app334.game.ringoffuture.backend.WalletLedger
+
 @Composable
 fun RingOfFutureScreen(
     onBackClick: () -> Unit = {},
     onOpenDepositScreen: () -> Unit = {}
 ) {
-    val gameUrl = "${ClientConfig.SERVER_BASE_URL}/game/ring-of-future?userId=USR-304"
+    BackHandler {
+        onBackClick()
+    }
+
+    val userProfile by WalletLedger.userProfile.collectAsState()
+    val gameUrl = "${ClientConfig.SERVER_BASE_URL}/game/ring-of-future?userId=${userProfile.userId}"
 
     Box(
         modifier = Modifier
@@ -49,6 +59,10 @@ fun RingOfFutureScreen(
                     loadUrl(gameUrl)
                 }
             },
+            onRelease = { webView ->
+                webView.stopLoading()
+                webView.destroy()
+            },
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -59,6 +73,10 @@ fun DepositPaymentScreen(
     onBackClick: () -> Unit = {},
     onSuccess: () -> Unit = {}
 ) {
+    BackHandler {
+        onBackClick()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
