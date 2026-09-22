@@ -33,6 +33,9 @@ import com.example.app334.data.repository.AuthRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+import com.example.app334.data.remote.LogginAuthService
+import kotlinx.coroutines.Job
+
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit) {
     val context = LocalContext.current
@@ -43,8 +46,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var isLoading by remember { mutableStateOf(false) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
     var activeSlide by remember { mutableStateOf(0) }
+    var verificationJob by remember { mutableStateOf<Job?>(null) }
 
-    val appKey = ClientConfig.LOGGIN_APP_KEY
+    val appKey = ClientConfig.LOGGIN_APP_KEY.ifBlank { "J2T8R6YN" }
 
     // Auto rotate slide every 4 seconds
     LaunchedEffect(Unit) {
@@ -66,27 +70,36 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
 
     fun handleWhatsAppLogin() {
         isLoading = true
-        statusMessage = "Opening WhatsApp for instant login..."
+        statusMessage = "Opening WhatsApp..."
 
-        scope.launch {
-            try {
-                val token = "WA-AUTH-${System.currentTimeMillis()}"
-                val encodedMsg = Uri.encode("Verify login code: $token (Loggin Key: $appKey)")
-                // Official WhatsApp deep link format
-                val waUri = Uri.parse("https://api.whatsapp.com/send?phone=919999999999&text=$encodedMsg")
-                val intent = Intent(Intent.ACTION_VIEW, waUri).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                context.startActivity(intent)
+        try {
+            val token = LogginAuthService.generateToken(appKey)
+            val waLink = LogginAuthService.createWhatsAppLink(token)
 
-                // Simulated instant token verification
-                delay(2000)
-                completeLogin("9876543210", "WhatsApp Player")
-            } catch (e: Exception) {
-                // If WhatsApp is not installed on device/emulator, fallback to clean phone prompt
-                isLoading = false
-                showPhoneSheet = true
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(waLink)).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
+            context.startActivity(intent)
+
+            statusMessage = "Waiting for WhatsApp verification...\nPlease tap Send in WhatsApp"
+
+            verificationJob?.cancel()
+            verificationJob = scope.launch {
+                val result = LogginAuthService.waitForVerification(token)
+                result.onSuccess { verifiedPhone ->
+                    statusMessage = "Verified! Logging in..."
+                    completeLogin(verifiedPhone, "WhatsApp User")
+                }.onFailure {
+                    isLoading = false
+                    statusMessage = null
+                    showPhoneSheet = true
+                }
+            }
+        } catch (e: Exception) {
+            // If WhatsApp is not installed on device/emulator, fallback to phone prompt
+            isLoading = false
+            statusMessage = null
+            showPhoneSheet = true
         }
     }
 
@@ -249,6 +262,34 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         // Clean White WhatsApp Chat Bubble Icon
                         WhatsAppIcon(modifier = Modifier.size(20.dp))
                     }
+                }
+            }
+
+            if (isLoading && statusMessage != null) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = statusMessage ?: "",
+                        color = Color(0xFFA270F5),
+                        fontSize = 12.sp,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Cancel",
+                        color = Color(0xFFC4B5D6),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.clickable {
+                            verificationJob?.cancel()
+                            isLoading = false
+                            statusMessage = null
+                        }
+                    )
                 }
             }
 
