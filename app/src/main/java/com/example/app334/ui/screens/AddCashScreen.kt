@@ -244,7 +244,12 @@ fun AddCashScreen(
                         Toast.makeText(context, "Opening deposit page...", Toast.LENGTH_SHORT).show()
                     }
                     val paise = WalletLedger.rupeesToPaise(inputNum)
-                    WalletLedger.addDepositCash(paise)
+                    WalletLedger.recordPendingDeposit(paise)
+                    Toast.makeText(
+                        context,
+                        "Payment page opened! Please complete UPI payment & submit UTR for approval.",
+                        Toast.LENGTH_LONG
+                    ).show()
                     onAddCashSuccess(inputAmount)
                 },
             contentAlignment = Alignment.Center

@@ -217,6 +217,27 @@ object WalletLedger {
         return tx
     }
 
+    @Synchronized
+    fun recordPendingDeposit(amountPaise: Long): WalletTransaction {
+        val current = _walletBalance.value
+        val tx = WalletTransaction(
+            userId = _userProfile.value.userId,
+            type = TransactionType.DEPOSIT,
+            amountPaise = amountPaise,
+            balanceAfterPaise = current.totalPaise,
+            status = TransactionStatus.PENDING,
+            referenceId = "DEP-REQ-${System.currentTimeMillis().toString().takeLast(6)}",
+            description = "Deposit Request (Awaiting Payment / UTR Approval)"
+        )
+        _transactions.update { listOf(tx) + it }
+        return tx
+    }
+
+    @Synchronized
+    fun syncBalance(depositPaise: Long, winningPaise: Long, bonusPaise: Long) {
+        _walletBalance.value = WalletBalance(depositPaise, winningPaise, bonusPaise)
+    }
+
     // Alias for compatibility
     fun addDemoCash(amountPaise: Long, utr: String = ""): WalletTransaction = addDepositCash(amountPaise, utr)
 
