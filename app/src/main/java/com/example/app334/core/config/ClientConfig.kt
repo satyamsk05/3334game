@@ -12,9 +12,6 @@ object ClientConfig {
 
     const val APP_VERSION: String = "1.0.0"
 
-    val LOGGIN_APP_KEY: String
-        get() = BuildConfig.LOGGIN_APP_KEY
-
     val API_BASE_URL: String
         get() = if (SERVER_BASE_URL.endsWith("/")) "${SERVER_BASE_URL}api/v1" else "$SERVER_BASE_URL/api/v1"
 

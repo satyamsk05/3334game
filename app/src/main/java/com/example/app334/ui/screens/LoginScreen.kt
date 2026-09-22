@@ -48,8 +48,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var activeSlide by remember { mutableStateOf(0) }
     var verificationJob by remember { mutableStateOf<Job?>(null) }
 
-    val appKey = ClientConfig.LOGGIN_APP_KEY
-
     // Auto rotate slide every 4 seconds
     LaunchedEffect(Unit) {
         while (true) {
@@ -70,22 +68,28 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
 
     fun handleWhatsAppLogin() {
         isLoading = true
-        statusMessage = "Opening WhatsApp..."
+        statusMessage = "Connecting to server..."
 
-        try {
-            val token = LogginAuthService.generateToken(appKey)
-            val waLink = LogginAuthService.createWhatsAppLink(token)
+        verificationJob?.cancel()
+        verificationJob = scope.launch {
+            try {
+                val initResult = LogginAuthService.initiateAuth()
+                if (initResult.isFailure) {
+                    isLoading = false
+                    statusMessage = null
+                    showPhoneSheet = true
+                    return@launch
+                }
 
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(waLink)).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(intent)
+                val session = initResult.getOrThrow()
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(session.waLink)).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
 
-            statusMessage = "Waiting for WhatsApp verification...\nPlease tap Send in WhatsApp"
+                statusMessage = "Waiting for WhatsApp verification...\nPlease tap Send in WhatsApp"
 
-            verificationJob?.cancel()
-            verificationJob = scope.launch {
-                val result = LogginAuthService.waitForVerification(token)
+                val result = LogginAuthService.waitForVerification(session.token)
                 result.onSuccess { verifiedPhone ->
                     statusMessage = "Verified! Logging in..."
                     completeLogin(verifiedPhone, "WhatsApp User")
@@ -94,12 +98,12 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                     statusMessage = null
                     showPhoneSheet = true
                 }
+            } catch (e: Exception) {
+                // If WhatsApp is not installed on device/emulator, fallback to phone prompt
+                isLoading = false
+                statusMessage = null
+                showPhoneSheet = true
             }
-        } catch (e: Exception) {
-            // If WhatsApp is not installed on device/emulator, fallback to phone prompt
-            isLoading = false
-            statusMessage = null
-            showPhoneSheet = true
         }
     }
 

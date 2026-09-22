@@ -24,9 +24,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        val logginKey = System.getenv("LOGGIN_APP_KEY") ?: localProperties.getProperty("LOGGIN_APP_KEY") ?: ""
-        buildConfigField("String", "LOGGIN_APP_KEY", "\"$logginKey\"")
     }
 
     buildTypes {

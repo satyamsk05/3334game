@@ -2,10 +2,13 @@ package com.example.app334.data.remote
 
 import android.net.Uri
 import android.util.Log
+import com.example.app334.core.config.ClientConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -30,24 +33,40 @@ object LogginAuthService {
         .readTimeout(0, TimeUnit.MILLISECONDS) // Indefinite for SSE streaming
         .build()
 
-    /**
-     * Generates a 6-character random token in format: ${appKey}-${RANDOM6}
-     */
-    fun generateToken(appKey: String): String {
-        val rand = StringBuilder(6)
-        for (i in 0 until 6) {
-            val idx = Random.nextInt(CHARS.length)
-            rand.append(CHARS[idx])
-        }
-        return "$appKey-$rand"
-    }
+    data class WaSession(val token: String, val waLink: String)
 
     /**
-     * Builds official WhatsApp deep link with the required pre-filled verification message.
+     * Asks the backend server to initiate WhatsApp authentication.
+     * The backend server uses its own .env configuration (LOGGIN_APP_KEY) so no secrets reside in the APK!
      */
-    fun createWhatsAppLink(token: String): String {
-        val msg = "Please do not edit this message.\nLOGGIN $token"
-        return "https://wa.me/$BUSINESS_PHONE?text=${Uri.encode(msg)}"
+    suspend fun initiateAuth(): Result<WaSession> = withContext(Dispatchers.IO) {
+        try {
+            val url = "${ClientConfig.API_BASE_URL}/auth/whatsapp/initiate"
+            val body = "{}".toRequestBody("application/json".toMediaTypeOrNull())
+            val request = Request.Builder()
+                .url(url)
+                .post(body)
+                .build()
+
+            val response = client.newCall(request).execute()
+            val responseString = response.body?.string() ?: ""
+            if (!response.isSuccessful) {
+                return@withContext Result.failure(Exception("Server initiate error: HTTP ${response.code}"))
+            }
+
+            val json = JSONObject(responseString)
+            val data = json.optJSONObject("data") ?: return@withContext Result.failure(Exception("Invalid server response"))
+            val token = data.optString("token")
+            val waLink = data.optString("waLink")
+
+            if (token.isNotBlank() && waLink.isNotBlank()) {
+                Result.success(WaSession(token, waLink))
+            } else {
+                Result.failure(Exception("Missing token or link from server"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     /**
