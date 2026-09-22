@@ -235,7 +235,8 @@ fun AddCashScreen(
                     }
                 )
                 .clickable(enabled = isAmountValid) {
-                    val payUrl = "${com.example.app334.core.config.ClientConfig.SERVER_BASE_URL}/pay?amount=$inputAmount&userId=USR-304"
+                    val currentUserId = WalletLedger.userProfile.value.userId
+                    val payUrl = "${com.example.app334.core.config.ClientConfig.SERVER_BASE_URL}/pay?amount=$inputAmount&userId=$currentUserId"
                     try {
                         val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(payUrl))
                         context.startActivity(intent)
