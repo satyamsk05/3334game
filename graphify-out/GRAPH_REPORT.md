@@ -1,11 +1,11 @@
 # Graph Report - /Users/satyamkumar/Desktop/1356  (2026-09-22)
 
 ## Corpus Check
-- 103 files · ~1,867,614 words
+- 104 files · ~1,868,151 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 371 nodes · 458 edges · 83 communities detected
+- 376 nodes · 462 edges · 83 communities detected
 - Extraction: 66% EXTRACTED · 34% INFERRED · 0% AMBIGUOUS · INFERRED: 156 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -113,32 +113,32 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.07
-Nodes (11): authenticateAdmin(), authenticateJwt(), DepositController, errorHandler(), getStatusCode(), FinancialService, ResponseHandler, UserController (+3 more)
+Cohesion: 0.11
+Nodes (4): PaymentService, RedisManager, SocketServer, WalletService
 
 ### Community 1 - "Community 1"
-Cohesion: 0.12
-Nodes (3): PaymentService, TelegramBotService, WalletService
+Cohesion: 0.07
+Nodes (9): RingOfFutureEngine, WalletValidator, BetDebitBreakdown, TransactionStatus, TransactionType, UserProfile, WalletBalance, WalletLedger (+1 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.11
-Nodes (4): AuthController, AuthService, AuthValidator, UserService
+Cohesion: 0.09
+Nodes (6): AuthController, AuthService, AuthValidator, ResponseHandler, UserController, UserService
 
 ### Community 3 - "Community 3"
+Cohesion: 0.12
+Nodes (7): authenticateAdmin(), authenticateJwt(), DatabaseConfig, DepositController, errorHandler(), getStatusCode(), WalletController
+
+### Community 4 - "Community 4"
+Cohesion: 0.12
+Nodes (3): FinancialService, TelegramBotService, WithdrawController
+
+### Community 5 - "Community 5"
 Cohesion: 0.11
 Nodes (15): AboutUs, ContactUs, DepositPayment, FairPlay, FeaturedGame, GridGame, HelpCentre, ProfileDetails (+7 more)
 
-### Community 4 - "Community 4"
-Cohesion: 0.14
-Nodes (4): createApp(), Database, RingOfFutureEngine, bootstrap()
-
-### Community 5 - "Community 5"
-Cohesion: 0.14
-Nodes (6): DatabaseConfig, buildDatabaseUrl(), readEnv(), requireProductionEnv(), Logger, RedisManager
-
 ### Community 6 - "Community 6"
-Cohesion: 0.12
-Nodes (7): BetDebitBreakdown, TransactionStatus, TransactionType, UserProfile, WalletBalance, WalletLedger, WalletTransaction
+Cohesion: 0.13
+Nodes (7): createApp(), Database, buildDatabaseUrl(), readEnv(), requireProductionEnv(), Logger, bootstrap()
 
 ### Community 7 - "Community 7"
 Cohesion: 0.25
@@ -173,8 +173,8 @@ Cohesion: 0.6
 Nodes (5): renderHistory(), syncState(), triggerSpinAnimation(), updateBetBadge(), updateUI()
 
 ### Community 15 - "Community 15"
-Cohesion: 0.33
-Nodes (1): SocketServer
+Cohesion: 0.4
+Nodes (2): LogginAuthService, WaSession
 
 ### Community 16 - "Community 16"
 Cohesion: 0.5
@@ -445,7 +445,7 @@ Cohesion: 1.0
 Nodes (0): 
 
 ## Knowledge Gaps
-- **39 isolated node(s):** `NavItem`, `OfferItem`, `ReferralUser`, `FeaturedGame`, `GridGame` (+34 more)
+- **40 isolated node(s):** `NavItem`, `OfferItem`, `ReferralUser`, `FeaturedGame`, `GridGame` (+35 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 33`** (2 nodes): `RootLayout()`, `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -551,17 +551,17 @@ Nodes (0):
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `WalletLedger` connect `Community 6` to `Community 1`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **Why does `bootstrap()` connect `Community 4` to `Community 1`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `Logger` connect `Community 5` to `Community 0`, `Community 1`?**
+- **Why does `WalletLedger` connect `Community 1` to `Community 0`?**
+  _High betweenness centrality (0.034) - this node is a cross-community bridge._
+- **Why does `bootstrap()` connect `Community 6` to `Community 0`, `Community 1`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `Logger` connect `Community 6` to `Community 0`, `Community 3`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **What connects `NavItem`, `OfferItem`, `ReferralUser` to the rest of the system?**
-  _39 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _40 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.07 - nodes in this community are weakly interconnected._
-- **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.12 - nodes in this community are weakly interconnected._
-- **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.11 - nodes in this community are weakly interconnected._
+- **Should `Community 1` be split into smaller, more focused modules?**
+  _Cohesion score 0.07 - nodes in this community are weakly interconnected._
+- **Should `Community 2` be split into smaller, more focused modules?**
+  _Cohesion score 0.09 - nodes in this community are weakly interconnected._
