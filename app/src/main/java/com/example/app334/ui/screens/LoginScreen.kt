@@ -48,7 +48,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var activeSlide by remember { mutableStateOf(0) }
     var verificationJob by remember { mutableStateOf<Job?>(null) }
 
-    val appKey = ClientConfig.LOGGIN_APP_KEY.ifBlank { "J2T8R6YN" }
+    val appKey = ClientConfig.LOGGIN_APP_KEY
 
     // Auto rotate slide every 4 seconds
     LaunchedEffect(Unit) {
