@@ -16,11 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.app334.data.remote.WalletSyncService
 import com.example.app334.data.repository.AuthRepository
 import com.example.app334.ui.screens.HomeScreen
 import com.example.app334.ui.screens.LoginScreen
 import com.example.app334.ui.screens.SplashScreen
 import com.example.app334.ui.theme.App334Theme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +44,15 @@ class MainActivity : ComponentActivity() {
                 var isSplashFinished by remember { mutableStateOf(false) }
                 val session by AuthRepository.currentSession.collectAsState()
 
+                androidx.compose.runtime.LaunchedEffect(session.isLoggedIn) {
+                    if (session.isLoggedIn) {
+                        WalletSyncService.startLiveSync(lifecycleScope)
+                        WalletSyncService.syncBalance(session.userId)
+                    } else {
+                        WalletSyncService.stopLiveSync()
+                    }
+                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = Color(0xFF150529)
@@ -58,4 +70,18 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Immediately refresh server wallet balance when app returns to foreground
+        lifecycleScope.launch {
+            WalletSyncService.syncBalance()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        WalletSyncService.stopLiveSync()
+    }
 }
+

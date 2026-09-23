@@ -46,6 +46,10 @@ fun AddCashScreen(
     var inputAmount by remember { mutableStateOf("200") }
     val walletBalance by WalletLedger.walletBalance.collectAsState()
 
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        com.example.app334.data.remote.WalletSyncService.syncBalance()
+    }
+
     val allOffers = remember {
         listOf(
             OfferItem("200", "25"),

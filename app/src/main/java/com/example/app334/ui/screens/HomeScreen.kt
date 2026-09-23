@@ -76,6 +76,11 @@ fun HomeScreen(
     val walletBalance by WalletLedger.walletBalance.collectAsState()
     val userProfile by WalletLedger.userProfile.collectAsState()
 
+    // Sync wallet balance from server whenever user navigates tabs or returns from subscreen
+    LaunchedEffect(selectedTab, activeSubScreen) {
+        com.example.app334.data.remote.WalletSyncService.syncBalance(userProfile.userId)
+    }
+
     // System Back Navigation Handling
     BackHandler(enabled = activeSubScreen != null || selectedTab != NavItem.HOME) {
         if (activeSubScreen != null) {
@@ -171,7 +176,6 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxSize()
             .background(Color(0xFF15001F))
-            .windowInsetsPadding(WindowInsets.statusBars)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()

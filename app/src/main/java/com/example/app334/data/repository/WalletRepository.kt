@@ -18,4 +18,9 @@ object WalletRepository {
     fun requestWithdrawal(amountPaise: Long, upiId: String = "user@upi"): Boolean {
         return WalletLedger.requestWithdrawal(amountPaise, upiId).first
     }
+
+    suspend fun refreshBalance(userId: String? = null): Boolean {
+        return com.example.app334.data.remote.WalletSyncService.syncBalance(userId)
+    }
 }
+
