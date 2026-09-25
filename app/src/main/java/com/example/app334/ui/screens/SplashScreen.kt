@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app334.R
+import com.example.app334.data.repository.AuthRepository
+import com.example.app334.ui.components.AccountBannedDialog
 import com.example.app334.ui.theme.RubikFont
 import kotlinx.coroutines.delay
 
@@ -26,8 +28,21 @@ fun SplashScreen(
 ) {
     val scale = remember { Animatable(0.75f) }
     val alpha = remember { Animatable(0f) }
+    var isBannedState by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
+        val session = AuthRepository.currentSession.value
+        val banned = if (session.userId.isNotBlank()) {
+            AuthRepository.checkBanStatus(session.userId, session.phone)
+        } else {
+            session.isBanned
+        }
+
+        if (banned) {
+            isBannedState = true
+            return@LaunchedEffect
+        }
+
         scale.animateTo(
             targetValue = 1.0f,
             animationSpec = spring(
@@ -41,6 +56,12 @@ fun SplashScreen(
         )
         delay(1400)
         onSplashFinished()
+    }
+
+    if (isBannedState) {
+        AccountBannedDialog(onDismiss = {
+            // Re-check or stay on blocked screen
+        })
     }
 
     Box(
@@ -98,4 +119,5 @@ fun SplashScreen(
         )
     }
 }
+
 

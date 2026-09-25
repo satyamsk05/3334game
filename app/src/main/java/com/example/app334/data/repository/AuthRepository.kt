@@ -21,7 +21,8 @@ data class UserSession(
     val userId: String = "",
     val name: String = "",
     val phone: String = "",
-    val isLoggedIn: Boolean = false
+    val isLoggedIn: Boolean = false,
+    val isBanned: Boolean = false
 )
 
 object AuthRepository {
@@ -30,6 +31,7 @@ object AuthRepository {
     private const val KEY_NAME = "auth_name"
     private const val KEY_PHONE = "auth_phone"
     private const val KEY_IS_LOGGED_IN = "auth_is_logged_in"
+    private const val KEY_IS_BANNED = "auth_is_banned"
 
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(5, TimeUnit.SECONDS)
@@ -45,15 +47,16 @@ object AuthRepository {
         appContext = context.applicationContext
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val isLoggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+        val isBanned = prefs.getBoolean(KEY_IS_BANNED, false)
         if (isLoggedIn) {
             val userId = prefs.getString(KEY_USER_ID, "USR-101") ?: "USR-101"
             val name = prefs.getString(KEY_NAME, "Player") ?: "Player"
             val phone = prefs.getString(KEY_PHONE, "") ?: ""
-            _currentSession.value = UserSession(userId, name, phone, true)
+            _currentSession.value = UserSession(userId, name, phone, true, isBanned)
             WalletLedger.updateProfile(name = name, phone = phone, userId = userId)
             SessionManager.signIn(userId = userId, username = name, token = "SESSION-$userId")
         } else {
-            _currentSession.value = UserSession(isLoggedIn = false)
+            _currentSession.value = UserSession(isLoggedIn = false, isBanned = isBanned)
         }
     }
 
@@ -72,7 +75,35 @@ object AuthRepository {
         return null
     }
 
-    suspend fun login(phone: String, name: String, context: Context? = null) = withContext(Dispatchers.IO) {
+    suspend fun checkBanStatus(userId: String, phone: String = ""): Boolean = withContext(Dispatchers.IO) {
+        if (userId.isBlank() && phone.isBlank()) return@withContext false
+        try {
+            val url = "${ClientConfig.API_BASE_URL}/auth/status?userId=$userId&phone=$phone"
+            val request = Request.Builder().url(url).get().build()
+            val response = httpClient.newCall(request).execute()
+            if (response.isSuccessful) {
+                val resString = response.body?.string() ?: ""
+                val json = JSONObject(resString)
+                val data = json.optJSONObject("data")
+                val isBanned = data?.optBoolean("isBanned", false) ?: false
+                if (isBanned) {
+                    withContext(Dispatchers.Main) {
+                        _currentSession.value = _currentSession.value.copy(isBanned = true)
+                        appContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)?.edit()?.apply {
+                            putBoolean(KEY_IS_BANNED, true)
+                            apply()
+                        }
+                    }
+                }
+                return@withContext isBanned
+            }
+        } catch (e: Exception) {
+            Log.w("AuthRepository", "Failed to check ban status against server: ${e.message}")
+        }
+        return@withContext false
+    }
+
+    suspend fun login(phone: String, name: String, context: Context? = null): Result<UserSession> = withContext(Dispatchers.IO) {
         val cleanPhone = phone.trim()
         val targetContext = context ?: appContext
         val prefs = targetContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -98,8 +129,17 @@ object AuthRepository {
             val body = payload.toString().toRequestBody("application/json".toMediaTypeOrNull())
             val request = Request.Builder().url(url).post(body).build()
             val response = httpClient.newCall(request).execute()
+            val resString = response.body?.string() ?: ""
+
+            if (response.code == 403 || resString.contains("suspended") || resString.contains("banned")) {
+                withContext(Dispatchers.Main) {
+                    _currentSession.value = _currentSession.value.copy(isBanned = true)
+                    prefs?.edit()?.putBoolean(KEY_IS_BANNED, true)?.apply()
+                }
+                return@withContext Result.failure(Exception("ACCOUNT_BANNED"))
+            }
+
             if (response.isSuccessful) {
-                val resString = response.body?.string() ?: ""
                 val json = JSONObject(resString)
                 val data = json.optJSONObject("data")
                 val user = data?.optJSONObject("user")
@@ -119,13 +159,16 @@ object AuthRepository {
             Log.e("AuthRepository", "Server sync failed, using persistent offline fallback", e)
         }
 
+        val session = UserSession(
+            userId = resolvedUserId,
+            name = resolvedName,
+            phone = cleanPhone,
+            isLoggedIn = true,
+            isBanned = false
+        )
+
         withContext(Dispatchers.Main) {
-            _currentSession.value = UserSession(
-                userId = resolvedUserId,
-                name = resolvedName,
-                phone = cleanPhone,
-                isLoggedIn = true
-            )
+            _currentSession.value = session
 
             // Save active session + persist user identity map
             prefs?.edit()?.apply {
@@ -133,6 +176,7 @@ object AuthRepository {
                 putString(KEY_NAME, resolvedName)
                 putString(KEY_PHONE, cleanPhone)
                 putBoolean(KEY_IS_LOGGED_IN, true)
+                putBoolean(KEY_IS_BANNED, false)
                 // Cache identity for this phone permanently
                 putString("user_phone_$cleanPhone", cleanPhone)
                 putString("user_id_$cleanPhone", resolvedUserId)
@@ -144,6 +188,7 @@ object AuthRepository {
             WalletLedger.updateProfile(name = resolvedName, phone = cleanPhone, userId = resolvedUserId)
             SessionManager.signIn(userId = resolvedUserId, username = resolvedName, token = authToken)
         }
+        return@withContext Result.success(session)
     }
 
     fun logout(context: Context? = null) {

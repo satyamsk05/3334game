@@ -64,7 +64,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.Black
                 ) {
-                    if (!isSplashFinished) {
+                    if (session.isBanned) {
+                        com.example.app334.ui.components.AccountBannedDialog(onDismiss = {})
+                    } else if (!isSplashFinished) {
                         SplashScreen(onSplashFinished = { isSplashFinished = true })
                     } else if (!session.isLoggedIn) {
                         LoginScreen(onLoginSuccess = {

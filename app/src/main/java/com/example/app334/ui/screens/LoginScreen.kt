@@ -47,6 +47,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var showNameSetup by remember { mutableStateOf(false) }
     var showPhoneSheet by remember { mutableStateOf(false) }
     var phoneInput by remember { mutableStateOf("") }
+    var showBannedModal by remember { mutableStateOf(false) }
     var firstNameInput by remember { mutableStateOf("") }
     var lastNameInput by remember { mutableStateOf("") }
     var verifiedPhoneHolder by remember { mutableStateOf("") }
@@ -58,10 +59,17 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     fun completeLogin(phone: String, name: String) {
         isLoading = true
         scope.launch {
-            AuthRepository.login(phone = phone, name = name.ifBlank { "Player" }, context = context)
-            delay(400)
+            val result = AuthRepository.login(phone = phone, name = name.ifBlank { "Player" }, context = context)
             isLoading = false
-            onLoginSuccess()
+            result.onSuccess {
+                onLoginSuccess()
+            }.onFailure { error ->
+                if (error.message?.contains("ACCOUNT_BANNED") == true) {
+                    showBannedModal = true
+                } else {
+                    statusMessage = error.message ?: "Login failed. Please try again."
+                }
+            }
         }
     }
 
@@ -126,6 +134,12 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             .fillMaxSize()
             .background(Color.Black)
     ) {
+        if (showBannedModal) {
+            com.example.app334.ui.components.AccountBannedDialog(onDismiss = {
+                showBannedModal = false
+            })
+        }
+
         if (!showNameSetup) {
             // Screen 2: Login Screen (Matching Screenshot 2 in Pure Black)
             Column(
