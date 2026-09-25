@@ -33,6 +33,13 @@ class MainActivity : ComponentActivity() {
         // Initialize persistent user auth session
         AuthRepository.init(this)
 
+        // Initialize Rive runtime
+        try {
+            app.rive.runtime.kotlin.core.Rive.init(this)
+        } catch (e: Exception) {
+            android.util.Log.e("MainActivity", "Rive init error: ${e.message}")
+        }
+
         // Enable true immersive full screen mode (hides status bar and bottom navigation bar)
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.systemBarsBehavior =
@@ -55,7 +62,7 @@ class MainActivity : ComponentActivity() {
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFF150529)
+                    color = Color.Black
                 ) {
                     if (!isSplashFinished) {
                         SplashScreen(onSplashFinished = { isSplashFinished = true })

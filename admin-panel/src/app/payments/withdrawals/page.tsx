@@ -11,7 +11,7 @@ interface WithdrawalRecord {
   userId: string;
   amountRupees: number;
   upiId: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: 'PENDING' | 'PROCESSING' | 'APPROVED' | 'REJECTED';
   createdAt: number;
 }
 
@@ -20,7 +20,7 @@ export default function WithdrawalsQueuePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
+  const [filter, setFilter] = useState<'PENDING' | 'PROCESSING' | 'APPROVED' | 'REJECTED'>('PENDING');
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   const fetchWithdrawals = async () => {
@@ -44,6 +44,25 @@ export default function WithdrawalsQueuePage() {
   useEffect(() => {
     fetchWithdrawals();
   }, []);
+
+  const handleProcess = async (withdrawalId: string) => {
+    if (!window.confirm(`Mark withdrawal (${withdrawalId}) as PROCESSING?`)) {
+      return;
+    }
+    try {
+      setProcessingId(withdrawalId);
+      const res = await paymentService.processWithdrawal(withdrawalId);
+      if (res.success) {
+        await fetchWithdrawals();
+      } else {
+        alert(res.message || 'Process update failed');
+      }
+    } catch (err: any) {
+      alert(`Process update failed: ${err.message}`);
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   const handleApprove = async (withdrawalId: string, amount: number, upiId: string) => {
     if (!window.confirm(`Are you sure you want to APPROVE withdrawal of ₹${amount.toFixed(2)} to ${upiId} (${withdrawalId})?`)) {
@@ -102,36 +121,58 @@ export default function WithdrawalsQueuePage() {
         </div>
 
         {/* Filter Segmented Control */}
-        <div className="flex items-center rounded-md border border-border-default bg-surface-raised p-0.5 text-xs font-medium text-text-secondary">
+        <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-border-default bg-surface-raised p-1 text-xs font-medium text-text-secondary">
           <button
             onClick={() => setFilter('PENDING')}
-            className={`rounded px-2.5 py-1 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
               filter === 'PENDING'
-                ? 'text-status-warning bg-status-warning/10 font-semibold'
-                : 'hover:text-text-primary'
+                ? 'text-status-warning bg-status-warning/15 font-semibold shadow-sm'
+                : 'hover:text-text-primary hover:bg-surface-subtle'
             }`}
           >
-            Pending ({withdrawals.filter((w) => w.status === 'PENDING').length})
+            <span>🟡 New Requests</span>
+            <span className="rounded-full bg-status-warning/20 px-1.5 py-0.2 text-[10px] font-bold">
+              {withdrawals.filter((w) => w.status === 'PENDING').length}
+            </span>
+          </button>
+          <button
+            onClick={() => setFilter('PROCESSING')}
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
+              filter === 'PROCESSING'
+                ? 'text-sky-400 bg-sky-500/15 font-semibold shadow-sm'
+                : 'hover:text-text-primary hover:bg-surface-subtle'
+            }`}
+          >
+            <span>🔵 In Processing</span>
+            <span className="rounded-full bg-sky-500/20 px-1.5 py-0.2 text-[10px] font-bold">
+              {withdrawals.filter((w) => w.status === 'PROCESSING').length}
+            </span>
           </button>
           <button
             onClick={() => setFilter('APPROVED')}
-            className={`rounded px-2.5 py-1 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
               filter === 'APPROVED'
-                ? 'text-status-positive bg-status-positive/10 font-semibold'
-                : 'hover:text-text-primary'
+                ? 'text-status-positive bg-status-positive/15 font-semibold shadow-sm'
+                : 'hover:text-text-primary hover:bg-surface-subtle'
             }`}
           >
-            Approved
+            <span>🟢 Completed</span>
+            <span className="rounded-full bg-status-positive/20 px-1.5 py-0.2 text-[10px] font-bold">
+              {withdrawals.filter((w) => w.status === 'APPROVED').length}
+            </span>
           </button>
           <button
             onClick={() => setFilter('REJECTED')}
-            className={`rounded px-2.5 py-1 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
               filter === 'REJECTED'
-                ? 'text-status-negative bg-status-negative/10 font-semibold'
-                : 'hover:text-text-primary'
+                ? 'text-status-negative bg-status-negative/15 font-semibold shadow-sm'
+                : 'hover:text-text-primary hover:bg-surface-subtle'
             }`}
           >
-            Rejected
+            <span>🔴 Rejected</span>
+            <span className="rounded-full bg-status-negative/20 px-1.5 py-0.2 text-[10px] font-bold">
+              {withdrawals.filter((w) => w.status === 'REJECTED').length}
+            </span>
           </button>
         </div>
       </div>
@@ -219,7 +260,7 @@ export default function WithdrawalsQueuePage() {
                       <td className="px-4 py-3">
                         <Badge
                           variant={
-                            w.status === 'PENDING' ? 'warning' : w.status === 'APPROVED' ? 'positive' : 'negative'
+                            w.status === 'PENDING' ? 'warning' : w.status === 'PROCESSING' ? 'neutral' : w.status === 'APPROVED' ? 'positive' : 'negative'
                           }
                         >
                           {w.status === 'APPROVED' ? 'PAID OUT' : w.status === 'REJECTED' ? 'REFUNDED' : w.status}
@@ -227,8 +268,20 @@ export default function WithdrawalsQueuePage() {
                       </td>
 
                       <td className="px-4 py-3 text-right">
-                        {w.status === 'PENDING' && (
+                        {(w.status === 'PENDING' || w.status === 'PROCESSING') && (
                           <div className="flex items-center justify-end gap-2">
+                            {w.status === 'PENDING' && (
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                disabled={processingId === w.withdrawalId}
+                                isLoading={processingId === w.withdrawalId}
+                                onClick={() => handleProcess(w.withdrawalId)}
+                              >
+                                <Loader2 className="h-3 w-3 text-sky-400" />
+                                <span>Process</span>
+                              </Button>
+                            )}
                             <Button
                               variant="primary"
                               size="sm"

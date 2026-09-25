@@ -306,12 +306,8 @@ fun HomeScreen(
                         )
                     }
                     null -> {
-                        Crossfade(
-                            targetState = selectedTab,
-                            label = "TabCrossfade"
-                        ) { tab ->
-                            when (tab) {
-                                NavItem.HOME -> {
+                        when (selectedTab) {
+                            NavItem.HOME -> {
                                     Column(
                                         modifier = Modifier.fillMaxSize()
                                     ) {
@@ -327,7 +323,7 @@ fun HomeScreen(
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .fillMaxWidth(),
-                                            contentPadding = PaddingValues(top = Dimens.spacingSm, bottom = Dimens.spacingLg),
+                                            contentPadding = PaddingValues(top = 20.dp, bottom = Dimens.spacingLg),
                                             verticalArrangement = Arrangement.spacedBy(Dimens.sectionSpacing)
                                         ) {
                                             // 4. Hero Banner (HorizontalPager carousel with 3 slides & dot indicators)
@@ -441,14 +437,10 @@ fun HomeScreen(
                         }
                     }
                 }
-            }
 
-            // Compliance Strip and Bottom Navigation Bar
+            // Bottom Navigation Bar
             if (activeSubScreen == null) {
-                // 7. Compliance strip above bottom navigation
-                ComplianceBar()
-
-                // 8. Custom Bottom Navigation Bar
+                // Custom Bottom Navigation Bar
                 CustomBottomNavBar(
                     selectedTab = selectedTab,
                     onTabSelected = { tab ->

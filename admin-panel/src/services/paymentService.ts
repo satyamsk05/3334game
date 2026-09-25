@@ -17,6 +17,10 @@ export const paymentService = {
     const res = await api.get('/payments/withdrawals');
     return res.data;
   },
+  processWithdrawal: async (withdrawalId: string) => {
+    const res = await api.post('/payments/withdraw/process', { withdrawalId });
+    return res.data;
+  },
   approveWithdrawal: async (withdrawalId: string) => {
     const res = await api.post('/payments/withdraw/approve', { withdrawalId });
     return res.data;

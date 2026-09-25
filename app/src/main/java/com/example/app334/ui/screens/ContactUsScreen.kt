@@ -29,7 +29,7 @@ fun ContactUsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF15001F))
+            .background(Color.Black)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)

@@ -35,6 +35,7 @@ enum class TransactionType {
 enum class TransactionStatus {
     SUCCESS,
     PENDING,
+    PROCESSING,
     REJECTED
 }
 
@@ -79,12 +80,25 @@ object WalletLedger {
     val transactions: StateFlow<List<WalletTransaction>> = _transactions.asStateFlow()
 
     init {
-        // Initial transaction records empty
         _transactions.value = emptyList()
     }
 
     fun rupeesToPaise(rupees: Double): Long = Math.round(rupees * 100)
     fun formatPaiseToRupees(paise: Long): String = String.format(Locale.getDefault(), "₹%.2f", paise / 100.0)
+
+    @Synchronized
+    fun setTransactions(newTransactions: List<WalletTransaction>) {
+        val existing = _transactions.value
+        val combined = (newTransactions + existing)
+            .distinctBy { it.id.ifEmpty { it.referenceId } }
+            .sortedByDescending { it.timestamp }
+        _transactions.value = combined
+    }
+
+    @Synchronized
+    fun addTransaction(tx: WalletTransaction) {
+        _transactions.update { listOf(tx) + it }
+    }
 
     @Synchronized
     fun placeBet(amountPaise: Long): BetDebitBreakdown {
@@ -239,7 +253,7 @@ object WalletLedger {
     }
 
     @Synchronized
-    fun requestWithdrawal(amountPaise: Long, upiId: String): Pair<Boolean, String> {
+    fun requestWithdrawal(amountPaise: Long, upiId: String, referenceId: String? = null): Pair<Boolean, String> {
         val current = _walletBalance.value
         val minPaise = 2500L
         val maxPaise = 500000L
@@ -257,17 +271,48 @@ object WalletLedger {
         val newBalance = current.copy(winningPaise = current.winningPaise - amountPaise)
         _walletBalance.value = newBalance
 
+        val txId = referenceId ?: "WD-${System.currentTimeMillis().toString().takeLast(6)}"
         val tx = WalletTransaction(
             userId = _userProfile.value.userId,
             type = TransactionType.WITHDRAWAL,
             amountPaise = amountPaise,
             balanceAfterPaise = newBalance.totalPaise,
-            status = TransactionStatus.SUCCESS,
-            referenceId = "WD-${System.currentTimeMillis().toString().takeLast(6)}",
+            status = TransactionStatus.PENDING,
+            referenceId = txId,
             description = "Withdrawal to UPI: $upiId"
         )
         _transactions.update { listOf(tx) + it }
-        return Pair(true, "Withdrawal of ${formatPaiseToRupees(amountPaise)} processed successfully!")
+        return Pair(true, "Withdrawal request of ${formatPaiseToRupees(amountPaise)} submitted. Awaiting approval.")
+    }
+
+    @Synchronized
+    fun updateWithdrawalStatus(referenceId: String, newStatus: TransactionStatus) {
+        _transactions.update { txns ->
+            txns.map { tx ->
+                if (tx.referenceId == referenceId || tx.id == referenceId) {
+                    tx.copy(status = newStatus)
+                } else {
+                    tx
+                }
+            }
+        }
+    }
+
+    @Synchronized
+    fun refundWithdrawal(referenceId: String, amountPaise: Long) {
+        val current = _walletBalance.value
+        val newBalance = current.copy(winningPaise = current.winningPaise + amountPaise)
+        _walletBalance.value = newBalance
+
+        _transactions.update { txns ->
+            txns.map { tx ->
+                if (tx.referenceId == referenceId || tx.id == referenceId) {
+                    tx.copy(status = TransactionStatus.REJECTED, balanceAfterPaise = newBalance.totalPaise)
+                } else {
+                    tx
+                }
+            }
+        }
     }
 
     fun updateProfile(name: String, phone: String, userId: String? = null) {

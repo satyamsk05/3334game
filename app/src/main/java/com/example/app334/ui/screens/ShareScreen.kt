@@ -68,7 +68,7 @@ fun ShareScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0F0417))
+            .background(Color.Black)
     ) {
         Column(
             modifier = Modifier

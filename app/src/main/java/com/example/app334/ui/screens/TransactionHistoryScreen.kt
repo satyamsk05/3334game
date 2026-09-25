@@ -30,7 +30,7 @@ import java.util.Date
 import java.util.Locale
 
 enum class TransactionFilterCategory {
-    ALL, DEPOSITS, WITHDRAWALS, WINNINGS
+    ALL, DEPOSITS, WITHDRAWALS, BETS, WINNINGS
 }
 
 @Composable
@@ -42,6 +42,10 @@ fun TransactionHistoryScreen(
         onBackClick()
     }
 
+    LaunchedEffect(Unit) {
+        com.example.app334.data.remote.WalletSyncService.fetchTransactions()
+    }
+
     var selectedFilter by remember { mutableStateOf(TransactionFilterCategory.ALL) }
     val transactionsState by WalletLedger.transactions.collectAsState()
 
@@ -50,14 +54,15 @@ fun TransactionHistoryScreen(
             TransactionFilterCategory.ALL -> transactionsState
             TransactionFilterCategory.DEPOSITS -> transactionsState.filter { it.type == TransactionType.DEPOSIT }
             TransactionFilterCategory.WITHDRAWALS -> transactionsState.filter { it.type == TransactionType.WITHDRAWAL }
-            TransactionFilterCategory.WINNINGS -> transactionsState.filter { it.type == TransactionType.WIN_PAYOUT }
+            TransactionFilterCategory.BETS -> transactionsState.filter { it.type == TransactionType.BET_PLACED }
+            TransactionFilterCategory.WINNINGS -> transactionsState.filter { it.type == TransactionType.WIN_PAYOUT || it.type == TransactionType.BET_REFUND }
         }
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF15001F))
+            .background(Color.Black)
             .padding(horizontal = 16.dp)
     ) {
         // Top Header Row with Back Button
@@ -71,7 +76,7 @@ fun TransactionHistoryScreen(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF240E38))
+                    .background(Color(0xFF1F1F1F))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -105,14 +110,15 @@ fun TransactionHistoryScreen(
                     TransactionFilterCategory.ALL -> "All"
                     TransactionFilterCategory.DEPOSITS -> "Deposits"
                     TransactionFilterCategory.WITHDRAWALS -> "Withdrawals"
+                    TransactionFilterCategory.BETS -> "Bets"
                     TransactionFilterCategory.WINNINGS -> "Winnings"
                 }
 
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(if (isSelected) Color(0xFF7C3AED) else Color(0xFF240E38))
-                        .border(1.dp, if (isSelected) Color(0xFFA78BFA) else Color(0xFF4C206D), RoundedCornerShape(20.dp))
+                        .background(if (isSelected) Color(0xFF10B981) else Color(0xFF1C1C1C))
+                        .border(1.dp, if (isSelected) Color(0xFF34D399) else Color(0xFF2E2E2E), RoundedCornerShape(20.dp))
                         .clickable { selectedFilter = filter }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
@@ -136,12 +142,24 @@ fun TransactionHistoryScreen(
                     .weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "No transactions found",
-                    fontSize = 15.sp,
-                    fontFamily = RubikFont,
-                    color = Color(0xFF9CA3AF)
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "No transactions found",
+                        fontSize = 16.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF9CA3AF)
+                    )
+                    Text(
+                        text = "Your deposits, bets, winnings and withdrawals will appear here.",
+                        fontSize = 12.sp,
+                        fontFamily = RubikFont,
+                        color = Color(0xFF6B7280)
+                    )
+                }
             }
         } else {
             LazyColumn(
@@ -164,14 +182,23 @@ private fun TransactionCardItem(txn: WalletTransaction) {
         sdf.format(Date(txn.timestamp))
     }
 
-    val isPositive = txn.type != TransactionType.WITHDRAWAL && txn.type != TransactionType.BET_PLACED
+    val isPositive = txn.type == TransactionType.DEPOSIT || txn.type == TransactionType.WIN_PAYOUT || txn.type == TransactionType.BET_REFUND
+    val amountPrefix = if (isPositive) "+ " else "- "
+
+    val typeIcon = when (txn.type) {
+        TransactionType.DEPOSIT -> "💰"
+        TransactionType.WITHDRAWAL -> "🏦"
+        TransactionType.BET_PLACED -> "🎲"
+        TransactionType.WIN_PAYOUT -> "🏆"
+        TransactionType.BET_REFUND -> "↩️"
+    }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(Color(0xFF1E0A30))
-            .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(14.dp))
+            .background(Color(0xFF141414))
+            .border(1.dp, Color(0xFF262626), RoundedCornerShape(14.dp))
             .padding(14.dp)
     ) {
         Row(
@@ -179,41 +206,55 @@ private fun TransactionCardItem(txn: WalletTransaction) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = txn.description,
-                    fontSize = 15.sp,
-                    fontFamily = RubikFont,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(if (isPositive) Color(0xFF064E3B) else Color(0xFF450A0A)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = typeIcon, fontSize = 18.sp)
+                }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Column {
+                    Text(
+                        text = txn.description,
+                        fontSize = 14.5.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
 
-                Text(
-                    text = dateStr,
-                    fontSize = 12.sp,
-                    fontFamily = RubikFont,
-                    color = Color(0xFF9CA3AF)
-                )
+                    Spacer(modifier = Modifier.height(3.dp))
 
-                Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = dateStr,
+                        fontSize = 11.5.sp,
+                        fontFamily = RubikFont,
+                        color = Color(0xFF9CA3AF)
+                    )
 
-                Text(
-                    text = "Ref: ${txn.referenceId}",
-                    fontSize = 11.sp,
-                    fontFamily = RubikFont,
-                    color = Color(0xFF6B7280)
-                )
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    Text(
+                        text = "Ref: ${txn.referenceId}",
+                        fontSize = 10.5.sp,
+                        fontFamily = RubikFont,
+                        color = Color(0xFF6B7280)
+                    )
+                }
             }
 
             Column(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = txn.amountRupeesFormatted,
+                    text = "$amountPrefix${txn.amountRupeesFormatted}",
                     fontSize = 16.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.ExtraBold,
@@ -225,11 +266,13 @@ private fun TransactionCardItem(txn: WalletTransaction) {
                 val statusBg = when (txn.status.name) {
                     "SUCCESS" -> Color(0xFF065F46)
                     "PENDING" -> Color(0xFF92400E)
+                    "PROCESSING" -> Color(0xFF0C4A6E)
                     else -> Color(0xFF991B1B)
                 }
                 val statusTxt = when (txn.status.name) {
                     "SUCCESS" -> Color(0xFF34D399)
                     "PENDING" -> Color(0xFFFBBF24)
+                    "PROCESSING" -> Color(0xFF38BDF8)
                     else -> Color(0xFFFCA5A5)
                 }
 

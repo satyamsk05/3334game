@@ -39,7 +39,7 @@ fun WalletScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0F0417))
+            .background(Color.Black)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(20.dp)

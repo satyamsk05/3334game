@@ -44,7 +44,7 @@ fun ReportedIssuesScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF15001F))
+            .background(Color.Black)
             .padding(horizontal = 16.dp)
     ) {
         // Top Header

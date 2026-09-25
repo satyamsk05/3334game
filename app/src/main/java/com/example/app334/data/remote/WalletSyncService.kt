@@ -5,6 +5,8 @@ import com.example.app334.core.config.ClientConfig
 import com.example.app334.core.session.SessionManager
 import com.example.app334.game.ringoffuture.backend.WalletLedger
 import kotlinx.coroutines.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -67,10 +69,91 @@ object WalletSyncService {
                 WalletLedger.syncBalance(dep, win, bon)
             }
             Log.d(TAG, "Wallet synced live from server: dep=₹${dep/100.0}, win=₹${win/100.0}, bon=₹${bon/100.0}")
+            
+            // Also fetch transactions
+            fetchTransactions(targetUserId)
             return@withContext true
         } catch (e: Exception) {
             Log.e(TAG, "Failed to sync wallet with server: ${e.message}")
             return@withContext false
+        }
+    }
+
+    /**
+     * Fetches user's transaction history from the backend server.
+     */
+    suspend fun fetchTransactions(userId: String? = null): List<com.example.app334.game.ringoffuture.backend.WalletTransaction> = withContext(Dispatchers.IO) {
+        if (!ClientConfig.IS_REMOTE_SERVER_ENABLED) return@withContext emptyList()
+
+        val targetUserId = userId
+            ?: SessionManager.currentUserId()
+            ?: WalletLedger.userProfile.value.userId
+
+        if (targetUserId.isBlank()) return@withContext emptyList()
+
+        try {
+            val url = "${ClientConfig.API_BASE_URL}/wallet/transactions?userId=${targetUserId}"
+            val requestBuilder = Request.Builder().url(url).get()
+
+            val token = SessionManager.authToken()
+            if (!token.isNullOrBlank()) {
+                requestBuilder.header("Authorization", "Bearer $token")
+            }
+
+            val response = httpClient.newCall(requestBuilder.build()).execute()
+            if (!response.isSuccessful) {
+                Log.w(TAG, "Transactions fetch returned HTTP ${response.code}")
+                return@withContext emptyList()
+            }
+
+            val body = response.body?.string() ?: return@withContext emptyList()
+            val json = JSONObject(body)
+            if (!json.optBoolean("success", false)) return@withContext emptyList()
+
+            val dataArray = json.optJSONArray("data") ?: return@withContext emptyList()
+            val list = mutableListOf<com.example.app334.game.ringoffuture.backend.WalletTransaction>()
+
+            for (i in 0 until dataArray.length()) {
+                val item = dataArray.getJSONObject(i)
+                val typeStr = item.optString("type", "DEPOSIT").uppercase()
+                val type = when {
+                    typeStr.contains("DEP") -> com.example.app334.game.ringoffuture.backend.TransactionType.DEPOSIT
+                    typeStr.contains("WITHDRAW") -> com.example.app334.game.ringoffuture.backend.TransactionType.WITHDRAWAL
+                    typeStr.contains("BET") || typeStr.contains("DEBIT") -> com.example.app334.game.ringoffuture.backend.TransactionType.BET_PLACED
+                    typeStr.contains("WIN") || typeStr.contains("PAYOUT") || typeStr.contains("CREDIT") -> com.example.app334.game.ringoffuture.backend.TransactionType.WIN_PAYOUT
+                    typeStr.contains("REFUND") -> com.example.app334.game.ringoffuture.backend.TransactionType.BET_REFUND
+                    else -> com.example.app334.game.ringoffuture.backend.TransactionType.DEPOSIT
+                }
+
+                val statusStr = item.optString("status", "SUCCESS").uppercase()
+                val status = when {
+                    statusStr == "SUCCESS" || statusStr == "COMPLETED" -> com.example.app334.game.ringoffuture.backend.TransactionStatus.SUCCESS
+                    statusStr == "PENDING" -> com.example.app334.game.ringoffuture.backend.TransactionStatus.PENDING
+                    statusStr == "PROCESSING" -> com.example.app334.game.ringoffuture.backend.TransactionStatus.PROCESSING
+                    else -> com.example.app334.game.ringoffuture.backend.TransactionStatus.REJECTED
+                }
+
+                val tx = com.example.app334.game.ringoffuture.backend.WalletTransaction(
+                    id = item.optString("id", "TX-$i"),
+                    userId = item.optString("userId", targetUserId),
+                    type = type,
+                    amountPaise = item.optLong("amountPaise", 0L),
+                    balanceAfterPaise = item.optLong("balanceAfterPaise", 0L),
+                    status = status,
+                    referenceId = item.optString("referenceId", item.optString("id", "")),
+                    description = item.optString("description", "$typeStr Transaction"),
+                    timestamp = item.optLong("timestamp", System.currentTimeMillis())
+                )
+                list.add(tx)
+            }
+
+            withContext(Dispatchers.Main) {
+                WalletLedger.setTransactions(list)
+            }
+            return@withContext list
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to fetch transactions from server: ${e.message}")
+            return@withContext emptyList()
         }
     }
 
@@ -89,6 +172,69 @@ object WalletSyncService {
                 }
                 delay(intervalMs)
             }
+        }
+    }
+
+    /**
+     * Sends withdrawal request to backend server.
+     */
+    suspend fun requestWithdrawal(amountRupees: Double, upiId: String): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        val targetUserId = SessionManager.currentUserId()
+            ?: WalletLedger.userProfile.value.userId
+
+        if (targetUserId.isBlank()) return@withContext Pair(false, "User not authenticated")
+
+        if (!ClientConfig.IS_REMOTE_SERVER_ENABLED) {
+            // Local fallback
+            val paise = WalletLedger.rupeesToPaise(amountRupees)
+            return@withContext WalletLedger.requestWithdrawal(paise, upiId)
+        }
+
+        try {
+            val url = "${ClientConfig.API_BASE_URL}/payments/withdraw/request"
+            val payload = JSONObject().apply {
+                put("amountRupees", amountRupees)
+                put("upiId", upiId)
+            }
+            val requestBody = payload.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+            val requestBuilder = Request.Builder()
+                .url(url)
+                .post(requestBody)
+
+            val token = SessionManager.authToken()
+            if (!token.isNullOrBlank()) {
+                requestBuilder.header("Authorization", "Bearer $token")
+            }
+
+            val response = httpClient.newCall(requestBuilder.build()).execute()
+            val body = response.body?.string() ?: ""
+            val json = if (body.isNotBlank()) JSONObject(body) else JSONObject()
+
+            val success = json.optBoolean("success", response.isSuccessful)
+            val message = json.optString("message", if (success) "Withdrawal request submitted" else "Request failed")
+
+            if (success) {
+                val dataObj = json.optJSONObject("data")
+                val wdId = dataObj?.optString("withdrawalId")
+                val paise = WalletLedger.rupeesToPaise(amountRupees)
+                withContext(Dispatchers.Main) {
+                    WalletLedger.requestWithdrawal(paise, upiId, wdId)
+                }
+                // Refresh balance from server to stay perfectly in sync
+                syncBalance(targetUserId)
+                return@withContext Pair(true, message)
+            } else {
+                return@withContext Pair(false, message)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Withdrawal network request error: ${e.message}")
+            // Fallback to local ledger so user isn't hard-blocked if offline demo
+            val paise = WalletLedger.rupeesToPaise(amountRupees)
+            val localRes = withContext(Dispatchers.Main) {
+                WalletLedger.requestWithdrawal(paise, upiId)
+            }
+            return@withContext localRes
         }
     }
 

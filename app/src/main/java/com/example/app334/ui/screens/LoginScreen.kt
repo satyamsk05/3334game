@@ -3,72 +3,85 @@ package com.example.app334.ui.screens
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Canvas
+import androidx.compose.animation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.app334.core.config.ClientConfig
+import com.example.app334.R
+import com.example.app334.data.remote.LogginAuthService
 import com.example.app334.data.repository.AuthRepository
+import com.example.app334.ui.theme.RubikFont
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-import com.example.app334.data.remote.LogginAuthService
-import kotlinx.coroutines.Job
 
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+    var showNameSetup by remember { mutableStateOf(false) }
     var showPhoneSheet by remember { mutableStateOf(false) }
     var phoneInput by remember { mutableStateOf("") }
+    var firstNameInput by remember { mutableStateOf("") }
+    var lastNameInput by remember { mutableStateOf("") }
+    var verifiedPhoneHolder by remember { mutableStateOf("") }
+
     var isLoading by remember { mutableStateOf(false) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
-    var activeSlide by remember { mutableStateOf(0) }
     var verificationJob by remember { mutableStateOf<Job?>(null) }
-
-    // Auto rotate slide every 4 seconds
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(4000)
-            activeSlide = (activeSlide + 1) % 3
-        }
-    }
 
     fun completeLogin(phone: String, name: String) {
         isLoading = true
         scope.launch {
-            AuthRepository.login(phone = phone, name = name, context = context)
+            AuthRepository.login(phone = phone, name = name.ifBlank { "Player" }, context = context)
             delay(400)
             isLoading = false
             onLoginSuccess()
         }
     }
 
+    fun processPhoneForLogin(phone: String) {
+        val cleanPhone = phone.trim()
+        val existing = AuthRepository.getSavedUserForPhone(cleanPhone, context)
+        if (existing != null && existing.second.isNotBlank()) {
+            // Returning user -> instantly log in with exact same identity & balance
+            completeLogin(cleanPhone, existing.second)
+        } else {
+            // New user -> ask for name on Screen 3
+            verifiedPhoneHolder = cleanPhone
+            showPhoneSheet = false
+            showNameSetup = true
+        }
+    }
+
     fun handleWhatsAppLogin() {
         isLoading = true
-        statusMessage = "Connecting to server..."
+        statusMessage = "Connecting to WhatsApp..."
 
         verificationJob?.cancel()
         verificationJob = scope.launch {
@@ -91,15 +104,16 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
 
                 val result = LogginAuthService.waitForVerification(session.token)
                 result.onSuccess { verifiedPhone ->
-                    statusMessage = "Verified! Logging in..."
-                    completeLogin(verifiedPhone, "WhatsApp User")
+                    statusMessage = "Verified!"
+                    isLoading = false
+                    statusMessage = null
+                    processPhoneForLogin(verifiedPhone)
                 }.onFailure {
                     isLoading = false
                     statusMessage = null
                     showPhoneSheet = true
                 }
             } catch (e: Exception) {
-                // If WhatsApp is not installed on device/emulator, fallback to phone prompt
                 isLoading = false
                 statusMessage = null
                 showPhoneSheet = true
@@ -110,353 +124,447 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.radialGradient(
-                    colors = listOf(
-                        Color(0xFF330B5C),
-                        Color(0xFF1B0533),
-                        Color(0xFF0C0217)
-                    ),
-                    center = Offset(700f, 200f),
-                    radius = 1200f
-                )
-            )
+            .background(Color.Black)
     ) {
-        // Main Container matching the screenshot layout
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 28.dp, vertical = 32.dp),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.Start
-        ) {
-
-            // Hero Typography Section matching screenshot
+        if (!showNameSetup) {
+            // Screen 2: Login Screen (Matching Screenshot 2 in Pure Black)
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                when (activeSlide) {
-                    0 -> {
-                        Text(
-                            text = "Play",
-                            color = Color.White,
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-1).sp
-                        )
-                        Text(
-                            text = "Instantly",
-                            color = Color(0xFFA270F5),
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-1).sp
-                        )
-                        Text(
-                            text = "Win Bigger",
-                            color = Color.White,
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-1).sp
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "Fast. Secure. More Fun.",
-                            color = Color(0xFFC4B5D6),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    1 -> {
-                        Text(
-                            text = "Ring of",
-                            color = Color.White,
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-1).sp
-                        )
-                        Text(
-                            text = "Future",
-                            color = Color(0xFFA270F5),
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-1).sp
-                        )
-                        Text(
-                            text = "Multipliers",
-                            color = Color.White,
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-1).sp
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "Real-time fair RNG game engine.",
-                            color = Color(0xFFC4B5D6),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    else -> {
-                        Text(
-                            text = "Instant",
-                            color = Color.White,
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-1).sp
-                        )
-                        Text(
-                            text = "Withdrawals",
-                            color = Color(0xFFA270F5),
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-1).sp
-                        )
-                        Text(
-                            text = "Direct UPI",
-                            color = Color.White,
-                            fontSize = 44.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-1).sp
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "Double-entry verified wallet ledger.",
-                            color = Color(0xFFC4B5D6),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // Continue with WhatsApp Black Pill Button
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .clip(RoundedCornerShape(32.dp))
-                    .background(Color.Black)
-                    .border(1.dp, Color(0xFF2A1C3E), RoundedCornerShape(32.dp))
-                    .clickable(enabled = !isLoading) {
-                        handleWhatsAppLogin()
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(22.dp),
-                        color = Color(0xFFA270F5),
-                        strokeWidth = 2.5.dp
-                    )
-                } else {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "Continue with WhatsApp",
-                            color = Color.White,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        // Clean White WhatsApp Chat Bubble Icon
-                        WhatsAppIcon(modifier = Modifier.size(20.dp))
-                    }
-                }
-            }
-
-            if (isLoading && statusMessage != null) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = statusMessage ?: "",
-                        color = Color(0xFFA270F5),
-                        fontSize = 12.sp,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = "Cancel",
-                        color = Color(0xFFC4B5D6),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.clickable {
-                            verificationJob?.cancel()
-                            isLoading = false
-                            statusMessage = null
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Subtle fallback text for phone number entry
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showPhoneSheet = true },
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Or continue with phone number",
-                    color = Color(0xFF8E7AAB),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Bottom 3 Carousel Indicators matching screenshot
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                for (index in 0 until 3) {
-                    if (index == activeSlide) {
-                        Box(
-                            modifier = Modifier
-                                .width(22.dp)
-                                .height(4.dp)
-                                .clip(RoundedCornerShape(2.dp))
-                                .background(Color(0xFFA270F5))
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .size(5.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFF4A3563))
-                        )
-                    }
-                    if (index < 2) Spacer(modifier = Modifier.width(6.dp))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        // Quick Direct Phone Login Modal Sheet
-        AnimatedVisibility(
-            visible = showPhoneSheet,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.8f))
-                    .clickable { showPhoneSheet = false },
-                contentAlignment = Alignment.Center
+                    .padding(horizontal = 20.dp, vertical = 24.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
+                // Top Half: Illustrated Hero Card with Floating Status Pill
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0xFF1B0730))
-                        .border(1.dp, Color(0xFF3F196B), RoundedCornerShape(16.dp))
-                        .clickable(enabled = false) {}
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxWidth()
+                        .height(310.dp)
+                        .padding(top = 16.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(Color(0xFF141414))
+                        .border(1.dp, Color(0xFF262626), RoundedCornerShape(24.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.pramotion_banner),
+                        contentDescription = "Game Showcase",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(24.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    // Floating Cashout Pill (Matching "Delivered in 38 min" in Screenshot 2)
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 16.dp, bottom = 16.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color.Black.copy(alpha = 0.85f))
+                            .border(1.dp, Color(0xFF10B981).copy(alpha = 0.6f), RoundedCornerShape(14.dp))
+                            .padding(horizontal = 14.dp, vertical = 10.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(26.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF064E3B)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = "✓", color = Color(0xFF34D399), fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                            }
+                            Column {
+                                Text(
+                                    text = "Instant Cashout in 30s",
+                                    fontSize = 12.sp,
+                                    fontFamily = RubikFont,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = "Direct UPI & Bank Transfer",
+                                    fontSize = 10.sp,
+                                    fontFamily = RubikFont,
+                                    color = Color(0xFF9CA3AF)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Middle Section: Headline & Description
+                Column(
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Text(
-                        text = "Phone Number Login",
+                        text = "Play games,\nwin cash today.",
+                        fontSize = 32.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.ExtraBold,
                         color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        lineHeight = 38.sp
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
+
                     Text(
-                        text = "Enter your 10-digit mobile number to enter the arena",
-                        color = Color(0xFFB8A9CC),
-                        fontSize = 12.sp
+                        text = "Play exciting games in seconds and withdraw your real cash winnings instantly.",
+                        fontSize = 14.sp,
+                        fontFamily = RubikFont,
+                        color = Color(0xFF9CA3AF),
+                        lineHeight = 20.sp
+                    )
+                }
+
+                // Bottom Section: Action Buttons & Footer
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (isLoading && statusMessage != null) {
+                        Text(
+                            text = statusMessage ?: "",
+                            fontSize = 13.sp,
+                            fontFamily = RubikFont,
+                            color = Color(0xFF10B981),
+                            fontWeight = FontWeight.Medium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+
+                    // 1. Primary Button: Continue with WhatsApp (Matching Screenshot 2)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp)
+                            .clip(RoundedCornerShape(27.dp))
+                            .background(
+                                Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color(0xFF25D366),
+                                        Color(0xFF128C7E)
+                                    )
+                                )
+                            )
+                            .clickable(enabled = !isLoading) {
+                                handleWhatsAppLogin()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White,
+                                strokeWidth = 2.5.dp
+                            )
+                        } else {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_whatsapp),
+                                    contentDescription = "WhatsApp",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = "Continue with WhatsApp",
+                                    fontSize = 16.sp,
+                                    fontFamily = RubikFont,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+
+                    // 2. Secondary Button: Continue with Phone
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp)
+                            .clip(RoundedCornerShape(27.dp))
+                            .background(Color(0xFF1C1C1C))
+                            .border(1.dp, Color(0xFF2E2E2E), RoundedCornerShape(27.dp))
+                            .clickable(enabled = !isLoading) {
+                                showPhoneSheet = true
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "📱 Continue with phone number",
+                                fontSize = 15.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Terms Footer
+                    Text(
+                        text = "By continuing, you agree to our Terms and Privacy Policy",
+                        fontSize = 11.5.sp,
+                        fontFamily = RubikFont,
+                        color = Color(0xFF6B7280)
+                    )
+                }
+            }
+        } else {
+            // Screen 3: "What's your name?" Setup Screen (Matching Screenshot 3)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 24.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    // Back Button
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF1C1C1C))
+                            .clickable { showNameSetup = false },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_back),
+                            contentDescription = "Back",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(28.dp))
+
+                    // Title
+                    Text(
+                        text = "What's your name?",
+                        fontSize = 28.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    OutlinedTextField(
-                        value = phoneInput,
-                        onValueChange = { if (it.length <= 10) phoneInput = it },
-                        placeholder = { Text("e.g. 9876543210", color = Color(0xFF7A6890), fontSize = 13.sp) },
-                        prefix = { Text("+91  ", color = Color(0xFFA270F5), fontWeight = FontWeight.Bold) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            focusedBorderColor = Color(0xFFA270F5),
-                            unfocusedBorderColor = Color(0xFF3F196B),
-                            focusedContainerColor = Color(0xFF110321),
-                            unfocusedContainerColor = Color(0xFF110321)
-                        ),
-                        modifier = Modifier.fillMaxWidth()
+                    Text(
+                        text = "Other players and leaderboards will see this on the platform.",
+                        fontSize = 14.sp,
+                        fontFamily = RubikFont,
+                        color = Color(0xFF9CA3AF)
                     )
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // First Name Field
+                    Text(
+                        text = "First name",
+                        fontSize = 13.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF9CA3AF)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFF141414))
+                            .border(1.dp, Color(0xFF2E2E2E), RoundedCornerShape(14.dp))
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        BasicTextField(
+                            value = firstNameInput,
+                            onValueChange = { firstNameInput = it },
+                            textStyle = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            ),
+                            cursorBrush = SolidColor(Color(0xFF10B981)),
+                            modifier = Modifier.fillMaxWidth(),
+                            decorationBox = { innerTextField ->
+                                if (firstNameInput.isEmpty()) {
+                                    Text("Enter first name", color = Color(0xFF6B7280), fontSize = 15.sp, fontFamily = RubikFont)
+                                }
+                                innerTextField()
+                            }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    Button(
-                        onClick = {
-                            if (phoneInput.trim().length >= 10) {
-                                completeLogin(phoneInput.trim(), "Player_${phoneInput.takeLast(4)}")
-                                showPhoneSheet = false
-                            }
-                        },
-                        enabled = phoneInput.trim().length >= 10 && !isLoading,
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA270F5)),
+                    // Last Name Field
+                    Text(
+                        text = "Last name (optional)",
+                        fontSize = 13.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF9CA3AF)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(54.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFF141414))
+                            .border(1.dp, Color(0xFF2E2E2E), RoundedCornerShape(14.dp))
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.CenterStart
                     ) {
+                        BasicTextField(
+                            value = lastNameInput,
+                            onValueChange = { lastNameInput = it },
+                            textStyle = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            ),
+                            cursorBrush = SolidColor(Color(0xFF10B981)),
+                            modifier = Modifier.fillMaxWidth(),
+                            decorationBox = { innerTextField ->
+                                if (lastNameInput.isEmpty()) {
+                                    Text("Enter last name", color = Color(0xFF6B7280), fontSize = 15.sp, fontFamily = RubikFont)
+                                }
+                                innerTextField()
+                            }
+                        )
+                    }
+                }
+
+                // Continue Button (Matching Screenshot 3)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
+                        .clip(RoundedCornerShape(27.dp))
+                        .background(
+                            if (firstNameInput.isNotBlank()) Color(0xFF10B981) else Color(0xFF262626)
+                        )
+                        .clickable(enabled = firstNameInput.isNotBlank() && !isLoading) {
+                            val fullName = if (lastNameInput.isNotBlank()) "$firstNameInput $lastNameInput" else firstNameInput
+                            completeLogin(verifiedPhoneHolder.ifBlank { "9876543210" }, fullName)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White,
+                            strokeWidth = 2.5.dp
+                        )
+                    } else {
                         Text(
-                            text = "Enter Platform",
-                            color = Color.Black,
+                            text = "Continue",
+                            fontSize = 16.sp,
+                            fontFamily = RubikFont,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
+                            color = if (firstNameInput.isNotBlank()) Color.White else Color(0xFF6B7280)
                         )
                     }
                 }
             }
         }
-    }
-}
 
-/**
- * Crisp WhatsApp icon drawing matching the screenshot pill
- */
-@Composable
-fun WhatsAppIcon(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier) {
-        val w = size.width
-        val h = size.height
+        // Direct Phone Login Sheet Modal
+        if (showPhoneSheet) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.75f))
+                    .clickable { showPhoneSheet = false },
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                        .background(Color(0xFF141414))
+                        .border(1.dp, Color(0xFF262626), RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                        .clickable(enabled = false) {}
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "Enter Phone Number",
+                        fontSize = 20.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
 
-        // WhatsApp Speech Bubble
-        val path = Path().apply {
-            // Main circle centered at w/2, h/2
-            addOval(androidx.compose.ui.geometry.Rect(w * 0.05f, h * 0.05f, w * 0.95f, h * 0.95f))
-            // Small pointer tail on bottom left
-            moveTo(w * 0.22f, h * 0.78f)
-            lineTo(w * 0.05f, h * 0.95f)
-            lineTo(w * 0.38f, h * 0.88f)
-            close()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF1F1F1F))
+                            .border(1.dp, Color(0xFF333333), RoundedCornerShape(12.dp))
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        BasicTextField(
+                            value = phoneInput,
+                            onValueChange = { if (it.length <= 10 && it.all { ch -> ch.isDigit() }) phoneInput = it },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                            textStyle = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            ),
+                            cursorBrush = SolidColor(Color(0xFF10B981)),
+                            modifier = Modifier.fillMaxWidth(),
+                            decorationBox = { innerTextField ->
+                                if (phoneInput.isEmpty()) {
+                                    Text("10-digit mobile number", color = Color(0xFF6B7280), fontSize = 15.sp, fontFamily = RubikFont)
+                                }
+                                innerTextField()
+                            }
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .clip(RoundedCornerShape(25.dp))
+                            .background(if (phoneInput.length >= 10) Color(0xFF10B981) else Color(0xFF262626))
+                            .clickable(enabled = phoneInput.length >= 10 && !isLoading) {
+                                processPhoneForLogin(phoneInput)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Next",
+                            fontSize = 16.sp,
+                            fontFamily = RubikFont,
+                            fontWeight = FontWeight.Bold,
+                            color = if (phoneInput.length >= 10) Color.White else Color(0xFF6B7280)
+                        )
+                    }
+                }
+            }
         }
-        drawPath(path = path, color = Color.White)
-
-        // Inside phone handset silhouette cut in black/dark
-        drawCircle(
-            color = Color.Black,
-            radius = w * 0.18f,
-            center = Offset(w * 0.5f, h * 0.5f)
-        )
     }
 }

@@ -25,11 +25,11 @@ val Gold500 = Color(0xFFFFC107)
 val Gold600 = Color(0xFFFFB300)
 val Gold700 = Color(0xFFFFA000)
 
-// Navy-Purple Backgrounds (#12081F to #1E0A2E)
-val DarkNavyPurpleStart = Color(0xFF12081F)
-val DarkNavyPurpleEnd = Color(0xFF1E0A2E)
-val CardNavyBackground = Color(0xFF1C0D2E)
-val CardSurfaceVariant = Color(0xFF24103A)
+// Black Backgrounds (#000000)
+val DarkNavyPurpleStart = Color(0xFF000000)
+val DarkNavyPurpleEnd = Color(0xFF000000)
+val CardNavyBackground = Color(0xFF141414)
+val CardSurfaceVariant = Color(0xFF1E1E1E)
 
 // Status & Indicators
 val OnlineGreen = Color(0xFF00E676)
@@ -44,11 +44,11 @@ val TextDisabled = Color(0xFF6B7280)
 
 // Gradients
 val BackgroundGradient = Brush.verticalGradient(
-    colors = listOf(DarkNavyPurpleStart, DarkNavyPurpleEnd)
+    colors = listOf(Color.Black, Color.Black)
 )
 
 val BottomNavGradient = Brush.verticalGradient(
-    colors = listOf(Color(0xFF250D38), Color(0xFF150424))
+    colors = listOf(Color.Black, Color.Black)
 )
 
 val ActiveTabIndicatorGradient = Brush.horizontalGradient(

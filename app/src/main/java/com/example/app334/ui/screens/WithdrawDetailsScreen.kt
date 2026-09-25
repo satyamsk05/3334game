@@ -26,6 +26,9 @@ import com.example.app334.R
 import com.example.app334.game.ringoffuture.backend.WalletLedger
 import com.example.app334.ui.theme.RubikFont
 
+import kotlinx.coroutines.launch
+import com.example.app334.data.remote.WalletSyncService
+
 @Composable
 fun WithdrawDetailsScreen(
     withdrawAmount: String = "500",
@@ -38,8 +41,10 @@ fun WithdrawDetailsScreen(
     }
 
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     var upiId by remember { mutableStateOf("user@upi") }
     var showEditUpiDialog by remember { mutableStateOf(false) }
+    var isSubmitting by remember { mutableStateOf(false) }
 
     val amountNum = withdrawAmount.toDoubleOrNull() ?: 500.0
     val upiFee = (amountNum * 0.02).coerceAtMost(10.0) // 2% fee max ₹10
@@ -48,7 +53,7 @@ fun WithdrawDetailsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0F0417))
+            .background(Color.Black)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(18.dp)
@@ -242,26 +247,44 @@ fun WithdrawDetailsScreen(
                                     )
                                 )
                             )
-                            .clickable {
-                                val paise = WalletLedger.rupeesToPaise(amountNum)
-                                val result = WalletLedger.requestWithdrawal(paise, upiId)
-                                if (result.first) {
-                                    Toast.makeText(context, result.second, Toast.LENGTH_SHORT).show()
-                                    onCompleteWithdrawal("UPI")
-                                } else {
-                                    Toast.makeText(context, result.second, Toast.LENGTH_SHORT).show()
+                            .clickable(enabled = !isSubmitting) {
+                                if (upiId.isBlank() || !upiId.contains("@")) {
+                                    Toast.makeText(context, "Please enter a valid UPI ID", Toast.LENGTH_SHORT).show()
+                                    return@clickable
+                                }
+                                isSubmitting = true
+                                coroutineScope.launch {
+                                    try {
+                                        val result = WalletSyncService.requestWithdrawal(amountNum, upiId)
+                                        Toast.makeText(context, result.second, Toast.LENGTH_SHORT).show()
+                                        if (result.first) {
+                                            onCompleteWithdrawal("UPI")
+                                        }
+                                    } catch (e: Exception) {
+                                        Toast.makeText(context, "Withdrawal failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    } finally {
+                                        isSubmitting = false
+                                    }
                                 }
                             }
                             .padding(horizontal = 16.dp, vertical = 10.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "Get ₹${String.format("%.2f", finalNet)}",
-                            fontSize = 14.5.sp,
-                            fontFamily = RubikFont,
-                            fontWeight = FontWeight.W800,
-                            color = Color.White
-                        )
+                        if (isSubmitting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(18.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(
+                                text = "Get ₹${String.format("%.2f", finalNet)}",
+                                fontSize = 14.5.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.W800,
+                                color = Color.White
+                            )
+                        }
                     }
                 }
             }

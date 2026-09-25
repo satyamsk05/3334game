@@ -57,10 +57,35 @@ object AuthRepository {
         }
     }
 
+    fun getSavedUserForPhone(phone: String, context: Context? = null): Pair<String, String>? {
+        val targetContext = context ?: appContext ?: return null
+        val prefs = targetContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val cleanPhone = phone.trim()
+        val savedPhone = prefs.getString("user_phone_$cleanPhone", null)
+        if (savedPhone != null) {
+            val savedId = prefs.getString("user_id_$cleanPhone", "") ?: ""
+            val savedName = prefs.getString("user_name_$cleanPhone", "") ?: ""
+            if (savedId.isNotEmpty() && savedName.isNotEmpty()) {
+                return Pair(savedId, savedName)
+            }
+        }
+        return null
+    }
+
     suspend fun login(phone: String, name: String, context: Context? = null) = withContext(Dispatchers.IO) {
         val cleanPhone = phone.trim()
-        val userName = if (name.isNotBlank()) name else "Player_${cleanPhone.takeLast(4)}"
-        var resolvedUserId = "USR-${System.currentTimeMillis() % 10000}"
+        val targetContext = context ?: appContext
+        val prefs = targetContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+        // Check if user previously logged in with this phone
+        val existingSaved = getSavedUserForPhone(cleanPhone, targetContext)
+        val resolvedName = when {
+            name.isNotBlank() -> name.trim()
+            existingSaved != null -> existingSaved.second
+            else -> "Player_${cleanPhone.takeLast(4).ifEmpty { "101" }}"
+        }
+
+        var resolvedUserId = existingSaved?.first ?: "USR-${(1000..9999).random()}"
         var authToken = "SESSION-$resolvedUserId"
 
         // Sync with live backend server so user is registered and visible in Admin Panel
@@ -68,7 +93,7 @@ object AuthRepository {
             val url = "${ClientConfig.API_BASE_URL}/auth/login"
             val payload = JSONObject().apply {
                 put("phone", cleanPhone)
-                put("name", userName)
+                put("name", resolvedName)
             }
             val body = payload.toString().toRequestBody("application/json".toMediaTypeOrNull())
             val request = Request.Builder().url(url).post(body).build()
@@ -91,29 +116,33 @@ object AuthRepository {
                 Log.w("AuthRepository", "Backend login returned HTTP ${response.code}")
             }
         } catch (e: Exception) {
-            Log.e("AuthRepository", "Server sync failed, using offline fallback", e)
+            Log.e("AuthRepository", "Server sync failed, using persistent offline fallback", e)
         }
 
         withContext(Dispatchers.Main) {
             _currentSession.value = UserSession(
                 userId = resolvedUserId,
-                name = userName,
+                name = resolvedName,
                 phone = cleanPhone,
                 isLoggedIn = true
             )
 
-            val targetContext = context ?: appContext
-            targetContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)?.edit()?.apply {
+            // Save active session + persist user identity map
+            prefs?.edit()?.apply {
                 putString(KEY_USER_ID, resolvedUserId)
-                putString(KEY_NAME, userName)
+                putString(KEY_NAME, resolvedName)
                 putString(KEY_PHONE, cleanPhone)
                 putBoolean(KEY_IS_LOGGED_IN, true)
+                // Cache identity for this phone permanently
+                putString("user_phone_$cleanPhone", cleanPhone)
+                putString("user_id_$cleanPhone", resolvedUserId)
+                putString("user_name_$cleanPhone", resolvedName)
                 apply()
             }
 
-            // Keep WalletLedger and SessionManager in exact sync (Rule 3 Invariant)
-            WalletLedger.updateProfile(name = userName, phone = cleanPhone, userId = resolvedUserId)
-            SessionManager.signIn(userId = resolvedUserId, username = userName, token = authToken)
+            // Keep WalletLedger and SessionManager in exact sync
+            WalletLedger.updateProfile(name = resolvedName, phone = cleanPhone, userId = resolvedUserId)
+            SessionManager.signIn(userId = resolvedUserId, username = resolvedName, token = authToken)
         }
     }
 
@@ -121,7 +150,7 @@ object AuthRepository {
         _currentSession.value = UserSession(isLoggedIn = false)
         val targetContext = context ?: appContext
         targetContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)?.edit()?.apply {
-            clear()
+            putBoolean(KEY_IS_LOGGED_IN, false)
             apply()
         }
         SessionManager.signOut()
