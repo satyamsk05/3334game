@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.app334.R
+import com.example.app334.data.repository.AuthRepository
 import com.example.app334.game.ringoffuture.backend.WalletLedger
 import com.example.app334.ui.components.*
 import com.example.app334.ui.navigation.NavItem
@@ -267,7 +268,10 @@ fun HomeScreen(
                             onAboutUsClick = { activeSubScreen = SubScreen.AboutUs },
                             onContactUsClick = { activeSubScreen = SubScreen.ContactUs },
                             onFairPlayClick = { activeSubScreen = SubScreen.FairPlay },
-                            onLogoutClick = {}
+                            onLogoutClick = {
+                                activeSubScreen = null
+                                AuthRepository.logout(context)
+                            }
                         )
                     }
                     SubScreen.WithdrawDetails -> {
