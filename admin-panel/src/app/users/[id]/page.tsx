@@ -93,8 +93,9 @@ export default function UserDetailPage() {
   };
 
   const handleToggleBan = async () => {
-    if (!data?.user) return;
-    const isCurrentlyBlocked = data.user.is_blocked;
+    const targetUser = data?.user || (data as any)?.overview;
+    if (!targetUser) return;
+    const isCurrentlyBlocked = Boolean(targetUser.is_blocked ?? targetUser.isBanned);
     let reason = '';
     if (!isCurrentlyBlocked) {
       const input = window.prompt('Enter reason for suspension / ban:', 'Platform policy violation');
@@ -196,18 +197,39 @@ export default function UserDetailPage() {
     );
   }
 
-  const { user, wallet, metrics, recentTransactions, recentBets, deposits, withdrawals, notes, auditTrail } = data;
+  const user = data.user || (data as any).overview || {
+    id: userId,
+    name: 'Player',
+    phone: '',
+    email: '',
+    is_blocked: false,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+  const wallet = data.wallet || {};
+  const metrics = data.metrics || {
+    totalBets: (data as any).totalBets || (data as any).financialSummary?.approvedTransactionsCount || 0,
+    totalWageredPaise: (data as any).totalWageredPaise || '0',
+    totalWonPaise: (data as any).totalPayoutsPaise || '0',
+    ggrPaise: '0'
+  };
+  const recentTransactions = data.recentTransactions || (data as any).transactions || [];
+  const recentBets = data.recentBets || (data as any).bets || (data as any).gameHistory || [];
+  const deposits = data.deposits || [];
+  const withdrawals = data.withdrawals || [];
+  const notes = data.notes || (data as any).adminNotes || [];
+  const auditTrail = data.auditTrail || (data as any).audits || (data as any).auditHistory || [];
 
-  const depositRupees = Number(wallet.deposit_balance || 0) / 100;
-  const winningsRupees = Number(wallet.winnings_balance || 0) / 100;
-  const bonusRupees = Number(wallet.rewards_balance || 0) / 100;
-  const availableRupees = Number(wallet.available_balance || 0) / 100;
-  const totalDepositedRupees = Number(wallet.total_deposited || 0) / 100;
-  const totalWithdrawnRupees = Number(wallet.total_withdrawn || 0) / 100;
+  const depositRupees = Number(wallet.deposit_balance ?? (wallet as any).depositPaise ?? 0) / 100;
+  const winningsRupees = Number(wallet.winnings_balance ?? (wallet as any).winningPaise ?? 0) / 100;
+  const bonusRupees = Number(wallet.rewards_balance ?? (wallet as any).bonusPaise ?? 0) / 100;
+  const availableRupees = Number(wallet.available_balance ?? (wallet as any).totalPaise ?? 0) / 100;
+  const totalDepositedRupees = Number(wallet.total_deposited ?? (data as any).financialSummary?.totalDepositsPaise ?? 0) / 100;
+  const totalWithdrawnRupees = Number(wallet.total_withdrawn ?? (data as any).financialSummary?.totalWithdrawalsPaise ?? 0) / 100;
 
-  const totalWageredRupees = Number(metrics.totalWageredPaise || 0) / 100;
-  const totalWonRupees = Number(metrics.totalWonPaise || 0) / 100;
-  const ggrRupees = Number(metrics.ggrPaise || 0) / 100;
+  const totalWageredRupees = Number(metrics.totalWageredPaise ?? 0) / 100;
+  const totalWonRupees = Number(metrics.totalWonPaise ?? 0) / 100;
+  const ggrRupees = Number(metrics.ggrPaise ?? 0) / 100;
 
   const tabs: Array<{ key: TabKey; label: string; icon: any; count?: number }> = [
     { key: 'overview', label: 'Overview', icon: User },

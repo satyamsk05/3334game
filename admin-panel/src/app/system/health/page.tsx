@@ -48,6 +48,22 @@ export default function SystemHealthPage() {
     return `${d}d ${h}h ${m}m ${s}s`;
   };
 
+  const dbStatusString = typeof health?.database === 'string'
+    ? health.database
+    : typeof health?.database === 'object' && health?.database?.status
+    ? (health.database.status === 'ONLINE' ? 'CONNECTED' : health.database.status)
+    : typeof health?.db === 'object' && health?.db?.status
+    ? (health.db.status === 'ONLINE' ? 'CONNECTED' : health.db.status)
+    : (loading ? 'CONNECTING...' : 'ONLINE');
+
+  const isDbConnected = dbStatusString === 'CONNECTED' || dbStatusString === 'ONLINE';
+  const heapUsedMb = health?.memory?.heapUsedMb ?? health?.system?.memoryUsageMb ?? 0;
+  const rssMb = health?.memory?.rssMb ?? heapUsedMb;
+  const activeWs = health?.activeWsConnections ?? health?.websocket?.activeConnections ?? 0;
+  const uptimeSec = health?.uptimeSeconds ?? health?.api?.uptimeSeconds ?? 0;
+  const nodeVer = health?.nodeVersion ?? health?.system?.nodeVersion ?? 'v20.x';
+  const serverTime = health?.timestamp ? new Date(health.timestamp).toLocaleString() : '—';
+
   return (
     <div className="space-y-6">
       
@@ -104,8 +120,8 @@ export default function SystemHealthPage() {
             <Database className="h-4 w-4 text-accent-primary" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className={`text-2xl font-bold font-mono ${health?.database === 'CONNECTED' ? 'text-status-positive' : 'text-status-negative'}`}>
-              {health?.database || 'CONNECTING...'}
+            <span className={`text-2xl font-bold font-mono ${isDbConnected ? 'text-status-positive' : 'text-status-negative'}`}>
+              {dbStatusString}
             </span>
           </div>
           <p className="mt-1 text-xs text-text-tertiary font-mono">
@@ -121,11 +137,11 @@ export default function SystemHealthPage() {
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-2xl font-bold font-mono text-text-primary">
-              {health?.memory?.heapUsedMb || 0} MB
+              {heapUsedMb} MB
             </span>
           </div>
           <p className="mt-1 text-xs text-text-tertiary font-mono">
-            RSS: {health?.memory?.rssMb || 0} MB
+            RSS: {rssMb} MB
           </p>
         </Card>
 
@@ -137,7 +153,7 @@ export default function SystemHealthPage() {
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-2xl font-bold font-mono text-text-primary">
-              {health?.activeWsConnections || 0}
+              {activeWs}
             </span>
           </div>
           <p className="mt-1 text-xs text-text-tertiary font-mono">Live connected players</p>
@@ -155,16 +171,16 @@ export default function SystemHealthPage() {
           <div>
             <span className="text-text-tertiary block text-[11px] font-sans">System Uptime</span>
             <span className="text-text-primary font-semibold text-sm">
-              {health?.uptimeSeconds ? formatUptime(health.uptimeSeconds) : '0s'}
+              {uptimeSec ? formatUptime(uptimeSec) : '0s'}
             </span>
           </div>
           <div>
             <span className="text-text-tertiary block text-[11px] font-sans">Node.js Version</span>
-            <span className="text-text-primary font-semibold text-sm">{health?.nodeVersion || process.version || 'v20.x'}</span>
+            <span className="text-text-primary font-semibold text-sm">{nodeVer}</span>
           </div>
           <div>
             <span className="text-text-tertiary block text-[11px] font-sans">Server Timestamp</span>
-            <span className="text-text-primary">{health?.timestamp ? new Date(health.timestamp).toLocaleString() : '—'}</span>
+            <span className="text-text-primary">{serverTime}</span>
           </div>
         </div>
       </Card>
