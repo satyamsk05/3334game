@@ -9,7 +9,7 @@ class WalletLedgerTest {
 
     @Before
     fun setup() {
-        WalletLedger.resetDemoBalance()
+        WalletLedger.setTestBalance(50000L, 125000L, 10000L)
     }
 
     @Test

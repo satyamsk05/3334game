@@ -11,18 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app334.R
 import com.example.app334.ui.navigation.NavItem
-import com.example.app334.ui.theme.RubikFont
-import androidx.compose.ui.graphics.graphicsLayer
+import com.example.app334.ui.theme.*
 
 @Composable
 fun CustomBottomNavBar(
@@ -42,16 +40,9 @@ fun CustomBottomNavBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(65.dp)
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF2C0C3E),
-                        Color(0xFF1B0626)
-                    )
-                )
-            )
-            .padding(vertical = 2.dp)
+            .height(Dimens.bottomNavHeight)
+            .background(brush = BottomNavGradient)
+            .padding(vertical = Dimens.spacing2xs)
     ) {
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()
@@ -61,7 +52,7 @@ fun CustomBottomNavBar(
             val density = LocalDensity.current
             val tabWidthPx = with(density) { tabWidth.toPx() }
 
-            // Sliding Active White Box Indicator (GPU Accelerated graphicsLayer)
+            // Sliding Active Solid Rounded Purple-Gradient Pill Indicator
             Box(
                 modifier = Modifier
                     .graphicsLayer {
@@ -73,11 +64,11 @@ fun CustomBottomNavBar(
             ) {
                 Box(
                     modifier = Modifier
-                        .width(66.dp)
-                        .height(55.dp)
+                        .width(Dimens.bottomNavIndicatorWidth)
+                        .height(Dimens.bottomNavIndicatorHeight)
                         .background(
-                            color = Color.White.copy(alpha = 0.18f),
-                            shape = RoundedCornerShape(10.dp)
+                            brush = ActiveTabIndicatorGradient,
+                            shape = RoundedCornerShape(Dimens.radiusCard)
                         )
                 )
             }
@@ -89,8 +80,8 @@ fun CustomBottomNavBar(
             ) {
                 items.forEach { item ->
                     val isSelected = item == selectedTab
-                    val iconTint = if (isSelected) Color.White else Color.White.copy(alpha = 0.5f)
-                    val fontWeight = if (isSelected) FontWeight.W700 else FontWeight.W500
+                    val iconTint = if (isSelected) Color.White else Color.White.copy(alpha = 0.45f)
+                    val fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
 
                     val iconRes = when (item) {
                         NavItem.HOME -> R.drawable.ic_nav_home
@@ -104,7 +95,7 @@ fun CustomBottomNavBar(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .height(55.dp)
+                            .fillMaxHeight()
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null
@@ -117,19 +108,15 @@ fun CustomBottomNavBar(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Box(
-                                modifier = Modifier.size(30.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = iconRes),
-                                    contentDescription = item.title,
-                                    modifier = Modifier.size(30.dp),
-                                    tint = iconTint
-                                )
-                            }
+                            Icon(
+                                painter = painterResource(id = iconRes),
+                                contentDescription = item.title,
+                                modifier = Modifier.size(22.dp),
+                                tint = iconTint
+                            )
 
-                            Spacer(modifier = Modifier.height(0.dp))
+                            Spacer(modifier = Modifier.height(2.dp))
+
                             Text(
                                 text = item.title,
                                 fontSize = 11.sp,

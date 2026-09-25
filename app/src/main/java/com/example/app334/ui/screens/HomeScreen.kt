@@ -4,34 +4,22 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.app334.R
 import com.example.app334.game.ringoffuture.backend.WalletLedger
-import com.example.app334.ui.components.CustomBottomNavBar
-import com.example.app334.ui.components.TopHeader
+import com.example.app334.ui.components.*
 import com.example.app334.ui.navigation.NavItem
-import com.example.app334.ui.theme.RubikFont
+import com.example.app334.ui.theme.*
 
 @Immutable
 data class FeaturedGame(
@@ -164,6 +152,41 @@ fun HomeScreen(
         )
     }
 
+    val bannerSlides = remember {
+        listOf(
+            BannerSlide(
+                id = "welcome_promo",
+                title = "WELCOME BONUS",
+                subtitle = "Claim 100% instant cash boost on your first deposit!",
+                imageRes = R.drawable.pramotion_banner,
+                backgroundGradient = listOf(Color(0xFF5B1FA6), Color(0xFF3B0764)),
+                badgeText = "HOT",
+                ctaText = "ADD CASH",
+                onClick = { selectedTab = NavItem.REWARD }
+            ),
+            BannerSlide(
+                id = "ring_feature",
+                title = "RING OF FUTURE",
+                subtitle = "Spin the 32-segment wheel for up to 30x instant multiplier!",
+                imageRes = R.drawable.logo_rings_of_future,
+                backgroundGradient = listOf(Color(0xFF0F766E), Color(0xFF042F2E)),
+                badgeText = "NEW",
+                ctaText = "PLAY NOW",
+                onClick = { activeSubScreen = SubScreen.RingOfFuture }
+            ),
+            BannerSlide(
+                id = "vip_cashback",
+                title = "INSTANT CASHOUT",
+                subtitle = "24/7 lightning fast UPI withdrawals directly to your bank account.",
+                imageRes = R.drawable.cashback_wallet_ic,
+                backgroundGradient = listOf(Color(0xFF9D174D), Color(0xFF500724)),
+                badgeText = "VIP",
+                ctaText = "WITHDRAW",
+                onClick = { activeSubScreen = SubScreen.Withdraw }
+            )
+        )
+    }
+
     fun onGameTileClick(gameId: String, title: String) {
         if (gameId == "rings_of_future") {
             activeSubScreen = SubScreen.RingOfFuture
@@ -175,7 +198,7 @@ fun HomeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF15001F))
+            .background(brush = BackgroundGradient)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -292,6 +315,7 @@ fun HomeScreen(
                                     Column(
                                         modifier = Modifier.fillMaxSize()
                                     ) {
+                                        // Header Section with avatar gold border, online dot, crown pill, and wallet card
                                         TopHeader(
                                             username = userProfile.username,
                                             balance = walletBalance.formattedTotal,
@@ -303,46 +327,36 @@ fun HomeScreen(
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .fillMaxWidth(),
-                                            contentPadding = PaddingValues(top = 10.dp, bottom = 80.dp),
-                                            verticalArrangement = Arrangement.spacedBy(18.dp)
+                                            contentPadding = PaddingValues(top = Dimens.spacingSm, bottom = Dimens.spacingLg),
+                                            verticalArrangement = Arrangement.spacedBy(Dimens.sectionSpacing)
                                         ) {
-                                            // Promotional Banner Card
+                                            // 4. Hero Banner (HorizontalPager carousel with 3 slides & dot indicators)
                                             item {
-                                                Image(
-                                                    painter = painterResource(id = R.drawable.pramotion_banner),
-                                                    contentDescription = "Promotion Banner",
-                                                    modifier = Modifier
-                                                        .padding(horizontal = 14.dp)
-                                                        .fillMaxWidth()
-                                                        .height(140.dp)
-                                                        .clip(RoundedCornerShape(16.dp))
-                                                        .clickable { selectedTab = NavItem.REWARD },
-                                                    contentScale = ContentScale.Crop
+                                                HeroBannerCarousel(
+                                                    slides = bannerSlides
                                                 )
                                             }
 
-                                            // Featured Games Section
+                                            // 5. Featured Games Section
                                             item {
-                                                Column {
-                                                    Text(
-                                                        text = "FEATURED GAMES",
-                                                        fontSize = 13.5.sp,
-                                                        fontFamily = RubikFont,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = Color(0xFFA78BFA),
-                                                        letterSpacing = 0.5.sp,
-                                                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
+                                                Column(
+                                                    verticalArrangement = Arrangement.spacedBy(Dimens.spacingSm)
+                                                ) {
+                                                    SectionHeader(
+                                                        title = "Featured Games",
+                                                        icon = painterResource(id = R.drawable.ic_vip_pro_crown)
                                                     )
 
-                                                    Spacer(modifier = Modifier.height(8.dp))
-
                                                     LazyRow(
-                                                        contentPadding = PaddingValues(horizontal = 14.dp),
-                                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                                        contentPadding = PaddingValues(horizontal = Dimens.screenHorizontalPadding),
+                                                        horizontalArrangement = Arrangement.spacedBy(Dimens.gridGutter)
                                                     ) {
                                                         items(featuredGames, key = { it.id }) { game ->
-                                                            FeaturedGameCard(
-                                                                game = game,
+                                                            GameCard(
+                                                                title = game.title,
+                                                                imageRes = game.logoRes,
+                                                                backgroundGradient = game.gradientColors,
+                                                                isFeatured = true,
                                                                 onPlayClick = { onGameTileClick(game.id, game.title) }
                                                             )
                                                         }
@@ -350,37 +364,38 @@ fun HomeScreen(
                                                 }
                                             }
 
-                                            // All Games Grid Section (160:230 Aspect Ratio, No Overlap)
+                                            // 6. All Games Section (2 columns, 160:230 Aspect Ratio, 16dp Gutter)
                                             item {
                                                 Column(
-                                                    modifier = Modifier.padding(horizontal = 14.dp)
+                                                    modifier = Modifier.padding(horizontal = Dimens.screenHorizontalPadding),
+                                                    verticalArrangement = Arrangement.spacedBy(Dimens.spacingSm)
                                                 ) {
-                                                    Text(
-                                                        text = "ALL GAMES",
-                                                        fontSize = 13.5.sp,
-                                                        fontFamily = RubikFont,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = Color(0xFFA78BFA),
-                                                        letterSpacing = 0.5.sp,
-                                                        modifier = Modifier.padding(vertical = 4.dp)
+                                                    SectionHeader(
+                                                        title = "All Games",
+                                                        icon = painterResource(id = R.drawable.ic_play_arrow),
+                                                        modifier = Modifier.padding(horizontal = 0.dp)
                                                     )
-
-                                                    Spacer(modifier = Modifier.height(8.dp))
 
                                                     for (i in gridGames.indices step 2) {
                                                         Row(
                                                             modifier = Modifier.fillMaxWidth(),
-                                                            horizontalArrangement = Arrangement.spacedBy(14.dp)
+                                                            horizontalArrangement = Arrangement.spacedBy(Dimens.gridGutter)
                                                         ) {
-                                                            GridGameCard(
-                                                                game = gridGames[i],
+                                                            GameCard(
+                                                                title = gridGames[i].title,
+                                                                imageRes = gridGames[i].logoRes,
+                                                                backgroundGradient = gridGames[i].gradientColors,
                                                                 modifier = Modifier.weight(1f),
+                                                                isFeatured = false,
                                                                 onPlayClick = { onGameTileClick(gridGames[i].id, gridGames[i].title) }
                                                             )
                                                             if (i + 1 < gridGames.size) {
-                                                                GridGameCard(
-                                                                    game = gridGames[i + 1],
+                                                                GameCard(
+                                                                    title = gridGames[i + 1].title,
+                                                                    imageRes = gridGames[i + 1].logoRes,
+                                                                    backgroundGradient = gridGames[i + 1].gradientColors,
                                                                     modifier = Modifier.weight(1f),
+                                                                    isFeatured = false,
                                                                     onPlayClick = { onGameTileClick(gridGames[i + 1].id, gridGames[i + 1].title) }
                                                                 )
                                                             } else {
@@ -388,7 +403,7 @@ fun HomeScreen(
                                                             }
                                                         }
                                                         if (i + 2 < gridGames.size) {
-                                                            Spacer(modifier = Modifier.height(14.dp))
+                                                            Spacer(modifier = Modifier.height(Dimens.gridGutter))
                                                         }
                                                     }
                                                 }
@@ -428,8 +443,12 @@ fun HomeScreen(
                 }
             }
 
-            // Bottom Navigation Bar
+            // Compliance Strip and Bottom Navigation Bar
             if (activeSubScreen == null) {
+                // 7. Compliance strip above bottom navigation
+                ComplianceBar()
+
+                // 8. Custom Bottom Navigation Bar
                 CustomBottomNavBar(
                     selectedTab = selectedTab,
                     onTabSelected = { tab ->
@@ -437,132 +456,6 @@ fun HomeScreen(
                         selectedTab = tab
                     }
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun FeaturedGameCard(
-    game: FeaturedGame,
-    modifier: Modifier = Modifier,
-    onPlayClick: () -> Unit = {}
-) {
-    Box(
-        modifier = modifier
-            .size(240.dp)
-            .clip(RoundedCornerShape(18.dp))
-    ) {
-        Image(
-            painter = painterResource(id = game.logoRes),
-            contentDescription = game.title,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(14.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.White)
-                .clickable { onPlayClick() }
-                .padding(horizontal = 18.dp, vertical = 8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "PLAY",
-                fontSize = 15.sp,
-                fontFamily = RubikFont,
-                fontWeight = FontWeight.W800,
-                color = Color(0xFF1E1B4B),
-                letterSpacing = 1.0.sp
-            )
-        }
-    }
-}
-
-@Composable
-private fun GridGameCard(
-    game: GridGame,
-    modifier: Modifier = Modifier,
-    onPlayClick: () -> Unit = {}
-) {
-    val themeColor = game.gradientColors.last()
-
-    // 160:230 Aspect Ratio with clean non-overlapping image and action footer
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(160f / 230f)
-            .clip(RoundedCornerShape(20.dp))
-            .background(themeColor)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(game.gradientColors.first(), themeColor)
-                    )
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = game.logoRes),
-                contentDescription = game.title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(themeColor)
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text(
-                text = game.title,
-                fontSize = 14.sp,
-                fontFamily = RubikFont,
-                fontWeight = FontWeight.W800,
-                color = Color.White,
-                maxLines = 1
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White)
-                    .clickable { onPlayClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_play_arrow),
-                        contentDescription = "Play",
-                        modifier = Modifier.size(14.dp),
-                        tint = Color(0xFF7C3AED)
-                    )
-                    Text(
-                        text = "PLAY NOW",
-                        fontSize = 13.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.W800,
-                        color = Color(0xFF7C3AED),
-                        letterSpacing = 0.5.sp,
-                        maxLines = 1
-                    )
-                }
             }
         }
     }

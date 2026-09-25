@@ -54,9 +54,9 @@ data class WalletTransaction(
 }
 
 data class UserProfile(
-    val userId: String = "USR-304",
-    val username: String = "Satyam Kumar",
-    val phone: String = "+91 98765 43210",
+    val userId: String = "",
+    val username: String = "Player",
+    val phone: String = "",
     val avatarRes: Int = 1
 )
 
@@ -238,9 +238,6 @@ object WalletLedger {
         _walletBalance.value = WalletBalance(depositPaise, winningPaise, bonusPaise)
     }
 
-    // Alias for compatibility
-    fun addDemoCash(amountPaise: Long, utr: String = ""): WalletTransaction = addDepositCash(amountPaise, utr)
-
     @Synchronized
     fun requestWithdrawal(amountPaise: Long, upiId: String): Pair<Boolean, String> {
         val current = _walletBalance.value
@@ -281,5 +278,14 @@ object WalletLedger {
                 userId = userId ?: current.userId
             )
         }
+    }
+
+    @androidx.annotation.VisibleForTesting
+    fun setTestBalance(depositPaise: Long, winningPaise: Long, bonusPaise: Long) {
+        _walletBalance.value = WalletBalance(
+            depositPaise = depositPaise,
+            winningPaise = winningPaise,
+            bonusPaise = bonusPaise
+        )
     }
 }
