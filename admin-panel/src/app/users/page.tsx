@@ -1,44 +1,64 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Search, UserX, UserCheck, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
-import { userService } from '@/services/userService';
-
-interface UserData {
-  id: string;
-  phone: string;
-  name: string;
-  isBanned: boolean;
-  createdAt: number;
-  balance?: {
-    depositPaise: number;
-    winningPaise: number;
-    bonusPaise: number;
-    totalPaise: number;
-  };
-}
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { 
+  Search, 
+  UserX, 
+  UserCheck, 
+  Copy, 
+  Check, 
+  Loader2, 
+  AlertCircle,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  Filter
+} from 'lucide-react';
+import { adminService, UserSummary } from '@/services/adminService';
 
 export default function UsersManagementPage() {
-  const [users, setUsers] = useState<UserData[]>([]);
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams.get('status') || 'ALL';
+
+  const [users, setUsers] = useState<UserSummary[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(25);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<'ALL' | 'ACTIVE' | 'BANNED'>('ALL');
+  const [status, setStatus] = useState<string>(initialStatus.toUpperCase());
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [processingId, setProcessingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const qStatus = searchParams.get('status');
+    if (qStatus) {
+      setStatus(qStatus.toUpperCase());
+    }
+  }, [searchParams]);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await userService.getAllUsers();
-      if (res.success && Array.isArray(res.data)) {
-        setUsers(res.data);
+      const res = await adminService.getUsers({
+        page,
+        limit,
+        search: search.trim() || undefined,
+        status: status === 'ALL' ? undefined : status.toLowerCase()
+      });
+      if (res.success && res.data) {
+        setUsers(res.data.users || []);
+        setTotal(res.data.total || 0);
       } else {
         setUsers([]);
+        setTotal(0);
       }
     } catch (err: any) {
       console.error('Failed to fetch real users:', err);
-      setError(err.message || 'Could not connect to live backend server');
+      setError(err.response?.data?.message || err.message || 'Could not connect to live backend server');
     } finally {
       setLoading(false);
     }
@@ -46,28 +66,38 @@ export default function UsersManagementPage() {
 
   useEffect(() => {
     fetchUsers();
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const q = params.get('search');
-      if (q) setSearch(q);
-    }
-  }, []);
+  }, [page, status]);
 
-  const toggleBan = async (userId: string, currentBanStatus: boolean) => {
-    const action = currentBanStatus ? 'UNBAN' : 'BAN';
-    if (!window.confirm(`Are you sure you want to ${action} user account ${userId}?`)) {
-      return;
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1);
+    fetchUsers();
+  };
+
+  const toggleBan = async (user: UserSummary) => {
+    const currentBan = user.is_blocked;
+    const action = currentBan ? 'UNBAN' : 'BAN';
+    let reason = '';
+    if (!currentBan) {
+      const input = window.prompt(`Enter reason for banning user ${user.name || user.id}:`, 'Terms of service violation');
+      if (input === null) return;
+      reason = input.trim();
+    } else {
+      if (!window.confirm(`Are you sure you want to unban user ${user.name || user.id}?`)) {
+        return;
+      }
     }
+
     try {
-      setProcessingId(userId);
-      const res = await userService.toggleBan(userId, !currentBanStatus);
+      setProcessingId(user.id);
+      const res = await adminService.toggleBan(user.id, !currentBan, reason);
       if (res.success) {
         await fetchUsers();
       } else {
         alert(res.message || 'Action failed');
       }
     } catch (err: any) {
-      alert(`Action failed: ${err.message}`);
+      alert(`Action failed: ${err.response?.data?.message || err.message}`);
     } finally {
       setProcessingId(null);
     }
@@ -79,15 +109,7 @@ export default function UsersManagementPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const filteredUsers = users.filter((u) => {
-    const name = u.name || '';
-    const phone = u.phone || '';
-    const id = u.id || '';
-    const matchesSearch = name.toLowerCase().includes(search.toLowerCase()) || phone.includes(search) || id.toLowerCase().includes(search.toLowerCase());
-    if (filter === 'ACTIVE') return matchesSearch && !u.isBanned;
-    if (filter === 'BANNED') return matchesSearch && u.isBanned;
-    return matchesSearch;
-  });
+  const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
     <div className="space-y-6">
@@ -96,173 +118,217 @@ export default function UsersManagementPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.08] pb-5">
         <div>
           <h1 className="text-lg font-semibold tracking-tight text-[#e1e1e1]">Player Directory</h1>
-          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Authoritative accounts with integer paise wallet accounting</p>
+          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Authoritative accounts with integer paise wallet accounting ({total} total)</p>
         </div>
 
-        {/* Filter Pills & Search */}
-        <div className="flex items-center gap-2.5">
-          <div className="relative w-56">
-            <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-[#8c8c8c]" />
+        {/* Search & Status Filters */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Status Tabs */}
+          <div className="flex items-center rounded-[4px] border border-white/[0.08] bg-[#212123] p-0.5 text-[11px] font-medium text-[#a6a6a6]">
+            {['ALL', 'ACTIVE', 'BANNED'].map((st) => (
+              <button
+                key={st}
+                onClick={() => {
+                  setStatus(st);
+                  setPage(1);
+                }}
+                className={`rounded-[3px] px-2.5 py-1 transition-all ${
+                  status === st
+                    ? 'text-[#e1e1e1] bg-white/[0.08] font-semibold shadow-sm'
+                    : 'hover:text-[#e1e1e1]'
+                }`}
+              >
+                {st}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Form */}
+          <form onSubmit={handleSearchSubmit} className="relative flex items-center">
+            <Search className="absolute left-2.5 h-3.5 w-3.5 text-[#8c8c8c]" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search user, phone, ID..."
-              className="w-full rounded-[4px] border border-white/[0.08] bg-white/[0.04] py-1 pl-8 pr-3 text-[12px] text-[#e1e1e1] placeholder-[#8c8c8c] focus:border-[#2988ff] focus:outline-none focus:ring-1 focus:ring-[#2988ff] transition-all"
+              placeholder="Search user / phone / ID..."
+              className="h-8 w-48 sm:w-60 rounded-[4px] border border-white/[0.08] bg-black pl-8 pr-2.5 text-[12px] text-[#e1e1e1] placeholder-[#666] focus:border-[#2988ff] focus:outline-none"
             />
-          </div>
+          </form>
 
-          <div className="flex items-center rounded-[4px] border border-white/[0.08] bg-[#212123] p-0.5 text-[11px] font-medium text-[#a6a6a6]">
-            <button
-              onClick={() => setFilter('ALL')}
-              className={`rounded-[3px] px-2 py-0.5 transition-colors ${filter === 'ALL' ? 'text-[#e1e1e1] bg-white/[0.08] font-medium' : 'hover:text-[#e1e1e1]'}`}
-            >
-              All ({users.length})
-            </button>
-            <button
-              onClick={() => setFilter('ACTIVE')}
-              className={`rounded-[3px] px-2 py-0.5 transition-colors ${filter === 'ACTIVE' ? 'text-[#e1e1e1] bg-white/[0.08] font-medium' : 'hover:text-[#e1e1e1]'}`}
-            >
-              Active
-            </button>
-            <button
-              onClick={() => setFilter('BANNED')}
-              className={`rounded-[3px] px-2 py-0.5 transition-colors ${filter === 'BANNED' ? 'text-[#e1e1e1] bg-white/[0.08] font-medium' : 'hover:text-[#e1e1e1]'}`}
-            >
-              Banned
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              setPage(1);
+              fetchUsers();
+            }}
+            disabled={loading}
+            className="flex h-8 items-center gap-1.5 rounded-[4px] border border-white/[0.08] bg-white/[0.03] px-2.5 text-[11.5px] font-medium text-[#a6a6a6] hover:text-[#e1e1e1] hover:border-white/20 transition-all disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="h-3 w-3 animate-spin text-[#2988ff]" /> : <Filter className="h-3 w-3 text-[#8c8c8c]" />}
+            <span>Filter</span>
+          </button>
         </div>
       </div>
 
-      {/* Error state */}
       {error && (
-        <div className="rounded-[4px] border border-red-500/20 bg-red-500/10 p-3 text-[12px] text-red-400 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>Backend Server Communication Error: {error}</span>
-          </div>
-          <button onClick={fetchUsers} className="rounded-[3px] bg-red-500/20 px-2 py-0.5 font-medium hover:bg-red-500/30">Retry</button>
+        <div className="flex items-center gap-2 rounded-[6px] border border-red-500/20 bg-red-500/10 p-3 text-[12px] text-red-400">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      {/* Loading state */}
-      {loading ? (
-        <div className="py-12 text-center text-[12px] text-[#8c8c8c] flex items-center justify-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin text-[#2988ff]" />
-          <span>Synchronizing live player accounts...</span>
-        </div>
-      ) : (
-        /* Users Table */
-        <div className="overflow-hidden rounded-[8px] border border-white/[0.08] bg-[#212123]">
-          <table className="w-full text-left text-[12px] text-[#a6a6a6]">
-            <thead className="border-b border-white/[0.08] bg-black text-[#8c8c8c] uppercase text-[10px] font-mono tracking-wider">
+      {/* Users Table */}
+      <div className="overflow-hidden rounded-[8px] border border-white/[0.08] bg-[#212123]">
+        <table className="w-full text-left text-[12px] text-[#a6a6a6]">
+          <thead className="border-b border-white/[0.08] bg-black text-[#8c8c8c] uppercase text-[10px] font-mono tracking-wider">
+            <tr>
+              <th className="px-4 py-3">Player / ID</th>
+              <th className="px-4 py-3">Phone</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3 text-right">Deposit</th>
+              <th className="px-4 py-3 text-right">Winnings</th>
+              <th className="px-4 py-3 text-right">Bonus</th>
+              <th className="px-4 py-3 text-right">Total Balance</th>
+              <th className="px-4 py-3">Registered</th>
+              <th className="px-4 py-3 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/[0.06] font-mono text-[11.5px]">
+            {loading ? (
               <tr>
-                <th className="px-4 py-2.5">Player</th>
-                <th className="px-4 py-2.5">User ID</th>
-                <th className="px-4 py-2.5">Phone</th>
-                <th className="px-4 py-2.5">Wallet Breakdown</th>
-                <th className="px-4 py-2.5">Total Balance</th>
-                <th className="px-4 py-2.5">Status</th>
-                <th className="px-4 py-2.5 text-right">Actions</th>
+                <td colSpan={9} className="px-4 py-12 text-center text-[#8c8c8c]">
+                  <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#2988ff] mb-2" />
+                  <span>Loading authoritative player accounts...</span>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-white/[0.06] text-[12px]">
-              {filteredUsers.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-[#8c8c8c] text-[12px]">
-                    No player accounts found.
-                  </td>
-                </tr>
-              ) : (
-                filteredUsers.map((u) => {
-                  const depositPaise = u.balance?.depositPaise || 0;
-                  const winningPaise = u.balance?.winningPaise || 0;
-                  const totalPaise = u.balance?.totalPaise || 0;
-                  return (
-                    <tr key={u.id} className="hover:bg-white/[0.02] transition-colors duration-150">
-                      
-                      <td className="px-4 py-2.5">
-                        <div className="flex items-center gap-2">
-                          <div className="h-6 w-6 rounded-[3px] bg-white/[0.06] border border-white/[0.08] flex items-center justify-center font-medium text-[11px] text-[#e1e1e1]">
-                            {(u.name || 'P').charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="font-medium text-[#e1e1e1] text-[12.5px]">{u.name || 'Player'}</div>
-                            <div className="text-[10px] text-[#8c8c8c] font-mono">
-                              {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'Active'}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
+            ) : users.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="px-4 py-12 text-center text-[#8c8c8c] font-sans">
+                  No player records found matching your filters.
+                </td>
+              </tr>
+            ) : (
+              users.map((u) => {
+                const depositRupees = Number(u.deposit_balance || 0) / 100;
+                const winningsRupees = Number(u.winnings_balance || 0) / 100;
+                const bonusRupees = Number(u.rewards_balance || 0) / 100;
+                const totalRupees = Number(u.available_balance || 0) / 100;
+                const isProcessing = processingId === u.id;
 
-                      <td className="px-4 py-2.5 font-mono text-[11.5px] text-[#e1e1e1]">
-                        <div className="flex items-center gap-1">
-                          <span className="truncate max-w-[120px]">{u.id}</span>
-                          <button 
-                            onClick={() => copyToClipboard(u.id)} 
-                            className="text-[#8c8c8c] hover:text-[#e1e1e1] transition-colors"
+                return (
+                  <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex flex-col">
+                        <Link 
+                          href={`/users/${u.id}`}
+                          className="font-sans font-medium text-[#e1e1e1] hover:text-[#2988ff] flex items-center gap-1.5 transition-colors"
+                        >
+                          <span>{u.name || 'Unnamed Player'}</span>
+                          <ExternalLink className="h-3 w-3 text-[#666]" />
+                        </Link>
+                        <div className="flex items-center gap-1 text-[10.5px] text-[#666] mt-0.5">
+                          <span className="truncate max-w-[110px]">{u.id}</span>
+                          <button
+                            onClick={() => copyToClipboard(u.id)}
+                            className="hover:text-[#a6a6a6] transition-colors"
                             title="Copy ID"
                           >
-                            {copiedId === u.id ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                            {copiedId === u.id ? <Check className="h-2.5 w-2.5 text-emerald-400" /> : <Copy className="h-2.5 w-2.5" />}
                           </button>
                         </div>
-                      </td>
-
-                      <td className="px-4 py-2.5 font-mono text-[11.5px] text-[#a6a6a6]">{u.phone}</td>
-
-                      <td className="px-4 py-2.5">
-                        <div className="text-[11px] space-y-0.5 font-mono">
-                          <div className="text-[#8c8c8c]">Dep: <span className="text-[#e1e1e1]">₹{(depositPaise / 100).toFixed(2)}</span></div>
-                          <div className="text-[#8c8c8c]">Win: <span className="text-emerald-400">₹{(winningPaise / 100).toFixed(2)}</span></div>
-                        </div>
-                      </td>
-
-                      <td className="px-4 py-2.5 font-mono font-semibold text-[13px] text-[#e1e1e1]">
-                        ₹{(totalPaise / 100).toFixed(2)}
-                      </td>
-
-                      <td className="px-4 py-2.5">
-                        {u.isBanned ? (
-                          <span className="inline-flex items-center gap-1 rounded-[3px] border border-red-500/20 bg-red-500/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-red-400">
-                            <span className="h-1 w-1 rounded-full bg-red-400" /> BANNED
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 rounded-[3px] border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-emerald-400">
-                            <span className="h-1 w-1 rounded-full bg-emerald-400" /> ACTIVE
-                          </span>
-                        )}
-                      </td>
-
-                      <td className="px-4 py-2.5 text-right">
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-[#a6a6a6]">
+                      {u.phone || '—'}
+                    </td>
+                    <td className="px-4 py-3 font-sans">
+                      {u.is_blocked ? (
+                        <span className="inline-flex items-center gap-1 rounded-[3px] bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 text-[10.5px] font-medium text-rose-400">
+                          BANNED
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-[3px] bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[10.5px] font-medium text-emerald-400">
+                          ACTIVE
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right text-[#a6a6a6]">
+                      ₹{depositRupees.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-right text-[#a6a6a6]">
+                      ₹{winningsRupees.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-right text-[#a6a6a6]">
+                      ₹{bonusRupees.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold text-[#e1e1e1]">
+                      ₹{totalRupees.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-[#8c8c8c] text-[10.5px] whitespace-nowrap">
+                      {new Date(u.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <Link
+                          href={`/users/${u.id}`}
+                          className="rounded-[3px] border border-white/[0.08] bg-white/[0.03] px-2 py-1 text-[11px] font-sans font-medium text-[#a6a6a6] hover:text-[#e1e1e1] hover:border-white/20 transition-all"
+                        >
+                          Details
+                        </Link>
                         <button
-                          disabled={processingId === u.id}
-                          onClick={() => toggleBan(u.id, u.isBanned)}
-                          className={`inline-flex items-center gap-1 rounded-[4px] border px-2 py-1 text-[11px] font-medium transition-all disabled:opacity-50 ${
-                            u.isBanned
-                              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
-                              : 'border-white/[0.08] bg-white/[0.03] text-[#a6a6a6] hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400'
+                          onClick={() => toggleBan(u)}
+                          disabled={isProcessing}
+                          title={u.is_blocked ? 'Unban User' : 'Ban User'}
+                          className={`rounded-[3px] border p-1 text-[11px] transition-all disabled:opacity-50 ${
+                            u.is_blocked
+                              ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                              : 'border-rose-500/20 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
                           }`}
                         >
-                          {processingId === u.id ? (
+                          {isProcessing ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
-                          ) : u.isBanned ? (
+                          ) : u.is_blocked ? (
                             <UserCheck className="h-3 w-3" />
                           ) : (
                             <UserX className="h-3 w-3" />
                           )}
-                          <span>{u.isBanned ? 'Unban' : 'Ban Account'}</span>
                         </button>
-                      </td>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
 
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+        {/* Pagination Footer */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-white/[0.08] bg-black/40 px-4 py-2.5 text-[11.5px] text-[#8c8c8c]">
+            <div>
+              Showing {users.length > 0 ? (page - 1) * limit + 1 : 0} to {Math.min(page * limit, total)} of {total} players
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1 || loading}
+                className="flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] disabled:opacity-30 disabled:pointer-events-none"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </button>
+              <span className="font-mono text-[#e1e1e1] px-2">
+                {page} / {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages || loading}
+                className="flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] disabled:opacity-30 disabled:pointer-events-none"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
     </div>
   );
