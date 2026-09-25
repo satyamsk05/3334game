@@ -16,15 +16,15 @@ export function Card({
   ...props
 }: CardProps) {
   const variantStyles = {
-    default: 'bg-surface-raised border-border-default hover:border-border-muted',
-    urgent: 'bg-surface-raised border-status-warning/50 shadow-[0_0_12px_rgba(245,158,11,0.08)]',
-    positive: 'bg-surface-raised border-status-positive/40',
-    subtle: 'bg-surface-subtle border-border-muted',
+    default: 'bg-white border border-gray-100/90 shadow-soft hover:shadow-card',
+    urgent: 'bg-white border border-amber-200/80 shadow-[0_4px_24px_rgba(245,158,11,0.08)]',
+    positive: 'bg-white border border-emerald-200/70 shadow-soft',
+    subtle: 'bg-surface-muted/80 border border-gray-200/60',
   };
 
   return (
     <Component
-      className={`rounded-lg border p-space-6 transition-normal ${variantStyles[variant]} ${className}`}
+      className={`rounded-3xl p-6 sm:p-7 transition-normal ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}

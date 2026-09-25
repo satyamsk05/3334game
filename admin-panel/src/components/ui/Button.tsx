@@ -2,7 +2,7 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'dark';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   isLoading?: boolean;
@@ -24,26 +24,28 @@ export function Button({
   const isSpinning = loading || isLoading;
 
   const sizeStyles = {
-    sm: 'h-7 px-space-3 text-xs gap-space-2 rounded-xs',
-    md: 'h-8 px-space-4 text-sm gap-space-2 rounded-sm',
-    lg: 'h-10 px-space-5 text-md gap-space-3 rounded-md',
+    sm: 'h-8 px-3.5 text-xs gap-1.5 rounded-xl',
+    md: 'h-9 px-4 text-sm gap-2 rounded-xl',
+    lg: 'h-11 px-5 text-base gap-2.5 rounded-2xl',
   };
 
   const variantStyles = {
     primary:
-      'bg-accent-primary text-text-inverse font-medium hover:bg-accent-primary/90 active:scale-[0.98]',
+      'bg-accent-primary text-white font-semibold hover:bg-blue-700 shadow-sm active:scale-[0.98]',
+    dark:
+      'bg-gray-900 text-white font-semibold hover:bg-black shadow-sm active:scale-[0.98]',
     secondary:
-      'bg-surface-raised border border-border-default text-text-secondary hover:text-text-primary hover:border-border-default/80 hover:bg-surface-subtle active:scale-[0.98]',
+      'bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 hover:text-gray-900 shadow-sm active:scale-[0.98]',
     danger:
-      'bg-status-negative/10 border border-status-negative/30 text-status-negative hover:bg-status-negative/20 active:scale-[0.98]',
+      'bg-rose-50 border border-rose-200 text-rose-700 font-semibold hover:bg-rose-100 active:scale-[0.98]',
     ghost:
-      'bg-transparent text-text-secondary hover:text-text-primary hover:bg-surface-raised active:scale-[0.98]',
+      'bg-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:scale-[0.98]',
   };
 
   return (
     <button
       disabled={disabled || isSpinning}
-      className={`inline-flex items-center justify-center font-mono font-medium transition-fast select-none disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center justify-center font-sans font-medium transition-fast select-none disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {isSpinning ? (

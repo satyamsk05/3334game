@@ -10,8 +10,8 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-premation-base text-premation-textSecondary min-h-screen antialiased selection:bg-premation-accent/25 selection:text-white font-sans">
+    <html lang="en">
+      <body className="bg-surface-base text-text-primary min-h-screen antialiased selection:bg-accent-primary/20 selection:text-accent-primary font-sans">
         <AdminGuard>
           <AppShell>
             {children}

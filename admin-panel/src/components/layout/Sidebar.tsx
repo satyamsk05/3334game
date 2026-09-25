@@ -15,8 +15,9 @@ import {
   PanelLeft,
   LogOut,
   ChevronDown,
-  ChevronRight
+  ChevronUp
 } from 'lucide-react';
+import { Badge } from '@/components/ui/Badge';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -25,16 +26,17 @@ interface SidebarProps {
   setMobileOpen: (open: boolean) => void;
 }
 
+interface SubItem {
+  name: string;
+  href: string;
+  badge?: { text: string; variant: 'peach' | 'mint' | 'info' | 'neutral' };
+}
+
 interface NavItem {
   name: string;
   href: string;
   icon: any;
-  subItems?: Array<{ name: string; href: string }>;
-}
-
-interface NavSection {
-  title: string;
-  items: NavItem[];
+  subItems?: SubItem[];
 }
 
 export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: SidebarProps) {
@@ -42,7 +44,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
   const router = useRouter();
   const [adminName, setAdminName] = useState('Admin');
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
-    Users: true,
+    Operations: true,
     Games: true,
     Transactions: true,
     System: false,
@@ -68,78 +70,58 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
     setExpandedMenus((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
-  const navSections: NavSection[] = [
+  const navItems: NavItem[] = [
+    { name: 'Dashboard', href: '/', icon: LayoutGrid },
     {
-      title: 'Platform',
-      items: [
-        { name: 'Dashboard', href: '/', icon: LayoutGrid },
+      name: 'Players',
+      href: '/users',
+      icon: Users,
+      subItems: [
+        { name: 'Overview', href: '/users' },
+        { name: 'Active Players', href: '/users?status=active' },
+        { name: 'Suspended', href: '/users?status=banned', badge: { text: '!', variant: 'peach' } }
       ]
     },
     {
-      title: 'Operations',
-      items: [
-        {
-          name: 'Users',
-          href: '/users',
-          icon: Users,
-          subItems: [
-            { name: 'All Users', href: '/users' },
-            { name: 'Active Players', href: '/users?status=active' },
-            { name: 'Suspended / Banned', href: '/users?status=banned' }
-          ]
-        },
-        {
-          name: 'Games',
-          href: '/games',
-          icon: Gamepad2,
-          subItems: [
-            { name: 'Catalog & Config', href: '/games' },
-            { name: 'Live Operations', href: '/games?filter=live' }
-          ]
-        },
-        {
-          name: 'Transactions',
-          href: '/transactions/ledger',
-          icon: ArrowLeftRight,
-          subItems: [
-            { name: 'Wallet Ledger', href: '/transactions/ledger' },
-            { name: 'Deposits Queue', href: '/payments/deposits' },
-            { name: 'Withdrawals Queue', href: '/payments/withdrawals' }
-          ]
-        }
+      name: 'Games',
+      href: '/games',
+      icon: Gamepad2,
+      subItems: [
+        { name: 'Catalog', href: '/games' },
+        { name: 'Live Engine', href: '/games?filter=live', badge: { text: 'Live', variant: 'mint' } }
       ]
     },
     {
-      title: 'Intelligence',
-      items: [
-        { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-        { name: 'Reports', href: '/reports', icon: FileSpreadsheet },
-        { name: 'Support', href: '/support', icon: LifeBuoy }
+      name: 'Finance',
+      href: '/transactions/ledger',
+      icon: ArrowLeftRight,
+      subItems: [
+        { name: 'Wallet Ledger', href: '/transactions/ledger' },
+        { name: 'Deposits', href: '/payments/deposits' },
+        { name: 'Payouts', href: '/payments/withdrawals', badge: { text: 'Queue', variant: 'peach' } }
+      ]
+    },
+    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+    { name: 'Reports', href: '/reports', icon: FileSpreadsheet },
+    { name: 'Support', href: '/support', icon: LifeBuoy },
+    {
+      name: 'System',
+      href: '/system/health',
+      icon: Server,
+      subItems: [
+        { name: 'Node Health', href: '/system/health' },
+        { name: 'Settings', href: '/system/settings' },
+        { name: 'Announcements', href: '/system/announcements' }
       ]
     },
     {
-      title: 'System & Security',
-      items: [
-        {
-          name: 'System',
-          href: '/system/health',
-          icon: Server,
-          subItems: [
-            { name: 'Node Health', href: '/system/health' },
-            { name: 'Platform Settings', href: '/system/settings' },
-            { name: 'Announcements', href: '/system/announcements' }
-          ]
-        },
-        {
-          name: 'Security',
-          href: '/security/admins',
-          icon: ShieldCheck,
-          subItems: [
-            { name: 'Admin Staff', href: '/security/admins' },
-            { name: 'Roles & RBAC', href: '/security/roles' },
-            { name: 'Audit Logs', href: '/security/audit-logs' }
-          ]
-        }
+      name: 'Security',
+      href: '/security/admins',
+      icon: ShieldCheck,
+      subItems: [
+        { name: 'Staff Accounts', href: '/security/admins' },
+        { name: 'RBAC Roles', href: '/security/roles' },
+        { name: 'Audit Logs', href: '/security/audit-logs' }
       ]
     }
   ];
@@ -150,205 +132,172 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-40 bg-surface-base/80 backdrop-blur-sm md:hidden transition-fast"
+          className="fixed inset-0 z-40 bg-gray-900/20 backdrop-blur-sm md:hidden transition-fast"
           aria-hidden="true"
         />
       )}
 
-      {/* Main Studio Sidebar */}
+      {/* Main Soft Sidebar */}
       <aside
         aria-label="Admin Navigation Sidebar"
-        className={`fixed top-space-3 bottom-space-3 z-50 flex flex-col rounded-lg border border-border-default bg-surface-raised shadow-2xl transition-normal ${
-          collapsed ? 'w-[68px]' : 'w-[260px]'
+        className={`fixed top-4 bottom-4 z-50 flex flex-col rounded-[28px] bg-[#f8f9fb] border border-gray-200/60 shadow-[0_4px_24px_rgba(0,0,0,0.03)] transition-normal ${
+          collapsed ? 'w-[76px]' : 'w-[260px]'
         } ${
-          mobileOpen ? 'left-space-3' : '-left-[300px] md:left-space-3'
+          mobileOpen ? 'left-4' : '-left-[300px] md:left-4'
         }`}
       >
-        <div className="flex h-full flex-col p-space-3 overflow-hidden">
+        <div className="flex h-full flex-col p-4 overflow-hidden">
           
-          {/* Brand & Collapse Header */}
-          <div className="flex items-center justify-between pb-space-3 pt-space-1 px-space-1">
-            <div className={`flex items-center gap-space-2.5 overflow-hidden transition-normal ${collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xs bg-accent-primary text-text-inverse font-black text-xs shadow-sm font-mono">
-                334
+          {/* Header Brand */}
+          <div className="flex items-center justify-between pb-4 pt-1 px-1">
+            <Link href="/" className="flex items-center gap-3 overflow-hidden">
+              {/* Reference image style quadrant / dark sphere logo */}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gray-900 text-white shadow-md relative overflow-hidden">
+                <div className="grid grid-cols-2 gap-0.5 w-5 h-5">
+                  <div className="bg-white/90 rounded-tl-sm" />
+                  <div className="bg-white/40 rounded-tr-sm" />
+                  <div className="bg-white/40 rounded-bl-sm" />
+                  <div className="bg-white/90 rounded-br-sm" />
+                </div>
               </div>
-              <div className="flex flex-col whitespace-nowrap">
-                <span className="font-semibold text-text-primary text-sm tracking-tight">Studio Admin</span>
-                <span className="text-xs text-text-tertiary font-mono">v1.2 • PostgreSQL Hub</span>
+              <div className={`flex flex-col whitespace-nowrap transition-normal ${collapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'}`}>
+                <span className="font-extrabold text-gray-900 text-base tracking-tight font-sans">334 Studio</span>
+                <span className="text-xs text-gray-400 font-medium">Authoritative Portal</span>
               </div>
-            </div>
+            </Link>
 
-            {/* Collapsed Mode Logo */}
-            {collapsed && (
-              <div className="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-xs bg-accent-primary text-text-inverse font-black text-xs shadow-sm font-mono">
-                334
-              </div>
-            )}
-
-            {/* Collapse Toggle Button */}
+            {/* Collapse Toggle */}
             <button
               type="button"
               onClick={() => setCollapsed((prev: boolean) => !prev)}
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className={`flex h-7 w-7 items-center justify-center rounded-xs border border-border-default bg-surface-muted text-text-secondary hover:text-text-primary hover:border-border-default/80 transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary ${
-                collapsed ? 'mt-space-2 mx-auto' : ''
-              }`}
+              className="hidden md:flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200/80 text-gray-500 hover:text-gray-900 hover:bg-gray-50 shadow-sm transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary"
               title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
-              <PanelLeft className="h-3.5 w-3.5" aria-hidden="true" />
+              <PanelLeft className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
 
-          {/* Divider */}
-          <hr className="border-t border-border-muted my-space-1" />
+          {/* Navigation Items */}
+          <div className="mt-2 flex-1 overflow-y-auto pr-1 space-y-1.5 scrollbar-thin">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isDirectActive = pathname === item.href;
+              const isParentOfActive = item.subItems?.some((sub) => {
+                if (sub.href.includes('?')) {
+                  return pathname === sub.href.split('?')[0];
+                }
+                return pathname === sub.href;
+              });
+              const isActive = isDirectActive || (isParentOfActive && pathname !== '/');
+              const hasSubItems = Boolean(item.subItems && item.subItems.length > 0);
+              const isExpanded = expandedMenus[item.name] ?? isActive;
 
-          {/* Profile Section */}
-          <div className={`my-space-1.5 flex items-center gap-space-2.5 rounded-sm bg-surface-muted border border-border-muted p-space-1.5 transition-fast ${
-            collapsed ? 'justify-center p-space-1 border-none bg-transparent' : ''
-          }`}>
-            <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-xs bg-border-default border border-border-muted text-xs font-semibold text-text-primary font-mono">
-              {adminName.slice(0, 2).toUpperCase()}
-              <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-status-positive border border-surface-raised" aria-hidden="true" />
-            </div>
+              return (
+                <div key={item.name} className="flex flex-col">
+                  {/* Parent Item */}
+                  <div className="flex items-center">
+                    <Link
+                      href={item.href}
+                      onClick={() => {
+                        if (!hasSubItems) setMobileOpen(false);
+                      }}
+                      title={collapsed ? item.name : undefined}
+                      className={`group flex flex-1 items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition-fast ${
+                        isActive
+                          ? 'bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+                      } ${collapsed ? 'justify-center px-0' : ''}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon
+                          className={`h-5 w-5 shrink-0 transition-fast ${
+                            isActive ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-800'
+                          }`}
+                          aria-hidden="true"
+                        />
+                        <span
+                          className={`truncate transition-normal ${
+                            collapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'
+                          }`}
+                        >
+                          {item.name}
+                        </span>
+                      </div>
 
-            <div className={`flex flex-col overflow-hidden transition-normal ${collapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'}`}>
-              <span className="truncate text-xs font-medium text-text-primary">{adminName}</span>
-              <span className="text-xs text-text-tertiary font-mono">Platform Admin</span>
-            </div>
-          </div>
-
-          {/* Navigation Items with Groups & Sub-items */}
-          <div className="mt-space-1 flex-1 overflow-y-auto pr-space-1 space-y-space-3">
-            {navSections.map((section) => (
-              <div key={section.title} className="space-y-space-1">
-                {!collapsed && (
-                  <div className="px-space-2 pt-space-1 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-                    {section.title}
-                  </div>
-                )}
-                <ul className="space-y-0.5">
-                  {section.items.map((item) => {
-                    const Icon = item.icon;
-                    const isDirectActive = pathname === item.href;
-                    const isParentOfActive = item.subItems?.some((sub) => {
-                      if (sub.href.includes('?')) {
-                        return pathname === sub.href.split('?')[0];
-                      }
-                      return pathname === sub.href;
-                    });
-                    const isActive = isDirectActive || (isParentOfActive && pathname !== '/');
-                    const hasSubItems = Boolean(item.subItems && item.subItems.length > 0);
-                    const isExpanded = expandedMenus[item.name];
-
-                    return (
-                      <li key={item.name}>
-                        <div className="flex flex-col">
-                          <div className="flex items-center">
-                            <Link
-                              href={item.href}
-                              onClick={() => {
-                                if (!hasSubItems) setMobileOpen(false);
-                              }}
-                              title={collapsed ? item.name : undefined}
-                              className={`group relative flex flex-1 items-center gap-space-2.5 rounded-sm px-space-2.5 py-space-1.5 text-xs font-medium transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary ${
-                                isActive
-                                  ? 'bg-accent-primary/15 text-text-primary border border-accent-primary/30 shadow-sm'
-                                  : 'text-text-secondary hover:bg-surface-muted hover:text-text-primary'
-                              } ${collapsed ? 'justify-center px-0 py-space-2' : ''}`}
-                            >
-                              {isActive && (
-                                <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-accent-primary" aria-hidden="true" />
-                              )}
-
-                              <Icon
-                                className={`h-4 w-4 shrink-0 transition-fast ${
-                                  isActive ? 'text-accent-primary' : 'text-text-secondary group-hover:text-text-primary'
-                                }`}
-                                aria-hidden="true"
-                              />
-
-                              <span
-                                className={`truncate transition-normal ${
-                                  collapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'
-                                }`}
-                              >
-                                {item.name}
-                              </span>
-                            </Link>
-
-                            {!collapsed && hasSubItems && (
-                              <button
-                                type="button"
-                                onClick={(e) => toggleSubmenu(item.name, e)}
-                                aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${item.name} submenu`}
-                                className="p-space-1.5 text-text-secondary hover:text-text-primary transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary"
-                              >
-                                {isExpanded ? (
-                                  <ChevronDown className="h-3 w-3" aria-hidden="true" />
-                                ) : (
-                                  <ChevronRight className="h-3 w-3" aria-hidden="true" />
-                                )}
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Submenu items */}
-                          {!collapsed && hasSubItems && isExpanded && (
-                            <ul className="ml-space-6 pl-space-2 border-l border-border-default mt-0.5 space-y-0.5">
-                              {item.subItems!.map((sub) => {
-                                const isSubActive = pathname === sub.href;
-                                return (
-                                  <li key={sub.name}>
-                                    <Link
-                                      href={sub.href}
-                                      onClick={() => setMobileOpen(false)}
-                                      className={`block rounded-xs px-space-2 py-space-1 text-xs transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary ${
-                                        isSubActive
-                                          ? 'text-accent-primary font-semibold bg-accent-primary/10'
-                                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-muted'
-                                      }`}
-                                    >
-                                      {sub.name}
-                                    </Link>
-                                  </li>
-                                );
-                              })}
-                            </ul>
+                      {!collapsed && hasSubItems && (
+                        <button
+                          type="button"
+                          onClick={(e) => toggleSubmenu(item.name, e)}
+                          aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${item.name} menu`}
+                          className="p-1 text-gray-400 hover:text-gray-700 rounded-md focus-visible:outline-none"
+                        >
+                          {isExpanded ? (
+                            <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" aria-hidden="true" />
                           )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
+                        </button>
+                      )}
+                    </Link>
+                  </div>
+
+                  {/* Submenu Tree with delicate curve connections (exact match to reference image) */}
+                  {!collapsed && hasSubItems && isExpanded && (
+                    <div className="ml-6 pl-3 border-l-2 border-gray-200/80 my-1 space-y-1">
+                      {item.subItems!.map((sub) => {
+                        const isSubActive = pathname === sub.href;
+                        return (
+                          <Link
+                            key={sub.name}
+                            href={sub.href}
+                            onClick={() => setMobileOpen(false)}
+                            className={`flex items-center justify-between rounded-xl px-3 py-1.5 text-xs font-medium transition-fast ${
+                              isSubActive
+                                ? 'bg-white text-gray-900 font-bold shadow-sm'
+                                : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
+                            }`}
+                          >
+                            <span className="truncate">{sub.name}</span>
+                            {sub.badge && (
+                              <Badge variant={sub.badge.variant}>
+                                {sub.badge.text}
+                              </Badge>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {/* Bottom Actions & System Status */}
-          <div className="pt-space-2 border-t border-border-muted space-y-space-1.5">
-            <div
-              className={`flex items-center gap-space-2 rounded-xs bg-surface-muted border border-border-muted p-space-1.5 text-xs text-text-secondary ${
-                collapsed ? 'justify-center p-space-1' : ''
-              }`}
-              title="Authoritative Ops Node"
-            >
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-status-positive animate-pulse" aria-hidden="true" />
-              <span className={`truncate text-xs font-mono ${collapsed ? 'hidden' : 'inline'}`}>
-                PostgreSQL Direct
-              </span>
+          {/* User Profile & Logout Bottom Card */}
+          <div className="pt-3 border-t border-gray-200/60 space-y-2">
+            <div className={`flex items-center gap-3 rounded-2xl bg-white p-2.5 border border-gray-100 shadow-sm ${
+              collapsed ? 'justify-center p-1.5' : ''
+            }`}>
+              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 font-bold text-xs">
+                {adminName.slice(0, 2).toUpperCase()}
+                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+              </div>
+              <div className={`flex flex-col overflow-hidden ${collapsed ? 'hidden' : 'inline'}`}>
+                <span className="text-xs font-bold text-gray-900 truncate">{adminName}</span>
+                <span className="text-[11px] text-gray-400">Platform Admin</span>
+              </div>
             </div>
 
             <button
               type="button"
               onClick={handleLogout}
-              title={collapsed ? 'Logout' : undefined}
-              aria-label="Logout of administration portal"
-              className={`flex w-full items-center gap-space-2.5 rounded-xs border border-border-default bg-surface-muted px-space-2.5 py-space-1.5 text-xs font-medium text-text-secondary hover:border-status-negative/30 hover:bg-status-negative/10 hover:text-status-negative transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary ${
+              className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-gray-500 hover:text-rose-600 hover:bg-rose-50/80 transition-fast ${
                 collapsed ? 'justify-center px-0' : ''
               }`}
             >
-              <LogOut className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-              <span className={`whitespace-nowrap ${collapsed ? 'hidden' : 'inline'}`}>Logout</span>
+              <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span className={collapsed ? 'hidden' : 'inline'}>Sign out</span>
             </button>
           </div>
 
