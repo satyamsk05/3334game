@@ -54,7 +54,7 @@ export default function UsersManagementPage() {
       });
       if (res.success && res.data) {
         setUsers(res.data.users || []);
-        setTotal(res.data.total || 0);
+        setTotal(res.data.total ?? res.data.pagination?.total ?? res.data.users?.length ?? 0);
       } else {
         setUsers([]);
         setTotal(0);
@@ -216,10 +216,12 @@ export default function UsersManagementPage() {
                 </tr>
               ) : (
                 users.map((u) => {
-                  const depositRupees = Number(u.deposit_balance || 0) / 100;
-                  const winningsRupees = Number(u.winnings_balance || 0) / 100;
-                  const bonusRupees = Number(u.rewards_balance || 0) / 100;
-                  const totalRupees = Number(u.available_balance || 0) / 100;
+                  const depositRupees = Number(u.deposit_balance ?? (u as any).balance?.depositPaise ?? 0) / 100;
+                  const winningsRupees = Number(u.winnings_balance ?? (u as any).balance?.winningPaise ?? 0) / 100;
+                  const bonusRupees = Number(u.rewards_balance ?? (u as any).balance?.bonusPaise ?? 0) / 100;
+                  const totalRupees = Number(u.available_balance ?? (u as any).balance?.totalPaise ?? 0) / 100;
+                  const isBlocked = Boolean(u.is_blocked ?? (u as any).isBanned);
+                  const createdDate = u.created_at || (u as any).createdAt;
                   const isProcessing = processingId === u.id;
 
                   return (
@@ -256,7 +258,7 @@ export default function UsersManagementPage() {
                       </td>
 
                       <td className="py-3.5 px-6">
-                        {u.is_blocked ? (
+                        {isBlocked ? (
                           <Badge variant="negative">Banned</Badge>
                         ) : (
                           <Badge variant="positive">Active</Badge>
@@ -280,7 +282,7 @@ export default function UsersManagementPage() {
                       </td>
 
                       <td className="py-3.5 px-6 text-xs text-gray-400 whitespace-nowrap">
-                        {new Date(u.created_at).toLocaleDateString()}
+                        {createdDate ? new Date(createdDate).toLocaleDateString() : '—'}
                       </td>
 
                       <td className="py-3.5 px-6 text-center">
@@ -294,16 +296,16 @@ export default function UsersManagementPage() {
                             type="button"
                             onClick={() => toggleBan(u)}
                             disabled={isProcessing}
-                            title={u.is_blocked ? 'Unban User' : 'Ban User'}
+                            title={isBlocked ? 'Unban User' : 'Ban User'}
                             className={`rounded-xl p-2 text-xs transition-fast ${
-                              u.is_blocked
+                              isBlocked
                                 ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                                 : 'bg-rose-50 text-rose-700 hover:bg-rose-100'
                             }`}
                           >
                             {isProcessing ? (
                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            ) : u.is_blocked ? (
+                            ) : isBlocked ? (
                               <UserCheck className="h-3.5 w-3.5" />
                             ) : (
                               <UserX className="h-3.5 w-3.5" />

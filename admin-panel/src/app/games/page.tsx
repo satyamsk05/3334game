@@ -124,7 +124,7 @@ export default function GamesManagementPage() {
       )}
 
       {/* Game Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
         {loading ? (
           <div className="col-span-full py-16 text-center text-text-tertiary">
             <Loader2 className="mx-auto h-6 w-6 animate-spin text-accent-primary mb-2" />
@@ -146,14 +146,14 @@ export default function GamesManagementPage() {
                 className="group flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-accent-primary/10 text-accent-primary border border-accent-primary/20">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-primary/10 text-accent-primary border border-accent-primary/20">
                         <Gamepad2 className="h-4 w-4" />
                       </div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-text-primary tracking-tight">{game.name}</h3>
-                        <span className="text-[10px] font-mono text-text-tertiary">{game.slug}</span>
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-semibold text-text-primary tracking-tight truncate">{game.name}</h3>
+                        <span className="text-[10px] font-mono text-text-tertiary block truncate">{game.slug}</span>
                       </div>
                     </div>
 
@@ -161,34 +161,35 @@ export default function GamesManagementPage() {
                       variant={
                         isLive ? 'positive' : isMaintenance ? 'warning' : 'neutral'
                       }
+                      className="shrink-0"
                     >
                       {game.status}
                     </Badge>
                   </div>
 
                   <div className="mt-4 space-y-2 text-xs font-mono border-t border-border-muted pt-3">
-                    <div className="flex justify-between text-text-tertiary">
-                      <span>Game Engine:</span>
-                      <span className="text-text-secondary">{game.type || 'RNG Wheel'}</span>
+                    <div className="flex items-center justify-between gap-2 text-text-tertiary">
+                      <span className="shrink-0 text-text-secondary">Game Engine:</span>
+                      <span className="text-text-primary font-medium">{game.type || 'RNG Wheel'}</span>
                     </div>
-                    <div className="flex justify-between text-text-tertiary">
-                      <span>Display Order:</span>
-                      <span className="text-text-secondary">#{game.display_order}</span>
+                    <div className="flex items-center justify-between gap-2 text-text-tertiary">
+                      <span className="shrink-0 text-text-secondary">Display Order:</span>
+                      <span className="text-text-primary font-medium">#{game.display_order}</span>
                     </div>
-                    <div className="flex justify-between text-text-tertiary">
-                      <span>Catalog ID:</span>
-                      <span className="text-text-primary truncate max-w-[120px]">{game.id}</span>
+                    <div className="flex items-center justify-between gap-2 text-text-tertiary">
+                      <span className="shrink-0 text-text-secondary whitespace-nowrap">Catalog ID:</span>
+                      <span className="text-text-primary font-medium truncate text-right font-mono">{game.id}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-5 pt-3 border-t border-border-muted flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1">
+                <div className="mt-5 pt-3.5 border-t border-border-muted flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <select
                       value={game.status}
                       onChange={(e) => handleStatusChange(game.id, e.target.value as any)}
                       disabled={isUpdating}
-                      className="h-7 rounded border border-border-default bg-surface-base px-2 text-xs text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+                      className="h-8 rounded-xl border border-border-default bg-surface-base px-2.5 text-xs font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary shrink-0"
                     >
                       <option value="LIVE">LIVE</option>
                       <option value="COMING_SOON">COMING SOON</option>
@@ -196,9 +197,9 @@ export default function GamesManagementPage() {
                     </select>
                   </div>
 
-                  <Link href={`/games/${game.id}`}>
-                    <Button variant="secondary" size="sm">
-                      <Settings2 className="h-3 w-3 text-text-tertiary" />
+                  <Link href={`/games/${game.id}`} className="shrink-0">
+                    <Button variant="secondary" size="sm" className="whitespace-nowrap shrink-0">
+                      <Settings2 className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
                       <span>Configure</span>
                     </Button>
                   </Link>
