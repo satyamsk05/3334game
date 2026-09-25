@@ -6,16 +6,18 @@ import {
   LayoutGrid,
   Users,
   Gamepad2,
+  ArrowDownLeft,
+  ArrowUpRight,
   ArrowLeftRight,
   BarChart3,
   FileSpreadsheet,
   LifeBuoy,
   Server,
+  Settings,
   ShieldCheck,
+  FileText,
   PanelLeft,
-  LogOut,
-  ChevronDown,
-  ChevronUp
+  LogOut
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 
@@ -26,30 +28,20 @@ interface SidebarProps {
   setMobileOpen: (open: boolean) => void;
 }
 
-interface SubItem {
-  name: string;
-  href: string;
-  badge?: { text: string; variant: 'peach' | 'mint' | 'info' | 'neutral' };
-}
-
-interface NavItem {
-  name: string;
-  href: string;
-  icon: any;
-  subItems?: SubItem[];
+interface NavSection {
+  title?: string;
+  items: {
+    name: string;
+    href: string;
+    icon: any;
+    badge?: { text: string; variant: 'peach' | 'mint' | 'info' | 'neutral' };
+  }[];
 }
 
 export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [adminName, setAdminName] = useState('Admin');
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
-    Operations: true,
-    Games: true,
-    Transactions: true,
-    System: false,
-    Security: false
-  });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -64,64 +56,38 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
     router.push('/login');
   };
 
-  const toggleSubmenu = (name: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setExpandedMenus((prev) => ({ ...prev, [name]: !prev[name] }));
-  };
-
-  const navItems: NavItem[] = [
-    { name: 'Dashboard', href: '/', icon: LayoutGrid },
+  const navSections: NavSection[] = [
     {
-      name: 'Players',
-      href: '/users',
-      icon: Users,
-      subItems: [
-        { name: 'Overview', href: '/users' },
-        { name: 'Active Players', href: '/users?status=active' },
-        { name: 'Suspended', href: '/users?status=banned', badge: { text: '!', variant: 'peach' } }
+      title: 'OPERATIONS',
+      items: [
+        { name: 'Dashboard', href: '/', icon: LayoutGrid },
+        { name: 'Players', href: '/users', icon: Users },
+        { name: 'Games', href: '/games', icon: Gamepad2 }
       ]
     },
     {
-      name: 'Games',
-      href: '/games',
-      icon: Gamepad2,
-      subItems: [
-        { name: 'Catalog', href: '/games' },
-        { name: 'Live Engine', href: '/games?filter=live', badge: { text: 'Live', variant: 'mint' } }
+      title: 'FINANCE',
+      items: [
+        { name: 'Deposits', href: '/payments/deposits', icon: ArrowDownLeft },
+        { name: 'Withdrawals', href: '/payments/withdrawals', icon: ArrowUpRight },
+        { name: 'Wallet Ledger', href: '/transactions/ledger', icon: ArrowLeftRight }
       ]
     },
     {
-      name: 'Finance',
-      href: '/transactions/ledger',
-      icon: ArrowLeftRight,
-      subItems: [
-        { name: 'Wallet Ledger', href: '/transactions/ledger' },
-        { name: 'Deposits', href: '/payments/deposits' },
-        { name: 'Payouts', href: '/payments/withdrawals', badge: { text: 'Queue', variant: 'peach' } }
-      ]
-    },
-    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-    { name: 'Reports', href: '/reports', icon: FileSpreadsheet },
-    { name: 'Support', href: '/support', icon: LifeBuoy },
-    {
-      name: 'System',
-      href: '/system/health',
-      icon: Server,
-      subItems: [
-        { name: 'Node Health', href: '/system/health' },
-        { name: 'Settings', href: '/system/settings' },
-        { name: 'Announcements', href: '/system/announcements' }
+      title: 'INSIGHTS',
+      items: [
+        { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+        { name: 'Reports', href: '/reports', icon: FileSpreadsheet },
+        { name: 'Support', href: '/support', icon: LifeBuoy }
       ]
     },
     {
-      name: 'Security',
-      href: '/security/admins',
-      icon: ShieldCheck,
-      subItems: [
-        { name: 'Staff Accounts', href: '/security/admins' },
-        { name: 'RBAC Roles', href: '/security/roles' },
-        { name: 'Audit Logs', href: '/security/audit-logs' }
+      title: 'SYSTEM & SECURITY',
+      items: [
+        { name: 'System Health', href: '/system/health', icon: Server },
+        { name: 'Settings', href: '/system/settings', icon: Settings },
+        { name: 'Staff Admins', href: '/security/admins', icon: ShieldCheck },
+        { name: 'Audit Logs', href: '/security/audit-logs', icon: FileText }
       ]
     }
   ];
@@ -151,7 +117,6 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
           {/* Header Brand */}
           <div className="flex items-center justify-between pb-4 pt-1 px-1">
             <Link href="/" className="flex items-center gap-3 overflow-hidden">
-              {/* Reference image style quadrant / dark sphere logo */}
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gray-900 text-white shadow-md relative overflow-hidden">
                 <div className="grid grid-cols-2 gap-0.5 w-5 h-5">
                   <div className="bg-white/90 rounded-tl-sm" />
@@ -178,32 +143,28 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
             </button>
           </div>
 
-          {/* Navigation Items */}
-          <div className="mt-2 flex-1 overflow-y-auto pr-1 space-y-1.5 scrollbar-thin">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isDirectActive = pathname === item.href;
-              const isParentOfActive = item.subItems?.some((sub) => {
-                if (sub.href.includes('?')) {
-                  return pathname === sub.href.split('?')[0];
-                }
-                return pathname === sub.href;
-              });
-              const isActive = isDirectActive || (isParentOfActive && pathname !== '/');
-              const hasSubItems = Boolean(item.subItems && item.subItems.length > 0);
-              const isExpanded = expandedMenus[item.name] ?? isActive;
+          {/* Direct Flat Navigation Items */}
+          <div className="mt-2 flex-1 overflow-y-auto pr-1 space-y-4 scrollbar-thin">
+            {navSections.map((section, sIdx) => (
+              <div key={section.title || sIdx} className="space-y-1">
+                {section.title && !collapsed && (
+                  <div className="px-3 pb-1 pt-1 text-[10px] font-extrabold tracking-wider text-gray-400 uppercase">
+                    {section.title}
+                  </div>
+                )}
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = item.href === '/'
+                    ? pathname === '/'
+                    : pathname.startsWith(item.href);
 
-              return (
-                <div key={item.name} className="flex flex-col">
-                  {/* Parent Item */}
-                  <div className="flex items-center">
+                  return (
                     <Link
+                      key={item.name}
                       href={item.href}
-                      onClick={() => {
-                        if (!hasSubItems) setMobileOpen(false);
-                      }}
+                      onClick={() => setMobileOpen(false)}
                       title={collapsed ? item.name : undefined}
-                      className={`group flex flex-1 items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition-fast ${
+                      className={`group flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition-fast ${
                         isActive
                           ? 'bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100'
                           : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
@@ -225,53 +186,16 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                         </span>
                       </div>
 
-                      {!collapsed && hasSubItems && (
-                        <button
-                          type="button"
-                          onClick={(e) => toggleSubmenu(item.name, e)}
-                          aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${item.name} menu`}
-                          className="p-1 text-gray-400 hover:text-gray-700 rounded-md focus-visible:outline-none"
-                        >
-                          {isExpanded ? (
-                            <ChevronUp className="h-4 w-4" aria-hidden="true" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                          )}
-                        </button>
+                      {!collapsed && item.badge && (
+                        <Badge variant={item.badge.variant}>
+                          {item.badge.text}
+                        </Badge>
                       )}
                     </Link>
-                  </div>
-
-                  {/* Submenu Tree with delicate curve connections (exact match to reference image) */}
-                  {!collapsed && hasSubItems && isExpanded && (
-                    <div className="ml-6 pl-3 border-l-2 border-gray-200/80 my-1 space-y-1">
-                      {item.subItems!.map((sub) => {
-                        const isSubActive = pathname === sub.href;
-                        return (
-                          <Link
-                            key={sub.name}
-                            href={sub.href}
-                            onClick={() => setMobileOpen(false)}
-                            className={`flex items-center justify-between rounded-xl px-3 py-1.5 text-xs font-medium transition-fast ${
-                              isSubActive
-                                ? 'bg-white text-gray-900 font-bold shadow-sm'
-                                : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
-                            }`}
-                          >
-                            <span className="truncate">{sub.name}</span>
-                            {sub.badge && (
-                              <Badge variant={sub.badge.variant}>
-                                {sub.badge.text}
-                              </Badge>
-                            )}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            ))}
           </div>
 
           {/* User Profile & Logout Bottom Card */}
