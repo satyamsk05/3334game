@@ -26,6 +26,7 @@ import com.example.app334.ui.theme.*
 fun TopHeader(
     username: String = "satyamog",
     balance: String = "₹0.00",
+    avatarRes: Int = R.drawable.avatar_1,
     onProfileClick: () -> Unit = {},
     onWalletClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -62,7 +63,7 @@ fun TopHeader(
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.avatar_1),
+                        painter = painterResource(id = avatarRes),
                         contentDescription = "Avatar",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop

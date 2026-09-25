@@ -296,8 +296,11 @@ fun HomeScreen(
                     }
                     SubScreen.ProfileDetails -> {
                         ProfileScreen(
+                            userId = userProfile.userId,
                             username = userProfile.username,
                             phone = userProfile.phone,
+                            avatarId = userProfile.avatarId,
+                            avatarRes = userProfile.avatarRes,
                             balance = walletBalance.formattedTotal,
                             onBackClick = { activeSubScreen = null },
                             onWalletClick = {
@@ -319,6 +322,7 @@ fun HomeScreen(
                                         TopHeader(
                                             username = userProfile.username,
                                             balance = walletBalance.formattedTotal,
+                                            avatarRes = userProfile.avatarRes,
                                             onProfileClick = { activeSubScreen = SubScreen.ProfileDetails },
                                             onWalletClick = { selectedTab = NavItem.PROFILE }
                                         )

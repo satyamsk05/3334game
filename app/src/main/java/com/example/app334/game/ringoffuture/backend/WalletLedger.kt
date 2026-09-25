@@ -58,7 +58,8 @@ data class UserProfile(
     val userId: String = "",
     val username: String = "Player",
     val phone: String = "",
-    val avatarRes: Int = 1
+    val avatarId: String = "avatar_1",
+    val avatarRes: Int = com.example.app334.R.drawable.avatar_1
 )
 
 data class BetDebitBreakdown(
@@ -212,6 +213,9 @@ object WalletLedger {
         _transactions.update { listOf(tx) + it }
     }
 
+    fun generateDepositId(): String = "D" + (100000000000L..999999999999L).random()
+    fun generateWithdrawalId(): String = "T" + (100000000000L..999999999999L).random()
+
     @Synchronized
     fun addDepositCash(amountPaise: Long, utr: String = ""): WalletTransaction {
         val current = _walletBalance.value
@@ -219,12 +223,13 @@ object WalletLedger {
         _walletBalance.value = newBalance
 
         val tx = WalletTransaction(
+            id = generateDepositId(),
             userId = _userProfile.value.userId,
             type = TransactionType.DEPOSIT,
             amountPaise = amountPaise,
             balanceAfterPaise = newBalance.totalPaise,
             status = TransactionStatus.SUCCESS,
-            referenceId = utr.ifEmpty { "DEP-UPI-${System.currentTimeMillis().toString().takeLast(8)}" },
+            referenceId = utr.ifEmpty { generateDepositId() },
             description = "Cash Deposit"
         )
         _transactions.update { listOf(tx) + it }
@@ -234,13 +239,15 @@ object WalletLedger {
     @Synchronized
     fun recordPendingDeposit(amountPaise: Long): WalletTransaction {
         val current = _walletBalance.value
+        val depId = generateDepositId()
         val tx = WalletTransaction(
+            id = depId,
             userId = _userProfile.value.userId,
             type = TransactionType.DEPOSIT,
             amountPaise = amountPaise,
             balanceAfterPaise = current.totalPaise,
             status = TransactionStatus.PENDING,
-            referenceId = "DEP-REQ-${System.currentTimeMillis().toString().takeLast(6)}",
+            referenceId = depId,
             description = "Deposit Request (Awaiting Payment / UTR Approval)"
         )
         _transactions.update { listOf(tx) + it }
@@ -271,8 +278,9 @@ object WalletLedger {
         val newBalance = current.copy(winningPaise = current.winningPaise - amountPaise)
         _walletBalance.value = newBalance
 
-        val txId = referenceId ?: "WD-${System.currentTimeMillis().toString().takeLast(6)}"
+        val txId = referenceId ?: generateWithdrawalId()
         val tx = WalletTransaction(
+            id = txId,
             userId = _userProfile.value.userId,
             type = TransactionType.WITHDRAWAL,
             amountPaise = amountPaise,
@@ -315,12 +323,14 @@ object WalletLedger {
         }
     }
 
-    fun updateProfile(name: String, phone: String, userId: String? = null) {
+    fun updateProfile(name: String, phone: String, userId: String? = null, avatarRes: Int? = null, avatarId: String? = null) {
         _userProfile.update { current ->
             current.copy(
                 username = name,
                 phone = phone,
-                userId = userId ?: current.userId
+                userId = userId ?: current.userId,
+                avatarRes = avatarRes ?: current.avatarRes,
+                avatarId = avatarId ?: current.avatarId
             )
         }
     }
