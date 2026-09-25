@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, Lock, User, Loader2, AlertCircle } from 'lucide-react';
 import { api } from '@/services/api';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -37,77 +39,74 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black px-4 text-[#e1e1e1]">
-      <div className="w-full max-w-sm space-y-6 rounded-[8px] border border-white/[0.08] bg-[#212123] p-7 shadow-2xl">
+    <div className="flex min-h-screen items-center justify-center bg-surface-base px-4 text-text-primary">
+      <Card className="w-full max-w-sm space-y-6 p-7 shadow-2xl">
         
         {/* Studio Brand Header */}
         <div className="text-center space-y-2">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-[4px] bg-[#2988ff] text-white font-black text-sm shadow-md">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-md bg-accent-primary text-text-inverse font-black text-sm shadow-md">
             334
           </div>
-          <h1 className="text-base font-semibold tracking-tight text-[#e1e1e1]">Studio Authentication</h1>
-          <p className="text-[12px] text-[#a6a6a6]">Protected Portal — Authorized Operations Only</p>
+          <h1 className="text-base font-semibold tracking-tight text-text-primary">Studio Authentication</h1>
+          <p className="text-xs text-text-secondary">Protected Portal — Authorized Operations Only</p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="flex items-center gap-2 rounded-[4px] border border-red-500/20 bg-red-500/10 p-2.5 text-[12px] text-red-400">
+          <div className="flex items-center gap-2 rounded-md border border-status-negative/20 bg-status-negative/10 p-2.5 text-xs text-status-negative">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 text-[12px]">
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block mb-1.5 font-medium text-[#a6a6a6]">Admin Username</label>
+            <label className="block mb-1.5 font-medium text-text-secondary">Admin Username</label>
             <div className="relative">
-              <User className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#8c8c8c]" />
+              <User className="absolute left-3 top-2.5 h-3.5 w-3.5 text-text-tertiary" />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username (e.g. admin)"
-                className="w-full rounded-[4px] border border-white/[0.08] bg-white/[0.04] py-2 pl-9 pr-3 text-[#e1e1e1] placeholder-[#8c8c8c] focus:border-[#2988ff] focus:outline-none focus:ring-1 focus:ring-[#2988ff] transition-all"
+                className="w-full rounded border border-border-default bg-surface-base py-2 pl-9 pr-3 text-text-primary placeholder:text-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
               />
             </div>
           </div>
 
           <div>
-            <label className="block mb-1.5 font-medium text-[#a6a6a6]">Admin Password</label>
+            <label className="block mb-1.5 font-medium text-text-secondary">Admin Password</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#8c8c8c]" />
+              <Lock className="absolute left-3 top-2.5 h-3.5 w-3.5 text-text-tertiary" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full rounded-[4px] border border-white/[0.08] bg-white/[0.04] py-2 pl-9 pr-3 text-[#e1e1e1] placeholder-[#8c8c8c] focus:border-[#2988ff] focus:outline-none focus:ring-1 focus:ring-[#2988ff] transition-all"
+                className="w-full rounded border border-border-default bg-surface-base py-2 pl-9 pr-3 text-text-primary placeholder:text-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
               />
             </div>
           </div>
 
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            size="md"
             disabled={loading}
-            className="w-full rounded-[4px] bg-[#2988ff] py-2 font-medium text-white hover:bg-[#1f73dc] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2988ff] focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 text-[12.5px]"
+            isLoading={loading}
+            className="w-full"
           >
-            {loading ? (
-              <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Authenticating...
-              </>
-            ) : (
-              'Sign In to Admin Portal'
-            )}
-          </button>
+            Sign In to Admin Portal
+          </Button>
         </form>
 
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#8c8c8c] pt-2 border-t border-white/[0.06]">
-          <ShieldCheck className="h-3.5 w-3.5 text-[#2988ff]" />
+        <div className="flex items-center justify-center gap-1.5 text-xs text-text-tertiary pt-2 border-t border-border-muted">
+          <ShieldCheck className="h-3.5 w-3.5 text-accent-primary" />
           <span>Encrypted 256-bit Admin Session</span>
         </div>
 
-      </div>
+      </Card>
     </div>
   );
 }

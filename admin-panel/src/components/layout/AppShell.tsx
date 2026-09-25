@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-black text-[#e1e1e1] flex">
+    <div className="min-h-screen bg-surface-base text-text-primary flex font-mono text-sm">
       {/* Studio Sidebar Component */}
       <Sidebar
         collapsed={collapsed}
@@ -33,51 +33,53 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Main Content Area */}
       <div
-        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out ${
+        className={`flex-1 flex flex-col min-w-0 transition-normal ${
           collapsed ? 'md:pl-[88px]' : 'md:pl-[280px]'
         }`}
       >
         {/* Top Floating Utility Header */}
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-white/[0.08] bg-black/85 backdrop-blur-md px-4 sm:px-6">
-          <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border-default bg-surface-base/90 backdrop-blur-md px-space-4 sm:px-space-6">
+          <div className="flex items-center gap-space-3">
             {/* Mobile Toggle Button */}
             <button
+              type="button"
               onClick={() => setMobileOpen(true)}
-              className="flex h-8 w-8 items-center justify-center rounded-[4px] border border-white/[0.08] bg-white/[0.04] text-[#a6a6a6] md:hidden hover:text-[#e1e1e1]"
-              aria-label="Open sidebar"
+              className="flex h-8 w-8 items-center justify-center rounded-xs border border-border-default bg-surface-raised text-text-secondary md:hidden hover:text-text-primary transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary"
+              aria-label="Open navigation sidebar"
             >
-              <Menu className="h-4 w-4" />
+              <Menu className="h-4 w-4" aria-hidden="true" />
             </button>
 
             {/* Breadcrumb / Title Context */}
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-[#8c8c8c]">Platform</span>
-              <span className="text-[#8c8c8c]">/</span>
-              <span className="font-medium text-[#e1e1e1]">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-space-2 text-xs">
+              <span className="text-text-tertiary">Platform</span>
+              <span className="text-border-default" aria-hidden="true">/</span>
+              <span className="font-medium text-text-primary">
                 {pathname === '/' ? 'Overview Telemetry' : pathname.replace('/', '').replace('payments/', '')}
               </span>
-            </div>
+            </nav>
           </div>
 
           {/* Quick Universal Search */}
           <div className="relative w-48 sm:w-64">
-            <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-[#8c8c8c]" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-text-tertiary" aria-hidden="true" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Search user, ID..."
-              className="w-full rounded-[4px] border border-white/[0.08] bg-white/[0.04] py-1 pl-8 pr-8 text-[12px] text-[#e1e1e1] placeholder-[#8c8c8c] focus:border-[#2988ff] focus:outline-none focus:ring-1 focus:ring-[#2988ff] transition-all"
+              aria-label="Search users and identifiers"
+              className="w-full rounded-xs border border-border-default bg-surface-raised py-1.5 pl-8 pr-8 text-xs text-text-primary placeholder-text-tertiary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
             />
-            <kbd className="absolute right-2 top-1.5 flex items-center gap-0.5 rounded-[3px] border border-white/[0.08] bg-[#212123] px-1 py-0.5 text-[9px] text-[#8c8c8c] font-mono">
-              <Command className="h-2 w-2" /> K
+            <kbd className="absolute right-2 top-2 flex items-center gap-0.5 rounded-xs border border-border-default bg-surface-muted px-1 py-0.5 text-[9px] text-text-tertiary font-mono">
+              <Command className="h-2.5 w-2.5" aria-hidden="true" /> K
             </kbd>
           </div>
         </header>
 
         {/* Viewport Main Children */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-space-4 sm:p-space-6 lg:p-space-8 max-w-7xl w-full mx-auto">
           {children}
         </main>
       </div>

@@ -9,39 +9,67 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        premation: {
+        text: {
+          primary: '#f5f5f5',
+          secondary: '#a3a3a3',
+          tertiary: '#737373',
+          inverse: '#0a0a0a',
+        },
+        surface: {
           base: '#000000',
-          muted: '#212123',
-          raised: 'rgba(255, 255, 255, 0.04)',
-          border: 'rgba(255, 255, 255, 0.08)',
-          borderHover: 'rgba(255, 255, 255, 0.16)',
-          accent: '#2988ff',
-          accentHover: '#1f73dc',
-          accentSoft: 'rgba(41, 136, 255, 0.12)',
-          textPrimary: '#a6a6a6',
-          textSecondary: '#e1e1e1',
-          textInverse: '#8c8c8c',
+          raised: '#141416',
+          strong: '#1f1f22',
+          muted: '#0a0a0b',
+        },
+        border: {
+          default: '#2a2a2e',
+          muted: '#1c1c1f',
+        },
+        accent: {
+          primary: '#2988ff',
+        },
+        status: {
+          positive: '#22c55e',
+          negative: '#fb7185',
+          warning: '#f59e0b',
         },
       },
+      spacing: {
+        'space-1': '2px',
+        'space-2': '4px',
+        'space-3': '8px',
+        'space-4': '12px',
+        'space-5': '16px',
+        'space-6': '20px',
+        'space-7': '24px',
+        'space-8': '32px',
+      },
       borderRadius: {
-        xs: '3px',
-        sm: '4px',
+        xs: '4px',
+        sm: '6px',
         md: '8px',
+        lg: '12px',
       },
-      boxShadow: {
-        'accent-inset': 'rgb(41, 136, 255) 2px 0px 0px 0px inset',
-        'accent-bottom': 'rgb(41, 136, 255) 0px -2px 0px 0px inset',
-      },
-      transitionDuration: {
-        instant: '150ms',
-        fast: '200ms',
-        normal: '300ms',
+      fontSize: {
+        xs: ['12px', { lineHeight: '18px' }],
+        sm: ['13px', { lineHeight: '19.5px' }],
+        md: ['14px', { lineHeight: '21px' }],
+        lg: ['16px', { lineHeight: '24px' }],
+        xl: ['18px', { lineHeight: '27px' }],
+        '2xl': ['22px', { lineHeight: '30px' }],
+        '3xl': ['28px', { lineHeight: '36px' }],
+        '4xl': ['34px', { lineHeight: '42px' }],
       },
       fontFamily: {
-        sans: ['var(--font-geist)', 'Geist', 'Geist Fallback', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['var(--font-geist-mono)', 'Geist Mono', 'ui-monospace', 'monospace'],
+        mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'Roboto Mono', 'Menlo', 'monospace'],
+        sans: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'Roboto Mono', 'Menlo', 'monospace'],
+      },
+      transitionDuration: {
+        instant: '100ms',
+        fast: '150ms',
+        normal: '200ms',
       },
     },
   },
   plugins: [],
-}
+};

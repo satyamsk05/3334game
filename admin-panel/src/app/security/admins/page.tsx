@@ -5,13 +5,12 @@ import {
   UserPlus,
   Loader2,
   AlertCircle,
-  CheckCircle2,
-  Lock,
-  UserCheck,
-  UserX,
   X
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 export default function AdminsManagementPage() {
   const [admins, setAdmins] = useState<any[]>([]);
@@ -104,167 +103,173 @@ export default function AdminsManagementPage() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.08] pb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold tracking-tight text-[#e1e1e1]">Administrative Staff</h1>
-            <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10.5px] font-mono text-emerald-400 border border-emerald-500/20">
-              RBAC Protected
-            </span>
+            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Administrative Staff</h1>
+            <Badge variant="positive">RBAC Protected</Badge>
           </div>
-          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Authoritative operator accounts, role boundaries and session governance</p>
+          <p className="text-xs text-text-secondary mt-1">Authoritative operator accounts, role boundaries and session governance</p>
         </div>
 
-        <button
+        <Button
+          variant="primary"
+          size="sm"
           onClick={() => setModalOpen(true)}
-          className="flex h-8 items-center gap-1.5 rounded-[4px] bg-[#2988ff] px-3 text-[12px] font-medium text-white hover:bg-[#2988ff]/90 transition-all shadow-sm"
+          aria-label="Create staff account"
         >
           <UserPlus className="h-3.5 w-3.5" />
           <span>New Staff Account</span>
-        </button>
+        </Button>
       </div>
 
       {error && (
-        <div className="rounded-[6px] border border-red-500/20 bg-red-500/10 p-3 text-[12px] text-red-400">
+        <div className="rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative">
           {error}
         </div>
       )}
 
       {/* Admins Table */}
-      <div className="overflow-hidden rounded-[8px] border border-white/[0.08] bg-[#212123]">
-        <table className="w-full text-left text-[12px] text-[#a6a6a6]">
-          <thead className="border-b border-white/[0.08] bg-black text-[#8c8c8c] uppercase text-[10px] font-mono tracking-wider">
-            <tr>
-              <th className="px-4 py-3">Admin Username</th>
-              <th className="px-4 py-3">Assigned Role</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Account ID</th>
-              <th className="px-4 py-3">Created</th>
-              <th className="px-4 py-3 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/[0.06] text-[11.5px]">
-            {loading ? (
+      <Card className="overflow-hidden p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs text-text-secondary">
+            <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-[10px] font-mono tracking-wider">
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-[#8c8c8c]">
-                  <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#2988ff] mb-2" />
-                  <span>Loading administrative accounts...</span>
-                </td>
+                <th className="px-4 py-3">Admin Username</th>
+                <th className="px-4 py-3">Assigned Role</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Account ID</th>
+                <th className="px-4 py-3">Created</th>
+                <th className="px-4 py-3 text-center">Action</th>
               </tr>
-            ) : admins.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-[#8c8c8c]">
-                  No staff accounts configured. Default root admin active via environment.
-                </td>
-              </tr>
-            ) : (
-              admins.map((a) => {
-                const isToggling = togglingId === a.id;
-                return (
-                  <tr key={a.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-[4px] bg-white/[0.05] font-semibold text-[#e1e1e1]">
-                          {a.username.slice(0, 2).toUpperCase()}
+            </thead>
+            <tbody className="divide-y divide-border-muted text-xs">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center text-text-tertiary">
+                    <Loader2 className="mx-auto h-5 w-5 animate-spin text-accent-primary mb-2" />
+                    <span>Loading administrative accounts...</span>
+                  </td>
+                </tr>
+              ) : admins.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-10 text-center text-text-tertiary">
+                    No staff accounts configured. Default root admin active via environment.
+                  </td>
+                </tr>
+              ) : (
+                admins.map((a) => {
+                  const isToggling = togglingId === a.id;
+                  return (
+                    <tr key={a.id} className="hover:bg-surface-subtle transition-fast">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-7 w-7 items-center justify-center rounded bg-surface-subtle font-semibold text-text-primary text-xs">
+                            {a.username.slice(0, 2).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-text-primary">{a.username}</span>
                         </div>
-                        <span className="font-medium text-[#e1e1e1]">{a.username}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 font-mono">
-                      <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-semibold border ${
-                        a.role === 'SUPER_ADMIN' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                        a.role === 'FINANCE_ADMIN' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                        a.role === 'GAME_OPERATOR' ? 'bg-[#2988ff]/10 text-[#2988ff] border border-[#2988ff]/20' :
-                        'bg-white/[0.04] text-[#8c8c8c] border-white/[0.08]'
-                      }`}>
-                        {a.role}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium ${
-                        a.is_active ? 'text-emerald-400' : 'text-rose-400'
-                      }`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${a.is_active ? 'bg-emerald-400' : 'bg-rose-400'}`} />
-                        {a.is_active ? 'ACTIVE' : 'DISABLED'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-[#8c8c8c] text-[11px]">
-                      {a.id}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-[#8c8c8c] text-[11px]">
-                      {new Date(a.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => handleToggle(a.id, a.is_active)}
-                        disabled={isToggling}
-                        className={`rounded-[3px] border px-2.5 py-1 text-[11px] font-medium transition-all ${
-                          a.is_active
-                            ? 'border-rose-500/20 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
-                            : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
-                        }`}
-                      >
-                        {isToggling ? <Loader2 className="h-3 w-3 animate-spin" /> : a.is_active ? 'Deactivate' : 'Activate'}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                      </td>
+                      <td className="px-4 py-3 font-mono">
+                        <Badge
+                          variant={
+                            a.role === 'SUPER_ADMIN' ? 'info' :
+                            a.role === 'FINANCE_ADMIN' ? 'positive' :
+                            a.role === 'GAME_OPERATOR' ? 'info' :
+                            'neutral'
+                          }
+                        >
+                          {a.role}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${
+                          a.is_active ? 'text-status-positive' : 'text-status-negative'
+                        }`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${a.is_active ? 'bg-status-positive' : 'bg-status-negative'}`} />
+                          {a.is_active ? 'ACTIVE' : 'DISABLED'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-mono text-text-tertiary text-xs">
+                        {a.id}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-text-tertiary text-xs">
+                        {new Date(a.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Button
+                          variant={a.is_active ? 'danger' : 'secondary'}
+                          size="sm"
+                          onClick={() => handleToggle(a.id, a.is_active)}
+                          disabled={isToggling}
+                          isLoading={isToggling}
+                        >
+                          {a.is_active ? 'Deactivate' : 'Activate'}
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
 
       {/* New Admin Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm rounded-[8px] border border-white/[0.12] bg-[#212123] p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-base/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm rounded-lg border border-border-default bg-surface-strong p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-border-muted pb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-[#2988ff]" />
-                <h3 className="text-sm font-semibold text-[#e1e1e1]">Create Staff Account</h3>
+                <ShieldCheck className="h-4 w-4 text-accent-primary" />
+                <h3 className="text-sm font-semibold text-text-primary">Create Staff Account</h3>
               </div>
-              <button onClick={() => setModalOpen(false)} className="text-[#8c8c8c] hover:text-[#e1e1e1]">
+              <button 
+                onClick={() => setModalOpen(false)} 
+                className="text-text-tertiary hover:text-text-primary p-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+                aria-label="Close modal"
+              >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {modalError && (
-              <div className="flex items-center gap-2 rounded-[4px] border border-red-500/20 bg-red-500/10 p-2 text-[11.5px] text-red-400">
+              <div className="flex items-center gap-2 rounded border border-status-negative/20 bg-status-negative/10 p-2 text-xs text-status-negative">
                 <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                 <span>{modalError}</span>
               </div>
             )}
 
-            <form onSubmit={handleCreate} className="space-y-3.5 text-[12px]">
+            <form onSubmit={handleCreate} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-[#a6a6a6] mb-1 font-medium">Username</label>
+                <label className="block text-text-secondary mb-1 font-medium">Username</label>
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="e.g. ops_sarah"
-                  className="w-full h-8 rounded-[4px] border border-white/[0.08] bg-black px-2.5 text-[#e1e1e1] focus:border-[#2988ff] focus:outline-none"
+                  className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-[#a6a6a6] mb-1 font-medium">Initial Password</label>
+                <label className="block text-text-secondary mb-1 font-medium">Initial Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 8 characters"
-                  className="w-full h-8 rounded-[4px] border border-white/[0.08] bg-black px-2.5 text-[#e1e1e1] focus:border-[#2988ff] focus:outline-none"
+                  className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-[#a6a6a6] mb-1 font-medium">RBAC Role</label>
+                <label className="block text-text-secondary mb-1 font-medium">RBAC Role</label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full h-8 rounded-[4px] border border-white/[0.08] bg-black px-2 text-[#e1e1e1] focus:border-[#2988ff] focus:outline-none"
+                  className="w-full h-8 rounded border border-border-default bg-surface-base px-2 text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
                 >
                   <option value="VIEWER">VIEWER (Read-only analytics)</option>
                   <option value="SUPPORT_ADMIN">SUPPORT_ADMIN (Users & support notes)</option>
@@ -274,22 +279,24 @@ export default function AdminsManagementPage() {
                 </select>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/[0.06]">
-                <button
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-border-muted">
+                <Button
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => setModalOpen(false)}
-                  className="rounded-[4px] border border-white/[0.08] px-3 py-1.5 text-[#8c8c8c] hover:text-[#e1e1e1]"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
+                  variant="primary"
+                  size="sm"
                   disabled={creating}
-                  className="flex items-center gap-1.5 rounded-[4px] bg-[#2988ff] px-4 py-1.5 font-medium text-white hover:bg-[#2988ff]/90 disabled:opacity-50"
+                  isLoading={creating}
                 >
-                  {creating && <Loader2 className="h-3 w-3 animate-spin" />}
-                  <span>Create Account</span>
-                </button>
+                  Create Account
+                </Button>
               </div>
             </form>
           </div>

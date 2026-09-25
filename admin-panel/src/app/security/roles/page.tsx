@@ -1,37 +1,39 @@
 'use client';
 import React from 'react';
-import { ShieldCheck, Check, X, Lock } from 'lucide-react';
+import { Check, X, Lock } from 'lucide-react';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
 
 const ROLES = [
   {
     name: 'SUPER_ADMIN',
     title: 'Super Administrator',
     description: 'Full unconstrained platform control, staff provisioning, wallet adjustments, and system overrides.',
-    badgeColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+    badgeVariant: 'info' as const
   },
   {
     name: 'FINANCE_ADMIN',
     title: 'Finance Administrator',
     description: 'Authority over user balances, deposit approvals, withdrawal disbursements, and ledger reconciliation.',
-    badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+    badgeVariant: 'positive' as const
   },
   {
     name: 'GAME_OPERATOR',
     title: 'Game Operator',
     description: 'Game catalog state, round timing configuration, maintenance toggles, and live engine oversight.',
-    badgeColor: 'bg-[#2988ff]/10 text-[#2988ff] border-[#2988ff]/20'
+    badgeVariant: 'info' as const
   },
   {
     name: 'SUPPORT_ADMIN',
     title: 'Player Support Specialist',
     description: 'Player profile lookup, account notes, ban/unban enforcement, and dispute review.',
-    badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+    badgeVariant: 'warning' as const
   },
   {
     name: 'VIEWER',
     title: 'Auditor / Viewer',
     description: 'Read-only telemetry access across games, users, ledger and reports with zero mutation privileges.',
-    badgeColor: 'bg-white/[0.04] text-[#8c8c8c] border-white/[0.08]'
+    badgeVariant: 'neutral' as const
   }
 ];
 
@@ -79,83 +81,83 @@ export default function RolesMatrixPage() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.08] pb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold tracking-tight text-[#e1e1e1]">Role-Based Access Control (RBAC)</h1>
-            <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10.5px] font-mono text-emerald-400 border border-emerald-500/20">
-              Server Enforced
-            </span>
+            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Role-Based Access Control (RBAC)</h1>
+            <Badge variant="positive">Server Enforced</Badge>
           </div>
-          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Authoritative permissions matrix verified on every backend API request</p>
+          <p className="text-xs text-text-secondary mt-1">Authoritative permissions matrix verified on every backend API request</p>
         </div>
       </div>
 
       {/* Roles Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {ROLES.map((r) => (
-          <div key={r.name} className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4 flex flex-col justify-between">
+          <Card key={r.name} className="flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
-                <span className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-mono font-semibold border ${r.badgeColor}`}>
+                <Badge variant={r.badgeVariant}>
                   {r.name}
-                </span>
-                <Lock className="h-3.5 w-3.5 text-[#666]" />
+                </Badge>
+                <Lock className="h-3.5 w-3.5 text-text-tertiary" />
               </div>
-              <h3 className="mt-2 text-[13px] font-semibold text-[#e1e1e1]">{r.title}</h3>
-              <p className="mt-1 text-[11.5px] text-[#8c8c8c] leading-relaxed">{r.description}</p>
+              <h3 className="mt-2 text-sm font-semibold text-text-primary">{r.title}</h3>
+              <p className="mt-1 text-xs text-text-secondary leading-relaxed">{r.description}</p>
             </div>
-            <div className="mt-3 pt-2 border-t border-white/[0.04] text-[11px] font-mono text-[#666]">
+            <div className="mt-3 pt-2 border-t border-border-muted text-xs font-mono text-text-tertiary">
               {MATRIX[r.name]?.length || 0} active permissions
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* Permissions Matrix Table */}
       <div className="space-y-3">
-        <h2 className="text-[13px] font-semibold text-[#e1e1e1]">Permission Entitlement Matrix</h2>
+        <h2 className="text-sm font-semibold text-text-primary">Permission Entitlement Matrix</h2>
 
-        <div className="overflow-x-auto rounded-[8px] border border-white/[0.08] bg-[#212123]">
-          <table className="w-full text-left text-[12px] text-[#a6a6a6]">
-            <thead className="border-b border-white/[0.08] bg-black text-[#8c8c8c] uppercase text-[10px] font-mono tracking-wider">
-              <tr>
-                <th className="px-4 py-3 min-w-[220px]">Granular Permission</th>
-                <th className="px-3 py-3 text-center">SUPER_ADMIN</th>
-                <th className="px-3 py-3 text-center">FINANCE_ADMIN</th>
-                <th className="px-3 py-3 text-center">GAME_OPERATOR</th>
-                <th className="px-3 py-3 text-center">SUPPORT_ADMIN</th>
-                <th className="px-3 py-3 text-center">VIEWER</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/[0.06] text-[11.5px]">
-              {PERMISSIONS.map((perm) => (
-                <tr key={perm.key} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-[#e1e1e1]">{perm.label}</div>
-                    <div className="text-[10.5px] text-[#666] font-mono">{perm.key} • {perm.desc}</div>
-                  </td>
-                  {['SUPER_ADMIN', 'FINANCE_ADMIN', 'GAME_OPERATOR', 'SUPPORT_ADMIN', 'VIEWER'].map((role) => {
-                    const hasPerm = MATRIX[role]?.includes(perm.key);
-                    return (
-                      <td key={role} className="px-3 py-3 text-center">
-                        {hasPerm ? (
-                          <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            <Check className="h-3 w-3" />
-                          </div>
-                        ) : (
-                          <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/[0.02] text-[#444]">
-                            <X className="h-3 w-3" />
-                          </div>
-                        )}
-                      </td>
-                    );
-                  })}
+        <Card className="overflow-hidden p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-text-secondary">
+              <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-[10px] font-mono tracking-wider">
+                <tr>
+                  <th className="px-4 py-3 min-w-[220px]">Granular Permission</th>
+                  <th className="px-3 py-3 text-center">SUPER_ADMIN</th>
+                  <th className="px-3 py-3 text-center">FINANCE_ADMIN</th>
+                  <th className="px-3 py-3 text-center">GAME_OPERATOR</th>
+                  <th className="px-3 py-3 text-center">SUPPORT_ADMIN</th>
+                  <th className="px-3 py-3 text-center">VIEWER</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-border-muted text-xs">
+                {PERMISSIONS.map((perm) => (
+                  <tr key={perm.key} className="hover:bg-surface-subtle transition-fast">
+                    <td className="px-4 py-3">
+                      <div className="font-medium text-text-primary">{perm.label}</div>
+                      <div className="text-[11px] text-text-tertiary font-mono">{perm.key} • {perm.desc}</div>
+                    </td>
+                    {['SUPER_ADMIN', 'FINANCE_ADMIN', 'GAME_OPERATOR', 'SUPPORT_ADMIN', 'VIEWER'].map((role) => {
+                      const hasPerm = MATRIX[role]?.includes(perm.key);
+                      return (
+                        <td key={role} className="px-3 py-3 text-center">
+                          {hasPerm ? (
+                            <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-status-positive/10 text-status-positive border border-status-positive/20">
+                              <Check className="h-3 w-3" />
+                            </div>
+                          ) : (
+                            <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-subtle text-text-tertiary">
+                              <X className="h-3 w-3" />
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       </div>
 
     </div>

@@ -2,16 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import {
   Server,
-  Activity,
   Database,
   Cpu,
   RefreshCw,
-  Loader2,
-  CheckCircle2,
-  Clock,
   Radio
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 export default function SystemHealthPage() {
   const [health, setHealth] = useState<any>(null);
@@ -53,30 +52,32 @@ export default function SystemHealthPage() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.08] pb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold tracking-tight text-[#e1e1e1]">Authoritative Node Health</h1>
-            <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-mono text-emerald-400 border border-emerald-500/20">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Authoritative Node Health</h1>
+            <Badge variant="positive">
+              <span className="h-1.5 w-1.5 rounded-full bg-status-positive animate-pulse mr-1" />
               Pulse Active (10s)
-            </span>
+            </Badge>
           </div>
-          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Real-time Node.js runtime process and PostgreSQL connection pool status</p>
+          <p className="text-xs text-text-secondary mt-1">Real-time Node.js runtime process and PostgreSQL connection pool status</p>
         </div>
 
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={fetchHealth}
           disabled={loading}
-          className="flex h-8 items-center gap-1.5 rounded-[4px] border border-white/[0.08] bg-white/[0.03] px-3 text-[11.5px] font-medium text-[#a6a6a6] hover:text-[#e1e1e1] transition-all"
+          aria-label="Refresh node health"
         >
-          <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin text-[#2988ff]' : 'text-[#8c8c8c]'}`} />
+          <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin text-accent-primary' : 'text-text-tertiary'}`} />
           <span>Refresh</span>
-        </button>
+        </Button>
       </div>
 
       {error && (
-        <div className="rounded-[6px] border border-red-500/20 bg-red-500/10 p-3 text-[12px] text-red-400">
+        <div className="rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative">
           {error}
         </div>
       )}
@@ -85,88 +86,88 @@ export default function SystemHealthPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Core Node State */}
-        <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-          <div className="flex items-center justify-between text-[#8c8c8c] text-[11px] font-mono uppercase">
+        <Card className="space-y-2">
+          <div className="flex items-center justify-between text-text-tertiary text-xs font-mono uppercase">
             <span>Server Process</span>
-            <Server className="h-4 w-4 text-emerald-400" />
+            <Server className="h-4 w-4 text-status-positive" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-xl font-bold font-mono text-emerald-400">ONLINE</span>
+            <span className="text-2xl font-bold font-mono text-status-positive">ONLINE</span>
           </div>
-          <p className="mt-1 text-[11px] text-[#8c8c8c] font-mono">PID {health?.pid || '—'}</p>
-        </div>
+          <p className="mt-1 text-xs text-text-tertiary font-mono">PID {health?.pid || '—'}</p>
+        </Card>
 
         {/* Card 2: Database Connectivity */}
-        <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-          <div className="flex items-center justify-between text-[#8c8c8c] text-[11px] font-mono uppercase">
+        <Card className="space-y-2">
+          <div className="flex items-center justify-between text-text-tertiary text-xs font-mono uppercase">
             <span>PostgreSQL Pool</span>
-            <Database className="h-4 w-4 text-[#2988ff]" />
+            <Database className="h-4 w-4 text-accent-primary" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className={`text-xl font-bold font-mono ${health?.database === 'CONNECTED' ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <span className={`text-2xl font-bold font-mono ${health?.database === 'CONNECTED' ? 'text-status-positive' : 'text-status-negative'}`}>
               {health?.database || 'CONNECTING...'}
             </span>
           </div>
-          <p className="mt-1 text-[11px] text-[#8c8c8c] font-mono">
-            Latency: <strong className="text-[#e1e1e1]">{health?.dbLatencyMs || '<5'}ms</strong>
+          <p className="mt-1 text-xs text-text-tertiary font-mono">
+            Latency: <strong className="text-text-primary">{health?.dbLatencyMs || '<5'}ms</strong>
           </p>
-        </div>
+        </Card>
 
         {/* Card 3: Memory Footprint */}
-        <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-          <div className="flex items-center justify-between text-[#8c8c8c] text-[11px] font-mono uppercase">
+        <Card className="space-y-2">
+          <div className="flex items-center justify-between text-text-tertiary text-xs font-mono uppercase">
             <span>Process Heap</span>
-            <Cpu className="h-4 w-4 text-[#a6a6a6]" />
+            <Cpu className="h-4 w-4 text-text-secondary" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-xl font-bold font-mono text-[#e1e1e1]">
+            <span className="text-2xl font-bold font-mono text-text-primary">
               {health?.memory?.heapUsedMb || 0} MB
             </span>
           </div>
-          <p className="mt-1 text-[11px] text-[#8c8c8c] font-mono">
+          <p className="mt-1 text-xs text-text-tertiary font-mono">
             RSS: {health?.memory?.rssMb || 0} MB
           </p>
-        </div>
+        </Card>
 
         {/* Card 4: WebSocket Clients */}
-        <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-          <div className="flex items-center justify-between text-[#8c8c8c] text-[11px] font-mono uppercase">
+        <Card className="space-y-2">
+          <div className="flex items-center justify-between text-text-tertiary text-xs font-mono uppercase">
             <span>Active WebSocket</span>
-            <Radio className="h-4 w-4 text-[#2988ff]" />
+            <Radio className="h-4 w-4 text-accent-primary" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-xl font-bold font-mono text-[#e1e1e1]">
+            <span className="text-2xl font-bold font-mono text-text-primary">
               {health?.activeWsConnections || 0}
             </span>
           </div>
-          <p className="mt-1 text-[11px] text-[#8c8c8c] font-mono">Live connected players</p>
-        </div>
+          <p className="mt-1 text-xs text-text-tertiary font-mono">Live connected players</p>
+        </Card>
 
       </div>
 
       {/* Process Telemetry Spec */}
-      <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-5 space-y-4">
-        <h3 className="text-[13px] font-semibold text-[#e1e1e1] border-b border-white/[0.06] pb-3">
+      <Card className="space-y-4">
+        <h3 className="text-sm font-semibold text-text-primary border-b border-border-muted pb-3">
           Process Runtime Environment
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-[12px] font-mono">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-xs font-mono">
           <div>
-            <span className="text-[#8c8c8c] block text-[11px]">System Uptime</span>
-            <span className="text-[#e1e1e1] font-semibold">
+            <span className="text-text-tertiary block text-[11px] font-sans">System Uptime</span>
+            <span className="text-text-primary font-semibold text-sm">
               {health?.uptimeSeconds ? formatUptime(health.uptimeSeconds) : '0s'}
             </span>
           </div>
           <div>
-            <span className="text-[#8c8c8c] block text-[11px]">Node.js Version</span>
-            <span className="text-[#e1e1e1] font-semibold">{health?.nodeVersion || process.version || 'v20.x'}</span>
+            <span className="text-text-tertiary block text-[11px] font-sans">Node.js Version</span>
+            <span className="text-text-primary font-semibold text-sm">{health?.nodeVersion || process.version || 'v20.x'}</span>
           </div>
           <div>
-            <span className="text-[#8c8c8c] block text-[11px]">Server Timestamp</span>
-            <span className="text-[#e1e1e1]">{health?.timestamp ? new Date(health.timestamp).toLocaleString() : '—'}</span>
+            <span className="text-text-tertiary block text-[11px] font-sans">Server Timestamp</span>
+            <span className="text-text-primary">{health?.timestamp ? new Date(health.timestamp).toLocaleString() : '—'}</span>
           </div>
         </div>
-      </div>
+      </Card>
 
     </div>
   );

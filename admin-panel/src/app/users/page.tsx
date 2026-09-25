@@ -16,6 +16,8 @@ import {
   Filter
 } from 'lucide-react';
 import { adminService, UserSummary } from '@/services/adminService';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 export default function UsersManagementPage() {
   const searchParams = useSearchParams();
@@ -112,30 +114,38 @@ export default function UsersManagementPage() {
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-space-6 font-mono text-sm">
       
       {/* Studio Page Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.08] pb-5">
+      <div className="flex flex-col gap-space-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-space-5">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight text-[#e1e1e1]">Player Directory</h1>
-          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Authoritative accounts with integer paise wallet accounting ({total} total)</p>
+          <h1 className="text-xl font-semibold tracking-tight text-text-primary">Player Directory</h1>
+          <p className="text-xs text-text-secondary mt-space-1">
+            Authoritative accounts with integer paise wallet accounting ({total} total)
+          </p>
         </div>
 
         {/* Search & Status Filters */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-space-2">
           {/* Status Tabs */}
-          <div className="flex items-center rounded-[4px] border border-white/[0.08] bg-[#212123] p-0.5 text-[11px] font-medium text-[#a6a6a6]">
+          <div 
+            role="group"
+            aria-label="Filter players by account status"
+            className="flex items-center rounded-xs border border-border-default bg-surface-raised p-space-1 text-xs text-text-secondary"
+          >
             {['ALL', 'ACTIVE', 'BANNED'].map((st) => (
               <button
                 key={st}
+                type="button"
                 onClick={() => {
                   setStatus(st);
                   setPage(1);
                 }}
-                className={`rounded-[3px] px-2.5 py-1 transition-all ${
+                aria-pressed={status === st}
+                className={`rounded-xs px-space-2.5 py-1 transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary ${
                   status === st
-                    ? 'text-[#e1e1e1] bg-white/[0.08] font-semibold shadow-sm'
-                    : 'hover:text-[#e1e1e1]'
+                    ? 'text-text-primary bg-border-default font-semibold shadow-sm'
+                    : 'hover:text-text-primary text-text-secondary'
                 }`}
               >
                 {st}
@@ -145,64 +155,67 @@ export default function UsersManagementPage() {
 
           {/* Search Form */}
           <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-            <Search className="absolute left-2.5 h-3.5 w-3.5 text-[#8c8c8c]" />
+            <Search className="absolute left-2.5 h-3.5 w-3.5 text-text-tertiary" aria-hidden="true" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search user / phone / ID..."
-              className="h-8 w-48 sm:w-60 rounded-[4px] border border-white/[0.08] bg-black pl-8 pr-2.5 text-[12px] text-[#e1e1e1] placeholder-[#666] focus:border-[#2988ff] focus:outline-none"
+              aria-label="Search user by name, phone or ID"
+              className="h-8 w-48 sm:w-60 rounded-xs border border-border-default bg-surface-base pl-8 pr-space-2.5 text-xs text-text-primary placeholder-text-tertiary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
             />
           </form>
 
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => {
               setPage(1);
               fetchUsers();
             }}
-            disabled={loading}
-            className="flex h-8 items-center gap-1.5 rounded-[4px] border border-white/[0.08] bg-white/[0.03] px-2.5 text-[11.5px] font-medium text-[#a6a6a6] hover:text-[#e1e1e1] hover:border-white/20 transition-all disabled:opacity-50"
+            loading={loading}
+            icon={<Filter className="h-3 w-3 text-text-secondary" aria-hidden="true" />}
+            aria-label="Filter player directory"
           >
-            {loading ? <Loader2 className="h-3 w-3 animate-spin text-[#2988ff]" /> : <Filter className="h-3 w-3 text-[#8c8c8c]" />}
-            <span>Filter</span>
-          </button>
+            Filter
+          </Button>
         </div>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-[6px] border border-red-500/20 bg-red-500/10 p-3 text-[12px] text-red-400">
-          <AlertCircle className="h-4 w-4 shrink-0" />
+        <div role="alert" className="flex items-center gap-space-2 rounded-md border border-status-negative/30 bg-status-negative/10 p-space-3 text-xs text-status-negative">
+          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Users Table */}
-      <div className="overflow-hidden rounded-[8px] border border-white/[0.08] bg-[#212123]">
-        <table className="w-full text-left text-[12px] text-[#a6a6a6]">
-          <thead className="border-b border-white/[0.08] bg-black text-[#8c8c8c] uppercase text-[10px] font-mono tracking-wider">
+      <div className="overflow-hidden rounded-lg border border-border-default bg-surface-raised">
+        <table className="w-full text-left text-xs text-text-secondary">
+          <thead className="border-b border-border-default bg-surface-muted text-text-secondary uppercase text-xs font-mono tracking-wider">
             <tr>
-              <th className="px-4 py-3">Player / ID</th>
-              <th className="px-4 py-3">Phone</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3 text-right">Deposit</th>
-              <th className="px-4 py-3 text-right">Winnings</th>
-              <th className="px-4 py-3 text-right">Bonus</th>
-              <th className="px-4 py-3 text-right">Total Balance</th>
-              <th className="px-4 py-3">Registered</th>
-              <th className="px-4 py-3 text-center">Actions</th>
+              <th className="px-space-4 py-space-3">Player / ID</th>
+              <th className="px-space-4 py-space-3">Phone</th>
+              <th className="px-space-4 py-space-3">Status</th>
+              <th className="px-space-4 py-space-3 text-right">Deposit</th>
+              <th className="px-space-4 py-space-3 text-right">Winnings</th>
+              <th className="px-space-4 py-space-3 text-right">Bonus</th>
+              <th className="px-space-4 py-space-3 text-right">Total Balance</th>
+              <th className="px-space-4 py-space-3">Registered</th>
+              <th className="px-space-4 py-space-3 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.06] font-mono text-[11.5px]">
+          <tbody className="divide-y divide-border-muted font-mono text-xs">
             {loading ? (
               <tr>
-                <td colSpan={9} className="px-4 py-12 text-center text-[#8c8c8c]">
-                  <Loader2 className="mx-auto h-5 w-5 animate-spin text-[#2988ff] mb-2" />
+                <td colSpan={9} className="px-space-4 py-space-8 text-center text-text-secondary">
+                  <Loader2 className="mx-auto h-5 w-5 animate-spin text-accent-primary mb-space-2" aria-hidden="true" />
                   <span>Loading authoritative player accounts...</span>
                 </td>
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-4 py-12 text-center text-[#8c8c8c] font-sans">
+                <td colSpan={9} className="px-space-4 py-space-8 text-center text-text-secondary font-sans">
                   No player records found matching your filters.
                 </td>
               </tr>
@@ -215,81 +228,85 @@ export default function UsersManagementPage() {
                 const isProcessing = processingId === u.id;
 
                 return (
-                  <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3">
+                  <tr key={u.id} className="hover:bg-surface-muted/60 transition-fast">
+                    <td className="px-space-4 py-space-3">
                       <div className="flex flex-col">
                         <Link 
                           href={`/users/${u.id}`}
-                          className="font-sans font-medium text-[#e1e1e1] hover:text-[#2988ff] flex items-center gap-1.5 transition-colors"
+                          className="font-sans font-medium text-text-primary hover:text-accent-primary flex items-center gap-space-1.5 transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary"
                         >
                           <span>{u.name || 'Unnamed Player'}</span>
-                          <ExternalLink className="h-3 w-3 text-[#666]" />
+                          <ExternalLink className="h-3 w-3 text-text-tertiary" aria-hidden="true" />
                         </Link>
-                        <div className="flex items-center gap-1 text-[10.5px] text-[#666] mt-0.5">
+                        <div className="flex items-center gap-space-1 text-xs text-text-tertiary mt-0.5">
                           <span className="truncate max-w-[110px]">{u.id}</span>
                           <button
+                            type="button"
                             onClick={() => copyToClipboard(u.id)}
-                            className="hover:text-[#a6a6a6] transition-colors"
+                            className="p-0.5 rounded-xs hover:text-text-primary transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary"
+                            aria-label={`Copy player ID ${u.id}`}
                             title="Copy ID"
                           >
-                            {copiedId === u.id ? <Check className="h-2.5 w-2.5 text-emerald-400" /> : <Copy className="h-2.5 w-2.5" />}
+                            {copiedId === u.id ? (
+                              <Check className="h-2.5 w-2.5 text-status-positive" aria-hidden="true" />
+                            ) : (
+                              <Copy className="h-2.5 w-2.5" aria-hidden="true" />
+                            )}
                           </button>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-[#a6a6a6]">
+                    <td className="px-space-4 py-space-3 text-text-secondary">
                       {u.phone || '—'}
                     </td>
-                    <td className="px-4 py-3 font-sans">
+                    <td className="px-space-4 py-space-3 font-sans">
                       {u.is_blocked ? (
-                        <span className="inline-flex items-center gap-1 rounded-[3px] bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 text-[10.5px] font-medium text-rose-400">
-                          BANNED
-                        </span>
+                        <Badge variant="negative" ariaLabel="Account suspended">Banned</Badge>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-[3px] bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[10.5px] font-medium text-emerald-400">
-                          ACTIVE
-                        </span>
+                        <Badge variant="positive" ariaLabel="Account active">Active</Badge>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-right text-[#a6a6a6]">
+                    <td className="px-space-4 py-space-3 text-right text-text-secondary">
                       ₹{depositRupees.toFixed(2)}
                     </td>
-                    <td className="px-4 py-3 text-right text-[#a6a6a6]">
+                    <td className="px-space-4 py-space-3 text-right text-text-secondary">
                       ₹{winningsRupees.toFixed(2)}
                     </td>
-                    <td className="px-4 py-3 text-right text-[#a6a6a6]">
+                    <td className="px-space-4 py-space-3 text-right text-text-secondary">
                       ₹{bonusRupees.toFixed(2)}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-[#e1e1e1]">
+                    <td className="px-space-4 py-space-3 text-right font-semibold text-text-primary">
                       ₹{totalRupees.toFixed(2)}
                     </td>
-                    <td className="px-4 py-3 text-[#8c8c8c] text-[10.5px] whitespace-nowrap">
+                    <td className="px-space-4 py-space-3 text-text-tertiary text-xs whitespace-nowrap">
                       {new Date(u.created_at).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-space-4 py-space-3 text-center">
+                      <div className="flex items-center justify-center gap-space-2">
                         <Link
                           href={`/users/${u.id}`}
-                          className="rounded-[3px] border border-white/[0.08] bg-white/[0.03] px-2 py-1 text-[11px] font-sans font-medium text-[#a6a6a6] hover:text-[#e1e1e1] hover:border-white/20 transition-all"
+                          className="rounded-xs border border-border-default bg-surface-base px-space-2 py-1 text-xs font-sans font-medium text-text-secondary hover:text-text-primary hover:border-border-default/80 transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary"
                         >
                           Details
                         </Link>
                         <button
+                          type="button"
                           onClick={() => toggleBan(u)}
                           disabled={isProcessing}
+                          aria-label={u.is_blocked ? `Unban user ${u.name || u.id}` : `Ban user ${u.name || u.id}`}
                           title={u.is_blocked ? 'Unban User' : 'Ban User'}
-                          className={`rounded-[3px] border p-1 text-[11px] transition-all disabled:opacity-50 ${
+                          className={`rounded-xs border p-1 text-xs transition-fast disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-accent-primary ${
                             u.is_blocked
-                              ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
-                              : 'border-rose-500/20 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
+                              ? 'border-status-positive/30 bg-status-positive/10 text-status-positive hover:bg-status-positive/20'
+                              : 'border-status-negative/30 bg-status-negative/10 text-status-negative hover:bg-status-negative/20'
                           }`}
                         >
                           {isProcessing ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
+                            <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
                           ) : u.is_blocked ? (
-                            <UserCheck className="h-3 w-3" />
+                            <UserCheck className="h-3 w-3" aria-hidden="true" />
                           ) : (
-                            <UserX className="h-3 w-3" />
+                            <UserX className="h-3 w-3" aria-hidden="true" />
                           )}
                         </button>
                       </div>
@@ -303,27 +320,31 @@ export default function UsersManagementPage() {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-white/[0.08] bg-black/40 px-4 py-2.5 text-[11.5px] text-[#8c8c8c]">
+          <div className="flex items-center justify-between border-t border-border-default bg-surface-muted px-space-4 py-space-2.5 text-xs text-text-secondary">
             <div>
               Showing {users.length > 0 ? (page - 1) * limit + 1 : 0} to {Math.min(page * limit, total)} of {total} players
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-space-1.5">
               <button
+                type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1 || loading}
-                className="flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] disabled:opacity-30 disabled:pointer-events-none"
+                aria-label="Previous page"
+                className="flex h-7 w-7 items-center justify-center rounded-xs border border-border-default bg-surface-raised hover:bg-border-default transition-fast disabled:opacity-30 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent-primary"
               >
-                <ChevronLeft className="h-3.5 w-3.5" />
+                <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
-              <span className="font-mono text-[#e1e1e1] px-2">
+              <span className="font-mono text-text-primary px-space-2">
                 {page} / {totalPages}
               </span>
               <button
+                type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages || loading}
-                className="flex h-7 w-7 items-center justify-center rounded-[3px] border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] disabled:opacity-30 disabled:pointer-events-none"
+                aria-label="Next page"
+                className="flex h-7 w-7 items-center justify-center rounded-xs border border-border-default bg-surface-raised hover:bg-border-default transition-fast disabled:opacity-30 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent-primary"
               >
-                <ChevronRight className="h-3.5 w-3.5" />
+                <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
             </div>
           </div>

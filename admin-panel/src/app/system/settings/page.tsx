@@ -1,15 +1,16 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import {
-  Sliders,
   Save,
   Loader2,
   AlertCircle,
   CheckCircle2,
-  Lock,
   RefreshCw
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 export default function PlatformSettingsPage() {
   const [settings, setSettings] = useState<Record<string, any>>({});
@@ -73,36 +74,36 @@ export default function PlatformSettingsPage() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.08] pb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold tracking-tight text-[#e1e1e1]">Global Platform Settings</h1>
-            <span className="rounded-full bg-[#2988ff]/10 px-2 py-0.5 text-[10.5px] font-mono text-[#2988ff] border border-[#2988ff]/20">
-              Database Synced
-            </span>
+            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Global Platform Settings</h1>
+            <Badge variant="info">Database Synced</Badge>
           </div>
-          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Authoritative platform risk bounds, limits and alert routing</p>
+          <p className="text-xs text-text-secondary mt-1">Authoritative platform risk bounds, limits and alert routing</p>
         </div>
 
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={fetchSettings}
           disabled={loading}
-          className="flex h-8 items-center gap-1.5 rounded-[4px] border border-white/[0.08] bg-white/[0.03] px-3 text-[11.5px] font-medium text-[#a6a6a6] hover:text-[#e1e1e1] transition-all"
+          aria-label="Sync platform settings"
         >
-          <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin text-[#2988ff]' : 'text-[#8c8c8c]'}`} />
+          <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin text-accent-primary' : 'text-text-tertiary'}`} />
           <span>Sync</span>
-        </button>
+        </Button>
       </div>
 
       {successMsg && (
-        <div className="flex items-center gap-2 rounded-[6px] border border-emerald-500/20 bg-emerald-500/10 p-3 text-[12px] text-emerald-400">
+        <div className="flex items-center gap-2 rounded-md border border-status-positive/20 bg-status-positive/10 p-3 text-xs text-status-positive">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 rounded-[6px] border border-red-500/20 bg-red-500/10 p-3 text-[12px] text-red-400">
+        <div className="flex items-center gap-2 rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
@@ -112,17 +113,17 @@ export default function PlatformSettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         
         {/* Card 1: RTP Target Config */}
-        <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <Card className="space-y-4">
+          <div className="flex items-center justify-between border-b border-border-muted pb-3">
             <div>
-              <h3 className="text-[13px] font-semibold text-[#e1e1e1]">Target Return to Player (RTP)</h3>
-              <p className="text-[11px] text-[#8c8c8c]">Calibrated mathematical house margin</p>
+              <h3 className="text-sm font-semibold text-text-primary">Target Return to Player (RTP)</h3>
+              <p className="text-xs text-text-tertiary">Calibrated mathematical house margin</p>
             </div>
-            <span className="font-mono text-[12px] text-emerald-400 font-bold">{rtpTarget}%</span>
+            <Badge variant="positive">{rtpTarget}%</Badge>
           </div>
 
           <div className="space-y-2">
-            <label className="block text-[12px] text-[#a6a6a6]">RTP Percentage (90% - 98%)</label>
+            <label className="block text-xs text-text-secondary">RTP Percentage (90% - 98%)</label>
             <div className="flex gap-2">
               <input
                 type="number"
@@ -131,129 +132,126 @@ export default function PlatformSettingsPage() {
                 max="98"
                 value={rtpTarget}
                 onChange={(e) => setRtpTarget(e.target.value)}
-                className="w-full h-8 rounded-[4px] border border-white/[0.08] bg-black px-2.5 font-mono text-[#e1e1e1] text-[12px] focus:border-[#2988ff] focus:outline-none"
+                className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 font-mono text-text-primary text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
               />
-              <button
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={() => handleSaveSetting('rtp_target_percent', parseFloat(rtpTarget), 'Updated RTP target percentage')}
                 disabled={savingKey === 'rtp_target_percent'}
-                className="flex items-center gap-1.5 rounded-[4px] bg-[#2988ff] px-3 text-[12px] font-medium text-white hover:bg-[#2988ff]/90 disabled:opacity-50 transition-all shadow-sm"
+                isLoading={savingKey === 'rtp_target_percent'}
               >
-                {savingKey === 'rtp_target_percent' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                <Save className="h-3 w-3" />
                 <span>Save</span>
-              </button>
+              </Button>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Card 2: Bet Constraints */}
-        <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <Card className="space-y-4">
+          <div className="flex items-center justify-between border-b border-border-muted pb-3">
             <div>
-              <h3 className="text-[13px] font-semibold text-[#e1e1e1]">Betting Range Bounds</h3>
-              <p className="text-[11px] text-[#8c8c8c]">Minimum & maximum wager constraints</p>
+              <h3 className="text-sm font-semibold text-text-primary">Betting Range Bounds</h3>
+              <p className="text-xs text-text-tertiary">Minimum & maximum wager constraints</p>
             </div>
-            <span className="font-mono text-[12px] text-[#2988ff] font-bold">₹{minBet} - ₹{maxBet}</span>
+            <Badge variant="info">₹{minBet} - ₹{maxBet}</Badge>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 text-[12px]">
+          <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <label className="block text-[#a6a6a6] mb-1">Min Bet (₹)</label>
+              <label className="block text-text-secondary mb-1">Min Bet (₹)</label>
               <input
                 type="number"
                 min="1"
                 value={minBet}
                 onChange={(e) => setMinBet(e.target.value)}
-                className="w-full h-8 rounded-[4px] border border-white/[0.08] bg-black px-2.5 font-mono text-[#e1e1e1] focus:border-[#2988ff] focus:outline-none"
+                className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
               />
             </div>
             <div>
-              <label className="block text-[#a6a6a6] mb-1">Max Bet (₹)</label>
+              <label className="block text-text-secondary mb-1">Max Bet (₹)</label>
               <input
                 type="number"
                 min="10"
                 value={maxBet}
                 onChange={(e) => setMaxBet(e.target.value)}
-                className="w-full h-8 rounded-[4px] border border-white/[0.08] bg-black px-2.5 font-mono text-[#e1e1e1] focus:border-[#2988ff] focus:outline-none"
+                className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
               />
             </div>
           </div>
 
           <div className="flex justify-end">
-            <button
+            <Button
+              variant="primary"
+              size="sm"
               onClick={() => {
                 handleSaveSetting('bet_min_limit', parseFloat(minBet), 'Updated minimum bet limit');
                 handleSaveSetting('bet_max_limit', parseFloat(maxBet), 'Updated maximum bet limit');
               }}
               disabled={Boolean(savingKey)}
-              className="flex items-center gap-1.5 rounded-[4px] bg-[#2988ff] px-3 py-1 text-[12px] font-medium text-white hover:bg-[#2988ff]/90 disabled:opacity-50 transition-all shadow-sm"
             >
               <Save className="h-3 w-3" />
               <span>Save Limits</span>
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Card 3: Global Maintenance Mode */}
-        <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <Card className="space-y-4">
+          <div className="flex items-center justify-between border-b border-border-muted pb-3">
             <div>
-              <h3 className="text-[13px] font-semibold text-[#e1e1e1]">Emergency Maintenance Mode</h3>
-              <p className="text-[11px] text-[#8c8c8c]">Pause gameplay and payment processing globally</p>
+              <h3 className="text-sm font-semibold text-text-primary">Emergency Maintenance Mode</h3>
+              <p className="text-xs text-text-tertiary">Pause gameplay and payment processing globally</p>
             </div>
-            <span className={`font-mono text-[12px] font-bold ${maintenanceMode ? 'text-amber-400' : 'text-emerald-400'}`}>
+            <Badge variant={maintenanceMode ? 'warning' : 'positive'}>
               {maintenanceMode ? 'ACTIVE' : 'OFF'}
-            </span>
+            </Badge>
           </div>
 
           <div className="flex items-center justify-between pt-2">
-            <span className="text-[12px] text-[#a6a6a6]">Toggle Platform Maintenance:</span>
-            <button
+            <span className="text-xs text-text-secondary">Toggle Platform Maintenance:</span>
+            <Button
+              variant={maintenanceMode ? 'danger' : 'secondary'}
+              size="sm"
               onClick={() => {
                 const nextVal = !maintenanceMode;
                 setMaintenanceMode(nextVal);
                 handleSaveSetting('maintenance_mode', nextVal, `Toggled maintenance mode to ${nextVal}`);
               }}
-              className={`rounded-[4px] border px-3 py-1.5 text-[12px] font-medium transition-all ${
-                maintenanceMode
-                  ? 'border-amber-500/40 bg-amber-500/15 text-amber-400'
-                  : 'border-white/[0.08] bg-black text-[#8c8c8c] hover:text-[#e1e1e1]'
-              }`}
             >
               {maintenanceMode ? 'Disable Maintenance' : 'Enable Maintenance'}
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Card 4: Telegram Alerts Channel */}
-        <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <Card className="space-y-4">
+          <div className="flex items-center justify-between border-b border-border-muted pb-3">
             <div>
-              <h3 className="text-[13px] font-semibold text-[#e1e1e1]">Telegram Security Alerts</h3>
-              <p className="text-[11px] text-[#8c8c8c]">High-value deposit & withdrawal alerts</p>
+              <h3 className="text-sm font-semibold text-text-primary">Telegram Security Alerts</h3>
+              <p className="text-xs text-text-tertiary">High-value deposit & withdrawal alerts</p>
             </div>
-            <span className={`font-mono text-[12px] font-bold ${telegramAlerts ? 'text-emerald-400' : 'text-[#8c8c8c]'}`}>
+            <Badge variant={telegramAlerts ? 'positive' : 'neutral'}>
               {telegramAlerts ? 'ENABLED' : 'MUTED'}
-            </span>
+            </Badge>
           </div>
 
           <div className="flex items-center justify-between pt-2">
-            <span className="text-[12px] text-[#a6a6a6]">Push Alerts to Telegram:</span>
-            <button
+            <span className="text-xs text-text-secondary">Push Alerts to Telegram:</span>
+            <Button
+              variant={telegramAlerts ? 'secondary' : 'primary'}
+              size="sm"
               onClick={() => {
                 const nextVal = !telegramAlerts;
                 setTelegramAlerts(nextVal);
                 handleSaveSetting('telegram_alerts_enabled', nextVal, `Toggled telegram alerts to ${nextVal}`);
               }}
-              className={`rounded-[4px] border px-3 py-1.5 text-[12px] font-medium transition-all ${
-                telegramAlerts
-                  ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-400'
-                  : 'border-white/[0.08] bg-black text-[#8c8c8c] hover:text-[#e1e1e1]'
-              }`}
             >
-              {telegramAlerts ? 'Enabled' : 'Disabled'}
-            </button>
+              {telegramAlerts ? 'Disable Alerts' : 'Enable Alerts'}
+            </Button>
           </div>
-        </div>
+        </Card>
 
       </div>
 

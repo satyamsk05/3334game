@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Download, ShieldCheck, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { paymentService } from '@/services/paymentService';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 export default function SystemicReportsPage() {
   const [totalDeposits, setTotalDeposits] = useState(0);
@@ -85,79 +88,81 @@ export default function SystemicReportsPage() {
   return (
     <div className="space-y-6">
       
-      {/* Studio Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.08] pb-5">
+      {/* Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight text-[#e1e1e1]">Financial Ledger Reports</h1>
-          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Authoritative integer paise wallet audits and payout summaries</p>
+          <h1 className="text-xl font-semibold tracking-tight text-text-primary">Financial Ledger Reports</h1>
+          <p className="text-xs text-text-secondary mt-1">Authoritative integer paise wallet audits and payout summaries</p>
         </div>
 
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={exportCsv}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-[4px] border border-white/[0.08] bg-white/[0.04] px-2.5 py-1 text-[11.5px] font-medium text-[#e1e1e1] hover:bg-white/[0.08] hover:border-white/20 transition-all disabled:opacity-50"
+          aria-label="Export CSV Audit"
         >
-          <Download className="h-3 w-3 text-[#8c8c8c]" /> 
+          <Download className="h-3 w-3 text-text-tertiary" /> 
           <span>Export CSV Audit</span>
-        </button>
+        </Button>
       </div>
 
       {/* Error state */}
       {error && (
-        <div className="rounded-[4px] border border-red-500/20 bg-red-500/10 p-3 text-[12px] text-red-400 flex items-center justify-between">
+        <div className="rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative flex items-center justify-between">
           <div className="flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>Telemetry Sync Error: {error}</span>
           </div>
-          <button onClick={fetchFinancials} className="rounded-[3px] bg-red-500/20 px-2 py-0.5 font-medium hover:bg-red-500/30">Retry</button>
+          <Button variant="danger" size="sm" onClick={fetchFinancials}>Retry</Button>
         </div>
       )}
 
       {/* Summary Cards */}
       {loading ? (
-        <div className="py-12 text-center text-[12px] text-[#8c8c8c] flex items-center justify-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin text-[#2988ff]" />
+        <div className="py-16 text-center text-xs text-text-tertiary flex items-center justify-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin text-accent-primary" />
           <span>Calculating authoritative financial audit...</span>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           
-          <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4 space-y-1.5 hover:border-white/20 transition-all duration-200">
-            <div className="text-[11px] font-mono uppercase tracking-wider text-[#8c8c8c]">Approved System Deposits</div>
-            <div className="text-[20px] font-semibold font-mono text-[#e1e1e1]">₹{totalDeposits.toFixed(2)}</div>
-            <div className="text-[11px] text-[#8c8c8c] font-mono">{depositPaise.toLocaleString()} paise credited</div>
-          </div>
+          <Card className="space-y-2">
+            <div className="text-xs font-mono uppercase tracking-wider text-text-tertiary">Approved System Deposits</div>
+            <div className="text-2xl font-semibold font-mono text-text-primary">₹{totalDeposits.toFixed(2)}</div>
+            <div className="text-xs text-text-tertiary font-mono">{depositPaise.toLocaleString()} paise credited</div>
+          </Card>
 
-          <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4 space-y-1.5 hover:border-white/20 transition-all duration-200">
-            <div className="text-[11px] font-mono uppercase tracking-wider text-[#8c8c8c]">Approved Paid Withdrawals</div>
-            <div className="text-[20px] font-semibold font-mono text-[#e1e1e1]">₹{totalWithdrawals.toFixed(2)}</div>
-            <div className="text-[11px] text-[#8c8c8c] font-mono">{withdrawalPaise.toLocaleString()} paise debited</div>
-          </div>
+          <Card className="space-y-2">
+            <div className="text-xs font-mono uppercase tracking-wider text-text-tertiary">Approved Paid Withdrawals</div>
+            <div className="text-2xl font-semibold font-mono text-text-primary">₹{totalWithdrawals.toFixed(2)}</div>
+            <div className="text-xs text-text-tertiary font-mono">{withdrawalPaise.toLocaleString()} paise debited</div>
+          </Card>
 
-          <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4 space-y-1.5 hover:border-white/20 transition-all duration-200">
-            <div className="text-[11px] font-mono uppercase tracking-wider text-[#8c8c8c]">Retained System Reserves</div>
-            <div className="text-[20px] font-semibold font-mono text-emerald-400">₹{netReserves.toFixed(2)}</div>
-            <div className="text-[11px] text-emerald-500/80 font-mono">{reservePaise.toLocaleString()} paise liquid reserve</div>
-          </div>
+          <Card className="space-y-2">
+            <div className="text-xs font-mono uppercase tracking-wider text-text-tertiary">Retained System Reserves</div>
+            <div className="text-2xl font-semibold font-mono text-status-positive">₹{netReserves.toFixed(2)}</div>
+            <div className="text-xs text-status-positive/80 font-mono">{reservePaise.toLocaleString()} paise liquid reserve</div>
+          </Card>
 
         </div>
       )}
 
       {/* Ledger Integrity Card */}
-      <div className="rounded-[8px] border border-white/[0.08] border-l-2 border-l-[#2988ff] bg-[#212123] p-5 space-y-2.5">
-        <div className="flex items-center gap-2 text-[#e1e1e1] font-medium text-[13px]">
-          <ShieldCheck className="h-4 w-4 text-[#2988ff]" />
+      <Card variant="default" className="border-l-2 border-l-accent-primary space-y-3">
+        <div className="flex items-center gap-2 text-text-primary font-medium text-sm">
+          <ShieldCheck className="h-4 w-4 text-accent-primary" />
           <span>Double-Entry Wallet Bucket Accounting Audit</span>
         </div>
-        <p className="text-[12px] text-[#a6a6a6] leading-relaxed max-w-2xl">
-          All balances are strictly tracked as integer paise (<code className="text-[#e1e1e1] font-mono text-[11px]">totalBalance = depositBalance + winningBalance + bonusBalance</code>).
-          Bucket debit order (<code className="text-[#e1e1e1] font-mono text-[11px]">deposit → winnings → bonus</code>) and refund equity are maintained 100% server-side.
+        <p className="text-xs text-text-secondary leading-relaxed max-w-2xl">
+          All balances are strictly tracked as integer paise (<code className="text-text-primary font-mono text-xs">totalBalance = depositBalance + winningBalance + bonusBalance</code>).
+          Bucket debit order (<code className="text-text-primary font-mono text-xs">deposit → winnings → bonus</code>) and refund equity are maintained 100% server-side.
         </p>
-        <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-400 font-mono pt-1">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-status-positive font-mono pt-1">
           <CheckCircle2 className="h-3.5 w-3.5" />
           <span>Audit Status: 100% RECONCILED</span>
         </div>
-      </div>
+      </Card>
 
     </div>
   );

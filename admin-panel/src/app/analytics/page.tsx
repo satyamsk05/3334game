@@ -1,19 +1,15 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { 
-  BarChart3, 
   TrendingUp, 
   Users, 
-  Gamepad2, 
   Coins, 
-  ArrowDownLeft, 
-  ArrowUpRight, 
   Loader2, 
-  AlertCircle,
-  Clock,
   ShieldCheck
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
 
 export default function AnalyticsPage() {
   const [range, setRange] = useState<'24h' | '7d' | '30d' | 'all'>('30d');
@@ -43,7 +39,6 @@ export default function AnalyticsPage() {
   }, [range]);
 
   const users = stats?.users || {};
-  const wallet = stats?.wallet || {};
   const deposits = stats?.deposits || {};
   const withdrawals = stats?.withdrawals || {};
   const games = stats?.games || {};
@@ -61,25 +56,23 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.08] pb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold tracking-tight text-[#e1e1e1]">Platform Analytics & Telemetry</h1>
-            <span className="rounded-full bg-[#2988ff]/10 px-2 py-0.5 text-[10.5px] font-mono text-[#2988ff] border border-[#2988ff]/20">
-              Aggregated Metrics
-            </span>
+            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Platform Analytics & Telemetry</h1>
+            <Badge variant="info">Aggregated Metrics</Badge>
           </div>
-          <p className="text-[12px] text-[#a6a6a6] mt-0.5">Statistical performance indicators, player turnover and financial margins</p>
+          <p className="text-xs text-text-secondary mt-1">Statistical performance indicators, player turnover and financial margins</p>
         </div>
 
         {/* Range Selector */}
-        <div className="flex items-center rounded-[4px] border border-white/[0.08] bg-[#212123] p-0.5 text-[11px] font-medium text-[#a6a6a6]">
+        <div className="flex items-center rounded-md border border-border-default bg-surface-raised p-0.5 text-xs font-medium text-text-secondary">
           {(['24h', '7d', '30d', 'all'] as const).map((t) => (
             <button
               key={t}
               onClick={() => setRange(t)}
-              className={`rounded-[3px] px-2.5 py-1 transition-all ${
-                range === t ? 'text-[#e1e1e1] bg-white/[0.08] font-semibold shadow-sm' : 'hover:text-[#e1e1e1]'
+              className={`rounded px-2.5 py-1 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
+                range === t ? 'text-text-primary bg-surface-subtle font-semibold shadow-sm' : 'hover:text-text-primary'
               }`}
             >
               {t.toUpperCase()}
@@ -89,14 +82,14 @@ export default function AnalyticsPage() {
       </div>
 
       {error && (
-        <div className="rounded-[6px] border border-red-500/20 bg-red-500/10 p-3 text-[12px] text-red-400">
+        <div className="rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="py-20 text-center text-[#8c8c8c]">
-          <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#2988ff] mb-2" />
+        <div className="py-20 text-center text-text-tertiary">
+          <Loader2 className="mx-auto h-6 w-6 animate-spin text-accent-primary mb-2" />
           <span>Crunching PostgreSQL analytics...</span>
         </div>
       ) : (
@@ -104,135 +97,135 @@ export default function AnalyticsPage() {
           
           {/* Section 1: Financial & GGR Overview */}
           <div className="space-y-3">
-            <h2 className="text-[13px] font-semibold text-[#e1e1e1] flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-emerald-400" />
+            <h2 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-status-positive" />
               <span>Gross Gaming Revenue & Performance</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-                <span className="text-[11px] font-mono text-[#8c8c8c] uppercase">Total Wagered Turnover</span>
-                <div className="mt-2 text-xl font-bold font-mono text-[#e1e1e1]">
+              <Card>
+                <span className="text-xs font-mono text-text-tertiary uppercase">Total Wagered Turnover</span>
+                <div className="mt-2 text-2xl font-bold font-mono text-text-primary">
                   ₹{totalWagered.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </div>
-                <p className="mt-1 text-[11px] text-[#8c8c8c]">{games.totalBetsPlaced || 0} bets placed in range</p>
-              </div>
+                <p className="mt-1 text-xs text-text-tertiary">{games.totalBetsPlaced || 0} bets placed in range</p>
+              </Card>
 
-              <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-                <span className="text-[11px] font-mono text-[#8c8c8c] uppercase">Total Won / Payouts</span>
-                <div className="mt-2 text-xl font-bold font-mono text-emerald-400">
+              <Card>
+                <span className="text-xs font-mono text-text-tertiary uppercase">Total Won / Payouts</span>
+                <div className="mt-2 text-2xl font-bold font-mono text-status-positive">
                   ₹{totalWon.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </div>
-                <p className="mt-1 text-[11px] text-[#8c8c8c]">Disbursed win credits</p>
-              </div>
+                <p className="mt-1 text-xs text-text-tertiary">Disbursed win credits</p>
+              </Card>
 
-              <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-                <span className="text-[11px] font-mono text-[#8c8c8c] uppercase">Gross Gaming Revenue (GGR)</span>
-                <div className={`mt-2 text-xl font-bold font-mono ${ggr >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <Card>
+                <span className="text-xs font-mono text-text-tertiary uppercase">Gross Gaming Revenue (GGR)</span>
+                <div className={`mt-2 text-2xl font-bold font-mono ${ggr >= 0 ? 'text-status-positive' : 'text-status-negative'}`}>
                   ₹{ggr.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </div>
-                <p className="mt-1 text-[11px] text-[#8c8c8c]">Turnover minus player wins</p>
-              </div>
+                <p className="mt-1 text-xs text-text-tertiary">Turnover minus player wins</p>
+              </Card>
             </div>
           </div>
 
           {/* Section 2: RTP & Fairness Health */}
-          <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <Card className="space-y-4">
+            <div className="flex items-center justify-between border-b border-border-muted pb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-[#2988ff]" />
-                <h3 className="text-[13px] font-semibold text-[#e1e1e1]">RTP Compliance & Game Math Verification</h3>
+                <ShieldCheck className="h-4 w-4 text-accent-primary" />
+                <h3 className="text-sm font-semibold text-text-primary">RTP Compliance & Game Math Verification</h3>
               </div>
-              <span className="text-[11px] font-mono text-emerald-400">95.0% Invariant Target</span>
+              <Badge variant="positive">95.0% Invariant Target</Badge>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-[12px] font-mono">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs font-mono">
               <div>
-                <span className="text-[#8c8c8c] block text-[11px] uppercase">Engine Target RTP</span>
-                <span className="text-[#e1e1e1] text-base font-bold">
+                <span className="text-text-tertiary block text-[11px] uppercase font-sans">Engine Target RTP</span>
+                <span className="text-text-primary text-base font-bold">
                   {games.rtpConfig?.targetPercent || '95.0'}%
                 </span>
-                <span className="text-[10.5px] text-[#666] block mt-0.5">Green 30x, Red 5.06x, Purple 3.04x, Grey 2.03x</span>
+                <span className="text-[11px] text-text-tertiary block mt-0.5 font-sans">Green 30x, Red 5.06x, Purple 3.04x, Grey 2.03x</span>
               </div>
 
               <div>
-                <span className="text-[#8c8c8c] block text-[11px] uppercase">Actual Observed RTP</span>
-                <span className={`text-base font-bold ${Math.abs(rtpActual - 95) <= 3 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                <span className="text-text-tertiary block text-[11px] uppercase font-sans">Actual Observed RTP</span>
+                <span className={`text-base font-bold ${Math.abs(rtpActual - 95) <= 3 ? 'text-status-positive' : 'text-status-warning'}`}>
                   {rtpActual.toFixed(2)}%
                 </span>
-                <span className="text-[10.5px] text-[#666] block mt-0.5">Derived from PostgreSQL bets table</span>
+                <span className="text-[11px] text-text-tertiary block mt-0.5 font-sans">Derived from PostgreSQL bets table</span>
               </div>
 
               <div>
-                <span className="text-[#8c8c8c] block text-[11px] uppercase">Total Engine Rounds</span>
-                <span className="text-[#e1e1e1] text-base font-bold">
+                <span className="text-text-tertiary block text-[11px] uppercase font-sans">Total Engine Rounds</span>
+                <span className="text-text-primary text-base font-bold">
                   #{games.totalRoundsPlayed || 0}
                 </span>
-                <span className="text-[10.5px] text-[#666] block mt-0.5">Authoritative server rounds</span>
+                <span className="text-[11px] text-text-tertiary block mt-0.5 font-sans">Authoritative server rounds</span>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Section 3: Cash Inflow vs Outflow */}
           <div className="space-y-3">
-            <h2 className="text-[13px] font-semibold text-[#e1e1e1] flex items-center gap-2">
-              <Coins className="h-4 w-4 text-[#2988ff]" />
+            <h2 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+              <Coins className="h-4 w-4 text-accent-primary" />
               <span>Cash Flow & Liquidity</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-                <span className="text-[11px] font-mono text-[#8c8c8c] uppercase">Settled Deposits (In)</span>
-                <div className="mt-2 text-xl font-bold font-mono text-emerald-400">
+              <Card>
+                <span className="text-xs font-mono text-text-tertiary uppercase">Settled Deposits (In)</span>
+                <div className="mt-2 text-2xl font-bold font-mono text-status-positive">
                   ₹{totalDeposited.toFixed(2)}
                 </div>
-                <p className="mt-1 text-[11px] text-[#8c8c8c]">UPI & manual deposit credits</p>
-              </div>
+                <p className="mt-1 text-xs text-text-tertiary">UPI & manual deposit credits</p>
+              </Card>
 
-              <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-                <span className="text-[11px] font-mono text-[#8c8c8c] uppercase">Settled Withdrawals (Out)</span>
-                <div className="mt-2 text-xl font-bold font-mono text-rose-400">
+              <Card>
+                <span className="text-xs font-mono text-text-tertiary uppercase">Settled Withdrawals (Out)</span>
+                <div className="mt-2 text-2xl font-bold font-mono text-status-negative">
                   ₹{totalWithdrawn.toFixed(2)}
                 </div>
-                <p className="mt-1 text-[11px] text-[#8c8c8c]">Processed player payouts</p>
-              </div>
+                <p className="mt-1 text-xs text-text-tertiary">Processed player payouts</p>
+              </Card>
 
-              <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-4">
-                <span className="text-[11px] font-mono text-[#8c8c8c] uppercase">Net Cash Flow</span>
-                <div className={`mt-2 text-xl font-bold font-mono ${netFinancial >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <Card>
+                <span className="text-xs font-mono text-text-tertiary uppercase">Net Cash Flow</span>
+                <div className={`mt-2 text-2xl font-bold font-mono ${netFinancial >= 0 ? 'text-status-positive' : 'text-status-negative'}`}>
                   ₹{netFinancial.toFixed(2)}
                 </div>
-                <p className="mt-1 text-[11px] text-[#8c8c8c]">Deposits minus withdrawals</p>
-              </div>
+                <p className="mt-1 text-xs text-text-tertiary">Deposits minus withdrawals</p>
+              </Card>
             </div>
           </div>
 
           {/* Section 4: Player Community Demographics */}
-          <div className="rounded-[8px] border border-white/[0.08] bg-[#212123] p-5 space-y-4">
-            <h3 className="text-[13px] font-semibold text-[#e1e1e1] flex items-center gap-2">
-              <Users className="h-4 w-4 text-[#2988ff]" />
+          <Card className="space-y-4">
+            <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+              <Users className="h-4 w-4 text-accent-primary" />
               <span>Player Retention & Account Health</span>
             </h3>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-[12px] font-mono">
-              <div className="p-3 rounded-[6px] bg-black/40 border border-white/[0.04]">
-                <span className="text-[#8c8c8c] block text-[10.5px] uppercase">Registered Total</span>
-                <span className="text-[#e1e1e1] text-base font-bold">{users.totalUsers || 0}</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+              <div className="p-3 rounded-md bg-surface-base border border-border-muted">
+                <span className="text-text-tertiary block text-[10px] uppercase font-sans">Registered Total</span>
+                <span className="text-text-primary text-base font-bold">{users.totalUsers || 0}</span>
               </div>
-              <div className="p-3 rounded-[6px] bg-black/40 border border-white/[0.04]">
-                <span className="text-[#8c8c8c] block text-[10.5px] uppercase">Active Accounts</span>
-                <span className="text-emerald-400 text-base font-bold">{users.activeUsers || 0}</span>
+              <div className="p-3 rounded-md bg-surface-base border border-border-muted">
+                <span className="text-text-tertiary block text-[10px] uppercase font-sans">Active Accounts</span>
+                <span className="text-status-positive text-base font-bold">{users.activeUsers || 0}</span>
               </div>
-              <div className="p-3 rounded-[6px] bg-black/40 border border-white/[0.04]">
-                <span className="text-[#8c8c8c] block text-[10.5px] uppercase">Banned / Suspended</span>
-                <span className="text-rose-400 text-base font-bold">{users.bannedUsers || 0}</span>
+              <div className="p-3 rounded-md bg-surface-base border border-border-muted">
+                <span className="text-text-tertiary block text-[10px] uppercase font-sans">Banned / Suspended</span>
+                <span className="text-status-negative text-base font-bold">{users.bannedUsers || 0}</span>
               </div>
-              <div className="p-3 rounded-[6px] bg-black/40 border border-white/[0.04]">
-                <span className="text-[#8c8c8c] block text-[10.5px] uppercase">New in Period</span>
-                <span className="text-[#2988ff] text-base font-bold">+{users.newUsers || 0}</span>
+              <div className="p-3 rounded-md bg-surface-base border border-border-muted">
+                <span className="text-text-tertiary block text-[10px] uppercase font-sans">New in Period</span>
+                <span className="text-accent-primary text-base font-bold">+{users.newUsers || 0}</span>
               </div>
             </div>
-          </div>
+          </Card>
 
         </div>
       )}

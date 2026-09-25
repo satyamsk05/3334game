@@ -1,22 +1,53 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-geist: 'Geist', 'Geist Fallback', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-geist-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Roboto Mono, Menlo, monospace;
+  /* Typography */
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Roboto Mono, Menlo, monospace;
 
-  /* Premation DESIGN.md Tokens */
+  /* Colors (Dark Theme Semantic Tokens) */
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #737373;
+  --text-inverse: #0a0a0a;
+
   --surface-base: #000000;
-  --surface-muted: #212123;
-  --surface-raised: rgba(255, 255, 255, 0.04);
-  --surface-strong: #2988ff;
-  --text-primary: #a6a6a6;
-  --text-secondary: #e1e1e1;
-  --text-inverse: #8c8c8c;
-  --border-muted: rgba(255, 255, 255, 0.08);
+  --surface-raised: #141416;
+  --surface-strong: #1f1f22;
+  --surface-muted: #0a0a0b;
+
+  --border-default: #2a2a2e;
+  --border-muted: #1c1c1f;
+
+  --accent-primary: #2988ff;
+
+  --status-positive: #22c55e;
+  --status-negative: #fb7185;
+  --status-warning: #f59e0b;
+
+  /* Spacing */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-7: 24px;
+  --space-8: 32px;
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Motion */
+  --motion-instant: 100ms;
+  --motion-fast: 150ms;
+  --motion-normal: 200ms;
 }
 
 * {
@@ -24,43 +55,46 @@
 }
 
 body {
-  font-family: var(--font-geist);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 400;
   background-color: var(--surface-base);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Premation Studio Focus & Keyboard Accessibility */
+/* Accessibility: Universal 2px Accent Focus Ring with 2px offset */
 :focus-visible {
-  outline: 2px solid #2988ff;
-  outline-offset: 1px;
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 2px !important;
 }
 
-/* Custom Sleek Premation Studio Scrollbar */
+/* Sleek Minimalist Studio Scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #000000;
+  background: var(--surface-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: #212123;
-  border-radius: 4px;
+  background: var(--border-default);
+  border-radius: var(--radius-xs);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #38383c;
+  background: #3f3f46;
 }
 
-/* Smooth motion utilities */
-.motion-instant {
-  transition-duration: 150ms;
+/* Motion Utilities */
+.transition-instant {
+  transition-duration: var(--motion-instant);
 }
-.motion-fast {
-  transition-duration: 200ms;
+.transition-fast {
+  transition-duration: var(--motion-fast);
 }
-.motion-normal {
-  transition-duration: 300ms;
+.transition-normal {
+  transition-duration: var(--motion-normal);
 }

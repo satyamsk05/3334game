@@ -25,9 +25,9 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
   if (!authorized && pathname !== '/login') {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-black text-[12px] text-[#8c8c8c]">
-        <div className="flex items-center gap-2 rounded-[4px] border border-white/[0.08] bg-[#212123] px-3.5 py-2 shadow-sm">
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-[#2988ff]" />
+      <div className="flex h-screen w-full items-center justify-center bg-surface-base text-xs text-text-tertiary">
+        <div className="flex items-center gap-2 rounded-md border border-border-default bg-surface-raised px-4 py-2.5 shadow-sm">
+          <Loader2 className="h-4 w-4 animate-spin text-accent-primary" />
           <span>Verifying Studio Authorization...</span>
         </div>
       </div>
