@@ -51,6 +51,9 @@ sealed interface SubScreen {
     object FairPlay : SubScreen
     object RingOfFuture : SubScreen
     object DepositPayment : SubScreen
+    object XOLobby : SubScreen
+    data class XOMatchmaking(val tier: com.example.app334.game.xo.model.XOTier) : SubScreen
+    data class XOBattle(val room: com.example.app334.game.xo.model.XORoomState) : SubScreen
 }
 
 @Composable
@@ -76,6 +79,8 @@ fun HomeScreen(
             when (activeSubScreen) {
                 SubScreen.WithdrawDetails -> activeSubScreen = SubScreen.Withdraw
                 SubScreen.DepositPayment -> activeSubScreen = SubScreen.RingOfFuture
+                is SubScreen.XOBattle -> activeSubScreen = SubScreen.XOLobby
+                is SubScreen.XOMatchmaking -> activeSubScreen = SubScreen.XOLobby
                 else -> activeSubScreen = null
             }
         } else if (selectedTab != NavItem.HOME) {
@@ -166,6 +171,16 @@ fun HomeScreen(
                 onClick = { selectedTab = NavItem.REWARD }
             ),
             BannerSlide(
+                id = "xo_battle_feature",
+                title = "1v1 XO BATTLE",
+                subtitle = "Play Live Tic-Tac-Toe battles with real cash prizes!",
+                imageRes = R.drawable.logo_classic_dice,
+                backgroundGradient = listOf(Color(0xFF6D28D9), Color(0xFF2E1065)),
+                badgeText = "LIVE",
+                ctaText = "PLAY NOW",
+                onClick = { activeSubScreen = SubScreen.XOLobby }
+            ),
+            BannerSlide(
                 id = "ring_feature",
                 title = "RING OF FUTURE",
                 subtitle = "Spin the 32-segment wheel for up to 30x instant multiplier!",
@@ -191,6 +206,8 @@ fun HomeScreen(
     fun onGameTileClick(gameId: String, title: String) {
         if (gameId == "rings_of_future") {
             activeSubScreen = SubScreen.RingOfFuture
+        } else if (gameId == "classic_dice" || gameId == "xo_battle" || title.contains("Dice", ignoreCase = true) || title.contains("XO", ignoreCase = true)) {
+            activeSubScreen = SubScreen.XOLobby
         } else {
             Toast.makeText(context, "$title is Coming Soon!", Toast.LENGTH_SHORT).show()
         }
@@ -209,7 +226,26 @@ fun HomeScreen(
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-                when (activeSubScreen) {
+                when (val sub = activeSubScreen) {
+                    SubScreen.XOLobby -> {
+                        com.example.app334.game.xo.ui.XOLobbyScreen(
+                            onBackClick = { activeSubScreen = null },
+                            onPlayClick = { tier -> activeSubScreen = SubScreen.XOMatchmaking(tier) },
+                            onAddCashClick = { selectedTab = NavItem.REWARD }
+                        )
+                    }
+                    is SubScreen.XOMatchmaking -> {
+                        com.example.app334.game.xo.ui.XOMatchmakingScreen(
+                            tier = sub.tier,
+                            onMatchFound = { room -> activeSubScreen = SubScreen.XOBattle(room) }
+                        )
+                    }
+                    is SubScreen.XOBattle -> {
+                        com.example.app334.game.xo.ui.XOBattleScreen(
+                            initialRoom = sub.room,
+                            onBackClick = { activeSubScreen = SubScreen.XOLobby }
+                        )
+                    }
                     SubScreen.RingOfFuture -> {
                         com.example.app334.game.ringoffuture.ui.RingOfFutureScreen(
                             onBackClick = { activeSubScreen = null },
