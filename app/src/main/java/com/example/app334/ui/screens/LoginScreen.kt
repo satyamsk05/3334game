@@ -75,15 +75,21 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
 
     fun processPhoneForLogin(phone: String) {
         val cleanPhone = phone.trim()
-        val existing = AuthRepository.getSavedUserForPhone(cleanPhone, context)
-        if (existing != null && existing.second.isNotBlank()) {
-            // Returning user -> instantly log in with exact same identity & balance
-            completeLogin(cleanPhone, existing.second)
-        } else {
-            // New user -> ask for name on Screen 3
-            verifiedPhoneHolder = cleanPhone
-            showPhoneSheet = false
-            showNameSetup = true
+        isLoading = true
+        statusMessage = "Checking player account..."
+        scope.launch {
+            val existing = AuthRepository.fetchExistingUser(cleanPhone)
+            isLoading = false
+            statusMessage = null
+            if (existing != null && existing.name.isNotBlank() && !existing.name.startsWith("Player_") && !existing.name.startsWith("WhatsAppUser_")) {
+                // Returning registered user -> directly log in with exact same identity, phone, ID & balance!
+                completeLogin(cleanPhone, existing.name)
+            } else {
+                // First-time user or needs name setup -> ask for name on Screen 3
+                verifiedPhoneHolder = cleanPhone
+                showPhoneSheet = false
+                showNameSetup = true
+            }
         }
     }
 

@@ -283,7 +283,9 @@ export default function UserDetailPage() {
                   )}
                 </button>
                 <span aria-hidden="true">•</span>
-                <span>Phone: {user.phone || 'No phone'}</span>
+                <span>
+                  Phone: {user.phone ? (user.phone.startsWith('91') && user.phone.length === 12 ? `+91 ${user.phone.slice(2)}` : user.phone) : 'No phone'}
+                </span>
               </div>
             </div>
           </div>
@@ -387,7 +389,9 @@ export default function UserDetailPage() {
               </div>
               <div>
                 <span className="text-text-secondary block text-xs">Registered Mobile</span>
-                <span className="font-mono text-text-primary">{user.phone || '—'}</span>
+                <span className="font-mono text-text-primary">
+                  {user.phone ? (user.phone.startsWith('91') && user.phone.length === 12 ? `+91 ${user.phone.slice(2)}` : user.phone) : '—'}
+                </span>
               </div>
               <div>
                 <span className="text-text-secondary block text-xs">Registration Date</span>

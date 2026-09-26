@@ -100,6 +100,58 @@ object AuthRepository {
         return null
     }
 
+    suspend fun fetchExistingUser(phone: String): UserSession? = withContext(Dispatchers.IO) {
+        val cleanPhone = phone.trim()
+        if (cleanPhone.isBlank()) return@withContext null
+
+        // 1. Query server for authoritative existing user profile
+        try {
+            val url = "${ClientConfig.API_BASE_URL}/auth/status?phone=$cleanPhone"
+            val request = Request.Builder().url(url).get().build()
+            val response = httpClient.newCall(request).execute()
+            if (response.isSuccessful) {
+                val resString = response.body?.string() ?: ""
+                val json = JSONObject(resString)
+                val data = json.optJSONObject("data")
+                val exists = data?.optBoolean("exists", false) ?: false
+                if (exists) {
+                    val userId = data?.optString("userId", "") ?: ""
+                    val name = data?.optString("name", "") ?: ""
+                    val isBanned = data?.optBoolean("isBanned", false) ?: false
+                    val local = getSavedUserForPhone(cleanPhone)
+                    val avatarId = local?.third ?: "avatar_1"
+                    if (userId.isNotBlank()) {
+                        return@withContext UserSession(
+                            userId = userId,
+                            name = name,
+                            phone = cleanPhone,
+                            avatarId = avatarId,
+                            isLoggedIn = false,
+                            isBanned = isBanned
+                        )
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.w("AuthRepository", "Failed to check existing user on server: ${e.message}")
+        }
+
+        // 2. Fallback to local cached profile if offline
+        val local = getSavedUserForPhone(cleanPhone)
+        if (local != null && local.first.isNotBlank() && local.second.isNotBlank()) {
+            return@withContext UserSession(
+                userId = local.first,
+                name = local.second,
+                phone = cleanPhone,
+                avatarId = local.third,
+                isLoggedIn = false,
+                isBanned = false
+            )
+        }
+
+        return@withContext null
+    }
+
     suspend fun checkBanStatus(userId: String, phone: String = ""): Boolean = withContext(Dispatchers.IO) {
         if (userId.isBlank() && phone.isBlank()) return@withContext false
         try {
@@ -135,7 +187,7 @@ object AuthRepository {
 
         // Check if user previously logged in with this phone
         val existingSaved = getSavedUserForPhone(cleanPhone, targetContext)
-        val resolvedName = when {
+        var resolvedName = when {
             name.isNotBlank() -> name.trim()
             existingSaved != null && existingSaved.second.isNotBlank() -> existingSaved.second
             else -> "Player_${cleanPhone.takeLast(4).ifEmpty { "101" }}"
@@ -170,14 +222,18 @@ object AuthRepository {
                 val data = json.optJSONObject("data")
                 val user = data?.optJSONObject("user")
                 val serverUserId = user?.optString("id")
+                val serverName = user?.optString("name")
                 if (!serverUserId.isNullOrBlank()) {
                     resolvedUserId = serverUserId
+                }
+                if (!serverName.isNullOrBlank() && name.isBlank()) {
+                    resolvedName = serverName
                 }
                 val token = data?.optString("token")
                 if (!token.isNullOrBlank()) {
                     authToken = token
                 }
-                Log.d("AuthRepository", "Synced login with backend server: $resolvedUserId")
+                Log.d("AuthRepository", "Synced login with backend server: $resolvedUserId ($resolvedName)")
             } else {
                 Log.w("AuthRepository", "Backend login returned HTTP ${response.code}")
             }

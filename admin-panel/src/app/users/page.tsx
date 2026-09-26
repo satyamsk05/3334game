@@ -256,8 +256,8 @@ export default function UsersManagementPage() {
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-6 text-xs text-gray-600 font-mono">
-                        {u.phone || '—'}
+                      <td className="py-3.5 px-6 text-xs text-gray-700 font-mono">
+                        {u.phone ? (u.phone.startsWith('91') && u.phone.length === 12 ? `+91 ${u.phone.slice(2)}` : u.phone) : '—'}
                       </td>
 
                       <td className="py-3.5 px-6">
