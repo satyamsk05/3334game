@@ -26,6 +26,11 @@ export interface UserDetailsResponse {
     block_reason?: string;
     created_at: string;
     updated_at: string;
+    device_model?: string;
+    os_version?: string;
+    app_version?: string;
+    ip_address?: string;
+    location?: string;
   };
   wallet: {
     deposit_balance: string;
@@ -44,10 +49,10 @@ export interface UserDetailsResponse {
   recentTransactions: Array<{
     id: string;
     transaction_type: string;
-    amount: string;
+    amount: string | number;
     bucket: string;
-    balance_before: string;
-    balance_after: string;
+    balance_before: string | number;
+    balance_after: string | number;
     reference_id: string;
     description: string;
     created_at: string;
@@ -56,21 +61,25 @@ export interface UserDetailsResponse {
     id: string;
     round_id: string;
     selected_option: string;
-    bet_amount: string;
-    payout_amount: string;
+    color?: string;
+    bet_amount?: string | number;
+    stake?: string | number;
+    payout_amount?: string | number;
+    win_amount?: string | number;
+    payout_multiplier?: number;
     status: string;
     created_at: string;
   }>;
   deposits: Array<{
     id: string;
-    amount: string;
+    amount: string | number;
     utr: string;
     status: string;
     created_at: string;
   }>;
   withdrawals: Array<{
     id: string;
-    amount: string;
+    amount: string | number;
     upi_id: string;
     status: string;
     created_at: string;
@@ -78,7 +87,7 @@ export interface UserDetailsResponse {
   notes: Array<{
     id: string;
     note: string;
-    author_id: string;
+    author_id?: string;
     created_at: string;
   }>;
   auditTrail: Array<{
@@ -87,6 +96,17 @@ export interface UserDetailsResponse {
     details: any;
     created_at: string;
   }>;
+  sessions?: Array<{
+    id: string;
+    device_model: string;
+    os_version: string;
+    app_version: string;
+    ip_address: string;
+    network_type: string;
+    location: string;
+    created_at: string;
+  }>;
+  activity?: Array<any>;
 }
 
 export interface GameInfo {
@@ -131,6 +151,11 @@ export const adminService = {
   // Dashboard & Analytics
   getDashboardStats: async (range: string = '30d') => {
     const res = await api.get(`/admin/dashboard/stats?range=${range}`);
+    return res.data;
+  },
+
+  getPendingCounts: async () => {
+    const res = await api.get('/admin/dashboard/pending-counts');
     return res.data;
   },
 

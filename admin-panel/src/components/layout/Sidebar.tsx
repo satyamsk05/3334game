@@ -19,7 +19,7 @@ import {
   PanelLeft,
   LogOut
 } from 'lucide-react';
-import { Badge } from '@/components/ui/Badge';
+import { adminService } from '@/services/adminService';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -34,6 +34,7 @@ interface NavSection {
     name: string;
     href: string;
     icon: any;
+    countKey?: 'deposits' | 'withdrawals';
     badge?: { text: string; variant: 'peach' | 'mint' | 'info' | 'neutral' };
   }[];
 }
@@ -42,12 +43,31 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
   const pathname = usePathname();
   const router = useRouter();
   const [adminName, setAdminName] = useState('Admin');
+  const [pendingCounts, setPendingCounts] = useState<{ pendingDeposits: number; pendingWithdrawals: number }>({
+    pendingDeposits: 0,
+    pendingWithdrawals: 0
+  });
+
+  const fetchCounts = async () => {
+    try {
+      const res = await adminService.getPendingCounts();
+      if (res.success && res.data) {
+        setPendingCounts({
+          pendingDeposits: res.data.pendingDeposits || 0,
+          pendingWithdrawals: res.data.pendingWithdrawals || 0
+        });
+      }
+    } catch (_e) {}
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('adminUser');
       if (stored) setAdminName(stored);
     }
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 8000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = () => {
@@ -68,8 +88,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
     {
       title: 'FINANCE',
       items: [
-        { name: 'Deposits', href: '/payments/deposits', icon: ArrowDownLeft },
-        { name: 'Withdrawals', href: '/payments/withdrawals', icon: ArrowUpRight },
+        { name: 'Deposits', href: '/payments/deposits', icon: ArrowDownLeft, countKey: 'deposits' },
+        { name: 'Withdrawals', href: '/payments/withdrawals', icon: ArrowUpRight, countKey: 'withdrawals' },
         { name: 'Wallet Ledger', href: '/transactions/ledger', icon: ArrowLeftRight }
       ]
     },
@@ -158,25 +178,37 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     ? pathname === '/'
                     : pathname.startsWith(item.href);
 
+                  const count = item.countKey === 'deposits' 
+                    ? pendingCounts.pendingDeposits 
+                    : (item.countKey === 'withdrawals' ? pendingCounts.pendingWithdrawals : 0);
+
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      title={collapsed ? item.name : undefined}
+                      title={collapsed ? `${item.name} ${count > 0 ? `(${count} pending)` : ''}` : undefined}
                       className={`group flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition-all duration-150 ease-out active:scale-[0.98] ${
                         isActive
                           ? 'bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100'
                           : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
                       } ${collapsed ? 'justify-center px-0' : ''}`}
                     >
-                      <div className="flex items-center gap-3">
-                        <Icon
-                          className={`h-5 w-5 shrink-0 transition-transform duration-150 group-hover:scale-105 ${
-                            isActive ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-800'
-                          }`}
-                          aria-hidden="true"
-                        />
+                      <div className="flex items-center gap-3 relative">
+                        <div className="relative">
+                          <Icon
+                            className={`h-5 w-5 shrink-0 transition-transform duration-150 group-hover:scale-105 ${
+                              isActive ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-800'
+                            }`}
+                            aria-hidden="true"
+                          />
+                          {collapsed && count > 0 && (
+                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+                            </span>
+                          )}
+                        </div>
                         <span
                           className={`truncate transition-opacity duration-150 ${
                             collapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'
@@ -186,10 +218,16 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                         </span>
                       </div>
 
-                      {!collapsed && item.badge && (
-                        <Badge variant={item.badge.variant}>
+                      {!collapsed && count > 0 && (
+                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold text-white bg-rose-500 shadow-sm animate-pulse">
+                          {count}
+                        </span>
+                      )}
+
+                      {!collapsed && !count && item.badge && (
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
                           {item.badge.text}
-                        </Badge>
+                        </span>
                       )}
                     </Link>
                   );

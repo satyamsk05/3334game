@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.app334.R
 import com.example.app334.core.config.ClientConfig
 import com.example.app334.core.session.SessionManager
+import com.example.app334.data.remote.DeviceInfoHelper
 import com.example.app334.game.ringoffuture.backend.WalletLedger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,9 @@ data class UserSession(
     val phone: String = "",
     val avatarId: String = "avatar_1",
     val isLoggedIn: Boolean = false,
-    val isBanned: Boolean = false
+    val isBanned: Boolean = false,
+    val deviceModel: String = "",
+    val osVersion: String = ""
 )
 
 object AuthRepository {
@@ -82,14 +85,20 @@ object AuthRepository {
             )
             SessionManager.signIn(userId = userId, username = name, token = "SESSION-$userId")
 
-            // Sync with backend so phone and username are up-to-date in Admin Panel
+            // Sync with backend so phone, username, and device specs are up-to-date in Admin Panel
             kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
                 try {
                     if (phone.isNotBlank()) {
+                        val ctx = context.applicationContext
                         val url = "${ClientConfig.API_BASE_URL}/auth/login"
                         val payload = JSONObject().apply {
                             put("phone", phone)
                             put("name", name)
+                            put("deviceModel", DeviceInfoHelper.getDeviceModel())
+                            put("osVersion", DeviceInfoHelper.getOsVersion())
+                            put("appVersion", DeviceInfoHelper.getAppVersion(ctx))
+                            put("networkType", DeviceInfoHelper.getNetworkType(ctx))
+                            put("isEmulator", DeviceInfoHelper.isEmulator())
                         }
                         val body = payload.toString().toRequestBody("application/json".toMediaTypeOrNull())
                         val request = Request.Builder().url(url).post(body).build()
@@ -220,10 +229,18 @@ object AuthRepository {
 
         // Sync with live backend server so user is registered and visible in Admin Panel
         try {
+            val ctx = targetContext ?: appContext
             val url = "${ClientConfig.API_BASE_URL}/auth/login"
             val payload = JSONObject().apply {
                 put("phone", cleanPhone)
                 put("name", resolvedName)
+                if (ctx != null) {
+                    put("deviceModel", DeviceInfoHelper.getDeviceModel())
+                    put("osVersion", DeviceInfoHelper.getOsVersion())
+                    put("appVersion", DeviceInfoHelper.getAppVersion(ctx))
+                    put("networkType", DeviceInfoHelper.getNetworkType(ctx))
+                    put("isEmulator", DeviceInfoHelper.isEmulator())
+                }
             }
             val body = payload.toString().toRequestBody("application/json".toMediaTypeOrNull())
             val request = Request.Builder().url(url).post(body).build()
