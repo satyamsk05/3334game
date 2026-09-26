@@ -20,12 +20,16 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Send,
-  X
+  X,
+  Pencil,
+  Phone,
+  MessageSquare
 } from 'lucide-react';
 import { adminService, UserDetailsResponse } from '@/services/adminService';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { Modal } from '@/components/ui/Modal';
 
 type TabKey =
   | 'overview'
@@ -49,6 +53,19 @@ export default function UserDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copiedPhone, setCopiedPhone] = useState<string | null>(null);
+
+  // Edit profile state
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editSubmitting, setEditSubmitting] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  // Ban modal state
+  const [banModalOpen, setBanModalOpen] = useState(false);
+  const [banReason, setBanReason] = useState('Platform policy violation');
+  const [banSubmitting, setBanSubmitting] = useState(false);
 
   // Note form state
   const [newNote, setNewNote] = useState('');
@@ -71,6 +88,11 @@ export default function UserDetailPage() {
       const res = await adminService.getUserDetails(userId);
       if (res.success && res.data) {
         setData(res.data);
+        const u = res.data.user || (res.data as any).overview;
+        if (u) {
+          setEditName(u.name || '');
+          setEditPhone(u.phone || '');
+        }
       } else {
         setError(res.message || 'Player details not found');
       }
@@ -92,28 +114,63 @@ export default function UserDetailPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleToggleBan = async () => {
+  const copyPhoneToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedPhone(text);
+    setTimeout(() => setCopiedPhone(null), 2000);
+  };
+
+  const handleEditProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editName.trim()) {
+      setEditError('Display name cannot be empty');
+      return;
+    }
+    try {
+      setEditSubmitting(true);
+      setEditError(null);
+      const res = await adminService.updateUser(userId, {
+        name: editName.trim(),
+        phone: editPhone.trim() || undefined
+      });
+      if (res.success) {
+        setEditModalOpen(false);
+        await fetchDetails();
+      } else {
+        setEditError(res.message || 'Failed to update profile');
+      }
+    } catch (err: any) {
+      setEditError(err.response?.data?.message || err.message || 'Failed to update profile');
+    } finally {
+      setEditSubmitting(false);
+    }
+  };
+
+  const handleToggleBan = () => {
+    const targetUser = data?.user || (data as any)?.overview;
+    if (!targetUser) return;
+    setBanReason(targetUser.is_blocked ? '' : 'Platform policy violation');
+    setBanModalOpen(true);
+  };
+
+  const handleConfirmBanToggle = async () => {
     const targetUser = data?.user || (data as any)?.overview;
     if (!targetUser) return;
     const isCurrentlyBlocked = Boolean(targetUser.is_blocked ?? targetUser.isBanned);
-    let reason = '';
-    if (!isCurrentlyBlocked) {
-      const input = window.prompt('Enter reason for suspension / ban:', 'Platform policy violation');
-      if (input === null) return;
-      reason = input.trim();
-    } else {
-      if (!window.confirm('Are you sure you want to lift this player suspension?')) return;
-    }
 
     try {
-      const res = await adminService.toggleBan(userId, !isCurrentlyBlocked, reason);
+      setBanSubmitting(true);
+      const res = await adminService.toggleBan(userId, !isCurrentlyBlocked, banReason);
       if (res.success) {
+        setBanModalOpen(false);
         await fetchDetails();
       } else {
         alert(res.message || 'Action failed');
       }
     } catch (err: any) {
       alert(`Action error: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setBanSubmitting(false);
     }
   };
 
@@ -254,44 +311,98 @@ export default function UserDetailPage() {
         </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 font-extrabold text-base shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-extrabold text-lg shadow-md">
               {(user.name || 'P').slice(0, 2).toUpperCase()}
+              <span className={`absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full ring-2 ring-white ${user.is_blocked ? 'bg-rose-500' : 'bg-emerald-500'}`} />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">{user.name || 'Player'}</h1>
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(true)}
+                  className="p-1 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-150 ease-out active:scale-[0.96]"
+                  title="Edit Player Profile"
+                  aria-label="Edit Player Profile"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
                 {user.is_blocked ? (
                   <Badge variant="negative" ariaLabel="Account suspended">BANNED</Badge>
                 ) : (
                   <Badge variant="positive" ariaLabel="Account active">ACTIVE</Badge>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-xs text-gray-400 mt-1 font-medium">
-                <span>ID: {user.id}</span>
-                <button 
-                  type="button"
-                  onClick={() => copyToClipboard(user.id)} 
-                  className="hover:text-gray-700 p-0.5 rounded transition-fast" 
-                  aria-label={`Copy user ID ${user.id}`}
-                  title="Copy ID"
-                >
-                  {copiedId === user.id ? (
-                    <Check className="h-3 w-3 text-emerald-600" aria-hidden="true" />
-                  ) : (
-                    <Copy className="h-3 w-3" aria-hidden="true" />
-                  )}
-                </button>
+              <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400 mt-1 font-medium">
+                <div className="flex items-center gap-1">
+                  <span>ID: <span className="font-mono text-gray-700">{user.id}</span></span>
+                  <button 
+                    type="button"
+                    onClick={() => copyToClipboard(user.id)} 
+                    className="hover:text-gray-700 p-0.5 rounded transition-fast" 
+                    aria-label={`Copy user ID ${user.id}`}
+                    title="Copy ID"
+                  >
+                    {copiedId === user.id ? (
+                      <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                    )}
+                  </button>
+                </div>
+
                 <span aria-hidden="true">•</span>
-                <span>
-                  Phone: {user.phone ? (user.phone.startsWith('91') && user.phone.length === 12 ? `+91 ${user.phone.slice(2)}` : user.phone) : 'No phone'}
-                </span>
+
+                <div className="flex items-center gap-1.5">
+                  <Phone className="h-3.5 w-3.5 text-gray-400" />
+                  <span>
+                    Phone: <span className="font-mono text-gray-700">
+                      {user.phone ? (user.phone.startsWith('91') && user.phone.length === 12 ? `+91 ${user.phone.slice(2)}` : user.phone) : 'No phone'}
+                    </span>
+                  </span>
+                  {user.phone && (
+                    <>
+                      <button 
+                        type="button"
+                        onClick={() => copyPhoneToClipboard(user.phone)} 
+                        className="hover:text-gray-700 p-0.5 rounded transition-fast" 
+                        aria-label={`Copy phone ${user.phone}`}
+                        title="Copy Phone"
+                      >
+                        {copiedPhone === user.phone ? (
+                          <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                        )}
+                      </button>
+                      <a
+                        href={`https://wa.me/${user.phone.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1 rounded text-emerald-600 hover:bg-emerald-50 transition-all duration-150 active:scale-[0.96]"
+                        title="Open WhatsApp Chat"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" />
+                      </a>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Quick Action Buttons */}
           <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => setEditModalOpen(true)}
+              icon={<Pencil className="h-3.5 w-3.5" aria-hidden="true" />}
+            >
+              Edit Profile
+            </Button>
+
             <Button
               variant="dark"
               size="md"
@@ -350,62 +461,86 @@ export default function UserDetailPage() {
       {/* TAB 1: OVERVIEW */}
       {/* ============================================================ */}
       {activeTab === 'overview' && (
-        <div className="space-y-space-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-4">
+        <div className="space-y-6">
+          {/* Top Key Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card variant="default">
-              <span className="text-xs text-text-secondary uppercase">Total Balance</span>
-              <div className="mt-space-2 text-xl font-bold font-mono text-text-primary">₹{availableRupees.toFixed(2)}</div>
-              <p className="mt-space-1 text-xs text-text-tertiary">All 3 buckets combined</p>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Balance</span>
+              <div className="mt-2 text-2xl font-bold font-mono text-gray-900">₹{availableRupees.toFixed(2)}</div>
+              <p className="mt-1 text-xs text-gray-400">All 3 buckets combined</p>
             </Card>
             <Card variant="default">
-              <span className="text-xs text-text-secondary uppercase">Total Wagered</span>
-              <div className="mt-space-2 text-xl font-bold font-mono text-text-primary">₹{totalWageredRupees.toFixed(2)}</div>
-              <p className="mt-space-1 text-xs text-text-tertiary">{metrics.totalBets} total bets placed</p>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Wagered</span>
+              <div className="mt-2 text-2xl font-bold font-mono text-gray-900">₹{totalWageredRupees.toFixed(2)}</div>
+              <p className="mt-1 text-xs text-gray-400">{metrics.totalBets} total bets placed</p>
             </Card>
             <Card variant="default">
-              <span className="text-xs text-text-secondary uppercase">Total Won</span>
-              <div className="mt-space-2 text-xl font-bold font-mono text-status-positive">₹{totalWonRupees.toFixed(2)}</div>
-              <p className="mt-space-1 text-xs text-text-tertiary">Payout credits</p>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Won</span>
+              <div className="mt-2 text-2xl font-bold font-mono text-emerald-600">₹{totalWonRupees.toFixed(2)}</div>
+              <p className="mt-1 text-xs text-gray-400">Payout credits</p>
             </Card>
             <Card variant="default">
-              <span className="text-xs text-text-secondary uppercase">Gross Gaming Revenue</span>
-              <div className={`mt-space-2 text-xl font-bold font-mono ${ggrRupees >= 0 ? 'text-status-positive' : 'text-status-negative'}`}>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Gross Gaming Revenue</span>
+              <div className={`mt-2 text-2xl font-bold font-mono ${ggrRupees >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                 ₹{ggrRupees.toFixed(2)}
               </div>
-              <p className="mt-space-1 text-xs text-text-tertiary">House margin generated</p>
+              <p className="mt-1 text-xs text-gray-400">House margin generated</p>
             </Card>
           </div>
 
+          {/* Player Identity Card */}
           <Card variant="default">
-            <h3 className="text-sm font-semibold text-text-primary mb-space-4">Player Identity & Coordinates</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-5 text-xs">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-gray-900">Player Identity & Coordinates</h3>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setEditModalOpen(true)}
+                icon={<Pencil className="h-3 w-3" />}
+              >
+                Edit Info
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
               <div>
-                <span className="text-text-secondary block text-xs">Primary User ID</span>
-                <span className="font-mono text-text-primary">{user.id}</span>
+                <span className="text-gray-400 block text-xs font-semibold">Primary User ID</span>
+                <span className="font-mono text-gray-900 font-bold text-sm">{user.id}</span>
               </div>
               <div>
-                <span className="text-text-secondary block text-xs">Display Name</span>
-                <span className="text-text-primary font-medium">{user.name || '—'}</span>
+                <span className="text-gray-400 block text-xs font-semibold">Display Name</span>
+                <span className="text-gray-900 font-bold text-sm">{user.name || '—'}</span>
               </div>
               <div>
-                <span className="text-text-secondary block text-xs">Registered Mobile</span>
-                <span className="font-mono text-text-primary">
-                  {user.phone ? (user.phone.startsWith('91') && user.phone.length === 12 ? `+91 ${user.phone.slice(2)}` : user.phone) : '—'}
-                </span>
+                <span className="text-gray-400 block text-xs font-semibold">Registered Mobile</span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="font-mono text-gray-900 font-bold text-sm">
+                    {user.phone ? (user.phone.startsWith('91') && user.phone.length === 12 ? `+91 ${user.phone.slice(2)}` : user.phone) : '—'}
+                  </span>
+                  {user.phone && (
+                    <a
+                      href={`https://wa.me/${user.phone.replace(/[^0-9]/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-emerald-600 hover:text-emerald-700"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5" />
+                    </a>
+                  )}
+                </div>
               </div>
               <div>
-                <span className="text-text-secondary block text-xs">Registration Date</span>
-                <span className="text-text-primary">{new Date(user.created_at).toLocaleString()}</span>
+                <span className="text-gray-400 block text-xs font-semibold">Registration Date</span>
+                <span className="text-gray-800 font-medium">{new Date(user.created_at).toLocaleString()}</span>
               </div>
               <div>
-                <span className="text-text-secondary block text-xs">Account Status</span>
-                <span className={user.is_blocked ? 'text-status-negative font-semibold' : 'text-status-positive font-semibold'}>
+                <span className="text-gray-400 block text-xs font-semibold">Account Status</span>
+                <span className={user.is_blocked ? 'text-rose-600 font-bold' : 'text-emerald-600 font-bold'}>
                   {user.is_blocked ? `Suspended (${user.block_reason || 'Policy Violation'})` : 'Active / Good Standing'}
                 </span>
               </div>
               <div>
-                <span className="text-text-secondary block text-xs">Last Updated</span>
-                <span className="text-text-primary">{new Date(user.updated_at).toLocaleString()}</span>
+                <span className="text-gray-400 block text-xs font-semibold">Last Activity</span>
+                <span className="text-gray-800 font-medium">{new Date(user.updated_at).toLocaleString()}</span>
               </div>
             </div>
           </Card>
@@ -801,125 +936,228 @@ export default function UserDetailPage() {
       )}
 
       {/* ============================================================ */}
-      {/* WALLET ADJUSTMENT MODAL (surface.strong token) */}
+      {/* WALLET ADJUSTMENT MODAL */}
       {/* ============================================================ */}
-      {adjustModalOpen && (
-        <div 
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-surface-base/80 backdrop-blur-sm p-space-4"
-        >
-          <div className="w-full max-w-md rounded-lg border border-border-default bg-surface-strong p-space-6 shadow-2xl space-y-space-4 font-mono text-xs">
-            <div className="flex items-center justify-between border-b border-border-default pb-space-3">
-              <div className="flex items-center gap-space-2">
-                <Coins className="h-4 w-4 text-accent-primary" aria-hidden="true" />
-                <h3 id="modal-title" className="text-sm font-semibold text-text-primary">Authoritative Wallet Adjustment</h3>
+      <Modal
+        isOpen={adjustModalOpen}
+        onClose={() => setAdjustModalOpen(false)}
+        title="Authoritative Wallet Adjustment"
+        description="Debit or Credit integer paise to user balance buckets with an audit log."
+        maxWidth="md"
+      >
+        <div className="space-y-space-4 font-mono text-xs pt-space-2">
+          {adjustError && (
+            <div role="alert" className="flex items-center gap-space-2 rounded-xs border border-status-negative/30 bg-status-negative/10 p-space-2.5 text-xs text-status-negative">
+              <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span>{adjustError}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleAdjustWallet} className="space-y-space-4 text-xs">
+            <div>
+              <label className="block text-text-secondary mb-1">Adjustment Type</label>
+              <div className="grid grid-cols-2 gap-space-2">
+                <button
+                  type="button"
+                  onClick={() => setAdjustType('CREDIT')}
+                  className={`rounded-xs border p-space-2 font-medium transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary ${
+                    adjustType === 'CREDIT'
+                      ? 'border-status-positive/40 bg-status-positive/15 text-status-positive'
+                      : 'border-border-default bg-surface-base text-text-secondary'
+                  }`}
+                >
+                  + CREDIT (Add Funds)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAdjustType('DEBIT')}
+                  className={`rounded-xs border p-space-2 font-medium transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary ${
+                    adjustType === 'DEBIT'
+                      ? 'border-status-negative/40 bg-status-negative/15 text-status-negative'
+                      : 'border-border-default bg-surface-base text-text-secondary'
+                  }`}
+                >
+                  - DEBIT (Deduct Funds)
+                </button>
               </div>
-              <button 
-                type="button"
-                onClick={() => setAdjustModalOpen(false)} 
-                className="text-text-secondary hover:text-text-primary p-1 rounded-xs transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary"
-                aria-label="Close modal"
-              >
-                <X className="h-4 w-4" aria-hidden="true" />
-              </button>
             </div>
 
-            {adjustError && (
-              <div role="alert" className="flex items-center gap-space-2 rounded-xs border border-status-negative/30 bg-status-negative/10 p-space-2.5 text-xs text-status-negative">
-                <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                <span>{adjustError}</span>
-              </div>
-            )}
+            <div>
+              <label className="block text-text-secondary mb-1">Target Balance Bucket</label>
+              <select
+                value={adjustBucket}
+                onChange={(e) => setAdjustBucket(e.target.value as any)}
+                className="w-full h-8 rounded-xs border border-border-default bg-surface-base px-space-2.5 text-text-primary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
+              >
+                <option value="deposit">Deposit Bucket (Priority 1 in bets)</option>
+                <option value="winnings">Winnings Bucket (Withdrawable)</option>
+                <option value="bonus">Bonus Bucket (Promotional)</option>
+              </select>
+            </div>
 
-            <form onSubmit={handleAdjustWallet} className="space-y-space-4 text-xs">
-              <div>
-                <label className="block text-text-secondary mb-1">Adjustment Type</label>
-                <div className="grid grid-cols-2 gap-space-2">
-                  <button
-                    type="button"
-                    onClick={() => setAdjustType('CREDIT')}
-                    className={`rounded-xs border p-space-2 font-medium transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary ${
-                      adjustType === 'CREDIT'
-                        ? 'border-status-positive/40 bg-status-positive/15 text-status-positive'
-                        : 'border-border-default bg-surface-base text-text-secondary'
-                    }`}
-                  >
-                    + CREDIT (Add Funds)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAdjustType('DEBIT')}
-                    className={`rounded-xs border p-space-2 font-medium transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary ${
-                      adjustType === 'DEBIT'
-                        ? 'border-status-negative/40 bg-status-negative/15 text-status-negative'
-                        : 'border-border-default bg-surface-base text-text-secondary'
-                    }`}
-                  >
-                    - DEBIT (Deduct Funds)
-                  </button>
-                </div>
-              </div>
+            <div>
+              <label className="block text-text-secondary mb-1">Amount (in ₹ Rupees)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={adjustAmount}
+                onChange={(e) => setAdjustAmount(e.target.value)}
+                placeholder="e.g. 500.00"
+                className="w-full h-8 rounded-xs border border-border-default bg-surface-base px-space-2.5 font-mono text-text-primary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
+              />
+            </div>
 
-              <div>
-                <label className="block text-text-secondary mb-1">Target Balance Bucket</label>
-                <select
-                  value={adjustBucket}
-                  onChange={(e) => setAdjustBucket(e.target.value as any)}
-                  className="w-full h-8 rounded-xs border border-border-default bg-surface-base px-space-2.5 text-text-primary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
-                >
-                  <option value="deposit">Deposit Bucket (Priority 1 in bets)</option>
-                  <option value="winnings">Winnings Bucket (Withdrawable)</option>
-                  <option value="bonus">Bonus Bucket (Promotional)</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-text-secondary mb-1">Mandatory Audit Reason</label>
+              <textarea
+                value={adjustReason}
+                onChange={(e) => setAdjustReason(e.target.value)}
+                placeholder="e.g. Support resolution for ticket #9821 / Compensation"
+                className="w-full h-16 rounded-xs border border-border-default bg-surface-base p-space-2 text-text-primary placeholder-text-tertiary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
+              />
+            </div>
 
-              <div>
-                <label className="block text-text-secondary mb-1">Amount (in ₹ Rupees)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  value={adjustAmount}
-                  onChange={(e) => setAdjustAmount(e.target.value)}
-                  placeholder="e.g. 500.00"
-                  className="w-full h-8 rounded-xs border border-border-default bg-surface-base px-space-2.5 font-mono text-text-primary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
-                />
-              </div>
+            <div className="flex items-center justify-end gap-space-2 pt-space-2 border-t border-border-muted">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setAdjustModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                loading={adjustSubmitting}
+              >
+                Confirm Adjustment
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
 
-              <div>
-                <label className="block text-text-secondary mb-1">Mandatory Audit Reason</label>
-                <textarea
-                  value={adjustReason}
-                  onChange={(e) => setAdjustReason(e.target.value)}
-                  placeholder="e.g. Support resolution for ticket #9821 / Compensation"
-                  className="w-full h-16 rounded-xs border border-border-default bg-surface-base p-space-2 text-text-primary placeholder-text-tertiary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
-                />
-              </div>
+      {/* ============================================================ */}
+      {/* EDIT PROFILE MODAL */}
+      {/* ============================================================ */}
+      <Modal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        title="Edit Player Profile"
+        description="Update authoritative player identity and linked WhatsApp mobile number."
+        maxWidth="md"
+      >
+        <div className="space-y-space-4 font-mono text-xs pt-space-2">
+          {editError && (
+            <div role="alert" className="flex items-center gap-space-2 rounded-xs border border-status-negative/30 bg-status-negative/10 p-space-2.5 text-xs text-status-negative">
+              <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span>{editError}</span>
+            </div>
+          )}
 
-              <div className="flex items-center justify-end gap-space-2 pt-space-2 border-t border-border-muted">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setAdjustModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="sm"
-                  loading={adjustSubmitting}
-                >
-                  Confirm Adjustment
-                </Button>
-              </div>
-            </form>
+          <form onSubmit={handleEditProfileSubmit} className="space-y-space-4 text-xs">
+            <div>
+              <label className="block text-text-secondary mb-1">User / Account ID</label>
+              <input
+                type="text"
+                value={userId}
+                disabled
+                className="w-full h-8 rounded-xs border border-border-default bg-surface-muted px-space-2.5 font-mono text-text-tertiary cursor-not-allowed"
+              />
+            </div>
+
+            <div>
+              <label className="block text-text-secondary mb-1">Display Name / Username</label>
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Enter player display name"
+                className="w-full h-8 rounded-xs border border-border-default bg-surface-base px-space-2.5 text-text-primary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
+              />
+            </div>
+
+            <div>
+              <label className="block text-text-secondary mb-1">WhatsApp / Phone Number</label>
+              <input
+                type="text"
+                value={editPhone}
+                onChange={(e) => setEditPhone(e.target.value)}
+                placeholder="e.g. 9876543210 or +919876543210"
+                className="w-full h-8 rounded-xs border border-border-default bg-surface-base px-space-2.5 font-mono text-text-primary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-space-2 pt-space-2 border-t border-border-muted">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setEditModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                loading={editSubmitting}
+              >
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+
+      {/* ============================================================ */}
+      {/* BAN / SUSPEND MODAL */}
+      {/* ============================================================ */}
+      <Modal
+        isOpen={banModalOpen}
+        onClose={() => setBanModalOpen(false)}
+        title={user.is_blocked ? "Unban Player Account" : "Suspend Player Account"}
+        description={user.is_blocked ? "Restore betting and wallet capabilities for this user." : "Block this account from placing bets, depositing, or withdrawing."}
+        maxWidth="sm"
+      >
+        <div className="space-y-space-4 font-mono text-xs pt-space-2">
+          {!user.is_blocked && (
+            <div>
+              <label className="block text-text-secondary mb-1">Suspension Reason</label>
+              <input
+                type="text"
+                value={banReason}
+                onChange={(e) => setBanReason(e.target.value)}
+                placeholder="Reason for suspension"
+                className="w-full h-8 rounded-xs border border-border-default bg-surface-base px-space-2.5 text-text-primary focus:border-accent-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-fast"
+              />
+            </div>
+          )}
+
+          <div className="flex items-center justify-end gap-space-2 pt-space-2 border-t border-border-muted">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setBanModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant={user.is_blocked ? "primary" : "danger"}
+              size="sm"
+              loading={banSubmitting}
+              onClick={handleConfirmBanToggle}
+            >
+              {user.is_blocked ? "Confirm Unban" : "Confirm Suspension"}
+            </Button>
           </div>
         </div>
-      )}
+      </Modal>
 
     </div>
   );

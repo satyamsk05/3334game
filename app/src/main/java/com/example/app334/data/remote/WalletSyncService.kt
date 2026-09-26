@@ -35,6 +35,11 @@ object WalletSyncService {
     suspend fun syncBalance(userId: String? = null): Boolean = withContext(Dispatchers.IO) {
         if (!ClientConfig.IS_REMOTE_SERVER_ENABLED) return@withContext false
 
+        // Do not perform remote wallet sync if user is not authenticated yet
+        if (!com.example.app334.data.repository.AuthRepository.currentSession.value.isLoggedIn && userId.isNullOrBlank()) {
+            return@withContext false
+        }
+
         val targetUserId = userId
             ?: SessionManager.currentUserId()
             ?: WalletLedger.userProfile.value.userId

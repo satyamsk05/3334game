@@ -159,6 +159,11 @@ export const adminService = {
     return res.data;
   },
 
+  updateUser: async (id: string, data: { name?: string; phone?: string }) => {
+    const res = await api.patch(`/admin/users/${id}`, data);
+    return res.data;
+  },
+
   toggleBan: async (id: string, isBlocked: boolean, reason?: string) => {
     const res = await api.post(`/admin/users/${id}/ban`, { isBlocked, reason });
     return res.data;
