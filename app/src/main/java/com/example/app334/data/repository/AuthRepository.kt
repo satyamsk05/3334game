@@ -6,7 +6,9 @@ import com.example.app334.R
 import com.example.app334.core.config.ClientConfig
 import com.example.app334.core.session.SessionManager
 import com.example.app334.game.ringoffuture.backend.WalletLedger
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -79,6 +81,25 @@ object AuthRepository {
                 avatarId = avatarId
             )
             SessionManager.signIn(userId = userId, username = name, token = "SESSION-$userId")
+
+            // Sync with backend so phone and username are up-to-date in Admin Panel
+            kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    if (phone.isNotBlank()) {
+                        val url = "${ClientConfig.API_BASE_URL}/auth/login"
+                        val payload = JSONObject().apply {
+                            put("phone", phone)
+                            put("name", name)
+                        }
+                        val body = payload.toString().toRequestBody("application/json".toMediaTypeOrNull())
+                        val request = Request.Builder().url(url).post(body).build()
+                        val res = httpClient.newCall(request).execute()
+                        res.close()
+                    }
+                } catch (e: Exception) {
+                    Log.w("AuthRepository", "Failed background profile sync: ${e.message}")
+                }
+            }
         } else {
             _currentSession.value = UserSession(isLoggedIn = false, isBanned = isBanned)
         }
