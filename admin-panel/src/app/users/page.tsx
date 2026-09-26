@@ -20,6 +20,8 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 
+import { Modal } from '@/components/ui/Modal';
+
 export default function UsersManagementPage() {
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get('status') || 'ALL';
@@ -34,6 +36,10 @@ export default function UsersManagementPage() {
   const [status, setStatus] = useState<string>(initialStatus.toUpperCase());
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [processingId, setProcessingId] = useState<string | null>(null);
+
+  // Modal State for Ban/Unban
+  const [banModalUser, setBanModalUser] = useState<UserSummary | null>(null);
+  const [banReason, setBanReason] = useState('Terms of service violation');
 
   useEffect(() => {
     const qStatus = searchParams.get('status');
@@ -77,29 +83,26 @@ export default function UsersManagementPage() {
     fetchUsers();
   };
 
-  const toggleBan = async (user: UserSummary) => {
-    const currentBan = user.is_blocked;
-    let reason = '';
-    if (!currentBan) {
-      const input = window.prompt(`Enter reason for banning user ${user.name || user.id}:`, 'Terms of service violation');
-      if (input === null) return;
-      reason = input.trim();
-    } else {
-      if (!window.confirm(`Are you sure you want to unban user ${user.name || user.id}?`)) {
-        return;
-      }
-    }
+  const openBanModal = (user: UserSummary) => {
+    setBanModalUser(user);
+    setBanReason(user.is_blocked ? '' : 'Terms of service violation');
+  };
 
+  const handleConfirmBanToggle = async () => {
+    if (!banModalUser) return;
+    const user = banModalUser;
+    const currentBan = Boolean(user.is_blocked);
     try {
       setProcessingId(user.id);
-      const res = await adminService.toggleBan(user.id, !currentBan, reason);
+      const res = await adminService.toggleBan(user.id, !currentBan, banReason);
       if (res.success) {
         await fetchUsers();
+        setBanModalUser(null);
       } else {
-        alert(res.message || 'Action failed');
+        setError(res.message || 'Action failed');
       }
     } catch (err: any) {
-      alert(`Action failed: ${err.response?.data?.message || err.message}`);
+      setError(`Action failed: ${err.response?.data?.message || err.message}`);
     } finally {
       setProcessingId(null);
     }
@@ -225,12 +228,12 @@ export default function UsersManagementPage() {
                   const isProcessing = processingId === u.id;
 
                   return (
-                    <tr key={u.id} className="hover:bg-gray-50/70 transition-fast">
+                    <tr key={u.id} className="hover:bg-gray-50/70 transition-colors duration-100 ease-out">
                       <td className="py-3.5 px-6">
                         <div className="flex flex-col">
                           <Link 
                             href={`/users/${u.id}`}
-                            className="font-bold text-gray-900 hover:text-blue-600 flex items-center gap-1.5 transition-fast text-xs"
+                            className="font-bold text-gray-900 hover:text-blue-600 flex items-center gap-1.5 transition-colors duration-150 text-xs"
                           >
                             <span>{u.name || 'Unnamed Player'}</span>
                             <ExternalLink className="h-3 w-3 text-gray-400" />
@@ -240,7 +243,7 @@ export default function UsersManagementPage() {
                             <button
                               type="button"
                               onClick={() => copyToClipboard(u.id)}
-                              className="p-0.5 rounded hover:text-gray-700"
+                              className="p-0.5 rounded hover:text-gray-700 transition-colors duration-100"
                               aria-label={`Copy player ID ${u.id}`}
                             >
                               {copiedId === u.id ? (
@@ -294,10 +297,10 @@ export default function UsersManagementPage() {
                           </Link>
                           <button
                             type="button"
-                            onClick={() => toggleBan(u)}
+                            onClick={() => openBanModal(u)}
                             disabled={isProcessing}
                             title={isBlocked ? 'Unban User' : 'Ban User'}
-                            className={`rounded-xl p-2 text-xs transition-fast ${
+                            className={`rounded-xl p-2 text-xs transition-all duration-150 ease-out active:scale-[0.96] ${
                               isBlocked
                                 ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                                 : 'bg-rose-50 text-rose-700 hover:bg-rose-100'
@@ -331,7 +334,7 @@ export default function UsersManagementPage() {
                   type="button"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1 || loading}
-                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-fast disabled:opacity-40 shadow-sm"
+                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-all duration-150 ease-out active:scale-[0.96] disabled:opacity-40 shadow-sm"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -342,7 +345,7 @@ export default function UsersManagementPage() {
                   type="button"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages || loading}
-                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-fast disabled:opacity-40 shadow-sm"
+                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-all duration-150 ease-out active:scale-[0.96] disabled:opacity-40 shadow-sm"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
@@ -351,6 +354,52 @@ export default function UsersManagementPage() {
           )}
         </div>
       </Card>
+
+      {/* Confirmation & Ban Management Modal */}
+      <Modal
+        isOpen={Boolean(banModalUser)}
+        onClose={() => setBanModalUser(null)}
+        title={banModalUser?.is_blocked ? 'Unban Player Account' : 'Restrict Player Account'}
+        description={
+          banModalUser?.is_blocked
+            ? `Reactivate account for ${banModalUser?.name || banModalUser?.id}`
+            : `Set restriction or ban for player ${banModalUser?.name || banModalUser?.id}`
+        }
+      >
+        <div className="space-y-4">
+          {!banModalUser?.is_blocked && (
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-700">Reason for restriction</label>
+              <input
+                type="text"
+                value={banReason}
+                onChange={(e) => setBanReason(e.target.value)}
+                placeholder="E.g., Suspicious activity, Terms violation..."
+                className="w-full rounded-xl border border-gray-200 p-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-accent-primary/20"
+              />
+            </div>
+          )}
+
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-gray-100">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setBanModalUser(null)}
+              disabled={Boolean(processingId)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant={banModalUser?.is_blocked ? 'primary' : 'danger'}
+              size="sm"
+              loading={Boolean(processingId)}
+              onClick={handleConfirmBanToggle}
+            >
+              {banModalUser?.is_blocked ? 'Unban Account' : 'Confirm Ban'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
     </div>
   );

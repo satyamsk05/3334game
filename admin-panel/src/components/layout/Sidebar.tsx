@@ -136,10 +136,10 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               type="button"
               onClick={() => setCollapsed((prev: boolean) => !prev)}
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className="hidden md:flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200/80 text-gray-500 hover:text-gray-900 hover:bg-gray-50 shadow-sm transition-fast focus-visible:ring-2 focus-visible:ring-accent-primary"
+              className="hidden md:flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200/80 text-gray-500 hover:text-gray-900 hover:bg-gray-50 shadow-sm transition-all duration-150 ease-out active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-accent-primary"
               title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
-              <PanelLeft className="h-4 w-4" aria-hidden="true" />
+              <PanelLeft className={`h-4 w-4 transition-transform duration-200 ease-out ${collapsed ? 'rotate-180' : ''}`} aria-hidden="true" />
             </button>
           </div>
 
@@ -164,21 +164,21 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
                       title={collapsed ? item.name : undefined}
-                      className={`group flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition-fast ${
+                      className={`group flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition-all duration-150 ease-out active:scale-[0.98] ${
                         isActive
                           ? 'bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
                       } ${collapsed ? 'justify-center px-0' : ''}`}
                     >
                       <div className="flex items-center gap-3">
                         <Icon
-                          className={`h-5 w-5 shrink-0 transition-fast ${
+                          className={`h-5 w-5 shrink-0 transition-transform duration-150 group-hover:scale-105 ${
                             isActive ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-800'
                           }`}
                           aria-hidden="true"
                         />
                         <span
-                          className={`truncate transition-normal ${
+                          className={`truncate transition-opacity duration-150 ${
                             collapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'
                           }`}
                         >
@@ -200,7 +200,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
 
           {/* User Profile & Logout Bottom Card */}
           <div className="pt-3 border-t border-gray-200/60 space-y-2">
-            <div className={`flex items-center gap-3 rounded-2xl bg-white p-2.5 border border-gray-100 shadow-sm ${
+            <div className={`flex items-center gap-3 rounded-2xl bg-white p-2.5 border border-gray-100 shadow-sm transition-all duration-150 ${
               collapsed ? 'justify-center p-1.5' : ''
             }`}>
               <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 font-bold text-xs">
@@ -216,11 +216,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
             <button
               type="button"
               onClick={handleLogout}
-              className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-gray-500 hover:text-rose-600 hover:bg-rose-50/80 transition-fast ${
+              className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-gray-500 hover:text-rose-600 hover:bg-rose-50/80 transition-all duration-150 ease-out active:scale-[0.96] ${
                 collapsed ? 'justify-center px-0' : ''
               }`}
             >
-              <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <LogOut className="h-4 w-4 shrink-0 transition-transform duration-150" aria-hidden="true" />
               <span className={collapsed ? 'hidden' : 'inline'}>Sign out</span>
             </button>
           </div>

@@ -80,6 +80,11 @@ module.exports = {
         instant: '100ms',
         fast: '150ms',
         normal: '200ms',
+        slow: '300ms',
+      },
+      transitionTimingFunction: {
+        'snappy-out': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'standard': 'cubic-bezier(0.2, 0, 0, 1)',
       },
     },
   },

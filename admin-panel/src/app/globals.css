@@ -32,10 +32,13 @@
   --status-warning: #f59e0b;
   --status-info: #3b82f6;
 
-  /* Motion */
+  /* Motion Tokens */
   --motion-instant: 100ms;
   --motion-fast: 150ms;
   --motion-normal: 200ms;
+  --motion-slow: 300ms;
+  --ease-snappy-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
 }
 
 * {
@@ -76,13 +79,48 @@ body {
   background: #9ca3af;
 }
 
-/* Motion Utilities */
+/* Motion & Transition Utilities */
 .transition-instant {
   transition-duration: var(--motion-instant);
+  transition-timing-function: var(--ease-snappy-out);
 }
 .transition-fast {
   transition-duration: var(--motion-fast);
+  transition-timing-function: var(--ease-snappy-out);
 }
 .transition-normal {
   transition-duration: var(--motion-normal);
+  transition-timing-function: var(--ease-snappy-out);
+}
+.transition-slow {
+  transition-duration: var(--motion-slow);
+  transition-timing-function: var(--ease-snappy-out);
+}
+
+/* One-shot Keyframe sequences (Reserved for mount/skeleton shimmer) */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* Accessibility: Support prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
