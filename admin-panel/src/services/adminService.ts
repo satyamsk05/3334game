@@ -371,9 +371,28 @@ export const adminService = {
     targetRoute?: string;
     gradientStart?: string;
     gradientEnd?: string;
+    iconType?: string;
+    imageUrl?: string;
     displayOrder?: number;
   }) => {
     const res = await api.post('/admin/promotions', data);
+    return res.data;
+  },
+
+  updatePromotion: async (id: string, data: {
+    title?: string;
+    subtitle?: string;
+    badgeText?: string;
+    ctaText?: string;
+    targetRoute?: string;
+    gradientStart?: string;
+    gradientEnd?: string;
+    iconType?: string;
+    imageUrl?: string;
+    displayOrder?: number;
+    isActive?: boolean;
+  }) => {
+    const res = await api.put(`/admin/promotions/${id}`, data);
     return res.data;
   },
 

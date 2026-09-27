@@ -161,49 +161,10 @@ fun HomeScreen(
         )
     }
 
-    val bannerSlides = remember {
-        listOf(
-            BannerSlide(
-                id = "welcome_promo",
-                title = "WELCOME BONUS",
-                subtitle = "Claim 100% instant cash boost on your first deposit!",
-                imageRes = R.drawable.pramotion_banner,
-                backgroundGradient = listOf(Color(0xFF5B1FA6), Color(0xFF3B0764)),
-                badgeText = "HOT",
-                ctaText = "ADD CASH",
-                onClick = { selectedTab = NavItem.REWARD }
-            ),
-            BannerSlide(
-                id = "xo_battle_feature",
-                title = "1v1 XO BATTLE",
-                subtitle = "Play Live Tic-Tac-Toe battles with real cash prizes!",
-                imageRes = R.drawable.logo_classic_dice,
-                backgroundGradient = listOf(Color(0xFF6D28D9), Color(0xFF2E1065)),
-                badgeText = "LIVE",
-                ctaText = "PLAY NOW",
-                onClick = { activeSubScreen = SubScreen.XOLobby }
-            ),
-            BannerSlide(
-                id = "ring_feature",
-                title = "RING OF FUTURE",
-                subtitle = "Spin the 32-segment wheel for up to 30x instant multiplier!",
-                imageRes = R.drawable.logo_rings_of_future,
-                backgroundGradient = listOf(Color(0xFF0F766E), Color(0xFF042F2E)),
-                badgeText = "NEW",
-                ctaText = "PLAY NOW",
-                onClick = { activeSubScreen = SubScreen.RingOfFuture }
-            ),
-            BannerSlide(
-                id = "vip_cashback",
-                title = "INSTANT CASHOUT",
-                subtitle = "24/7 lightning fast UPI withdrawals directly to your bank account.",
-                imageRes = R.drawable.cashback_wallet_ic,
-                backgroundGradient = listOf(Color(0xFF9D174D), Color(0xFF500724)),
-                badgeText = "VIP",
-                ctaText = "WITHDRAW",
-                onClick = { activeSubScreen = SubScreen.Withdraw }
-            )
-        )
+    val serverPromotions by com.playingame.app.data.remote.PromotionSyncService.promotions.collectAsState()
+
+    LaunchedEffect(Unit) {
+        com.playingame.app.data.remote.PromotionSyncService.fetchActivePromotions()
     }
 
     fun openDepositInBrowser(amountRupees: Double) {
@@ -221,6 +182,60 @@ fun HomeScreen(
             context.startActivity(intent)
         } catch (e: Exception) {
             Toast.makeText(context, "No browser found to open payment page", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val bannerSlides = remember(serverPromotions, activeSubScreen, selectedTab) {
+        serverPromotions.map { promo ->
+            val startColor = try {
+                Color(android.graphics.Color.parseColor(promo.gradientStart))
+            } catch (_: Exception) {
+                Color(0xFF5B1FA6)
+            }
+            val endColor = try {
+                Color(android.graphics.Color.parseColor(promo.gradientEnd))
+            } catch (_: Exception) {
+                Color(0xFF3B0764)
+            }
+
+            val iconRes = when (promo.iconType) {
+                "xo" -> R.drawable.logo_classic_dice
+                "ring" -> R.drawable.logo_rings_of_future
+                "wallet" -> R.drawable.cashback_wallet_ic
+                "welcome" -> R.drawable.pramotion_banner
+                else -> {
+                    if (promo.targetRoute.contains("xo", ignoreCase = true)) R.drawable.logo_classic_dice
+                    else if (promo.targetRoute.contains("ring", ignoreCase = true)) R.drawable.logo_rings_of_future
+                    else if (promo.targetRoute.contains("withdraw", ignoreCase = true)) R.drawable.cashback_wallet_ic
+                    else R.drawable.pramotion_banner
+                }
+            }
+
+            BannerSlide(
+                id = promo.id,
+                title = promo.title,
+                subtitle = promo.subtitle,
+                imageRes = iconRes,
+                backgroundGradient = listOf(startColor, endColor),
+                badgeText = promo.badgeText,
+                ctaText = promo.ctaText,
+                onClick = {
+                    when (promo.targetRoute) {
+                        "/games/xo" -> activeSubScreen = SubScreen.XOLobby
+                        "/games/ring" -> activeSubScreen = SubScreen.RingOfFuture
+                        "/wallet/deposit" -> openDepositInBrowser(500.0)
+                        "/wallet/withdraw" -> activeSubScreen = SubScreen.Withdraw
+                        "/reward" -> selectedTab = NavItem.REWARD
+                        else -> {
+                            if (promo.targetRoute.contains("xo", ignoreCase = true)) activeSubScreen = SubScreen.XOLobby
+                            else if (promo.targetRoute.contains("ring", ignoreCase = true)) activeSubScreen = SubScreen.RingOfFuture
+                            else if (promo.targetRoute.contains("withdraw", ignoreCase = true)) activeSubScreen = SubScreen.Withdraw
+                            else if (promo.targetRoute.contains("deposit", ignoreCase = true) || promo.targetRoute.contains("wallet", ignoreCase = true)) openDepositInBrowser(500.0)
+                            else selectedTab = NavItem.REWARD
+                        }
+                    }
+                }
+            )
         }
     }
 
