@@ -27,7 +27,7 @@ export function Badge({
     <span
       role="status"
       aria-label={ariaLabel}
-      className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs select-none transition-colors ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs select-none transition-colors ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}

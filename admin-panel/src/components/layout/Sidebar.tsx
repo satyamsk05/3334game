@@ -218,6 +218,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                             isActive ? 'text-white' : 'text-zinc-400 group-hover:text-zinc-200'
                           }`}
                           aria-hidden="true"
+                          strokeWidth={1.75}
                         />
                         {/* Dot indicator on collapsed view */}
                         {collapsed && count > 0 && (
@@ -237,7 +238,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
 
                     {/* Pending Count Badges on Expanded */}
                     {!collapsed && count > 0 && (
-                      <span className="flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full text-[10px] font-medium bg-rose-500/15 text-rose-400 border border-rose-500/25">
+                      <span className="flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full text-[10px] font-medium bg-rose-500/15 text-rose-400 border border-rose-500/25 tabular-nums">
                         {count}
                       </span>
                     )}

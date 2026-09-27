@@ -47,14 +47,14 @@ export default function AdminLoginPage() {
           <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black font-black text-xs shadow-sm mb-3">
             334
           </div>
-          <h1 className="text-lg font-semibold tracking-tight text-white">334 Admin</h1>
-          <p className="text-xs text-zinc-400 mt-1">Sign in to manage platform operations</p>
+          <h1 className="text-lg font-semibold tracking-tight text-white text-balance">334 Admin</h1>
+          <p className="text-xs text-zinc-400 mt-1 text-pretty">Sign in to manage platform operations</p>
         </div>
 
         {/* Error Alert */}
         {error && (
           <div className="flex items-center gap-2 rounded-md border border-rose-500/25 bg-rose-950/20 p-2.5 text-xs text-rose-300">
-            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" strokeWidth={1.75} />
             <span>{error}</span>
           </div>
         )}
@@ -64,13 +64,13 @@ export default function AdminLoginPage() {
           <div>
             <label className="block mb-1.5 font-medium text-zinc-300">Username</label>
             <div className="relative">
-              <User className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" />
+              <User className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" strokeWidth={1.75} />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username (e.g. admin)"
-                className="w-full rounded-md border border-white/[0.08] bg-[#141417] py-2 pl-9 pr-3 text-xs text-white placeholder:text-zinc-500 focus:bg-[#18181b] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
+                className="w-full rounded-md border border-white/[0.08] bg-[#141417] py-2 pl-9 pr-3 text-base sm:text-xs text-white placeholder:text-zinc-500 focus:bg-[#18181b] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
               />
             </div>
           </div>
@@ -78,13 +78,13 @@ export default function AdminLoginPage() {
           <div>
             <label className="block mb-1.5 font-medium text-zinc-300">Password</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" />
+              <Lock className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" strokeWidth={1.75} />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full rounded-md border border-white/[0.08] bg-[#141417] py-2 pl-9 pr-3 text-xs text-white placeholder:text-zinc-500 focus:bg-[#18181b] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
+                className="w-full rounded-md border border-white/[0.08] bg-[#141417] py-2 pl-9 pr-3 text-base sm:text-xs text-white placeholder:text-zinc-500 focus:bg-[#18181b] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
               />
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
         </form>
 
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-500 pt-3 border-t border-white/[0.06]">
-          <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+          <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" strokeWidth={1.75} />
           <span>Encrypted 256-bit Session</span>
         </div>
 

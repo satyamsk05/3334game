@@ -136,10 +136,10 @@ export default function OverviewDashboard() {
       {/* Page Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-white/[0.08]">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight text-white">
+          <h1 className="text-lg font-semibold tracking-tight text-white text-balance">
             Platform Overview
           </h1>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-zinc-400 mt-0.5 text-pretty">
             Track deposits, players and game revenue.
           </p>
         </div>
@@ -169,7 +169,7 @@ export default function OverviewDashboard() {
             disabled={loading}
             aria-label="Refresh telemetry"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-white' : 'text-zinc-400'}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-white' : 'text-zinc-400'}`} strokeWidth={1.75} />
             <span>Sync</span>
           </Button>
         </div>
@@ -178,7 +178,7 @@ export default function OverviewDashboard() {
       {error && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-md border border-rose-500/25 bg-rose-950/20 p-3 text-xs text-rose-300">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" strokeWidth={1.75} />
             <span>{error}</span>
           </div>
           {isNetwork && (
@@ -189,7 +189,7 @@ export default function OverviewDashboard() {
               disabled={loading}
               className="self-start sm:self-auto bg-rose-900/30 hover:bg-rose-900/50 text-rose-200 border-rose-700/40"
             >
-              <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} strokeWidth={1.75} />
               Retry
             </Button>
           )}
@@ -198,7 +198,7 @@ export default function OverviewDashboard() {
 
       {/* Overview Cards (Calm, monochrome-first, identical internal layout) */}
       <div className="space-y-2.5">
-        <h2 className="text-xs font-medium text-zinc-400">
+        <h2 className="text-xs font-medium text-zinc-400 text-balance">
           Overview
         </h2>
 
@@ -209,7 +209,7 @@ export default function OverviewDashboard() {
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-400">
-                  <TrendingUp className="h-4 w-4" />
+                  <TrendingUp className="h-4 w-4" strokeWidth={1.75} />
                 </div>
               </div>
 
@@ -218,7 +218,7 @@ export default function OverviewDashboard() {
                   Gaming revenue (GGR)
                 </span>
                 <div className="mt-1">
-                  <span className="text-2xl font-semibold text-white tracking-tight">
+                  <span className="text-2xl font-semibold text-white tracking-tight tabular-nums">
                     {formatRupees(ggrRupees)}
                   </span>
                 </div>
@@ -226,11 +226,11 @@ export default function OverviewDashboard() {
             </div>
 
             <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
-              <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
-                <ArrowUpRight className="h-3 w-3" />
+              <span className="inline-flex items-center gap-1 text-emerald-400 font-medium tabular-nums">
+                <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
                 95.0% RTP
               </span>
-              <span className="text-zinc-500 font-normal">Turnover: ₹{totalWageredRupees.toFixed(0)}</span>
+              <span className="text-zinc-500 font-normal tabular-nums">Turnover: ₹{totalWageredRupees.toFixed(0)}</span>
             </div>
           </Card>
 
@@ -239,7 +239,7 @@ export default function OverviewDashboard() {
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-400">
-                  <Users className="h-4 w-4" />
+                  <Users className="h-4 w-4" strokeWidth={1.75} />
                 </div>
               </div>
 
@@ -248,7 +248,7 @@ export default function OverviewDashboard() {
                   Total players
                 </span>
                 <div className="mt-1">
-                  <span className="text-2xl font-semibold text-white tracking-tight">
+                  <span className="text-2xl font-semibold text-white tracking-tight tabular-nums">
                     {users.totalUsers || 0}
                   </span>
                 </div>
@@ -256,10 +256,10 @@ export default function OverviewDashboard() {
             </div>
 
             <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
-              <span className="font-normal text-zinc-300">
+              <span className="font-normal text-zinc-300 tabular-nums">
                 {users.activeUsers || 0} active
               </span>
-              <span className="text-zinc-500 font-normal">
+              <span className="text-zinc-500 font-normal tabular-nums">
                 {users.bannedUsers || 0} blocked
               </span>
             </div>
@@ -270,7 +270,7 @@ export default function OverviewDashboard() {
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-400">
-                  <Wallet className="h-4 w-4" />
+                  <Wallet className="h-4 w-4" strokeWidth={1.75} />
                 </div>
               </div>
 
@@ -279,7 +279,7 @@ export default function OverviewDashboard() {
                   Player balances
                 </span>
                 <div className="mt-1">
-                  <span className="text-2xl font-semibold text-white tracking-tight">
+                  <span className="text-2xl font-semibold text-white tracking-tight tabular-nums">
                     {formatRupees(totalAvailableRupees)}
                   </span>
                 </div>
@@ -287,9 +287,9 @@ export default function OverviewDashboard() {
             </div>
 
             <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
-              <span>Dep: <span className="text-zinc-200">₹{totalDepositRupees.toFixed(0)}</span></span>
-              <span>Win: <span className="text-zinc-200">₹{totalWinningRupees.toFixed(0)}</span></span>
-              <span>Bonus: <span className="text-zinc-200">₹{totalBonusRupees.toFixed(0)}</span></span>
+              <span>Dep: <span className="text-zinc-200 tabular-nums">₹{totalDepositRupees.toFixed(0)}</span></span>
+              <span>Win: <span className="text-zinc-200 tabular-nums">₹{totalWinningRupees.toFixed(0)}</span></span>
+              <span>Bonus: <span className="text-zinc-200 tabular-nums">₹{totalBonusRupees.toFixed(0)}</span></span>
             </div>
           </Card>
 
@@ -304,9 +304,9 @@ export default function OverviewDashboard() {
                   pendingPayoutsCount > 0 ? 'text-amber-400' : 'text-zinc-400'
                 }`}>
                   {pendingPayoutsCount > 0 ? (
-                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTriangle className="h-4 w-4" strokeWidth={1.75} />
                   ) : (
-                    <ShieldCheck className="h-4 w-4" />
+                    <ShieldCheck className="h-4 w-4" strokeWidth={1.75} />
                   )}
                 </div>
                 {pendingPayoutsCount > 0 ? (
@@ -325,7 +325,7 @@ export default function OverviewDashboard() {
                   Payout queue
                 </span>
                 <div className="mt-1">
-                  <span className={`text-2xl font-semibold tracking-tight ${
+                  <span className={`text-2xl font-semibold tracking-tight tabular-nums ${
                     pendingPayoutsCount > 0 ? 'text-amber-400' : 'text-white'
                   }`}>
                     {pendingPayoutsCount} pending
@@ -336,7 +336,7 @@ export default function OverviewDashboard() {
 
             <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
               <span>
-                Total: <span className="text-zinc-200 font-medium">₹{pendingWithdrawRupees.toFixed(2)}</span>
+                Total: <span className="text-zinc-200 font-medium tabular-nums">₹{pendingWithdrawRupees.toFixed(2)}</span>
               </span>
               <span className={pendingPayoutsCount > 0 ? 'text-amber-400 font-medium' : 'text-zinc-500'}>
                 {pendingPayoutsCount > 0 ? 'Review UPI' : 'Cleared'}
@@ -351,7 +351,7 @@ export default function OverviewDashboard() {
       <Card className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 sm:p-5 bg-[#0c0c0e] border border-white/[0.08]">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-400 shrink-0">
-            <Activity className="h-4 w-4" />
+            <Activity className="h-4 w-4" strokeWidth={1.75} />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -362,7 +362,7 @@ export default function OverviewDashboard() {
               </Badge>
             </div>
             <p className="text-xs text-zinc-400 mt-0.5">
-              Round #{games.totalRoundsPlayed || 0} • Time left: <span className="text-zinc-200 font-medium">{games.engineState?.timeLeft || 0}s</span>
+              Round #{games.totalRoundsPlayed || 0} • Time left: <span className="text-zinc-200 font-medium tabular-nums">{games.engineState?.timeLeft || 0}s</span>
             </p>
           </div>
         </div>
@@ -370,15 +370,15 @@ export default function OverviewDashboard() {
         <div className="flex items-center gap-6 text-xs text-zinc-400 font-normal">
           <div>
             <span className="text-zinc-500 block text-[11px]">Bet range</span>
-            <span className="text-zinc-200 font-medium">₹{games.rtpConfig?.minBetRupees || 10} - ₹{games.rtpConfig?.maxBetRupees || 10000}</span>
+            <span className="text-zinc-200 font-medium tabular-nums">₹{games.rtpConfig?.minBetRupees || 10} - ₹{games.rtpConfig?.maxBetRupees || 10000}</span>
           </div>
           <div>
             <span className="text-zinc-500 block text-[11px]">Deposits</span>
-            <span className="text-zinc-200 font-medium">₹{approvedDepositRupees.toFixed(0)}</span>
+            <span className="text-zinc-200 font-medium tabular-nums">₹{approvedDepositRupees.toFixed(0)}</span>
           </div>
           <div>
             <span className="text-zinc-500 block text-[11px]">Payouts</span>
-            <span className="text-zinc-200 font-medium">₹{approvedWithdrawRupees.toFixed(0)}</span>
+            <span className="text-zinc-200 font-medium tabular-nums">₹{approvedWithdrawRupees.toFixed(0)}</span>
           </div>
         </div>
       </Card>
@@ -387,12 +387,12 @@ export default function OverviewDashboard() {
       <div className="space-y-2.5">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xs font-medium text-zinc-400">
+            <h2 className="text-xs font-medium text-zinc-400 text-balance">
               Transactions
             </h2>
-            <p className="text-xs text-zinc-500">Recent wallet transactions and settlement logs.</p>
+            <p className="text-xs text-zinc-500 text-pretty">Recent wallet transactions and settlement logs.</p>
           </div>
-          {loading && <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />}
+          {loading && <Loader2 className="h-4 w-4 animate-spin text-zinc-400" strokeWidth={1.75} />}
         </div>
 
         <Card className="overflow-hidden p-0 border border-white/[0.08]">
@@ -459,13 +459,13 @@ export default function OverviewDashboard() {
                           {String(tx.bucket || '').toLowerCase()}
                         </td>
 
-                        <td className={`py-2.5 px-4 text-right font-medium text-xs ${
+                        <td className={`py-2.5 px-4 text-right font-medium text-xs tabular-nums ${
                           isCredit ? 'text-emerald-400' : 'text-zinc-200'
                         }`}>
                           {isCredit ? '+' : '-'}₹{Math.abs(amountRupees).toFixed(2)}
                         </td>
 
-                        <td className="py-2.5 px-4 text-right font-normal text-zinc-300 text-xs font-mono">
+                        <td className="py-2.5 px-4 text-right font-normal text-zinc-300 text-xs font-mono tabular-nums">
                           ₹{balanceAfterRupees.toFixed(2)}
                         </td>
 

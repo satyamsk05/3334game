@@ -76,7 +76,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           {/* Quick Universal Search with Pill Input */}
           <div className="relative w-44 sm:w-60">
-            <Search className="absolute left-3 top-2 h-3.5 w-3.5 text-zinc-500" aria-hidden="true" />
+            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" aria-hidden="true" strokeWidth={1.75} />
             <input
               type="text"
               value={searchQuery}
@@ -84,10 +84,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onKeyDown={handleSearchKeyDown}
               placeholder="Search users, IDs..."
               aria-label="Search users and identifiers"
-              className="w-full rounded-md border border-white/[0.08] bg-[#0c0c0e] py-1.5 pl-8 pr-8 text-xs font-normal text-white placeholder:text-zinc-500 focus:bg-[#141417] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
+              className="w-full rounded-md border border-white/[0.08] bg-[#0c0c0e] py-1.5 pl-8 pr-8 text-base sm:text-xs font-normal text-white placeholder:text-zinc-500 focus:bg-[#141417] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
             />
-            <kbd className="absolute right-2.5 top-1.5 flex items-center gap-0.5 rounded bg-zinc-800 border border-white/[0.08] px-1 py-0.5 text-[9px] text-zinc-400 font-mono">
-              <Command className="h-2.5 w-2.5" aria-hidden="true" /> K
+            <kbd className="absolute right-2.5 top-2 flex items-center gap-0.5 rounded bg-zinc-800/80 border border-white/[0.08] px-1 py-0.5 text-[9px] text-zinc-400 font-mono">
+              <Command className="h-2.5 w-2.5" aria-hidden="true" strokeWidth={1.75} /> K
             </kbd>
           </div>
         </header>

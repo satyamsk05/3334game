@@ -44,18 +44,18 @@ export function Button({
       'bg-transparent text-zinc-400 hover:text-white hover:bg-white/[0.06] border border-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400',
   };
 
-  const tapScale = !isStatic ? 'active:not-disabled:scale-[0.98]' : '';
+  const tapScale = !isStatic ? 'active:not-disabled:scale-[0.96]' : '';
 
   return (
     <button
       disabled={disabled || isSpinning}
-      className={`inline-flex items-center justify-center font-sans transition-fast select-none disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed ${tapScale} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center justify-center font-sans transition-all duration-150 select-none disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed ${tapScale} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {isSpinning ? (
-        <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" aria-hidden="true" />
+        <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" aria-hidden="true" strokeWidth={2} />
       ) : icon ? (
-        <span className="shrink-0 transition-fast">{icon}</span>
+        <span className="shrink-0 transition-opacity">{icon}</span>
       ) : null}
       {children}
     </button>

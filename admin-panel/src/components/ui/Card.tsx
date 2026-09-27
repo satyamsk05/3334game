@@ -25,7 +25,7 @@ export function Card({
 
   return (
     <Component
-      className={`rounded-lg p-5 sm:p-6 ${variantStyles[variant]} ${className}`}
+      className={`rounded-xl p-5 sm:p-6 ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}
