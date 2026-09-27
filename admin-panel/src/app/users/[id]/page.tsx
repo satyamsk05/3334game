@@ -804,11 +804,11 @@ export default function UserDetailPage() {
           <table className="w-full text-left text-xs text-text-secondary">
             <thead className="border-b border-border-default bg-surface-muted text-text-secondary uppercase text-xs font-mono tracking-wider">
               <tr>
-                <th className="px-space-4 py-space-2.5">Bet ID</th>
-                <th className="px-space-4 py-space-2.5">Round ID</th>
-                <th className="px-space-4 py-space-2.5">Color Selected</th>
-                <th className="px-space-4 py-space-2.5 text-right">Bet Amount</th>
-                <th className="px-space-4 py-space-2.5 text-right">Payout</th>
+                <th className="px-space-4 py-space-2.5">Game / Mode</th>
+                <th className="px-space-4 py-space-2.5">Match / Ref ID</th>
+                <th className="px-space-4 py-space-2.5">Stake Tier</th>
+                <th className="px-space-4 py-space-2.5 text-right">Bet Stake</th>
+                <th className="px-space-4 py-space-2.5 text-right">Win Payout</th>
                 <th className="px-space-4 py-space-2.5">Outcome</th>
                 <th className="px-space-4 py-space-2.5">Placed At</th>
               </tr>
@@ -822,33 +822,47 @@ export default function UserDetailPage() {
                 </tr>
               ) : (
                 recentBets.map((b) => {
-                  const betAmt = Number(b.bet_amount || 0) / 100;
-                  const payoutAmt = Number(b.payout_amount || 0) / 100;
+                  const betAmt = Number(b.stake ?? b.bet_amount ?? 0) / 100;
+                  const payoutAmt = Number(b.win_amount ?? b.payout_amount ?? 0) / 100;
                   const isWon = b.status === 'WON';
+                  const isDraw = b.status === 'DRAW';
+                  const isXo = (b.game_type && b.game_type.includes('XO')) || (b.id && String(b.id).startsWith('XO-')) || (b.tier_name && String(b.tier_name).includes('Battle'));
 
                   return (
-                    <tr key={b.id} className="hover:bg-surface-muted/60 transition-fast">
-                      <td className="px-space-4 py-space-2.5 text-text-primary truncate max-w-[80px]" title={b.id}>{b.id}</td>
-                      <td className="px-space-4 py-space-2.5 text-text-secondary truncate max-w-[100px]" title={b.round_id}>{b.round_id}</td>
+                    <tr key={b.id || b.round_id} className="hover:bg-surface-muted/60 transition-fast">
                       <td className="px-space-4 py-space-2.5 font-sans">
-                        <span className={`px-space-2 py-0.5 rounded-xs text-[10px] uppercase font-bold ${
-                          b.selected_option === 'green' ? 'bg-status-positive/20 text-status-positive' :
-                          b.selected_option === 'red' ? 'bg-status-negative/20 text-status-negative' :
-                          b.selected_option === 'purple' ? 'bg-purple-500/20 text-purple-400' : 'bg-surface-muted text-text-secondary'
+                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold ${
+                          isXo ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
                         }`}>
-                          {b.selected_option}
+                          {isXo ? '⚔️ XO 1v1 Battle' : '🎡 Ring of Future'}
                         </span>
                       </td>
-                      <td className="px-space-4 py-space-2.5 text-right text-text-primary">₹{betAmt.toFixed(2)}</td>
-                      <td className={`px-space-4 py-space-2.5 text-right font-semibold ${isWon ? 'text-status-positive' : 'text-text-secondary'}`}>
-                        ₹{payoutAmt.toFixed(2)}
+                      <td className="px-space-4 py-space-2.5 text-text-primary font-mono truncate max-w-[130px]" title={b.id || b.round_id}>
+                        {b.id || b.round_id}
+                      </td>
+                      <td className="px-space-4 py-space-2.5 text-text-secondary font-sans font-medium">
+                        {b.tier_name || (isXo ? '1v1 Battle' : b.selected_option || 'Standard')}
+                      </td>
+                      <td className="px-space-4 py-space-2.5 text-right font-bold text-text-primary">
+                        ₹{betAmt.toFixed(2)}
+                      </td>
+                      <td className={`px-space-4 py-space-2.5 text-right font-bold ${
+                        isWon ? 'text-emerald-600' : isDraw ? 'text-amber-500' : 'text-text-tertiary'
+                      }`}>
+                        {payoutAmt > 0 ? `+₹${payoutAmt.toFixed(2)}` : '₹0.00'}
                       </td>
                       <td className="px-space-4 py-space-2.5 font-sans">
-                        <Badge variant={isWon ? 'positive' : 'neutral'}>
-                          {b.status}
-                        </Badge>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
+                          isWon ? 'bg-emerald-100 text-emerald-800' :
+                          isDraw ? 'bg-amber-100 text-amber-800' :
+                          'bg-rose-100 text-rose-800'
+                        }`}>
+                          {b.status || (isWon ? 'WON' : 'LOST')}
+                        </span>
                       </td>
-                      <td className="px-space-4 py-space-2.5 text-text-tertiary">{new Date(b.created_at).toLocaleString()}</td>
+                      <td className="px-space-4 py-space-2.5 text-text-tertiary">
+                        {b.created_at ? new Date(b.created_at).toLocaleString() : 'Recent'}
+                      </td>
                     </tr>
                   );
                 })

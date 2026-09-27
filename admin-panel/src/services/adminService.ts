@@ -60,6 +60,8 @@ export interface UserDetailsResponse {
   recentBets: Array<{
     id: string;
     round_id: string;
+    game_type?: string;
+    tier_name?: string;
     selected_option: string;
     color?: string;
     bet_amount?: string | number;
