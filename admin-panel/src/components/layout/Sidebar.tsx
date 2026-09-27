@@ -9,17 +9,14 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   ArrowLeftRight,
-  BarChart3,
-  FileSpreadsheet,
-  LifeBuoy,
-  Server,
   Settings,
-  ShieldCheck,
-  FileText,
-  PanelLeft,
   LogOut,
   Bell,
-  Sparkles
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  Shield,
+  Activity
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
 
@@ -37,7 +34,7 @@ interface NavSection {
     href: string;
     icon: any;
     countKey?: 'deposits' | 'withdrawals';
-    badge?: { text: string; variant: 'peach' | 'mint' | 'info' | 'neutral' };
+    badge?: { text: string; variant: 'blue' | 'emerald' | 'amber' | 'purple' };
   }[];
 }
 
@@ -84,11 +81,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
       items: [
         { name: 'Dashboard', href: '/', icon: LayoutGrid },
         { name: 'Players', href: '/users', icon: Users },
-        { name: 'Games', href: '/games', icon: Gamepad2 }
+        { name: 'Game Engine', href: '/games', icon: Gamepad2 }
       ]
     },
     {
-      title: 'FINANCE',
+      title: 'FINANCIAL DESK',
       items: [
         { name: 'Deposits', href: '/payments/deposits', icon: ArrowDownLeft, countKey: 'deposits' },
         { name: 'Withdrawals', href: '/payments/withdrawals', icon: ArrowUpRight, countKey: 'withdrawals' },
@@ -96,16 +93,16 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
       ]
     },
     {
-      title: 'MARKETING',
+      title: 'GROWTH & ALERTS',
       items: [
-        { name: 'Push Notifications', href: '/notifications', icon: Bell, badge: { text: 'FCM', variant: 'info' } },
-        { name: 'Promotions & Banners', href: '/promotions', icon: Sparkles, badge: { text: 'App', variant: 'mint' } }
+        { name: 'Push Notifications', href: '/notifications', icon: Bell, badge: { text: 'FCM', variant: 'blue' } },
+        { name: 'Promotions & Banners', href: '/promotions', icon: Sparkles, badge: { text: 'Live', variant: 'emerald' } }
       ]
     },
     {
-      title: 'PREFERENCES',
+      title: 'SYSTEM',
       items: [
-        { name: 'System & Settings', href: '/system/settings', icon: Settings, badge: { text: 'Hub', variant: 'neutral' } }
+        { name: 'Platform Settings', href: '/system/settings', icon: Settings }
       ]
     }
   ];
@@ -116,151 +113,202 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-40 bg-gray-900/20 backdrop-blur-sm md:hidden transition-fast"
+          className="fixed inset-0 z-40 bg-gray-900/40 backdrop-blur-xs md:hidden transition-opacity duration-200"
           aria-hidden="true"
         />
       )}
 
-      {/* Main Soft Sidebar */}
+      {/* Main Clean Docked Light Sidebar */}
       <aside
         aria-label="Admin Navigation Sidebar"
-        className={`fixed top-4 bottom-4 z-50 flex flex-col rounded-[28px] bg-[#f8f9fb] border border-gray-200/60 shadow-[0_4px_24px_rgba(0,0,0,0.03)] transition-normal ${
-          collapsed ? 'w-[76px]' : 'w-[260px]'
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-white border-r border-gray-200/80 shadow-xs transition-all duration-200 ease-in-out ${
+          collapsed ? 'w-[72px]' : 'w-64'
         } ${
-          mobileOpen ? 'left-4' : '-left-[300px] md:left-4'
+          mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        <div className="flex h-full flex-col p-4 overflow-hidden">
-          
-          {/* Header Brand */}
-          <div className="flex items-center justify-between pb-4 pt-1 px-1">
-            <Link href="/" className="flex items-center gap-3 overflow-hidden">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gray-900 text-white shadow-md relative overflow-hidden">
-                <div className="grid grid-cols-2 gap-0.5 w-5 h-5">
-                  <div className="bg-white/90 rounded-tl-sm" />
-                  <div className="bg-white/40 rounded-tr-sm" />
-                  <div className="bg-white/40 rounded-bl-sm" />
-                  <div className="bg-white/90 rounded-br-sm" />
-                </div>
-              </div>
-              <div className={`flex flex-col whitespace-nowrap transition-normal ${collapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'}`}>
-                <span className="font-extrabold text-gray-900 text-base tracking-tight font-sans">334 Studio</span>
-                <span className="text-xs text-gray-400 font-medium">Authoritative Portal</span>
-              </div>
-            </Link>
+        {/* Brand Header */}
+        <div className="flex h-16 shrink-0 items-center justify-between px-4 border-b border-gray-100">
+          <Link
+            href="/"
+            className={`flex items-center gap-3 overflow-hidden ${collapsed ? 'justify-center w-full' : ''}`}
+            onClick={() => setMobileOpen(false)}
+          >
+            {/* Logo Badge */}
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white shadow-sm ring-1 ring-gray-900/10">
+              <Shield className="h-4 w-4 text-emerald-400" />
+            </div>
 
-            {/* Collapse Toggle */}
+            {!collapsed && (
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-gray-950 text-sm tracking-tight truncate font-sans">
+                    334 Gaming
+                  </span>
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                    Admin
+                  </span>
+                </div>
+                <span className="text-[11px] text-gray-400 font-medium truncate">
+                  Authoritative Control
+                </span>
+              </div>
+            )}
+          </Link>
+
+          {/* Desktop Collapse Toggle */}
+          {!collapsed && (
             <button
               type="button"
-              onClick={() => setCollapsed((prev: boolean) => !prev)}
-              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className="hidden md:flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200/80 text-gray-500 hover:text-gray-900 hover:bg-gray-50 shadow-sm transition-all duration-150 ease-out active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-accent-primary"
-              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              onClick={() => setCollapsed(true)}
+              aria-label="Collapse sidebar"
+              className="hidden md:flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              title="Collapse sidebar"
             >
-              <PanelLeft className={`h-4 w-4 transition-transform duration-200 ease-out ${collapsed ? 'rotate-180' : ''}`} aria-hidden="true" />
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Collapsed Expand Button (Centered beneath header) */}
+        {collapsed && (
+          <div className="hidden md:flex justify-center py-2 border-b border-gray-100">
+            <button
+              type="button"
+              onClick={() => setCollapsed(false)}
+              aria-label="Expand sidebar"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              title="Expand sidebar"
+            >
+              <ChevronRight className="h-4 w-4" />
             </button>
           </div>
+        )}
 
-          {/* Direct Flat Navigation Items */}
-          <div className="mt-2 flex-1 overflow-y-auto pr-1 space-y-4 scrollbar-thin">
-            {navSections.map((section, sIdx) => (
-              <div key={section.title || sIdx} className="space-y-1">
-                {section.title && !collapsed && (
-                  <div className="px-3 pb-1 pt-1 text-[10px] font-extrabold tracking-wider text-gray-400 uppercase">
-                    {section.title}
-                  </div>
-                )}
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = item.href === '/'
-                    ? pathname === '/'
-                    : pathname.startsWith(item.href);
+        {/* Navigation Sections */}
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5 scrollbar-thin">
+          {navSections.map((section, sIdx) => (
+            <div key={section.title || sIdx} className="space-y-1">
+              {section.title && !collapsed && (
+                <div className="px-3 pb-1.5 text-[11px] font-bold tracking-wider text-gray-400 uppercase font-mono">
+                  {section.title}
+                </div>
+              )}
 
-                  const count = item.countKey === 'deposits' 
-                    ? pendingCounts.pendingDeposits 
-                    : (item.countKey === 'withdrawals' ? pendingCounts.pendingWithdrawals : 0);
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = item.href === '/'
+                  ? pathname === '/'
+                  : pathname.startsWith(item.href);
 
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      title={collapsed ? `${item.name} ${count > 0 ? `(${count} pending)` : ''}` : undefined}
-                      className={`group flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition-all duration-150 ease-out active:scale-[0.98] ${
-                        isActive
-                          ? 'bg-white text-gray-900 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/80'
-                      } ${collapsed ? 'justify-center px-0' : ''}`}
-                    >
-                      <div className="flex items-center gap-3 relative">
-                        <div className="relative">
-                          <Icon
-                            className={`h-5 w-5 shrink-0 transition-transform duration-150 group-hover:scale-105 ${
-                              isActive ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-800'
-                            }`}
-                            aria-hidden="true"
-                          />
-                          {collapsed && count > 0 && (
-                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
-                            </span>
-                          )}
-                        </div>
-                        <span
-                          className={`truncate transition-opacity duration-150 ${
-                            collapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'
+                const count = item.countKey === 'deposits'
+                  ? pendingCounts.pendingDeposits
+                  : (item.countKey === 'withdrawals' ? pendingCounts.pendingWithdrawals : 0);
+
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    title={collapsed ? `${item.name} ${count > 0 ? `(${count} pending)` : ''}` : undefined}
+                    className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-150 ${
+                      isActive
+                        ? 'bg-gray-900 text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-950 hover:bg-gray-100/80'
+                    } ${collapsed ? 'justify-center px-0' : 'justify-between'}`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="relative shrink-0">
+                        <Icon
+                          className={`h-4 w-4 transition-colors ${
+                            isActive
+                              ? 'text-white'
+                              : 'text-gray-500 group-hover:text-gray-900'
                           }`}
-                        >
-                          {item.name}
-                        </span>
+                          aria-hidden="true"
+                        />
+                        {/* Dot badge on collapsed view */}
+                        {collapsed && count > 0 && (
+                          <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500" />
+                          </span>
+                        )}
                       </div>
 
-                      {!collapsed && count > 0 && (
-                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold text-white bg-rose-500 shadow-sm animate-pulse">
-                          {count}
+                      {!collapsed && (
+                        <span className="truncate">
+                          {item.name}
                         </span>
                       )}
+                    </div>
 
-                      {!collapsed && !count && item.badge && (
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
-                          {item.badge.text}
-                        </span>
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+                    {/* Pending Count Badges on Expanded */}
+                    {!collapsed && count > 0 && (
+                      <span
+                        className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold ${
+                          isActive
+                            ? 'bg-rose-500 text-white'
+                            : 'bg-rose-100 text-rose-700 border border-rose-200'
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    )}
 
-          {/* User Profile & Logout Bottom Card */}
-          <div className="pt-3 border-t border-gray-200/60 space-y-2">
-            <div className={`flex items-center gap-3 rounded-2xl bg-white p-2.5 border border-gray-100 shadow-sm transition-all duration-150 ${
-              collapsed ? 'justify-center p-1.5' : ''
-            }`}>
-              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 font-bold text-xs">
+                    {/* Optional Tag Badges */}
+                    {!collapsed && !count && item.badge && (
+                      <span
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
+                          isActive
+                            ? 'bg-white/20 text-white'
+                            : item.badge.variant === 'emerald'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                            : 'bg-blue-50 text-blue-700 border border-blue-100'
+                        }`}
+                      >
+                        {item.badge.text}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        {/* User Profile & Logout Bottom Card */}
+        <div className="shrink-0 p-3 border-t border-gray-100 bg-gray-50/50">
+          <div className={`flex items-center gap-2.5 ${collapsed ? 'justify-center flex-col' : 'justify-between'}`}>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-200 text-gray-800 font-bold text-xs ring-1 ring-gray-300">
                 {adminName.slice(0, 2).toUpperCase()}
-                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
               </div>
-              <div className={`flex flex-col overflow-hidden ${collapsed ? 'hidden' : 'inline'}`}>
-                <span className="text-xs font-bold text-gray-900 truncate">{adminName}</span>
-                <span className="text-[11px] text-gray-400">Platform Admin</span>
-              </div>
+
+              {!collapsed && (
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs font-bold text-gray-900 truncate">
+                    {adminName}
+                  </span>
+                  <span className="text-[11px] text-gray-500 font-medium truncate">
+                    Super Admin
+                  </span>
+                </div>
+              )}
             </div>
 
             <button
               type="button"
               onClick={handleLogout}
-              className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-gray-500 hover:text-rose-600 hover:bg-rose-50/80 transition-all duration-150 ease-out active:scale-[0.96] ${
-                collapsed ? 'justify-center px-0' : ''
+              title="Sign out of platform"
+              className={`flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors ${
+                collapsed ? 'w-8 h-8' : ''
               }`}
             >
-              <LogOut className="h-4 w-4 shrink-0 transition-transform duration-150" aria-hidden="true" />
-              <span className={collapsed ? 'hidden' : 'inline'}>Sign out</span>
+              <LogOut className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
-
         </div>
       </aside>
     </>
