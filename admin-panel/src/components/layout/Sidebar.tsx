@@ -17,7 +17,9 @@ import {
   ShieldCheck,
   FileText,
   PanelLeft,
-  LogOut
+  LogOut,
+  Bell,
+  Sparkles
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
 
@@ -94,6 +96,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
       ]
     },
     {
+      title: 'MARKETING & ENGAGEMENT',
+      items: [
+        { name: 'Push Notifications', href: '/notifications', icon: Bell, badge: { text: 'FCM', variant: 'info' } },
+        { name: 'Promotions & Banners', href: '/promotions', icon: Sparkles, badge: { text: 'App', variant: 'mint' } }
+      ]
+    },
+    {
       title: 'INSIGHTS',
       items: [
         { name: 'Analytics', href: '/analytics', icon: BarChart3 },
@@ -104,8 +113,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
     {
       title: 'SYSTEM & SECURITY',
       items: [
-        { name: 'System Health', href: '/system/health', icon: Server },
-        { name: 'Settings', href: '/system/settings', icon: Settings },
+        { name: 'System Settings', href: '/system/settings', icon: Settings },
+        { name: 'Server Health', href: '/system/health', icon: Server },
         { name: 'Staff Admins', href: '/security/admins', icon: ShieldCheck },
         { name: 'Audit Logs', href: '/security/audit-logs', icon: FileText }
       ]

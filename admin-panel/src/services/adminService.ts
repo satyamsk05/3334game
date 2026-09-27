@@ -357,6 +357,36 @@ export const adminService = {
     return res.data;
   },
 
+  // Promotions & App Carousel
+  getPromotions: async () => {
+    const res = await api.get('/admin/promotions');
+    return res.data;
+  },
+
+  createPromotion: async (data: {
+    title: string;
+    subtitle: string;
+    badgeText?: string;
+    ctaText?: string;
+    targetRoute?: string;
+    gradientStart?: string;
+    gradientEnd?: string;
+    displayOrder?: number;
+  }) => {
+    const res = await api.post('/admin/promotions', data);
+    return res.data;
+  },
+
+  togglePromotionStatus: async (id: string, isActive: boolean) => {
+    const res = await api.patch(`/admin/promotions/${id}/status`, { isActive });
+    return res.data;
+  },
+
+  deletePromotion: async (id: string) => {
+    const res = await api.delete(`/admin/promotions/${id}`);
+    return res.data;
+  },
+
   // Security & Admins
   getAdmins: async () => {
     const res = await api.get('/admin/admins');
