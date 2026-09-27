@@ -140,25 +140,25 @@ export default function OverviewDashboard() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-950">
             Platform overview
           </h1>
-          <p className="text-sm font-medium text-gray-500 mt-1">
+          <p className="text-xs font-normal text-gray-500 mt-0.5">
             Authoritative financial telemetry & real-time gaming engine operations
           </p>
         </div>
 
         {/* Date Filters & Sync Controls */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-2xl bg-white p-1 shadow-sm border border-gray-200/80 text-xs font-semibold text-gray-600">
+          <div className="flex items-center rounded-lg bg-white p-1 shadow-card text-xs font-medium text-gray-600">
             {(['24h', '7d', '30d', 'all'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setRange(t)}
-                className={`rounded-xl px-3.5 py-1.5 transition-fast ${
+                className={`rounded-md px-3 py-1 text-xs transition-fast ${
                   range === t
-                    ? 'bg-gray-900 text-white shadow-sm'
-                    : 'hover:text-gray-900 hover:bg-gray-50'
+                    ? 'bg-gray-950 text-white font-medium shadow-button'
+                    : 'hover:text-gray-950 hover:bg-gray-50'
                 }`}
               >
                 {t.toUpperCase()}
@@ -173,7 +173,7 @@ export default function OverviewDashboard() {
             disabled={loading}
             aria-label="Refresh telemetry"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-accent-primary' : 'text-gray-500'}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-gray-900' : 'text-gray-500'}`} />
             <span>Sync</span>
           </Button>
         </div>
