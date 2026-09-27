@@ -59,8 +59,11 @@ module.exports = {
         xs: '4px',
         sm: '6px',
         md: '8px',
-        lg: '12px',
-        xl: '9999px',
+        lg: '10px',
+        xl: '12px',
+        '2xl': '16px',
+        '3xl': '24px',
+        full: '9999px',
       },
       fontSize: {
         xs: ['13.13px', { lineHeight: '18px' }],
