@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.game3334.play.R
+import com.game3334.play.ui.theme.AppBackground
 import com.game3334.play.ui.theme.RubikFont
 
 @Composable
@@ -39,16 +40,18 @@ fun WalletScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 120.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         // 1. Top Header Row: "Wallet" + Support & Settings Buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 45.dp),
+                .statusBarsPadding()
+                .padding(top = 12.dp, bottom = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -56,7 +59,7 @@ fun WalletScreen(
                 text = "Wallet",
                 fontSize = 24.sp,
                 fontFamily = RubikFont,
-                fontWeight = FontWeight.W800,
+                fontWeight = FontWeight.Black,
                 color = Color.White
             )
 
@@ -69,8 +72,8 @@ fun WalletScreen(
                         .width(66.dp)
                         .height(66.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFF240E38))
-                        .border(1.dp, Color(0xFF4C206D), RoundedCornerShape(14.dp))
+                        .background(Color(0xFF161922))
+                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
                         .clickable { onSupportClick() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -101,8 +104,8 @@ fun WalletScreen(
                         .width(66.dp)
                         .height(66.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFF240E38))
-                        .border(1.dp, Color(0xFF4C206D), RoundedCornerShape(14.dp))
+                        .background(Color(0xFF161922))
+                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
                         .clickable { onSettingsClick() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -157,8 +160,8 @@ fun WalletScreen(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF230E36))
-                    .border(1.dp, Color(0xFF5B2B85), RoundedCornerShape(12.dp))
+                    .background(Color(0xFF161922))
+                    .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(12.dp))
                     .clickable { onAllTransactionsClick() }
                     .padding(horizontal = 16.dp, vertical = 10.dp),
                 contentAlignment = Alignment.Center
@@ -189,9 +192,9 @@ fun WalletScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF1E0A30))
-                .border(1.dp, Color(0xFF4B206E), RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
                 .padding(16.dp)
         ) {
             Column(
@@ -232,7 +235,7 @@ fun WalletScreen(
                         )
                     }
 
-                    // Green ADD CASH Button (Clean button without 3D shadow layer)
+                    // Green ADD CASH Button
                     Box(
                         modifier = Modifier
                             .width(155.dp)
@@ -271,7 +274,7 @@ fun WalletScreen(
                     }
                 }
 
-                HorizontalDivider(color = Color(0xFF2B1342), thickness = 1.dp)
+                HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
 
                 // Winnings Row
                 Row(
@@ -308,7 +311,7 @@ fun WalletScreen(
                         )
                     }
 
-                    // Purple WITHDRAW Button (Clean button without 3D shadow layer)
+                    // Amber Gold WITHDRAW Button
                     Box(
                         modifier = Modifier
                             .width(155.dp)
@@ -317,8 +320,8 @@ fun WalletScreen(
                             .background(
                                 brush = Brush.verticalGradient(
                                     colors = listOf(
-                                        Color(0xFF6B42F2),
-                                        Color(0xFF552BD8)
+                                        Color(0xFFFFB800),
+                                        Color(0xFFFF9100)
                                     )
                                 )
                             )
@@ -336,7 +339,7 @@ fun WalletScreen(
                     }
                 }
 
-                HorizontalDivider(color = Color(0xFF2B1342), thickness = 1.dp)
+                HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
 
                 // Bonus Row
                 Row(
@@ -373,14 +376,14 @@ fun WalletScreen(
                         )
                     }
 
-                    // Dark Purple PLAY TO USE Button
+                    // Sleek Dark PLAY TO USE Button
                     Box(
                         modifier = Modifier
                             .width(155.dp)
                             .height(46.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFF2E124B))
-                            .border(1.dp, Color(0xFF632B98), RoundedCornerShape(10.dp))
+                            .background(Color(0xFF181B24))
+                            .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(10.dp))
                             .clickable { /* Play to use */ },
                         contentAlignment = Alignment.Center
                     ) {
@@ -419,8 +422,8 @@ fun WalletScreen(
                     .fillMaxWidth()
                     .padding(top = 10.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF1E0A30))
-                    .border(1.dp, Color(0xFF5E278B), RoundedCornerShape(16.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
                     .padding(horizontal = 18.dp, vertical = 18.dp)
             ) {
                 Row(
@@ -446,7 +449,7 @@ fun WalletScreen(
                         )
                     }
 
-                    // Green + ADD Button (Clean button without 3D shadow layer)
+                    // Green + ADD Button
                     Box(
                         modifier = Modifier
                             .width(120.dp)
@@ -479,7 +482,7 @@ fun WalletScreen(
                 modifier = Modifier
                     .offset(x = 16.dp, y = 0.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(Color(0xFFE84D4D))
+                    .background(Color(0xFFEF4444))
                     .padding(horizontal = 10.dp, vertical = 4.dp)
             ) {
                 Text(
