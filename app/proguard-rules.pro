@@ -20,10 +20,10 @@
 -dontnote kotlinx.serialization.AnnotationsKt
 
 # ---- Data / Model classes (keep for StateFlow) ----
--keep class com.game3334.play.game.ringoffuture.model.** { *; }
--keep class com.game3334.play.game.ringoffuture.backend.WalletBalance { *; }
--keep class com.game3334.play.game.ringoffuture.backend.WalletTransaction { *; }
--keep class com.game3334.play.game.ringoffuture.backend.UserProfile { *; }
+-keep class com.playingame.app.game.ringoffuture.model.** { *; }
+-keep class com.playingame.app.game.ringoffuture.backend.WalletBalance { *; }
+-keep class com.playingame.app.game.ringoffuture.backend.WalletTransaction { *; }
+-keep class com.playingame.app.game.ringoffuture.backend.UserProfile { *; }
 
 # ---- Android standard ----
 -keepattributes SourceFile,LineNumberTable

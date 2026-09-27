@@ -13,11 +13,11 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.game3334.play"
+    namespace = "com.playingame.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.game3334.play"
+        applicationId = "com.playingame.app"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
