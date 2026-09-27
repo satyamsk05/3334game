@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
 
         // Initialize persistent user auth session
         AuthRepository.init(this)
+        com.playingame.app.data.remote.RemoteApiClient.init(this)
 
         // Initialize Rive runtime
         try {

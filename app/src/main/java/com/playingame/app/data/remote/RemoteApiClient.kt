@@ -21,10 +21,15 @@ object RemoteApiClient {
     val httpClient: OkHttpClient
         get() = client
 
+    private var appContext: android.content.Context? = null
     private var webSocket: WebSocket? = null
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
+
+    fun init(context: android.content.Context) {
+        appContext = context.applicationContext
+    }
 
     fun connectWebSocket() {
         if (!ClientConfig.IS_REMOTE_SERVER_ENABLED) return
@@ -38,6 +43,30 @@ object RemoteApiClient {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
                     Log.d(TAG, "Connected to Remote Backend WebSocket: ${ClientConfig.WEBSOCKET_URL}")
                     _isConnected.value = true
+                }
+
+                override fun onMessage(webSocket: WebSocket, text: String) {
+                    Log.d(TAG, "WebSocket message received: $text")
+                    try {
+                        val json = org.json.JSONObject(text)
+                        val event = json.optString("event")
+                        val data = json.optJSONObject("data")
+                        if (event == "SYSTEM_ANNOUNCEMENT" && data != null) {
+                            val title = data.optString("title", "Game In Play Alert")
+                            val body = data.optString("body", "")
+                            if (body.isNotBlank()) {
+                                appContext?.let { ctx ->
+                                    com.playingame.app.service.NotificationHelper.showNotification(
+                                        context = ctx,
+                                        title = title,
+                                        body = body
+                                    )
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error parsing WebSocket message: ${e.message}")
+                    }
                 }
 
                 override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
