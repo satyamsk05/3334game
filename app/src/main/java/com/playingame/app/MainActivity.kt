@@ -30,9 +30,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Initialize persistent user auth session
+        // Initialize persistent user auth session and network monitoring
         AuthRepository.init(this)
         com.playingame.app.data.remote.RemoteApiClient.init(this)
+        com.playingame.app.util.NetworkMonitor.init(this)
 
         // Initialize Rive runtime
         try {
@@ -49,7 +50,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             App334Theme {
                 var isSplashFinished by remember { mutableStateOf(false) }
+                var isRetryingBootstrap by remember { mutableStateOf(false) }
                 val session by AuthRepository.currentSession.collectAsState()
+                val bootstrapState by com.playingame.app.data.remote.AppBootstrapService.bootstrapState.collectAsState()
                 val context = androidx.compose.ui.platform.LocalContext.current
 
                 // Runtime permission launcher for Location + Notification permissions
@@ -99,16 +102,46 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = com.playingame.app.ui.theme.AppBackground
                 ) {
-                    if (session.isBanned) {
-                        com.playingame.app.ui.components.AccountBannedDialog(onDismiss = {})
-                    } else if (!isSplashFinished) {
-                        SplashScreen(onSplashFinished = { isSplashFinished = true })
-                    } else if (!session.isLoggedIn) {
-                        LoginScreen(onLoginSuccess = {
-                            // Session isLoggedIn state change automatically transitions to HomeScreen
-                        })
-                    } else {
-                        HomeScreen()
+                    when (bootstrapState) {
+                        is com.playingame.app.data.remote.BootstrapState.NoInternet -> {
+                            com.playingame.app.ui.screens.NoInternetScreen(
+                                isRetrying = isRetryingBootstrap,
+                                onRetry = {
+                                    lifecycleScope.launch {
+                                        isRetryingBootstrap = true
+                                        com.playingame.app.data.remote.AppBootstrapService.performBootstrap()
+                                        isRetryingBootstrap = false
+                                    }
+                                }
+                            )
+                        }
+                        is com.playingame.app.data.remote.BootstrapState.ServerMaintenance -> {
+                            val msg = (bootstrapState as com.playingame.app.data.remote.BootstrapState.ServerMaintenance).message
+                            com.playingame.app.ui.screens.ServerMaintenanceScreen(
+                                message = msg,
+                                isRetrying = isRetryingBootstrap,
+                                onRetry = {
+                                    lifecycleScope.launch {
+                                        isRetryingBootstrap = true
+                                        com.playingame.app.data.remote.AppBootstrapService.performBootstrap()
+                                        isRetryingBootstrap = false
+                                    }
+                                }
+                            )
+                        }
+                        else -> {
+                            if (session.isBanned) {
+                                com.playingame.app.ui.components.AccountBannedDialog(onDismiss = {})
+                            } else if (!isSplashFinished) {
+                                SplashScreen(onSplashFinished = { isSplashFinished = true })
+                            } else if (!session.isLoggedIn) {
+                                LoginScreen(onLoginSuccess = {
+                                    // Session isLoggedIn state change automatically transitions to HomeScreen
+                                })
+                            } else {
+                                HomeScreen()
+                            }
+                        }
                     }
                 }
             }

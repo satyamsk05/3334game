@@ -1,0 +1,40 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <!-- Server stack 1 -->
+  <path
+      android:fillColor="#00000000"
+      android:strokeColor="#A78BFA"
+      android:strokeWidth="1.8"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round"
+      android:pathData="M4,6 C4,4.5 7.5,3.5 12,3.5 C16.5,3.5 20,4.5 20,6 C20,7.5 16.5,8.5 12,8.5 C7.5,8.5 4,7.5 4,6 Z" />
+  <!-- Server stack 2 -->
+  <path
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="1.8"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round"
+      android:pathData="M4,6 L4,12 C4,13.5 7.5,14.5 12,14.5 C16.5,14.5 20,13.5 20,12 L20,6" />
+  <!-- Server stack 3 -->
+  <path
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="1.8"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round"
+      android:pathData="M4,12 L4,18 C4,19.5 7.5,20.5 12,20.5 C16.5,20.5 20,19.5 20,18 L20,12" />
+  <!-- Indicator Lights -->
+  <path
+      android:fillColor="#00E676"
+      android:pathData="M7,6 A0.75,0.75 0 1,0 8.5,6 A0.75,0.75 0 1,0 7,6 Z" />
+  <path
+      android:fillColor="#FBBF24"
+      android:pathData="M7,12 A0.75,0.75 0 1,0 8.5,12 A0.75,0.75 0 1,0 7,12 Z" />
+  <path
+      android:fillColor="#00E676"
+      android:pathData="M7,18 A0.75,0.75 0 1,0 8.5,18 A0.75,0.75 0 1,0 7,18 Z" />
+</vector>

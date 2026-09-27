@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
+import com.playingame.app.data.remote.AppBootstrapService
+import com.playingame.app.data.remote.BootstrapState
 import com.playingame.app.data.repository.AuthRepository
 import com.playingame.app.ui.components.AccountBannedDialog
 import com.playingame.app.ui.theme.RubikFont
@@ -31,6 +33,27 @@ fun SplashScreen(
     var isBannedState by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
+        // Run splash animation concurrently with server bootstrap
+        scale.animateTo(
+            targetValue = 1.0f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        )
+        alpha.animateTo(
+            targetValue = 1.0f,
+            animationSpec = tween(durationMillis = 350)
+        )
+
+        // Step 1: Perform network & backend health handshake
+        val bootstrapResult = AppBootstrapService.performBootstrap()
+        if (bootstrapResult !is BootstrapState.Ready) {
+            // NoInternet or ServerMaintenance will be rendered by MainActivity gate
+            return@LaunchedEffect
+        }
+
+        // Step 2: Check user ban status if logged in
         val session = AuthRepository.currentSession.value
         val banned = if (session.userId.isNotBlank()) {
             AuthRepository.checkBanStatus(session.userId, session.phone)
@@ -43,18 +66,7 @@ fun SplashScreen(
             return@LaunchedEffect
         }
 
-        scale.animateTo(
-            targetValue = 1.0f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
-            )
-        )
-        alpha.animateTo(
-            targetValue = 1.0f,
-            animationSpec = tween(durationMillis = 400)
-        )
-        delay(500)
+        delay(300)
         onSplashFinished()
     }
 
