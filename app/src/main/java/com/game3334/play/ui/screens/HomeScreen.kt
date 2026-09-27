@@ -50,7 +50,7 @@ sealed interface SubScreen {
     object ContactUs : SubScreen
     object FairPlay : SubScreen
     object RingOfFuture : SubScreen
-    object DepositPayment : SubScreen
+    data class DepositPayment(val amountRupees: Double = 100.0) : SubScreen
     object XOLobby : SubScreen
     data class XOMatchmaking(val tier: com.game3334.play.game.xo.model.XOTier) : SubScreen
     data class XOBattle(val room: com.game3334.play.game.xo.model.XORoomState) : SubScreen
@@ -81,7 +81,7 @@ fun HomeScreen(
         if (activeSubScreen != null) {
             when (activeSubScreen) {
                 SubScreen.WithdrawDetails -> activeSubScreen = SubScreen.Withdraw
-                SubScreen.DepositPayment -> activeSubScreen = SubScreen.RingOfFuture
+                is SubScreen.DepositPayment -> activeSubScreen = null
                 is SubScreen.XOBattle -> activeSubScreen = SubScreen.XOLobby
                 is SubScreen.XOMatchmaking -> activeSubScreen = SubScreen.XOLobby
                 else -> activeSubScreen = null
@@ -252,13 +252,13 @@ fun HomeScreen(
                     SubScreen.RingOfFuture -> {
                         com.game3334.play.game.ringoffuture.ui.RingOfFutureScreen(
                             onBackClick = { activeSubScreen = null },
-                            onOpenDepositScreen = { activeSubScreen = SubScreen.DepositPayment }
+                            onOpenDepositScreen = { activeSubScreen = SubScreen.DepositPayment(200.0) }
                         )
                     }
-                    SubScreen.DepositPayment -> {
-                        com.game3334.play.game.ringoffuture.ui.DepositPaymentScreen(
-                            onBackClick = { activeSubScreen = SubScreen.RingOfFuture },
-                            onSuccess = { activeSubScreen = SubScreen.RingOfFuture }
+                    is SubScreen.DepositPayment -> {
+                        DepositPaymentScreen(
+                            amountRupees = sub.amountRupees,
+                            onBackClick = { activeSubScreen = null }
                         )
                     }
                     SubScreen.TransactionHistory -> {
@@ -467,6 +467,9 @@ fun HomeScreen(
 
                                 NavItem.REWARD -> {
                                     AddCashScreen(
+                                        onOpenDeposit = { amount ->
+                                            activeSubScreen = SubScreen.DepositPayment(amount)
+                                        },
                                         onAddCashSuccess = { addedAmount ->
                                             selectedTab = NavItem.PROFILE
                                         }

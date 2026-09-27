@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -20,6 +21,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.game3334.play.R
+import com.game3334.play.ui.theme.CardBorderColor
+import com.game3334.play.ui.theme.CardNavyBackground
 import com.game3334.play.ui.theme.RubikFont
 
 @Composable
@@ -27,30 +30,33 @@ fun WalletChip(
     balance: String,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    chipHeight: Dp = 38.dp,
-    coinSize: Dp = 42.dp,
-    fontSize: TextUnit = 18.sp,
-    minWidth: Dp = 90.dp,
-    backgroundColor: Color = Color(0xFF2C2D35)
+    chipHeight: Dp = 36.dp,
+    coinSize: Dp = 38.dp,
+    fontSize: TextUnit = 16.sp,
+    minWidth: Dp = 0.dp
 ) {
+    val pillShape = RoundedCornerShape(percent = 50)
+
     Box(
         modifier = modifier
+            .wrapContentWidth()
             .height(maxOf(chipHeight, coinSize))
             .then(
                 if (onClick != null) Modifier.clickable { onClick() } else Modifier
             ),
         contentAlignment = Alignment.CenterStart
     ) {
-        // Dark Capsule Background
+        // Dynamic Dark Capsule Background (Expands automatically with balance text)
         Row(
             modifier = Modifier
-                .padding(start = coinSize / 3)
+                .padding(start = 12.dp)
                 .height(chipHeight)
-                .defaultMinSize(minWidth = minWidth)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFF1B2230))
-                .border(1.dp, Color(0xFF2F394C), RoundedCornerShape(12.dp))
-                .padding(start = (coinSize * 2 / 3) - 2.dp, end = 16.dp),
+                .wrapContentWidth()
+                .shadow(elevation = 4.dp, shape = pillShape, spotColor = Color.Black)
+                .clip(pillShape)
+                .background(CardNavyBackground)
+                .border(width = 1.dp, color = CardBorderColor, shape = pillShape)
+                .padding(start = 30.dp, end = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -60,11 +66,13 @@ fun WalletChip(
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                letterSpacing = 0.5.sp
+                letterSpacing = 0.3.sp,
+                maxLines = 1,
+                softWrap = false
             )
         }
 
-        // 3D Gold Star Coin overlapping left
+        // 3D Gold Star Coin (Placed on left edge without overlapping any digits)
         Image(
             painter = painterResource(id = R.drawable.ic_gold_chip),
             contentDescription = "Wallet Balance",

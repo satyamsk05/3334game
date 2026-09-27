@@ -31,8 +31,9 @@ fun TopHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .statusBarsPadding()
             .padding(
-                top = 42.dp,
+                top = 10.dp,
                 bottom = Dimens.spacingSm,
                 start = Dimens.screenHorizontalPadding,
                 end = Dimens.screenHorizontalPadding

@@ -42,17 +42,13 @@ data class ChipPackItem(
 
 @Composable
 fun AddCashScreen(
+    onOpenDeposit: (Double) -> Unit = {},
     onAddCashSuccess: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     val walletBalance by WalletLedger.walletBalance.collectAsState()
     val userProfile by WalletLedger.userProfile.collectAsState()
-
-    var selectedPack by remember { mutableStateOf<ChipPackItem?>(null) }
-    var showConfirmDialog by remember { mutableStateOf(false) }
-    var isProcessing by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         com.game3334.play.data.remote.WalletSyncService.syncBalance(userProfile.userId)
@@ -114,7 +110,7 @@ fun AddCashScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(com.game3334.play.ui.theme.AppBackground)
     ) {
         Column(
             modifier = Modifier
@@ -184,8 +180,8 @@ fun AddCashScreen(
                                         pack = pack,
                                         modifier = Modifier.weight(1f),
                                         onClick = {
-                                            selectedPack = pack
-                                            showConfirmDialog = true
+                                            val amt = pack.amountPaise / 100.0
+                                            onOpenDeposit(amt)
                                         }
                                     )
                                 } else {
@@ -197,82 +193,6 @@ fun AddCashScreen(
                 }
             }
         }
-    }
-
-    // Purchase / Deposit Confirmation Dialog
-    if (showConfirmDialog && selectedPack != null) {
-        val pack = selectedPack!!
-        AlertDialog(
-            onDismissRequest = {
-                if (!isProcessing) showConfirmDialog = false
-            },
-            title = {
-                Text(
-                    text = "Add ${pack.chips} Chips",
-                    fontFamily = RubikFont,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Amount to Pay: ${pack.price}",
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = Color(0xFFFFB800)
-                    )
-                    Text(
-                        text = "Chips will be credited instantly to your account wallet for gameplay.",
-                        fontFamily = RubikFont,
-                        fontSize = 13.5.sp,
-                        color = Color(0xFF9CA3AF),
-                        lineHeight = 18.sp
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        isProcessing = true
-                        coroutineScope.launch {
-                            // Credit deposit to wallet
-                            WalletLedger.addDepositCash(pack.amountPaise)
-                            com.game3334.play.data.remote.WalletSyncService.syncBalance(userProfile.userId)
-                            isProcessing = false
-                            showConfirmDialog = false
-                            Toast.makeText(context, "${pack.chips} Chips added successfully!", Toast.LENGTH_SHORT).show()
-                            onAddCashSuccess(pack.price)
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
-                    shape = RoundedCornerShape(12.dp),
-                    enabled = !isProcessing
-                ) {
-                    Text(
-                        text = if (isProcessing) "Processing..." else "Pay ${pack.price}",
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showConfirmDialog = false },
-                    enabled = !isProcessing
-                ) {
-                    Text(
-                        text = "Cancel",
-                        fontFamily = RubikFont,
-                        color = Color(0xFF9CA3AF)
-                    )
-                }
-            },
-            containerColor = Color(0xFF1E202B),
-            shape = RoundedCornerShape(20.dp)
-        )
     }
 }
 
