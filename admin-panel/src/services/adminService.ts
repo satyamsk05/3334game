@@ -294,6 +294,11 @@ export const adminService = {
     return res.data;
   },
 
+  processWithdrawal: async (withdrawalId: string) => {
+    const res = await api.post('/admin/withdrawals/process', { withdrawalId });
+    return res.data;
+  },
+
   approveWithdrawal: async (withdrawalId: string) => {
     const res = await api.post('/admin/withdrawals/approve', { withdrawalId });
     return res.data;

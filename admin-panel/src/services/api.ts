@@ -29,7 +29,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+    // Only handle 401 Unauthorized (expired or invalid token), NOT 403 Forbidden (insufficient permission)
+    if (error.response && error.response.status === 401) {
       const isLoginRequest = error.config?.url?.includes('/auth/admin/login');
       if (!isLoginRequest && typeof window !== 'undefined') {
         localStorage.removeItem('adminToken');

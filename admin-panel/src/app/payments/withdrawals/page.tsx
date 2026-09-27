@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, XCircle, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
-import { paymentService } from '@/services/paymentService';
+import { adminService } from '@/services/adminService';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
@@ -27,7 +27,7 @@ export default function WithdrawalsQueuePage() {
     try {
       setLoading(true);
       setError(null);
-      const res = await paymentService.getWithdrawals();
+      const res = await adminService.getWithdrawals();
       if (res.success && Array.isArray(res.data)) {
         setWithdrawals(res.data);
       } else {
@@ -51,7 +51,7 @@ export default function WithdrawalsQueuePage() {
     }
     try {
       setProcessingId(withdrawalId);
-      const res = await paymentService.processWithdrawal(withdrawalId);
+      const res = await adminService.processWithdrawal(withdrawalId);
       if (res.success) {
         await fetchWithdrawals();
       } else {
@@ -70,7 +70,7 @@ export default function WithdrawalsQueuePage() {
     }
     try {
       setProcessingId(withdrawalId);
-      const res = await paymentService.approveWithdrawal(withdrawalId);
+      const res = await adminService.approveWithdrawal(withdrawalId);
       if (res.success) {
         await fetchWithdrawals();
       } else {
@@ -89,7 +89,7 @@ export default function WithdrawalsQueuePage() {
     }
     try {
       setProcessingId(withdrawalId);
-      const res = await paymentService.rejectWithdrawal(withdrawalId);
+      const res = await adminService.rejectWithdrawal(withdrawalId);
       if (res.success) {
         await fetchWithdrawals();
       } else {

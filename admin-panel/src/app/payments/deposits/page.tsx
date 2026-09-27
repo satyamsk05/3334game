@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, XCircle, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
-import { paymentService } from '@/services/paymentService';
+import { adminService } from '@/services/adminService';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
@@ -27,7 +27,7 @@ export default function DepositsQueuePage() {
     try {
       setLoading(true);
       setError(null);
-      const res = await paymentService.getDeposits();
+      const res = await adminService.getDeposits();
       if (res.success && Array.isArray(res.data)) {
         setDeposits(res.data);
       } else {
@@ -51,7 +51,7 @@ export default function DepositsQueuePage() {
     }
     try {
       setProcessingId(depositId);
-      const res = await paymentService.approveDeposit(depositId);
+      const res = await adminService.approveDeposit(depositId);
       if (res.success) {
         await fetchDeposits();
       } else {
@@ -70,7 +70,7 @@ export default function DepositsQueuePage() {
     }
     try {
       setProcessingId(depositId);
-      const res = await paymentService.rejectDeposit(depositId);
+      const res = await adminService.rejectDeposit(depositId);
       if (res.success) {
         await fetchDeposits();
       } else {

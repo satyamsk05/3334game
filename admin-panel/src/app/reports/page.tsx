@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Download, ShieldCheck, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
-import { paymentService } from '@/services/paymentService';
+import { adminService } from '@/services/adminService';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -19,8 +19,8 @@ export default function SystemicReportsPage() {
       setLoading(true);
       setError(null);
       const [depRes, withRes] = await Promise.all([
-        paymentService.getDeposits().catch(() => ({ success: false, data: [] })),
-        paymentService.getWithdrawals().catch(() => ({ success: false, data: [] }))
+        adminService.getDeposits().catch(() => ({ success: false, data: [] })),
+        adminService.getWithdrawals().catch(() => ({ success: false, data: [] }))
       ]);
 
       const deps = depRes.success && Array.isArray(depRes.data) ? depRes.data : [];
