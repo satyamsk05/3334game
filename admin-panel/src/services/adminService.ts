@@ -352,6 +352,11 @@ export const adminService = {
     return res.data;
   },
 
+  sendPushNotification: async (data: { title: string; body: string; targetAudience?: string; userId?: string }) => {
+    const res = await api.post('/admin/system/notifications/push', data);
+    return res.data;
+  },
+
   // Security & Admins
   getAdmins: async () => {
     const res = await api.get('/admin/admins');

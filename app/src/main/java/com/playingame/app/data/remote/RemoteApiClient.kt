@@ -12,11 +12,14 @@ object RemoteApiClient {
 
     private const val TAG = "RemoteApiClient"
 
-    private val client = OkHttpClient.Builder()
+    val client = OkHttpClient.Builder()
         .connectTimeout(5, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
         .build()
+
+    val httpClient: OkHttpClient
+        get() = client
 
     private var webSocket: WebSocket? = null
 

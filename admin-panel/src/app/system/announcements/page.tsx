@@ -3,7 +3,10 @@ import React, { useState, useEffect } from 'react';
 import {
   Megaphone,
   Loader2,
-  Send
+  Send,
+  Bell,
+  Smartphone,
+  CheckCircle2
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
 import { Card } from '@/components/ui/Card';
@@ -21,6 +24,14 @@ export default function AnnouncementsPage() {
   const [type, setType] = useState('INFO');
   const [submitting, setSubmitting] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  // Push notification state
+  const [pushTitle, setPushTitle] = useState('🎁 Special Reward Alert!');
+  const [pushBody, setPushBody] = useState('New cashback and bonus added to your wallet! Play XO Battle now.');
+  const [pushTarget, setPushTarget] = useState('ALL');
+  const [pushUserId, setPushUserId] = useState('');
+  const [pushSending, setPushSending] = useState(false);
+  const [pushSuccessMsg, setPushSuccessMsg] = useState<string | null>(null);
 
   const fetchAnnouncements = async () => {
     try {
@@ -43,6 +54,32 @@ export default function AnnouncementsPage() {
   useEffect(() => {
     fetchAnnouncements();
   }, []);
+
+  const handleSendPush = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pushBody.trim()) return;
+
+    try {
+      setPushSending(true);
+      setPushSuccessMsg(null);
+      const res = await adminService.sendPushNotification({
+        title: pushTitle.trim() || 'Game In Play Alert',
+        body: pushBody.trim(),
+        targetAudience: pushTarget,
+        userId: pushTarget === 'SINGLE' ? pushUserId.trim() : undefined
+      });
+
+      if (res.success) {
+        setPushSuccessMsg(res.message || 'Push notification successfully broadcast to players mobile devices!');
+      } else {
+        alert(res.message || 'Failed to send push notification');
+      }
+    } catch (err: any) {
+      alert(`Error sending push notification: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setPushSending(false);
+    }
+  };
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,12 +130,100 @@ export default function AnnouncementsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Broadcast Announcements</h1>
-            <Badge variant="info">Live Broadcast</Badge>
+            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Push Notifications & Broadcasts</h1>
+            <Badge variant="positive">Firebase Push Active</Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">Push system maintenance, promotional and platform updates to all players</p>
+          <p className="text-xs text-text-secondary mt-1">Send instant mobile push alerts to lock screens, notification trays and in-app banners</p>
         </div>
       </div>
+
+      {error && (
+        <div className="rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative">
+          {error}
+        </div>
+      )}
+
+      {pushSuccessMsg && (
+        <div className="flex items-center gap-2 rounded-md border border-status-positive/20 bg-status-positive/10 p-3 text-xs text-status-positive">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <span>{pushSuccessMsg}</span>
+        </div>
+      )}
+
+      {/* Instant Mobile Push Notification Card */}
+      <Card as="form" onSubmit={handleSendPush} className="space-y-4 border-accent-primary/20 bg-surface-raised">
+        <div className="flex items-center justify-between border-b border-border-muted pb-3">
+          <div className="flex items-center gap-2">
+            <Smartphone className="h-4 w-4 text-accent-primary" />
+            <h2 className="text-sm font-semibold text-text-primary">Instant Mobile Push Notification (Phone Tray & Lock Screen)</h2>
+          </div>
+          <Badge variant="info">FCM Live</Badge>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label className="block text-text-secondary mb-1 font-medium">Notification Title</label>
+            <input
+              type="text"
+              value={pushTitle}
+              onChange={(e) => setPushTitle(e.target.value)}
+              placeholder="e.g. 🎁 Weekend Bonus Alert!"
+              className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+            />
+          </div>
+
+          <div>
+            <label className="block text-text-secondary mb-1 font-medium">Target Audience</label>
+            <select
+              value={pushTarget}
+              onChange={(e) => setPushTarget(e.target.value)}
+              className="w-full h-8 rounded border border-border-default bg-surface-base px-2 text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+            >
+              <option value="ALL">All Registered Players (Broadcast)</option>
+              <option value="SINGLE">Single Player (By User ID / Phone)</option>
+            </select>
+          </div>
+
+          {pushTarget === 'SINGLE' && (
+            <div>
+              <label className="block text-text-secondary mb-1 font-medium">Target User ID</label>
+              <input
+                type="text"
+                value={pushUserId}
+                onChange={(e) => setPushUserId(e.target.value)}
+                placeholder="Enter userId (e.g. usr_12345)"
+                className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+              />
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-text-secondary mb-1 font-medium text-xs">Push Notification Message</label>
+          <textarea
+            value={pushBody}
+            onChange={(e) => setPushBody(e.target.value)}
+            placeholder="Message that pops up on player's mobile notification bar and lock screen..."
+            className="w-full h-16 rounded border border-border-default bg-surface-base p-2.5 text-xs text-text-primary placeholder:text-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+          />
+        </div>
+
+        <div className="flex justify-between items-center pt-1">
+          <span className="text-[11px] text-text-tertiary">
+            ⚡ Pops up on lock screen & status bar even when app is closed
+          </span>
+          <Button
+            type="submit"
+            variant="primary"
+            size="sm"
+            disabled={pushSending || !pushBody.trim()}
+            isLoading={pushSending}
+          >
+            <Bell className="h-3.5 w-3.5 mr-1" />
+            <span>Send Mobile Push Alert</span>
+          </Button>
+        </div>
+      </Card>
 
       {error && (
         <div className="rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative">

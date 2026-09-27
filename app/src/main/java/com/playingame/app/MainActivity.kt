@@ -77,6 +77,18 @@ class MainActivity : ComponentActivity() {
                     if (session.isLoggedIn) {
                         WalletSyncService.startLiveSync(lifecycleScope)
                         WalletSyncService.syncBalance(session.userId)
+
+                        // Register FCM push token with backend
+                        try {
+                            com.google.firebase.messaging.FirebaseMessaging.getInstance().token
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful && task.result != null) {
+                                        com.playingame.app.service.AppFirebaseMessagingService.syncTokenWithBackend(task.result)
+                                    }
+                                }
+                        } catch (e: Exception) {
+                            android.util.Log.e("MainActivity", "Firebase token error: ${e.message}")
+                        }
                     } else {
                         WalletSyncService.stopLiveSync()
                     }

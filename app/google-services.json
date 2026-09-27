@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "989453243621",
+    "project_id": "gameinplay",
+    "storage_bucket": "gameinplay.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:989453243621:android:b1256e931d755c198fb00c",
+        "android_client_info": {
+          "package_name": "com.playingame.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC00SJqjcg6wutDxVZeVdjYOHdP2KRmd3A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
