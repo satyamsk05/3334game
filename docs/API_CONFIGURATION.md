@@ -2,8 +2,8 @@
 
 ## 1. System Overview
 
-- **Base URL**: `http://3.7.73.109:4001/api/v1`
-- **WebSocket URL**: `ws://3.7.73.109:4001/ws`
+- **Base URL**: `http://localhost:4001/api/v1` (or `${NEXT_PUBLIC_API_URL}`)
+- **WebSocket URL**: `ws://localhost:4001/ws` (or `${NEXT_PUBLIC_WS_URL}`)
 - **Protocol**: HTTP/1.1 REST & WebSockets
 - **Authentication**: JWT Bearer Tokens (`Authorization: Bearer <token>`)
 - **Data Format**: JSON (`Content-Type: application/json`)

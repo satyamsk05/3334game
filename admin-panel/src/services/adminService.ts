@@ -201,19 +201,6 @@ export const adminService = {
     return res.data;
   },
 
-  adjustWallet: async (
-    id: string,
-    data: {
-      bucket: 'deposit' | 'winnings' | 'bonus';
-      type: 'CREDIT' | 'DEBIT';
-      amountRupees: number;
-      reason: string;
-    }
-  ) => {
-    const res = await api.post(`/admin/users/${id}/adjust-wallet`, data);
-    return res.data;
-  },
-
   adjustUserWallet: async (
     id: string,
     data: {

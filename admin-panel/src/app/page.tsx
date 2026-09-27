@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Users, 
   ArrowDownLeft, 
@@ -26,30 +26,50 @@ export default function OverviewDashboard() {
   const [range, setRange] = useState<'24h' | '7d' | '30d' | 'all'>('30d');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isNetwork, setIsNetwork] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [stats, setStats] = useState<any>(null);
+  const activeRequestRef = useRef<number>(0);
 
-  const fetchLiveMetrics = async (selectedRange: string = range) => {
+  const fetchLiveMetrics = useCallback(async (selectedRange: string = range) => {
+    const requestId = ++activeRequestRef.current;
     try {
       setLoading(true);
       setError(null);
+      setIsNetwork(false);
       const res = await adminService.getDashboardStats(selectedRange);
-      if (res.success && res.data) {
-        setStats(res.data);
-      } else {
-        setError(res.message || 'Failed to fetch dashboard metrics');
+      // Guard against race conditions from out-of-order response completion
+      if (requestId === activeRequestRef.current) {
+        if (res.success && res.data) {
+          setStats(res.data);
+        } else {
+          setError(res.message || 'Failed to fetch dashboard metrics');
+        }
       }
     } catch (err: any) {
-      console.error('Metrics sync error:', err);
-      setError(err.response?.data?.message || err.message || 'Telemetry connection error');
+      if (requestId === activeRequestRef.current) {
+        console.error('Metrics sync error:', err);
+        setIsNetwork(!!err.isNetwork);
+        if (err.isForbidden) {
+          setError('You do not have permission to view telemetry metrics.');
+        } else {
+          setError(err.message || 'Telemetry connection error');
+        }
+      }
     } finally {
-      setLoading(false);
+      if (requestId === activeRequestRef.current) {
+        setLoading(false);
+      }
     }
-  };
+  }, [range]);
 
   useEffect(() => {
     fetchLiveMetrics(range);
-  }, [range]);
+    return () => {
+      // Invalidate current request on cleanup / range switch
+      activeRequestRef.current++;
+    };
+  }, [range, fetchLiveMetrics]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -160,9 +180,23 @@ export default function OverviewDashboard() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-medium text-rose-700">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          <span>{error}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-medium text-rose-700">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+          {isNetwork && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => fetchLiveMetrics(range)}
+              disabled={loading}
+              className="self-start sm:self-auto bg-white hover:bg-rose-100 text-rose-800 border-rose-200"
+            >
+              <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+              Retry
+            </Button>
+          )}
         </div>
       )}
 
