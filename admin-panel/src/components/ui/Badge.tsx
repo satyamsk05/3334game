@@ -14,20 +14,20 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const variantStyles = {
-    positive: 'bg-emerald-950/50 text-emerald-400 border border-emerald-800/40 font-medium',
-    negative: 'bg-rose-950/50 text-rose-400 border border-rose-800/40 font-medium',
-    warning: 'bg-amber-950/50 text-amber-400 border border-amber-800/40 font-medium',
-    info: 'bg-sky-950/50 text-sky-400 border border-sky-800/40 font-medium',
-    neutral: 'bg-zinc-800/60 text-zinc-300 border border-white/[0.08] font-medium',
-    peach: 'bg-amber-950/60 text-amber-300 border border-amber-800/50 font-semibold',
-    mint: 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/50 font-semibold',
+    positive: 'bg-emerald-950/30 text-emerald-400 border border-emerald-800/30 font-medium',
+    negative: 'bg-rose-950/30 text-rose-400 border border-rose-800/30 font-medium',
+    warning: 'bg-amber-950/30 text-amber-400 border border-amber-800/30 font-medium',
+    info: 'bg-sky-950/30 text-sky-400 border border-sky-800/30 font-medium',
+    neutral: 'bg-zinc-900 text-zinc-400 border border-white/[0.08] font-medium',
+    peach: 'bg-amber-950/30 text-amber-400 border border-amber-800/30 font-medium',
+    mint: 'bg-emerald-950/30 text-emerald-400 border border-emerald-800/30 font-medium',
   };
 
   return (
     <span
       role="status"
       aria-label={ariaLabel}
-      className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs tracking-tight select-none transition-fast ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs select-none transition-colors ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}

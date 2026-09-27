@@ -33,15 +33,15 @@ export function Button({
 
   const variantStyles = {
     primary:
-      'bg-white text-black font-semibold hover:bg-zinc-200 shadow-button border border-white focus-visible:ring-2 focus-visible:ring-white',
+      'bg-white text-black font-medium hover:bg-zinc-200 border border-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400',
     dark:
-      'bg-zinc-800 text-white font-medium hover:bg-zinc-700 shadow-button border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-white',
+      'bg-zinc-900 text-white font-medium hover:bg-zinc-800 border border-white/[0.08] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400',
     secondary:
-      'bg-[#141417] text-zinc-200 font-medium hover:bg-zinc-800 hover:text-white border border-white/[0.08] shadow-button focus-visible:ring-2 focus-visible:ring-white',
+      'bg-[#0c0c0e] text-zinc-300 font-medium hover:bg-[#141417] hover:text-white border border-white/[0.08] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400',
     danger:
-      'bg-rose-950/40 text-rose-300 font-medium hover:bg-rose-900/50 border border-rose-800/50 focus-visible:ring-2 focus-visible:ring-rose-500',
+      'bg-rose-950/30 text-rose-300 font-medium hover:bg-rose-950/50 border border-rose-800/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-400',
     ghost:
-      'bg-transparent text-zinc-400 hover:text-white hover:bg-white/[0.06] border border-transparent focus-visible:ring-2 focus-visible:ring-white',
+      'bg-transparent text-zinc-400 hover:text-white hover:bg-white/[0.06] border border-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400',
   };
 
   const tapScale = !isStatic ? 'active:not-disabled:scale-[0.98]' : '';

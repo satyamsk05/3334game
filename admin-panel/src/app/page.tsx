@@ -134,13 +134,13 @@ export default function OverviewDashboard() {
     <div className="space-y-6 text-[#fcfcfc]">
       
       {/* Page Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-2 border-b border-white/[0.06]">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-white/[0.08]">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-white">
+          <h1 className="text-lg font-semibold tracking-tight text-white">
             Platform Overview
           </h1>
           <p className="text-xs text-zinc-400 mt-0.5">
-            Authoritative financial telemetry & gaming engine operations
+            Track deposits, players and game revenue.
           </p>
         </div>
 
@@ -153,11 +153,11 @@ export default function OverviewDashboard() {
                 onClick={() => setRange(t)}
                 className={`rounded px-2.5 py-1 text-xs transition-colors ${
                   range === t
-                    ? 'bg-white text-black font-semibold shadow-sm'
-                    : 'hover:text-white hover:bg-white/[0.05]'
+                    ? 'bg-white text-black font-medium'
+                    : 'hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
-                {t.toUpperCase()}
+                {t}
               </button>
             ))}
           </div>
@@ -176,7 +176,7 @@ export default function OverviewDashboard() {
       </div>
 
       {error && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-rose-500/30 bg-rose-950/20 p-3.5 text-xs text-rose-300">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-md border border-rose-500/25 bg-rose-950/20 p-3 text-xs text-rose-300">
           <div className="flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
             <span>{error}</span>
@@ -187,7 +187,7 @@ export default function OverviewDashboard() {
               size="sm"
               onClick={() => fetchLiveMetrics(range)}
               disabled={loading}
-              className="self-start sm:self-auto bg-rose-900/40 hover:bg-rose-900/60 text-rose-200 border-rose-700/50"
+              className="self-start sm:self-auto bg-rose-900/30 hover:bg-rose-900/50 text-rose-200 border-rose-700/40"
             >
               <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
               Retry
@@ -196,177 +196,149 @@ export default function OverviewDashboard() {
         </div>
       )}
 
-      {/* Overview Cards (Sleek Dark Theme) */}
-      <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-zinc-300 tracking-tight uppercase font-mono text-[11px]">
-          Key Telemetry
+      {/* Overview Cards (Calm, monochrome-first, identical internal layout) */}
+      <div className="space-y-2.5">
+        <h2 className="text-xs font-medium text-zinc-400">
+          Overview
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
           
           {/* Card 1: GGR / Earnings */}
-          <Card className="flex flex-col justify-between group">
+          <Card className="flex flex-col justify-between p-4 sm:p-5">
             <div>
               <div className="flex items-center justify-between">
-                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-sky-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-400">
                   <TrendingUp className="h-4 w-4" />
                 </div>
-                <Badge variant="mint">
-                  Live Engine
-                </Badge>
               </div>
 
-              <div className="mt-4">
-                <span className="text-xs font-medium text-zinc-400 flex items-center gap-1">
-                  Gaming Revenue (GGR)
-                  <HelpCircle className="h-3 w-3 text-zinc-600" />
+              <div className="mt-3">
+                <span className="text-xs font-medium text-zinc-400">
+                  Gaming revenue (GGR)
                 </span>
-                <div className="mt-1 flex items-center justify-between">
-                  <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                <div className="mt-1">
+                  <span className="text-2xl font-semibold text-white tracking-tight">
                     {formatRupees(ggrRupees)}
                   </span>
-                  {/* Decorative neon sparkline */}
-                  <svg className="w-16 h-8 stroke-emerald-400 fill-none" viewBox="0 0 100 40">
-                    <path
-                      d="M 5,30 Q 30,38 50,15 T 95,10"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                    />
-                  </svg>
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs">
+            <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
               <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
                 <ArrowUpRight className="h-3 w-3" />
                 95.0% RTP
               </span>
-              <span className="text-zinc-500 font-medium text-[11px]">Turnover: ₹{totalWageredRupees.toFixed(0)}</span>
+              <span className="text-zinc-500 font-normal">Turnover: ₹{totalWageredRupees.toFixed(0)}</span>
             </div>
           </Card>
 
           {/* Card 2: Customers / Active Players */}
-          <Card className="flex flex-col justify-between group">
+          <Card className="flex flex-col justify-between p-4 sm:p-5">
             <div>
               <div className="flex items-center justify-between">
-                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-emerald-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-400">
                   <Users className="h-4 w-4" />
                 </div>
-                <Badge variant="neutral">
-                  PostgreSQL
-                </Badge>
               </div>
 
-              <div className="mt-4">
-                <span className="text-xs font-medium text-zinc-400 flex items-center gap-1">
-                  Total Players
-                  <HelpCircle className="h-3 w-3 text-zinc-600" />
+              <div className="mt-3">
+                <span className="text-xs font-medium text-zinc-400">
+                  Total players
                 </span>
-                <div className="mt-1 flex items-center justify-between">
-                  <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                <div className="mt-1">
+                  <span className="text-2xl font-semibold text-white tracking-tight">
                     {users.totalUsers || 0}
                   </span>
-                  {/* Decorative neon blue wave */}
-                  <svg className="w-16 h-8 stroke-sky-400 fill-none" viewBox="0 0 100 40">
-                    <path
-                      d="M 5,25 Q 35,5 60,20 T 95,8"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                    />
-                  </svg>
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs">
-              <span className="inline-flex items-center gap-1 text-sky-400 font-medium">
-                <ArrowUpRight className="h-3 w-3" />
-                {users.activeUsers || 0} Active
+            <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
+              <span className="font-normal text-zinc-300">
+                {users.activeUsers || 0} active
               </span>
-              <span className="text-zinc-500 font-medium text-[11px]">{users.bannedUsers || 0} Blocked</span>
+              <span className="text-zinc-500 font-normal">
+                {users.bannedUsers || 0} blocked
+              </span>
             </div>
           </Card>
 
           {/* Card 3: Player Wallet Liquidity */}
-          <Card className="flex flex-col justify-between group">
+          <Card className="flex flex-col justify-between p-4 sm:p-5">
             <div>
               <div className="flex items-center justify-between">
-                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-purple-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-400">
                   <Wallet className="h-4 w-4" />
                 </div>
-                <Badge variant="neutral">
-                  3 Buckets
-                </Badge>
               </div>
 
-              <div className="mt-4">
-                <span className="text-xs font-medium text-zinc-400 flex items-center gap-1">
-                  Player Balances
-                  <HelpCircle className="h-3 w-3 text-zinc-600" />
+              <div className="mt-3">
+                <span className="text-xs font-medium text-zinc-400">
+                  Player balances
                 </span>
                 <div className="mt-1">
-                  <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                  <span className="text-2xl font-semibold text-white tracking-tight">
                     {formatRupees(totalAvailableRupees)}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-zinc-400">
-              <span>Dep: <strong className="text-zinc-200">₹{totalDepositRupees.toFixed(0)}</strong></span>
-              <span>Win: <strong className="text-emerald-400">₹{totalWinningRupees.toFixed(0)}</strong></span>
-              <span>Bonus: <strong className="text-zinc-200">₹{totalBonusRupees.toFixed(0)}</strong></span>
+            <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
+              <span>Dep: <span className="text-zinc-200">₹{totalDepositRupees.toFixed(0)}</span></span>
+              <span>Win: <span className="text-zinc-200">₹{totalWinningRupees.toFixed(0)}</span></span>
+              <span>Bonus: <span className="text-zinc-200">₹{totalBonusRupees.toFixed(0)}</span></span>
             </div>
           </Card>
 
           {/* Card 4: Action Required / Pending Payouts */}
           <Card 
             variant={pendingPayoutsCount > 0 ? 'urgent' : 'default'} 
-            className="flex flex-col justify-between group"
+            className="flex flex-col justify-between p-4 sm:p-5"
           >
             <div>
               <div className="flex items-center justify-between">
-                <div className={`flex h-9 w-9 items-center justify-center rounded-md ${
-                  pendingPayoutsCount > 0 ? 'bg-amber-950/60 border border-amber-800/40 text-amber-400' : 'bg-zinc-900 border border-white/[0.08] text-emerald-400'
+                <div className={`flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] ${
+                  pendingPayoutsCount > 0 ? 'text-amber-400' : 'text-zinc-400'
                 }`}>
                   {pendingPayoutsCount > 0 ? (
-                    <AlertTriangle className="h-4 w-4 text-amber-400 animate-pulse" />
+                    <AlertTriangle className="h-4 w-4" />
                   ) : (
-                    <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                    <ShieldCheck className="h-4 w-4" />
                   )}
                 </div>
                 {pendingPayoutsCount > 0 ? (
-                  <Badge variant="peach">
-                    Needs Action
+                  <Badge variant="warning">
+                    Action required
                   </Badge>
                 ) : (
-                  <Badge variant="mint">
-                    All Settled
+                  <Badge variant="neutral">
+                    All settled
                   </Badge>
                 )}
               </div>
 
-              <div className="mt-4">
-                <span className="text-xs font-medium text-zinc-400 flex items-center gap-1">
-                  Payout Queue
-                  <HelpCircle className="h-3 w-3 text-zinc-600" />
+              <div className="mt-3">
+                <span className="text-xs font-medium text-zinc-400">
+                  Payout queue
                 </span>
                 <div className="mt-1">
-                  <span className={`text-2xl sm:text-3xl font-bold tracking-tight ${
+                  <span className={`text-2xl font-semibold tracking-tight ${
                     pendingPayoutsCount > 0 ? 'text-amber-400' : 'text-white'
                   }`}>
-                    {pendingPayoutsCount} Pending
+                    {pendingPayoutsCount} pending
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs">
-              <span className="text-zinc-400 text-[11px]">
-                Total: <strong className="text-zinc-200 font-semibold">₹{pendingWithdrawRupees.toFixed(2)}</strong>
+            <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
+              <span>
+                Total: <span className="text-zinc-200 font-medium">₹{pendingWithdrawRupees.toFixed(2)}</span>
               </span>
-              <span className={pendingPayoutsCount > 0 ? 'text-amber-400 font-medium text-[11px]' : 'text-emerald-400 font-medium text-[11px]'}>
+              <span className={pendingPayoutsCount > 0 ? 'text-amber-400 font-medium' : 'text-zinc-500'}>
                 {pendingPayoutsCount > 0 ? 'Review UPI' : 'Cleared'}
               </span>
             </div>
@@ -376,72 +348,72 @@ export default function OverviewDashboard() {
       </div>
 
       {/* Live Engine Runtime Status Banner */}
-      <Card className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#0c0c0e] border border-white/[0.08]">
+      <Card className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 sm:p-5 bg-[#0c0c0e] border border-white/[0.08]">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-white text-black shadow-sm shrink-0">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-400 shrink-0">
             <Activity className="h-4 w-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-white text-xs">Ring of Future Game Engine</h3>
-              <Badge variant="mint">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse mr-1" />
-                {games.engineState?.state || 'ACTIVE'}
+              <h3 className="font-medium text-white text-xs">Ring of Future Engine</h3>
+              <Badge variant="positive">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-1" />
+                {games.engineState?.state || 'Active'}
               </Badge>
             </div>
-            <p className="text-[11px] text-zinc-400 mt-0.5">
-              Round #{games.totalRoundsPlayed || 0} • Phase Time Left: <strong className="text-white font-bold">{games.engineState?.timeLeft || 0}s</strong>
+            <p className="text-xs text-zinc-400 mt-0.5">
+              Round #{games.totalRoundsPlayed || 0} • Time left: <span className="text-zinc-200 font-medium">{games.engineState?.timeLeft || 0}s</span>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-5 text-xs text-zinc-300 font-normal">
+        <div className="flex items-center gap-6 text-xs text-zinc-400 font-normal">
           <div>
-            <span className="text-zinc-500 block text-[10px] uppercase font-mono">Bet Bounds</span>
-            <span className="text-white font-medium">₹{games.rtpConfig?.minBetRupees || 10} - ₹{games.rtpConfig?.maxBetRupees || 10000}</span>
+            <span className="text-zinc-500 block text-[11px]">Bet range</span>
+            <span className="text-zinc-200 font-medium">₹{games.rtpConfig?.minBetRupees || 10} - ₹{games.rtpConfig?.maxBetRupees || 10000}</span>
           </div>
           <div>
-            <span className="text-zinc-500 block text-[10px] uppercase font-mono">Deposits</span>
-            <span className="text-emerald-400 font-medium">₹{approvedDepositRupees.toFixed(0)}</span>
+            <span className="text-zinc-500 block text-[11px]">Deposits</span>
+            <span className="text-zinc-200 font-medium">₹{approvedDepositRupees.toFixed(0)}</span>
           </div>
           <div>
-            <span className="text-zinc-500 block text-[10px] uppercase font-mono">Payouts</span>
-            <span className="text-sky-400 font-medium">₹{approvedWithdrawRupees.toFixed(0)}</span>
+            <span className="text-zinc-500 block text-[11px]">Payouts</span>
+            <span className="text-zinc-200 font-medium">₹{approvedWithdrawRupees.toFixed(0)}</span>
           </div>
         </div>
       </Card>
 
       {/* Product Activity / Ledger Stream Table */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-semibold text-zinc-300 tracking-tight uppercase font-mono text-[11px]">
-              Authoritative Ledger Stream
+            <h2 className="text-xs font-medium text-zinc-400">
+              Transactions
             </h2>
-            <p className="text-[11px] text-zinc-500">Real-time immutable wallet transaction entries</p>
+            <p className="text-xs text-zinc-500">Recent wallet transactions and settlement logs.</p>
           </div>
-          {loading && <Loader2 className="h-4 w-4 animate-spin text-white" />}
+          {loading && <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />}
         </div>
 
         <Card className="overflow-hidden p-0 border border-white/[0.08]">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-zinc-300">
-              <thead className="bg-[#141417]/70 border-b border-white/[0.08] text-zinc-400 text-[11px] font-medium uppercase tracking-wider font-mono">
+              <thead className="border-b border-white/[0.08] text-zinc-400 text-xs font-medium bg-[#141417]/50">
                 <tr>
-                  <th className="py-3 px-5">Transaction ID</th>
-                  <th className="py-3 px-5">Player</th>
-                  <th className="py-3 px-5">Type</th>
-                  <th className="py-3 px-5">Bucket</th>
-                  <th className="py-3 px-5 text-right">Amount</th>
-                  <th className="py-3 px-5 text-right">Balance After</th>
-                  <th className="py-3 px-5">Notes / Ref</th>
-                  <th className="py-3 px-5">Time</th>
+                  <th className="py-2.5 px-4 font-medium">Transaction ID</th>
+                  <th className="py-2.5 px-4 font-medium">Player</th>
+                  <th className="py-2.5 px-4 font-medium">Type</th>
+                  <th className="py-2.5 px-4 font-medium">Bucket</th>
+                  <th className="py-2.5 px-4 text-right font-medium">Amount</th>
+                  <th className="py-2.5 px-4 text-right font-medium">Balance after</th>
+                  <th className="py-2.5 px-4 font-medium">Reference</th>
+                  <th className="py-2.5 px-4 font-medium">Time</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-white/[0.04]">
                 {recentActivity.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-10 text-center text-zinc-500 text-xs">
+                    <td colSpan={8} className="py-8 text-center text-zinc-500 text-xs">
                       No transaction entries recorded in this time period.
                     </td>
                   </tr>
@@ -452,8 +424,8 @@ export default function OverviewDashboard() {
                     const isCredit = ['DEPOSIT', 'WIN_PAYOUT', 'BET_REFUND', 'PROMO_BONUS', 'ADMIN_CREDIT'].includes(tx.transaction_type);
 
                     return (
-                      <tr key={tx.id} className="hover:bg-white/[0.03] transition-colors">
-                        <td className="py-3 px-5 text-zinc-300 font-mono text-xs">
+                      <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="py-2.5 px-4 text-zinc-300 font-mono text-xs">
                           <div className="flex items-center gap-1.5">
                             <span className="truncate max-w-[110px]" title={tx.id}>
                               {tx.id}
@@ -473,35 +445,35 @@ export default function OverviewDashboard() {
                           </div>
                         </td>
 
-                        <td className="py-3 px-5 font-medium text-white text-xs">
+                        <td className="py-2.5 px-4 font-medium text-white text-xs">
                           <span className="truncate max-w-[120px] block" title={tx.user_name || tx.user_id}>
                             {tx.user_name || tx.user_id}
                           </span>
                         </td>
 
-                        <td className="py-3 px-5">
+                        <td className="py-2.5 px-4">
                           {getTransactionBadge(tx.transaction_type)}
                         </td>
 
-                        <td className="py-3 px-5 text-[11px] text-zinc-400 uppercase font-mono">
-                          {tx.bucket}
+                        <td className="py-2.5 px-4 text-xs text-zinc-400 capitalize">
+                          {String(tx.bucket || '').toLowerCase()}
                         </td>
 
-                        <td className={`py-3 px-5 text-right font-semibold text-xs ${
+                        <td className={`py-2.5 px-4 text-right font-medium text-xs ${
                           isCredit ? 'text-emerald-400' : 'text-zinc-200'
                         }`}>
                           {isCredit ? '+' : '-'}₹{Math.abs(amountRupees).toFixed(2)}
                         </td>
 
-                        <td className="py-3 px-5 text-right font-medium text-zinc-200 text-xs font-mono">
+                        <td className="py-2.5 px-4 text-right font-normal text-zinc-300 text-xs font-mono">
                           ₹{balanceAfterRupees.toFixed(2)}
                         </td>
 
-                        <td className="py-3 px-5 text-[11px] text-zinc-500 truncate max-w-[140px]" title={tx.description || tx.reference_id}>
+                        <td className="py-2.5 px-4 text-xs text-zinc-500 truncate max-w-[140px]" title={tx.description || tx.reference_id}>
                           {tx.description || tx.reference_id || '—'}
                         </td>
 
-                        <td className="py-3 px-5 text-[11px] text-zinc-500 whitespace-nowrap">
+                        <td className="py-2.5 px-4 text-xs text-zinc-500 whitespace-nowrap">
                           {new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </td>
                       </tr>
