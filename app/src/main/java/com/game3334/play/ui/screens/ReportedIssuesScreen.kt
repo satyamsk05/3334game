@@ -44,21 +44,23 @@ fun ReportedIssuesScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF0A0C11))
             .padding(horizontal = 16.dp)
     ) {
         // Top Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 45.dp, bottom = 16.dp),
+                .statusBarsPadding()
+                .padding(top = 12.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF240E38))
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -70,7 +72,7 @@ fun ReportedIssuesScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Text(
                 text = "My Reported Issues",
@@ -105,10 +107,10 @@ fun ReportedIssuesScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(Color(0xFF1E0A30))
-                            .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(14.dp))
-                            .padding(14.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color(0xFF0F1015))
+                            .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                            .padding(16.dp)
                     ) {
                         Column {
                             Row(
@@ -121,14 +123,15 @@ fun ReportedIssuesScreen(
                                     fontSize = 13.sp,
                                     fontFamily = RubikFont,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFA78BFA)
+                                    color = Color(0xFFFFB800)
                                 )
 
                                 val isResolved = ticket.status == "RESOLVED"
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(if (isResolved) Color(0xFF065F46) else Color(0xFF92400E))
+                                        .background(if (isResolved) Color(0xFF00E676).copy(alpha = 0.15f) else Color(0xFFFFB800).copy(alpha = 0.15f))
+                                        .border(1.dp, if (isResolved) Color(0xFF00E676).copy(alpha = 0.4f) else Color(0xFFFFB800).copy(alpha = 0.4f), RoundedCornerShape(6.dp))
                                         .padding(horizontal = 8.dp, vertical = 3.dp)
                                 ) {
                                     Text(
@@ -136,12 +139,12 @@ fun ReportedIssuesScreen(
                                         fontSize = 10.sp,
                                         fontFamily = RubikFont,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (isResolved) Color(0xFF34D399) else Color(0xFFFBBF24)
+                                        color = if (isResolved) Color(0xFF00E676) else Color(0xFFFFB800)
                                     )
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
 
                             Text(
                                 text = ticket.subject,
@@ -151,7 +154,7 @@ fun ReportedIssuesScreen(
                                 color = Color.White
                             )
 
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(6.dp))
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),

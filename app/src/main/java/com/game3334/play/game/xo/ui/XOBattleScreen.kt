@@ -3,6 +3,7 @@ package com.game3334.play.game.xo.ui
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,11 +24,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.game3334.play.R
 import com.game3334.play.game.ringoffuture.backend.WalletLedger
 import com.game3334.play.game.xo.backend.XOGameRepository
 import com.game3334.play.game.xo.model.XORoomState
@@ -150,11 +154,11 @@ fun XOBattleScreen(
         }
     }
 
-    // Modern Dark Sleek Theme Matching Image 1
+    // Modern Dark Sleek Theme Matching Image 1 & Unified Design System
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF14151B)) // Deep dark matte slate
+            .background(Color(0xFF0A0C11))
     ) {
         Column(
             modifier = Modifier
@@ -182,7 +186,7 @@ fun XOBattleScreen(
                 }
 
                 Text(
-                    text = "Game",
+                    text = "XO Battle",
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
@@ -211,7 +215,7 @@ fun XOBattleScreen(
                 modifier = Modifier.padding(vertical = 4.dp)
             )
 
-            // 3. Dual Player Battle Podiums (Matching Image 1)
+            // 3. Dual Player Battle Podiums (Matching 3D Avatar Spec)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -219,20 +223,18 @@ fun XOBattleScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Left Player (You - 'O' Purple)
+                // Left Player (You - 'O' Gold/Emerald)
                 val isP1Turn = currentTurnUserId == myUserId
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Card(
                         shape = RoundedCornerShape(28.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1C1E26)),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F1015)),
                         modifier = Modifier
-                            .width(100.dp)
-                            .then(
-                                if (isP1Turn) Modifier.border(
-                                    2.5.dp,
-                                    Color(0xFF10B981).copy(alpha = turnBorderAlpha),
-                                    RoundedCornerShape(28.dp)
-                                ) else Modifier
+                            .width(108.dp)
+                            .border(
+                                width = if (isP1Turn) 2.5.dp else 1.dp,
+                                color = if (isP1Turn) Color(0xFF00E676).copy(alpha = turnBorderAlpha) else Color(0xFF1E2028),
+                                shape = RoundedCornerShape(28.dp)
                             )
                     ) {
                         Column(
@@ -241,34 +243,33 @@ fun XOBattleScreen(
                                 .padding(vertical = 12.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // Circular Avatar
+                            // Circular 3D Avatar
                             Box(
                                 modifier = Modifier
-                                    .size(60.dp)
+                                    .size(62.dp)
                                     .clip(CircleShape)
-                                    .background(Color(0xFF4C1D95)),
-                                contentAlignment = Alignment.Center
+                                    .border(2.dp, if (isP1Turn) Color(0xFF00E676) else Color(0xFFFFB800), CircleShape)
                             ) {
-                                Text(
-                                    text = (userProfile.username.firstOrNull() ?: 'P').uppercase(),
-                                    color = Color.White,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Black
+                                Image(
+                                    painter = painterResource(id = userProfile.avatarRes),
+                                    contentDescription = "My Avatar",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
                                 )
                             }
                             Spacer(modifier = Modifier.height(10.dp))
-                            // Purple 'O' Symbol
+                            // Glowing Emerald 'O' Symbol
                             Text(
                                 text = "O",
-                                color = Color(0xFFC084FC),
+                                color = Color(0xFF00E676),
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Black
                             )
-                            // Score Indicator
+                            // Turn/Score Indicator
                             Text(
-                                text = "3",
-                                color = Color.White,
-                                fontSize = 16.sp,
+                                text = if (isP1Turn) "YOUR TURN" else "READY",
+                                color = if (isP1Turn) Color(0xFF00E676) else Color(0xFF9CA3AF),
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -276,11 +277,12 @@ fun XOBattleScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = Color(0xFF1E202B),
+                        color = Color(0xFF161922),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF282E3E)),
                         modifier = Modifier.padding(horizontal = 4.dp)
                     ) {
                         Text(
-                            text = userProfile.username.ifEmpty { "Ayush kumar" },
+                            text = userProfile.username.ifEmpty { "You" },
                             color = Color.White,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -289,20 +291,18 @@ fun XOBattleScreen(
                     }
                 }
 
-                // Right Player (Opponent - 'X' White)
+                // Right Player (Opponent - 'X' Crisp White)
                 val isP2Turn = currentTurnUserId != myUserId
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Card(
                         shape = RoundedCornerShape(28.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1C1E26)),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F1015)),
                         modifier = Modifier
-                            .width(100.dp)
-                            .then(
-                                if (isP2Turn) Modifier.border(
-                                    2.5.dp,
-                                    Color(0xFF10B981).copy(alpha = turnBorderAlpha),
-                                    RoundedCornerShape(28.dp)
-                                ) else Modifier
+                            .width(108.dp)
+                            .border(
+                                width = if (isP2Turn) 2.5.dp else 1.dp,
+                                color = if (isP2Turn) Color(0xFF00E676).copy(alpha = turnBorderAlpha) else Color(0xFF1E2028),
+                                shape = RoundedCornerShape(28.dp)
                             )
                     ) {
                         Column(
@@ -311,34 +311,33 @@ fun XOBattleScreen(
                                 .padding(vertical = 12.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // Circular Avatar
+                            // Circular 3D Avatar
                             Box(
                                 modifier = Modifier
-                                    .size(60.dp)
+                                    .size(62.dp)
                                     .clip(CircleShape)
-                                    .background(Color(0xFF0F766E)),
-                                contentAlignment = Alignment.Center
+                                    .border(2.dp, if (isP2Turn) Color(0xFF00E676) else Color(0xFF282E3E), CircleShape)
                             ) {
-                                Text(
-                                    text = (roomState.player2?.name?.firstOrNull() ?: 'A').uppercase(),
-                                    color = Color.White,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Black
+                                Image(
+                                    painter = painterResource(id = R.drawable.avatar_2),
+                                    contentDescription = "Opponent Avatar",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
                                 )
                             }
                             Spacer(modifier = Modifier.height(10.dp))
-                            // White 'X' Symbol
+                            // Crisp White 'X' Symbol
                             Text(
                                 text = "✕",
                                 color = Color.White,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Black
                             )
-                            // Score Indicator
+                            // Turn/Score Indicator
                             Text(
-                                text = "1",
-                                color = Color.White,
-                                fontSize = 16.sp,
+                                text = if (isP2Turn) "THINKING..." else "READY",
+                                color = if (isP2Turn) Color(0xFFFFB800) else Color(0xFF9CA3AF),
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -346,7 +345,8 @@ fun XOBattleScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = Color(0xFF1E202B),
+                        color = Color(0xFF161922),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF282E3E)),
                         modifier = Modifier.padding(horizontal = 4.dp)
                     ) {
                         Text(
@@ -360,10 +360,11 @@ fun XOBattleScreen(
                 }
             }
 
-            // 4. Main 3x3 Tactile Game Board (Matching Image 1)
+            // 4. Main 3x3 Tactile Game Board
             Surface(
                 shape = RoundedCornerShape(32.dp),
-                color = Color(0xFF1E202B), // Smooth dark matte container
+                color = Color(0xFF0F1015),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1E2028)),
                 modifier = Modifier
                     .fillMaxWidth(0.95f)
                     .aspectRatio(1f)
@@ -395,17 +396,22 @@ fun XOBattleScreen(
                                         .padding(5.dp)
                                         .clip(RoundedCornerShape(18.dp))
                                         .background(
-                                            if (isWinningCell) Color(0xFF10B981).copy(alpha = 0.35f)
-                                            else Color(0xFF15161D)
+                                            if (isWinningCell) Color(0xFF00E676).copy(alpha = 0.35f)
+                                            else Color(0xFF161922)
+                                        )
+                                        .border(
+                                            1.dp,
+                                            if (isWinningCell) Color(0xFF00E676) else Color(0xFF282E3E),
+                                            RoundedCornerShape(18.dp)
                                         )
                                         .clickable { onCellClicked(cellIndex) },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (cellValue == "O") {
-                                        // Thick Neon Purple Ring
+                                        // Glowing Emerald Ring
                                         Canvas(modifier = Modifier.size(44.dp)) {
                                             drawCircle(
-                                                color = Color(0xFFC084FC),
+                                                color = Color(0xFF00E676),
                                                 radius = size.minDimension / 2.5f,
                                                 style = Stroke(width = 11.dp.toPx(), cap = StrokeCap.Round)
                                             )
@@ -440,12 +446,13 @@ fun XOBattleScreen(
             // 5. Turn Status Bar
             Surface(
                 shape = RoundedCornerShape(20.dp),
-                color = if (isMyTurn) Color(0xFF059669) else Color(0xFF374151),
+                color = if (isMyTurn) Color(0xFF00E676) else Color(0xFF161922),
+                border = androidx.compose.foundation.BorderStroke(1.dp, if (isMyTurn) Color(0xFF00E676) else Color(0xFF282E3E)),
                 modifier = Modifier.padding(bottom = 8.dp)
             ) {
                 Text(
                     text = if (isMyTurn) "YOUR TURN (${turnSecondsRemaining}s)" else "OPPONENT'S TURN (${turnSecondsRemaining}s)",
-                    color = Color.White,
+                    color = if (isMyTurn) Color(0xFF0A0C11) else Color.White,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
@@ -468,8 +475,8 @@ fun XOBattleScreen(
                     fontWeight = FontWeight.Black,
                     fontSize = 24.sp,
                     color = when {
-                        winnerUserId == myUserId -> Color(0xFF10B981)
-                        isDraw -> Color(0xFFFBBF24)
+                        winnerUserId == myUserId -> Color(0xFF00E676)
+                        isDraw -> Color(0xFFFFB800)
                         else -> Color(0xFFEF4444)
                     },
                     textAlign = TextAlign.Center,
@@ -496,14 +503,14 @@ fun XOBattleScreen(
             confirmButton = {
                 Button(
                     onClick = { onBackClick() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00E676)),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "BACK TO LOBBY", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(text = "BACK TO LOBBY", color = Color(0xFF0A0C11), fontWeight = FontWeight.Bold)
                 }
             },
-            containerColor = Color(0xFF1E202B),
+            containerColor = Color(0xFF0F1015),
             shape = RoundedCornerShape(24.dp)
         )
     }

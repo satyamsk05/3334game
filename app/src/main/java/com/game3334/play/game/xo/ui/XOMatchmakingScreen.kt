@@ -1,6 +1,7 @@
 package com.game3334.play.game.xo.ui
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -18,14 +19,19 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.game3334.play.R
 import com.game3334.play.game.ringoffuture.backend.WalletLedger
 import com.game3334.play.game.xo.backend.XOGameRepository
 import com.game3334.play.game.xo.model.XORoomState
 import com.game3334.play.game.xo.model.XOTier
+import com.game3334.play.ui.theme.AppBackground
+import com.game3334.play.ui.theme.RubikFont
 import kotlinx.coroutines.delay
 import java.util.Locale
 
@@ -54,8 +60,20 @@ fun XOMatchmakingScreen(
     val sampleOpponents = remember {
         listOf("Anika D.", "Vikram S.", "Rahul_Gamer", "Pooja_99", "Kunal_X", "Sneha R.")
     }
+    val sampleOpponentAvatars = remember {
+        listOf(
+            R.drawable.avatar_2,
+            R.drawable.avatar_3,
+            R.drawable.avatar_4,
+            R.drawable.avatar_5,
+            R.drawable.avatar_6,
+            R.drawable.avatar_7,
+            R.drawable.avatar_8
+        )
+    }
+
     var currentOpponentName by remember { mutableStateOf("Searching...") }
-    var currentOpponentInitial by remember { mutableStateOf("?") }
+    var currentOpponentAvatar by remember { mutableIntStateOf(R.drawable.avatar_2) }
 
     LaunchedEffect(Unit) {
         // Fast cycling name effect
@@ -63,7 +81,7 @@ fun XOMatchmakingScreen(
         while (System.currentTimeMillis() - startTime < 3500) {
             val name = sampleOpponents.random()
             currentOpponentName = name
-            currentOpponentInitial = name.first().toString()
+            currentOpponentAvatar = sampleOpponentAvatars.random()
             delay(200)
         }
 
@@ -77,26 +95,16 @@ fun XOMatchmakingScreen(
         if (result.isSuccess) {
             val room = result.getOrThrow()
             currentOpponentName = room.player2?.name ?: "Opponent"
-            currentOpponentInitial = currentOpponentName.first().toString()
+            currentOpponentAvatar = sampleOpponentAvatars.random()
             delay(1000)
             onMatchFound(room)
         }
     }
 
-    // Purple Patterned Gaming Gradient
-    val bgGradient = Brush.verticalGradient(
-        colors = listOf(
-            Color(0xFF220C40),
-            Color(0xFF2D1152),
-            Color(0xFF1E0A38),
-            Color(0xFF120324)
-        )
-    )
-
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(brush = bgGradient)
+            .background(AppBackground)
     ) {
         Column(
             modifier = Modifier
@@ -112,60 +120,52 @@ fun XOMatchmakingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF4C1D95),
-                    modifier = Modifier.shadow(8.dp, RoundedCornerShape(12.dp))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(Color(0xFF161922))
+                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFF6D28D9), Color(0xFF9333EA))
-                                )
-                            )
-                            .padding(horizontal = 24.dp, vertical = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "XO BATTLE",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 1.sp
-                        )
-                    }
+                    Text(
+                        text = "XO BATTLE",
+                        color = Color(0xFFFFB800),
+                        fontSize = 18.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 1.sp
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Battle Stake Capsule
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF43197E),
-                    modifier = Modifier.border(1.dp, Color(0xFF8B5CF6).copy(alpha = 0.4f), RoundedCornerShape(16.dp))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color(0xFF0F1015))
+                        .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                        .padding(horizontal = 20.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Battle ₹${String.format(Locale.getDefault(), "%.1f", tier.entryRupees)}",
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    Text(
+                        text = "Battle ₹${String.format(Locale.getDefault(), "%.1f", tier.entryRupees)}",
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        fontFamily = RubikFont,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
-            // 2. Middle 1v1 Battle Radar Arena (Matching Image 3)
+            // 2. Middle 1v1 Battle Radar Arena
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Left Player Pod (You)
+                // Left Player Pod (You with Real 3D Avatar)
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -173,22 +173,21 @@ fun XOMatchmakingScreen(
                         modifier = Modifier
                             .size(76.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF4C1D95))
-                            .border(3.dp, Color(0xFFEAB308), CircleShape),
-                        contentAlignment = Alignment.Center
+                            .border(3.dp, Color(0xFFFFB800), CircleShape)
                     ) {
-                        Text(
-                            text = (userProfile.username.firstOrNull() ?: 'P').uppercase(),
-                            color = Color.White,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Black
+                        Image(
+                            painter = painterResource(id = userProfile.avatarRes),
+                            contentDescription = "My Avatar",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = userProfile.username.ifEmpty { "Ayush kumar" },
+                        text = userProfile.username.ifEmpty { "Player" },
                         color = Color.White,
                         fontSize = 14.sp,
+                        fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -218,11 +217,12 @@ fun XOMatchmakingScreen(
                         text = "VS",
                         color = Color(0xFF451A03),
                         fontSize = 16.sp,
+                        fontFamily = RubikFont,
                         fontWeight = FontWeight.Black
                     )
                 }
 
-                // Right Player Pod (Animated Radar Opponent)
+                // Right Player Pod (Animated Radar Opponent with 3D Avatar)
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -230,7 +230,7 @@ fun XOMatchmakingScreen(
                         modifier = Modifier.size(84.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Spinning Outer Dashed Ring
+                        // Spinning Outer Glow Ring
                         Box(
                             modifier = Modifier
                                 .size(84.dp)
@@ -238,26 +238,24 @@ fun XOMatchmakingScreen(
                                 .border(
                                     2.dp,
                                     Brush.sweepGradient(
-                                        listOf(Color(0xFF8B5CF6), Color.Transparent, Color(0xFF10B981))
+                                        listOf(Color(0xFFFFB800), Color.Transparent, Color(0xFF00E676))
                                     ),
                                     CircleShape
                                 )
                         )
 
-                        // Opponent Avatar Circle
+                        // Opponent 3D Avatar Circle
                         Box(
                             modifier = Modifier
                                 .size(72.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF2E1065))
-                                .border(2.dp, Color(0xFF8B5CF6).copy(alpha = 0.6f), CircleShape),
-                            contentAlignment = Alignment.Center
+                                .border(2.dp, Color(0xFF282E3E), CircleShape)
                         ) {
-                            Text(
-                                text = currentOpponentInitial,
-                                color = Color.White,
-                                fontSize = 26.sp,
-                                fontWeight = FontWeight.Bold
+                            Image(
+                                painter = painterResource(id = currentOpponentAvatar),
+                                contentDescription = "Opponent Avatar",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
                             )
                         }
                     }
@@ -266,6 +264,7 @@ fun XOMatchmakingScreen(
                         text = currentOpponentName,
                         color = Color.White,
                         fontSize = 14.sp,
+                        fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -277,18 +276,20 @@ fun XOMatchmakingScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 Text(
-                    text = "Starting...",
-                    color = Color.White,
-                    fontSize = 20.sp,
+                    text = "Starting Live Match...",
+                    color = Color(0xFF00E676),
+                    fontSize = 18.sp,
+                    fontFamily = RubikFont,
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     text = "You'll lose the game & entry fee if you\nleave now or close the app.",
                     color = Color(0xFF9CA3AF),
                     fontSize = 12.sp,
+                    fontFamily = RubikFont,
                     textAlign = TextAlign.Center,
                     lineHeight = 16.sp
                 )
@@ -296,3 +297,4 @@ fun XOMatchmakingScreen(
         }
     }
 }
+

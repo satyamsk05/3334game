@@ -41,14 +41,14 @@ fun PlayButton(
                 painter = painterResource(id = R.drawable.ic_play_arrow),
                 contentDescription = "Play Icon",
                 modifier = Modifier.size(13.dp),
-                tint = PlayButtonPurple
+                tint = Color(0xFF0A0C11)
             )
             Text(
                 text = "PLAY",
                 fontSize = 12.5.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Black,
-                color = PlayButtonPurple,
+                color = Color(0xFF0A0C11),
                 letterSpacing = 0.5.sp,
                 maxLines = 1
             )

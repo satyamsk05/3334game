@@ -52,7 +52,7 @@ fun HelpCentreScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF0A0C11))
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -60,14 +60,16 @@ fun HelpCentreScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 45.dp, bottom = 16.dp),
+                .statusBarsPadding()
+                .padding(top = 12.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF240E38))
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -79,7 +81,7 @@ fun HelpCentreScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Text(
                 text = "Help Centre",
@@ -97,15 +99,16 @@ fun HelpCentreScreen(
             placeholder = { Text("Search help topics...", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 20.dp),
+                .padding(bottom = 16.dp),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFF1E0A30),
-                unfocusedContainerColor = Color(0xFF1E0A30),
-                focusedBorderColor = Color(0xFF7C3AED),
-                unfocusedBorderColor = Color(0xFF3D195B),
+                focusedContainerColor = Color(0xFF0F1015),
+                unfocusedContainerColor = Color(0xFF0F1015),
+                focusedBorderColor = Color(0xFF00E676),
+                unfocusedBorderColor = Color(0xFF1E2028),
                 focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White
+                unfocusedTextColor = Color.White,
+                cursorColor = Color(0xFF00E676)
             ),
             singleLine = true
         )
@@ -114,9 +117,9 @@ fun HelpCentreScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFF2E0F45))
-                .border(1.dp, Color(0xFF6B21A8), RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
                 .clickable { onContactSupportClick() }
                 .padding(16.dp)
         ) {
@@ -138,28 +141,28 @@ fun HelpCentreScreen(
                         text = "Our support team is active 24/7 to help you",
                         fontSize = 12.sp,
                         fontFamily = RubikFont,
-                        color = Color(0xFFD1D5DB)
+                        color = Color(0xFF9CA3AF)
                     )
                 }
 
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF7C3AED))
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFF00E676))
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text = "Contact Us",
                         fontSize = 12.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color(0xFF0A0C11)
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Frequently Asked Questions Header
         Text(
@@ -167,7 +170,7 @@ fun HelpCentreScreen(
             fontSize = 16.sp,
             fontFamily = RubikFont,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFA78BFA),
+            color = Color(0xFFFFB800),
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
@@ -178,9 +181,9 @@ fun HelpCentreScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 10.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF1E0A30))
-                    .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
                     .clickable {
                         expandedFaqId = if (isExpanded) null else faq.id
                     }
@@ -203,7 +206,7 @@ fun HelpCentreScreen(
                         Text(
                             text = if (isExpanded) "▲" else "▼",
                             fontSize = 12.sp,
-                            color = Color(0xFFA78BFA)
+                            color = Color(0xFFFFB800)
                         )
                     }
 

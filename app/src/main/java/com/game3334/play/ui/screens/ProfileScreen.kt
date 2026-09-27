@@ -87,7 +87,7 @@ fun ProfileScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF0A0C11))
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(18.dp)
@@ -103,22 +103,25 @@ fun ProfileScreen(
             Box(
                 modifier = Modifier
                     .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(20.dp),
                     tint = Color.White
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Text(
                 text = "Profile",
-                fontSize = 24.sp,
+                fontSize = 22.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -130,8 +133,8 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFF140B28))
-                .border(1.dp, Color(0xFF3B1E6D), RoundedCornerShape(20.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
                 .padding(16.dp)
         ) {
             Row(
@@ -141,7 +144,7 @@ fun ProfileScreen(
             ) {
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // Name row with edit pencil icon
                     Row(
@@ -160,8 +163,8 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF2E1065))
-                                .border(1.dp, Color(0xFF7C3AED), CircleShape)
+                                .background(Color(0xFF161922))
+                                .border(1.dp, Color(0xFF282E3E), CircleShape)
                                 .clickable {
                                     editedName = username
                                     showEditNameDialog = true
@@ -171,7 +174,7 @@ fun ProfileScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_setting),
                                 contentDescription = "Edit Name",
-                                tint = Color(0xFFC4B5FD),
+                                tint = Color(0xFF9CA3AF),
                                 modifier = Modifier.size(14.dp)
                             )
                         }
@@ -184,8 +187,8 @@ fun ProfileScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF1E1B4B))
-                                .border(1.dp, Color(0xFF4F46E5), RoundedCornerShape(8.dp))
+                                .background(Color(0xFF161922))
+                                .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(8.dp))
                                 .clickable {
                                     clipboardManager.setText(AnnotatedString(userId))
                                     Toast.makeText(context, "User ID copied: $userId", Toast.LENGTH_SHORT).show()
@@ -197,12 +200,12 @@ fun ProfileScreen(
                                 fontSize = 13.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFA5B4FC)
+                                color = Color(0xFFFFB800)
                             )
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_settings_about),
                                 contentDescription = "Copy",
-                                tint = Color(0xFFA5B4FC),
+                                tint = Color(0xFFFFB800),
                                 modifier = Modifier.size(12.dp)
                             )
                         }
@@ -243,7 +246,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(CircleShape)
-                            .border(2.dp, Color(0xFFFFD700), CircleShape)
+                            .border(2.dp, Color(0xFFFFB800), CircleShape)
                     ) {
                         Image(
                             painter = painterResource(id = avatarRes),
@@ -259,14 +262,14 @@ fun ProfileScreen(
                             .size(26.dp)
                             .align(Alignment.BottomEnd)
                             .clip(CircleShape)
-                            .background(Color(0xFF7C3AED))
-                            .border(1.5.dp, Color.Black, CircleShape),
+                            .background(Color(0xFF00E676))
+                            .border(1.5.dp, Color(0xFF0A0C11), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_profile_person),
                             contentDescription = "Change Avatar",
-                            tint = Color.White,
+                            tint = Color(0xFF0A0C11),
                             modifier = Modifier.size(14.dp)
                         )
                     }
@@ -283,11 +286,12 @@ fun ProfileScreen(
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFF260D6B),
-                            Color(0xFF2B51E5)
+                            Color(0xFF161922),
+                            Color(0xFF1A2232)
                         )
                     )
                 )
+                .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(22.dp))
                 .clickable { onWalletClick() }
                 .padding(horizontal = 18.dp)
         ) {
@@ -308,14 +312,14 @@ fun ProfileScreen(
                             fontSize = 12.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFCBD5E1),
+                            color = Color(0xFF9CA3AF),
                             letterSpacing = 0.5.sp
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.ic_reward_badge),
                             contentDescription = "Verified Shield",
                             modifier = Modifier.size(14.dp),
-                            tint = Color(0xFFFFD700)
+                            tint = Color(0xFFFFB800)
                         )
                     }
 
@@ -328,13 +332,13 @@ fun ProfileScreen(
                             fontSize = 28.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = Color(0xFF00E676)
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.ic_play_arrow),
                             contentDescription = "Arrow",
                             modifier = Modifier.size(16.dp),
-                            tint = Color.White
+                            tint = Color(0xFF00E676)
                         )
                     }
                 }
@@ -348,7 +352,7 @@ fun ProfileScreen(
             }
         }
 
-        // 4. Contact Support Gradient Card
+        // 4. Contact Support Card
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -357,11 +361,12 @@ fun ProfileScreen(
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFF4C0519),
-                            Color(0xFF3B0764)
+                            Color(0xFF161922),
+                            Color(0xFF1E222D)
                         )
                     )
                 )
+                .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(18.dp))
                 .clickable { onSupportClick() }
                 .padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
@@ -378,7 +383,7 @@ fun ProfileScreen(
                         fontSize = 12.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFD1D5DB),
+                        color = Color(0xFF9CA3AF),
                         letterSpacing = 0.5.sp
                     )
 
@@ -404,9 +409,9 @@ fun ProfileScreen(
 
                 Box(
                     modifier = Modifier
-                        .size(60.dp)
+                        .size(56.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF581C87)),
+                        .border(1.5.dp, Color(0xFFFFB800), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -424,8 +429,8 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(18.dp))
-                .background(Color(0xFF220338))
-                .border(1.dp, Color(0xFF4C1D95), RoundedCornerShape(18.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(18.dp))
                 .padding(16.dp)
         ) {
             Column(
@@ -448,8 +453,8 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF380E54))
-                                .border(1.dp, Color(0xFF7C3AED), CircleShape),
+                                .background(Color(0xFF161922))
+                                .border(1.dp, Color(0xFF282E3E), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -474,11 +479,11 @@ fun ProfileScreen(
                         fontSize = 22.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color(0xFF9CA3AF)
                     )
                 }
 
-                HorizontalDivider(color = Color(0xFF3D105A), thickness = 1.dp)
+                HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
 
                 // Settings Row
                 Row(
@@ -497,8 +502,8 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF380E54))
-                                .border(1.dp, Color(0xFF7C3AED), CircleShape),
+                                .background(Color(0xFF161922))
+                                .border(1.dp, Color(0xFF282E3E), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -523,7 +528,7 @@ fun ProfileScreen(
                         fontSize = 22.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color(0xFF9CA3AF)
                     )
                 }
             }
@@ -539,8 +544,8 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFF1E1035))
-                    .border(1.dp, Color(0xFF7C3AED), RoundedCornerShape(24.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(24.dp))
                     .padding(20.dp)
             ) {
                 Column(
@@ -568,11 +573,11 @@ fun ProfileScreen(
                             fontWeight = FontWeight.Medium
                         ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFA855F7),
-                            unfocusedBorderColor = Color(0xFF4C1D95),
-                            focusedContainerColor = Color(0xFF0F071D),
-                            unfocusedContainerColor = Color(0xFF0F071D),
-                            cursorColor = Color(0xFFA855F7)
+                            focusedBorderColor = Color(0xFF00E676),
+                            unfocusedBorderColor = Color(0xFF282E3E),
+                            focusedContainerColor = Color(0xFF161922),
+                            unfocusedContainerColor = Color(0xFF161922),
+                            cursorColor = Color(0xFF00E676)
                         ),
                         shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -598,7 +603,8 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(48.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF374151)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161922)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF282E3E)),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("Cancel", color = Color.White, fontFamily = RubikFont, fontWeight = FontWeight.SemiBold)
@@ -619,10 +625,10 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(48.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00E676)),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Save", color = Color.White, fontFamily = RubikFont, fontWeight = FontWeight.Bold)
+                            Text("Save", color = Color(0xFF0A0C11), fontFamily = RubikFont, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -639,8 +645,8 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFF1E1035))
-                    .border(1.dp, Color(0xFF7C3AED), RoundedCornerShape(24.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(24.dp))
                     .padding(20.dp)
             ) {
                 Column(
@@ -669,10 +675,10 @@ fun ProfileScreen(
                                 modifier = Modifier
                                     .size(64.dp)
                                     .clip(CircleShape)
-                                    .background(if (isSelected) Color(0xFF7C3AED) else Color(0xFF2E1065))
+                                    .background(Color(0xFF161922))
                                     .border(
                                         width = if (isSelected) 3.dp else 1.dp,
-                                        color = if (isSelected) Color(0xFFFFD700) else Color(0xFF4C1D95),
+                                        color = if (isSelected) Color(0xFFFFB800) else Color(0xFF282E3E),
                                         shape = CircleShape
                                     )
                                     .clickable {
@@ -706,7 +712,8 @@ fun ProfileScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(46.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF374151)),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161922)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF282E3E)),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Close", color = Color.White, fontFamily = RubikFont, fontWeight = FontWeight.SemiBold)
