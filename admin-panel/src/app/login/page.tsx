@@ -39,29 +39,22 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f0f2f5] px-4 font-sans text-gray-900">
-      <Card className="w-full max-w-sm space-y-6 p-8 shadow-card border border-gray-100">
+    <div className="flex min-h-screen items-center justify-center bg-[#000000] px-4 font-sans text-white selection:bg-white/20 selection:text-white">
+      <Card className="w-full max-w-[380px] space-y-6 p-7 border border-white/[0.08] bg-[#0c0c0e]">
         
         {/* Brand Header */}
-        <div className="text-center space-y-3">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-900 text-white shadow-md relative overflow-hidden">
-            <div className="grid grid-cols-2 gap-0.5 w-6 h-6">
-              <div className="bg-white/90 rounded-tl-sm" />
-              <div className="bg-white/40 rounded-tr-sm" />
-              <div className="bg-white/40 rounded-bl-sm" />
-              <div className="bg-white/90 rounded-br-sm" />
-            </div>
+        <div className="text-center">
+          <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black font-black text-xs shadow-sm mb-3">
+            334
           </div>
-          <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-gray-900">334 Studio Admin</h1>
-            <p className="text-xs font-medium text-gray-500 mt-0.5">Authoritative Management Console</p>
-          </div>
+          <h1 className="text-lg font-semibold tracking-tight text-white">334 Admin</h1>
+          <p className="text-xs text-zinc-400 mt-1">Sign in to manage platform operations</p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-700">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+          <div className="flex items-center gap-2 rounded-md border border-rose-500/25 bg-rose-950/20 p-2.5 text-xs text-rose-300">
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
             <span>{error}</span>
           </div>
         )}
@@ -69,37 +62,37 @@ export default function AdminLoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block mb-1.5 font-semibold text-gray-700">Staff Username</label>
+            <label className="block mb-1.5 font-medium text-zinc-300">Username</label>
             <div className="relative">
-              <User className="absolute left-3.5 top-3 h-4 w-4 text-gray-400" />
+              <User className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username (e.g. admin)"
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-fast"
+                className="w-full rounded-md border border-white/[0.08] bg-[#141417] py-2 pl-9 pr-3 text-xs text-white placeholder:text-zinc-500 focus:bg-[#18181b] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block mb-1.5 font-semibold text-gray-700">Staff Password</label>
+            <label className="block mb-1.5 font-medium text-zinc-300">Password</label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-3 h-4 w-4 text-gray-400" />
+              <Lock className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/20 transition-fast"
+                className="w-full rounded-md border border-white/[0.08] bg-[#141417] py-2 pl-9 pr-3 text-xs text-white placeholder:text-zinc-500 focus:bg-[#18181b] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
               />
             </div>
           </div>
 
           <Button
             type="submit"
-            variant="dark"
-            size="lg"
+            variant="primary"
+            size="md"
             disabled={loading}
             isLoading={loading}
             className="w-full mt-2"
@@ -108,8 +101,8 @@ export default function AdminLoginPage() {
           </Button>
         </form>
 
-        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 pt-2 border-t border-gray-100">
-          <ShieldCheck className="h-4 w-4 text-emerald-600" />
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-500 pt-3 border-t border-white/[0.06]">
+          <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
           <span>Encrypted 256-bit Session</span>
         </div>
 
