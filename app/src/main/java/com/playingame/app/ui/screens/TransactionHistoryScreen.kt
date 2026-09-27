@@ -95,7 +95,7 @@ fun TransactionHistoryScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0D0D11))
+            .background(Color(0xFF0C0C12))
     ) {
         Column(
             modifier = Modifier
@@ -117,9 +117,9 @@ fun TransactionHistoryScreen(
                     Box(
                         modifier = Modifier
                             .size(38.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFF1E1E28))
-                            .border(1.dp, Color(0xFF2E2E3E), RoundedCornerShape(12.dp))
+                            .clip(CircleShape)
+                            .background(Color(0xFF1C1C28))
+                            .border(1.dp, Color(0xFF2E2E40), CircleShape)
                             .clickable { onBackClick() },
                         contentAlignment = Alignment.Center
                     ) {
@@ -140,20 +140,20 @@ fun TransactionHistoryScreen(
                             color = Color.White
                         )
                         Text(
-                            text = "Verified wallet transactions",
-                            fontSize = 11.sp,
+                            text = "All debits, credits & refunds",
+                            fontSize = 11.5.sp,
                             fontFamily = RubikFont,
                             color = Color(0xFF9CA3AF)
                         )
                     }
                 }
 
-                // Balance summary pill
+                // Balance summary badge
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0xFF1E1E28))
-                        .border(1.dp, Color(0xFF3B82F6).copy(alpha = 0.4f), RoundedCornerShape(20.dp))
+                        .background(Color(0xFF181826))
+                        .border(1.dp, Color(0xFF10B981).copy(alpha = 0.3f), RoundedCornerShape(20.dp))
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
@@ -161,7 +161,7 @@ fun TransactionHistoryScreen(
                         fontSize = 13.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF60A5FA)
+                        color = Color(0xFF34D399)
                     )
                 }
             }
@@ -185,18 +185,14 @@ fun TransactionHistoryScreen(
 
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(20.dp))
                             .background(
-                                if (isSelected) Brush.horizontalGradient(
-                                    listOf(Color(0xFF10B981), Color(0xFF059669))
-                                ) else Brush.horizontalGradient(
-                                    listOf(Color(0xFF181822), Color(0xFF181822))
-                                )
+                                if (isSelected) Color(0xFF10B981) else Color(0xFF161622)
                             )
                             .border(
                                 1.dp,
-                                if (isSelected) Color(0xFF34D399) else Color(0xFF262638),
-                                RoundedCornerShape(12.dp)
+                                if (isSelected) Color(0xFF34D399) else Color(0xFF242436),
+                                RoundedCornerShape(20.dp)
                             )
                             .clickable { selectedFilter = filter }
                             .padding(horizontal = 14.dp, vertical = 7.dp),
@@ -218,9 +214,9 @@ fun TransactionHistoryScreen(
                                     modifier = Modifier
                                         .clip(CircleShape)
                                         .background(
-                                            if (isSelected) Color.White.copy(alpha = 0.25f) else Color(0xFF2E2E40)
+                                            if (isSelected) Color.Black.copy(alpha = 0.25f) else Color(0xFF28283C)
                                         )
-                                        .padding(horizontal = 5.dp, vertical = 1.dp)
+                                        .padding(horizontal = 6.dp, vertical = 1.dp)
                                 ) {
                                     Text(
                                         text = count.toString(),
@@ -252,7 +248,7 @@ fun TransactionHistoryScreen(
                             modifier = Modifier
                                 .size(64.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF181824)),
+                                .background(Color(0xFF161624)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -281,7 +277,7 @@ fun TransactionHistoryScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(bottom = 32.dp)
                 ) {
                     groupedTransactions.forEach { (dateGroup, txns) ->
@@ -292,12 +288,12 @@ fun TransactionHistoryScreen(
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF6B7280),
-                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp, start = 4.dp)
+                                modifier = Modifier.padding(top = 10.dp, bottom = 4.dp, start = 4.dp)
                             )
                         }
 
                         items(txns, key = { it.id }) { txn ->
-                            ModernTransactionCard(
+                            CleanSleekTransactionCard(
                                 txn = txn,
                                 onClick = { selectedTxnForDetail = txn }
                             )
@@ -318,7 +314,7 @@ fun TransactionHistoryScreen(
 }
 
 @Composable
-private fun ModernTransactionCard(
+private fun CleanSleekTransactionCard(
     txn: WalletTransaction,
     onClick: () -> Unit
 ) {
@@ -334,19 +330,33 @@ private fun ModernTransactionCard(
     val amountPrefix = if (isPositive) "+ ₹" else "- ₹"
     val amountColor = if (isPositive) Color(0xFF10B981) else Color(0xFFEF4444)
 
-    // Contextual icon and background styling
-    val (iconRes, iconTint, iconBg) = when (txn.type) {
-        TransactionType.DEPOSIT -> Triple(R.drawable.ic_wallet, Color(0xFF34D399), Color(0xFF064E3B).copy(alpha = 0.6f))
-        TransactionType.WITHDRAWAL -> Triple(R.drawable.ic_settings_withdraw, Color(0xFFF87171), Color(0xFF450A0A).copy(alpha = 0.6f))
-        TransactionType.BET_PLACED -> {
-            if (txn.description.contains("XO", ignoreCase = true)) {
-                Triple(R.drawable.logo_classic_dice, Color(0xFFF59E0B), Color(0xFF451A03).copy(alpha = 0.6f))
-            } else {
-                Triple(R.drawable.logo_rings_of_future, Color(0xFF818CF8), Color(0xFF1E1B4B).copy(alpha = 0.6f))
-            }
-        }
-        TransactionType.WIN_PAYOUT -> Triple(R.drawable.ic_vip_pro_crown, Color(0xFFFBBF24), Color(0xFF451A03).copy(alpha = 0.6f))
-        TransactionType.BET_REFUND -> Triple(R.drawable.ic_history, Color(0xFF38BDF8), Color(0xFF082F49).copy(alpha = 0.6f))
+    // Crisp dedicated vector icons & circular badge colors
+    val (iconRes, iconTint, badgeBg) = when (txn.type) {
+        TransactionType.DEPOSIT -> Triple(
+            R.drawable.ic_wallet,
+            Color(0xFF10B981),
+            Color(0xFF064E3B).copy(alpha = 0.35f)
+        )
+        TransactionType.WITHDRAWAL -> Triple(
+            R.drawable.ic_settings_withdraw,
+            Color(0xFFEF4444),
+            Color(0xFF450A0A).copy(alpha = 0.35f)
+        )
+        TransactionType.BET_PLACED -> Triple(
+            R.drawable.ic_txn_bet,
+            Color(0xFFF59E0B),
+            Color(0xFF451A03).copy(alpha = 0.35f)
+        )
+        TransactionType.WIN_PAYOUT -> Triple(
+            R.drawable.ic_txn_win,
+            Color(0xFFFBBF24),
+            Color(0xFF78350F).copy(alpha = 0.35f)
+        )
+        TransactionType.BET_REFUND -> Triple(
+            R.drawable.ic_txn_refund,
+            Color(0xFF38BDF8),
+            Color(0xFF0C4A6E).copy(alpha = 0.35f)
+        )
     }
 
     Box(
@@ -354,48 +364,48 @@ private fun ModernTransactionCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFF14141E))
-            .border(1.dp, Color(0xFF222232), RoundedCornerShape(16.dp))
+            .border(1.dp, Color(0xFF20202E), RoundedCornerShape(16.dp))
             .clickable { onClick() }
-            .padding(14.dp)
+            .padding(horizontal = 14.dp, vertical = 12.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left Icon + Details
+            // Left Circle Vector Icon + Details
             Row(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Sleek borderless circular badge
                 Box(
                     modifier = Modifier
-                        .size(42.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(iconBg)
-                        .border(1.dp, iconTint.copy(alpha = 0.3f), RoundedCornerShape(12.dp)),
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(badgeBg),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(id = iconRes),
                         contentDescription = txn.type.name,
                         tint = iconTint,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = txn.description,
-                        fontSize = 14.sp,
+                        fontSize = 13.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         maxLines = 1
                     )
 
-                    Spacer(modifier = Modifier.height(3.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -403,7 +413,7 @@ private fun ModernTransactionCard(
                     ) {
                         Text(
                             text = timeStr,
-                            fontSize = 11.5.sp,
+                            fontSize = 11.sp,
                             fontFamily = RubikFont,
                             color = Color(0xFF9CA3AF)
                         )
@@ -428,19 +438,19 @@ private fun ModernTransactionCard(
                 }
             }
 
-            // Right Amount + Status
+            // Right Amount + Net Balance
             Column(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
                     text = "$amountPrefix${String.format(Locale.getDefault(), "%.2f", txn.amountRupees)}",
-                    fontSize = 16.sp,
+                    fontSize = 15.5.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.ExtraBold,
                     color = amountColor
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(3.dp))
 
                 if (txn.status != TransactionStatus.SUCCESS) {
                     val (statusBg, statusTxt) = when (txn.status) {
@@ -456,7 +466,7 @@ private fun ModernTransactionCard(
                     ) {
                         Text(
                             text = txn.status.name,
-                            fontSize = 9.5.sp,
+                            fontSize = 9.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.Bold,
                             color = statusTxt
@@ -465,7 +475,7 @@ private fun ModernTransactionCard(
                 } else if (txn.balanceAfterPaise > 0) {
                     Text(
                         text = "Bal: ₹${String.format(Locale.getDefault(), "%.2f", txn.balanceAfterPaise / 100.0)}",
-                        fontSize = 10.sp,
+                        fontSize = 10.5.sp,
                         fontFamily = RubikFont,
                         color = Color(0xFF6B7280)
                     )
@@ -503,7 +513,7 @@ private fun TransactionDetailDialog(
             ) {
                 Text(
                     text = txn.description,
-                    fontSize = 16.sp,
+                    fontSize = 15.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -524,7 +534,7 @@ private fun TransactionDetailDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Divider(color = Color(0xFF262636))
+                HorizontalDivider(color = Color(0xFF262636))
 
                 DetailRow(label = "Status", value = txn.status.name, isHighlight = true)
                 DetailRow(label = "Date & Time", value = fullDateStr)
