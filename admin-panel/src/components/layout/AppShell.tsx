@@ -37,6 +37,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#000000] text-[#fcfcfc] flex font-sans antialiased selection:bg-white/20 selection:text-white">
+      {/* Skip to Main Content Link for Keyboard / Screen Reader Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2.5 focus:left-2.5 focus:z-50 focus:px-3 focus:py-1.5 focus:rounded-md focus:bg-white focus:text-black focus:font-medium focus:text-xs focus:shadow-md focus:outline-none focus:ring-2 focus:ring-white"
+      >
+        Skip to main content
+      </a>
+
       {/* Studio Sidebar Component */}
       <Sidebar
         collapsed={collapsed}
@@ -93,7 +101,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Viewport Main Children */}
-        <main className="flex-1 px-4 sm:px-8 py-6 max-w-7xl w-full mx-auto space-y-6">
+        <main id="main-content" tabIndex={-1} className="flex-1 px-4 sm:px-8 py-6 max-w-7xl w-full mx-auto space-y-6 focus:outline-none">
           {children}
         </main>
       </div>

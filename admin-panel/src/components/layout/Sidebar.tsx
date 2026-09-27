@@ -180,7 +180,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
         )}
 
         {/* Navigation Section Items */}
-        <div className="flex-1 overflow-y-auto px-2.5 py-3 space-y-4 scrollbar-thin">
+        <nav aria-label="Sidebar Navigation" className="flex-1 overflow-y-auto px-2.5 py-3 space-y-4 scrollbar-thin">
           {navSections.map((section, sIdx) => (
             <div key={section.title || sIdx} className="space-y-0.5">
               {section.title && !collapsed && (
@@ -203,6 +203,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   <Link
                     key={item.name}
                     href={item.href}
+                    aria-current={isActive ? 'page' : undefined}
                     onClick={() => setMobileOpen(false)}
                     title={collapsed ? `${item.name} ${count > 0 ? `(${count} pending)` : ''}` : undefined}
                     className={`group relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
@@ -258,7 +259,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               })}
             </div>
           ))}
-        </div>
+        </nav>
 
         {/* User Profile & Logout Bottom Section */}
         <div className="shrink-0 p-2.5 border-t border-white/[0.06] bg-black/40">
@@ -285,11 +286,10 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               type="button"
               onClick={handleLogout}
               title="Sign out"
-              className={`flex items-center justify-center rounded-md p-1.5 text-zinc-400 hover:text-rose-400 hover:bg-rose-950/30 transition-colors ${
-                collapsed ? 'w-7 h-7' : ''
-              }`}
+              aria-label="Sign out of admin session"
+              className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-400 hover:text-rose-400 hover:bg-rose-950/30 transition-colors"
             >
-              <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+              <LogOut className="h-4 w-4" aria-hidden="true" strokeWidth={1.75} />
             </button>
           </div>
         </div>
