@@ -26,7 +26,11 @@ import {
   Cpu,
   Radio,
   FileSpreadsheet,
-  ArrowRight
+  ArrowRight,
+  Eye,
+  Key,
+  Shield,
+  Activity
 } from 'lucide-react';
 import { adminService, AuditLogItem, UserDetailsResponse } from '@/services/adminService';
 import { Card } from '@/components/ui/Card';
@@ -147,6 +151,7 @@ export default function UnifiedSystemSettingsPage() {
   const [creatingAdmin, setCreatingAdmin] = useState(false);
   const [createModalError, setCreateModalError] = useState<string | null>(null);
   const [togglingAdminId, setTogglingAdminId] = useState<string | null>(null);
+  const [adminCopiedId, setAdminCopiedId] = useState<string | null>(null);
 
   const fetchAdmins = async () => {
     try {
@@ -225,6 +230,7 @@ export default function UnifiedSystemSettingsPage() {
   const [actionFilter, setActionFilter] = useState('');
   const [adminIdFilter, setAdminIdFilter] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [selectedAuditPayload, setSelectedAuditPayload] = useState<any | null>(null);
 
   const fetchAuditLogs = async () => {
     try {
@@ -328,7 +334,7 @@ export default function UnifiedSystemSettingsPage() {
   ];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-10">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       
       {/* Top Breadcrumb & Title */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-gray-200/80 pb-4">
@@ -342,7 +348,7 @@ export default function UnifiedSystemSettingsPage() {
       </div>
 
       {/* Modern Pill Navigation Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto p-1.5 bg-gray-100/80 rounded-2xl border border-gray-200/60 scrollbar-none">
+      <div className="flex items-center gap-1.5 overflow-x-auto p-1.5 bg-gray-100/90 rounded-2xl border border-gray-200/60 scrollbar-none shadow-inner">
         {tabsConfig.map((t) => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
@@ -350,13 +356,13 @@ export default function UnifiedSystemSettingsPage() {
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id as SettingsTab)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
                 isActive
-                  ? 'bg-white text-gray-900 shadow-sm border border-gray-200/80'
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
+                  ? 'bg-white text-gray-900 shadow-[0_2px_8px_rgba(0,0,0,0.06)] border border-gray-200/80 font-bold'
+                  : 'text-gray-500 hover:text-gray-900 hover:bg-white/60'
               }`}
             >
-              <Icon className={`h-4 w-4 ${isActive ? 'text-gray-900' : 'text-gray-400'}`} />
+              <Icon className={`h-4 w-4 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
               <span>{t.label}</span>
             </button>
           );
@@ -554,7 +560,7 @@ export default function UnifiedSystemSettingsPage() {
                 <h2 className="text-base font-bold text-gray-900">Authoritative Node Telemetry</h2>
                 <Badge variant="positive">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse mr-1" />
-                  Live Monitor
+                  Live Monitor (10s)
                 </Badge>
               </div>
               <p className="text-xs text-gray-500">Real-time Node.js runtime process and PostgreSQL connection pool status</p>
@@ -578,7 +584,7 @@ export default function UnifiedSystemSettingsPage() {
 
           {/* Telemetry Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="space-y-2">
+            <Card className="space-y-2 p-5">
               <div className="flex items-center justify-between text-gray-400 text-xs font-mono uppercase">
                 <span>Server Runtime</span>
                 <Server className="h-4 w-4 text-emerald-600" />
@@ -589,7 +595,7 @@ export default function UnifiedSystemSettingsPage() {
               <p className="text-xs text-gray-400 font-mono">PID {healthData?.pid || '10294'}</p>
             </Card>
 
-            <Card className="space-y-2">
+            <Card className="space-y-2 p-5">
               <div className="flex items-center justify-between text-gray-400 text-xs font-mono uppercase">
                 <span>PostgreSQL Pool</span>
                 <Database className="h-4 w-4 text-blue-600" />
@@ -602,7 +608,7 @@ export default function UnifiedSystemSettingsPage() {
               </p>
             </Card>
 
-            <Card className="space-y-2">
+            <Card className="space-y-2 p-5">
               <div className="flex items-center justify-between text-gray-400 text-xs font-mono uppercase">
                 <span>Heap Memory</span>
                 <Cpu className="h-4 w-4 text-purple-600" />
@@ -615,7 +621,7 @@ export default function UnifiedSystemSettingsPage() {
               <p className="text-xs text-gray-400 font-mono">Process RSS: {healthData?.memory?.rssMb ?? 98} MB</p>
             </Card>
 
-            <Card className="space-y-2">
+            <Card className="space-y-2 p-5">
               <div className="flex items-center justify-between text-gray-400 text-xs font-mono uppercase">
                 <span>Active WebSockets</span>
                 <Radio className="h-4 w-4 text-indigo-600" />
@@ -629,7 +635,7 @@ export default function UnifiedSystemSettingsPage() {
             </Card>
           </div>
 
-          <Card className="space-y-4">
+          <Card className="space-y-4 p-6">
             <h3 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-3">Runtime Environment</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs font-mono">
               <div>
@@ -659,7 +665,7 @@ export default function UnifiedSystemSettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-gray-900">Staff Accounts & RBAC</h2>
+                <h2 className="text-base font-bold text-gray-900">Staff Accounts & Access Controls</h2>
                 <Badge variant="positive">RBAC Protected</Badge>
               </div>
               <p className="text-xs text-gray-500">Operator permissions, role boundaries, and account credential management</p>
@@ -683,70 +689,85 @@ export default function UnifiedSystemSettingsPage() {
           <Card className="overflow-hidden p-0 border border-gray-200/80 shadow-sm rounded-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-gray-600">
-                <thead className="border-b border-gray-200/80 bg-gray-50 text-gray-500 uppercase text-[10px] font-mono tracking-wider">
+                <thead className="border-b border-gray-200/80 bg-gray-50/90 text-gray-500 uppercase text-[10px] font-mono tracking-wider">
                   <tr>
-                    <th className="px-4 py-3">Admin Username</th>
-                    <th className="px-4 py-3">Assigned Role</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Account ID</th>
-                    <th className="px-4 py-3">Created</th>
-                    <th className="px-4 py-3 text-center">Action</th>
+                    <th className="px-5 py-3.5">Admin Operator</th>
+                    <th className="px-5 py-3.5">Assigned Role</th>
+                    <th className="px-5 py-3.5">Status</th>
+                    <th className="px-5 py-3.5">Account ID</th>
+                    <th className="px-5 py-3.5">Created Date</th>
+                    <th className="px-5 py-3.5 text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-xs">
                   {loadingAdmins ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
-                        <Loader2 className="mx-auto h-5 w-5 animate-spin text-accent-primary mb-2" />
+                      <td colSpan={6} className="px-5 py-12 text-center text-gray-400">
+                        <Loader2 className="mx-auto h-5 w-5 animate-spin text-blue-600 mb-2" />
                         <span>Loading staff accounts...</span>
                       </td>
                     </tr>
                   ) : adminsList.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
-                        No secondary staff accounts configured. Default root admin active.
+                      <td colSpan={6} className="px-5 py-10 text-center text-gray-400">
+                        No secondary staff accounts configured. Root admin active.
                       </td>
                     </tr>
                   ) : (
                     adminsList.map((a) => {
                       const isToggling = togglingAdminId === a.id;
+                      const roleColor = 
+                        a.role === 'SUPER_ADMIN' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                        a.role === 'FINANCE_ADMIN' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                        a.role === 'GAME_OPERATOR' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                        a.role === 'SUPPORT_ADMIN' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                        'bg-gray-100 text-gray-700 border-gray-200';
+
                       return (
-                        <tr key={a.id} className="hover:bg-gray-50/60 transition-all">
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-100 font-bold text-gray-900 text-xs">
+                        <tr key={a.id} className="hover:bg-gray-50/80 transition-all">
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-gray-900 to-gray-700 font-bold text-white text-xs shadow-sm">
                                 {a.username.slice(0, 2).toUpperCase()}
                               </div>
-                              <span className="font-bold text-gray-900">{a.username}</span>
+                              <div>
+                                <span className="font-bold text-gray-900 block text-sm">{a.username}</span>
+                                <span className="text-[11px] text-gray-400 font-mono">{a.email || 'No email attached'}</span>
+                              </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 font-mono">
-                            <Badge
-                              variant={
-                                a.role === 'SUPER_ADMIN' ? 'info' :
-                                a.role === 'FINANCE_ADMIN' ? 'positive' :
-                                a.role === 'GAME_OPERATOR' ? 'info' :
-                                'neutral'
-                              }
-                            >
+                          <td className="px-5 py-4">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${roleColor}`}>
                               {a.role}
-                            </Badge>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
-                              a.is_active ? 'text-emerald-600' : 'text-rose-600'
-                            }`}>
-                              <span className={`h-1.5 w-1.5 rounded-full ${a.is_active ? 'bg-emerald-500' : 'bg-rose-500'}`} />
-                              {a.is_active ? 'ACTIVE' : 'DISABLED'}
                             </span>
                           </td>
-                          <td className="px-4 py-3 font-mono text-gray-400 text-xs">
-                            {a.id}
+                          <td className="px-5 py-4">
+                            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
+                              a.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
+                            }`}>
+                              <span className={`h-1.5 w-1.5 rounded-full ${a.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                              {a.is_active ? 'Active' : 'Disabled'}
+                            </span>
                           </td>
-                          <td className="px-4 py-3 font-mono text-gray-400 text-xs">
-                            {new Date(a.created_at).toLocaleDateString()}
+                          <td className="px-5 py-4 font-mono text-gray-400 text-xs">
+                            <div className="flex items-center gap-1.5">
+                              <span>{a.id.slice(0, 10)}...</span>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(a.id);
+                                  setAdminCopiedId(a.id);
+                                  setTimeout(() => setAdminCopiedId(null), 2000);
+                                }}
+                                className="text-gray-400 hover:text-gray-900"
+                              >
+                                {adminCopiedId === a.id ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+                              </button>
+                            </div>
                           </td>
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-5 py-4 font-mono text-gray-500 text-xs">
+                            {new Date(a.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </td>
+                          <td className="px-5 py-4 text-center">
                             <Button
                               variant={a.is_active ? 'danger' : 'secondary'}
                               size="sm"
@@ -768,7 +789,7 @@ export default function UnifiedSystemSettingsPage() {
 
           {/* Modal for creating admin */}
           {createAdminModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
               <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl space-y-4">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <div className="flex items-center gap-2">
@@ -862,10 +883,10 @@ export default function UnifiedSystemSettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-gray-900">Immutable Security Audit Logs</h2>
+                <h2 className="text-base font-bold text-gray-900">Immutable Security Audit Trail</h2>
                 <Badge variant="info">Tamper Evident</Badge>
               </div>
-              <p className="text-xs text-gray-500">Every administrative policy change, wallet adjustment, and security action</p>
+              <p className="text-xs text-gray-500">Traceable policy mutations, admin permissions, and wallet adjustments</p>
             </div>
             <Button
               variant="secondary"
@@ -879,14 +900,14 @@ export default function UnifiedSystemSettingsPage() {
           </div>
 
           {/* Filter Bar */}
-          <Card className="flex flex-wrap items-center gap-3 p-3 text-xs">
+          <Card className="flex flex-wrap items-center gap-3 p-3.5 text-xs bg-white shadow-sm border border-gray-200/80 rounded-2xl">
             <div className="flex-1 min-w-[200px]">
               <input
                 type="text"
                 value={actionFilter}
                 onChange={(e) => setActionFilter(e.target.value)}
                 placeholder="Filter by action (e.g. USER_BAN, WALLET_ADJUST)..."
-                className="w-full h-8.5 rounded-xl border border-gray-200 bg-white px-3 font-mono text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-9 rounded-xl border border-gray-200 bg-gray-50/60 px-3 font-mono text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
             <div className="flex-1 min-w-[200px]">
@@ -895,7 +916,7 @@ export default function UnifiedSystemSettingsPage() {
                 value={adminIdFilter}
                 onChange={(e) => setAdminIdFilter(e.target.value)}
                 placeholder="Filter by Staff Admin ID..."
-                className="w-full h-8.5 rounded-xl border border-gray-200 bg-white px-3 font-mono text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full h-9 rounded-xl border border-gray-200 bg-gray-50/60 px-3 font-mono text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
             <Button
@@ -912,64 +933,122 @@ export default function UnifiedSystemSettingsPage() {
           <Card className="overflow-hidden p-0 border border-gray-200/80 shadow-sm rounded-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-gray-600">
-                <thead className="border-b border-gray-200/80 bg-gray-50 text-gray-500 uppercase text-[10px] font-mono tracking-wider">
+                <thead className="border-b border-gray-200/80 bg-gray-50/90 text-gray-500 uppercase text-[10px] font-mono tracking-wider">
                   <tr>
-                    <th className="px-4 py-3">Log ID</th>
-                    <th className="px-4 py-3">Action</th>
-                    <th className="px-4 py-3">Staff Operator</th>
-                    <th className="px-4 py-3">Target Subject</th>
-                    <th className="px-4 py-3">Details Payload</th>
-                    <th className="px-4 py-3">Timestamp</th>
+                    <th className="px-5 py-3.5">Log ID</th>
+                    <th className="px-5 py-3.5">Action Type</th>
+                    <th className="px-5 py-3.5">Staff Operator</th>
+                    <th className="px-5 py-3.5">Target Subject</th>
+                    <th className="px-5 py-3.5">Payload & Details</th>
+                    <th className="px-5 py-3.5">Timestamp</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 font-mono text-xs">
                   {loadingAudit ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
-                        <Loader2 className="mx-auto h-5 w-5 animate-spin text-accent-primary mb-2" />
+                      <td colSpan={6} className="px-5 py-12 text-center text-gray-400">
+                        <Loader2 className="mx-auto h-5 w-5 animate-spin text-blue-600 mb-2" />
                         <span>Loading audit records...</span>
                       </td>
                     </tr>
                   ) : auditLogs.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-10 text-center text-gray-400 font-sans">
+                      <td colSpan={6} className="px-5 py-10 text-center text-gray-400 font-sans">
                         No audit records matching criteria.
                       </td>
                     </tr>
                   ) : (
-                    auditLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-gray-50/60 transition-all">
-                        <td className="px-4 py-3 text-gray-900">
-                          <div className="flex items-center gap-1.5">
-                            <span className="truncate max-w-[80px]">{log.id}</span>
+                    auditLogs.map((log) => {
+                      const actionVariant = 
+                        log.action.includes('BAN') ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                        log.action.includes('WALLET') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                        log.action.includes('NOTE') ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                        'bg-gray-100 text-gray-800 border-gray-200';
+
+                      return (
+                        <tr key={log.id} className="hover:bg-gray-50/80 transition-all font-sans">
+                          <td className="px-5 py-3.5 font-mono text-gray-900">
+                            <div className="flex items-center gap-1.5">
+                              <span className="truncate max-w-[90px]">{log.id}</span>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(log.id);
+                                  setCopiedId(log.id);
+                                  setTimeout(() => setCopiedId(null), 2000);
+                                }}
+                                className="text-gray-400 hover:text-gray-900"
+                                title="Copy Log ID"
+                              >
+                                {copiedId === log.id ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+                              </button>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3.5">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold border font-mono ${actionVariant}`}>
+                              {log.action}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3.5 text-gray-800 font-medium">
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-xs">
+                              {log.admin_id}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3.5 text-gray-500 font-mono text-xs">
+                            {log.target_id || 'SYSTEM'}
+                          </td>
+                          <td className="px-5 py-3.5">
                             <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(log.id);
-                                setCopiedId(log.id);
-                                setTimeout(() => setCopiedId(null), 2000);
-                              }}
-                              className="text-gray-400 hover:text-gray-900 p-0.5"
+                              onClick={() => setSelectedAuditPayload(log.details)}
+                              className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 font-medium bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-all"
                             >
-                              {copiedId === log.id ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+                              <Eye className="h-3 w-3" />
+                              <span>Inspect Payload</span>
                             </button>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 font-sans">
-                          <Badge variant="info">{log.action}</Badge>
-                        </td>
-                        <td className="px-4 py-3 text-gray-800">{log.admin_id}</td>
-                        <td className="px-4 py-3 text-gray-500 truncate max-w-[120px]">{log.target_id || 'SYSTEM'}</td>
-                        <td className="px-4 py-3 text-gray-400 truncate max-w-[200px]">{JSON.stringify(log.details)}</td>
-                        <td className="px-4 py-3 text-gray-400 text-[11px] whitespace-nowrap">
-                          {new Date(log.created_at).toLocaleString()}
-                        </td>
-                      </tr>
-                    ))
+                          </td>
+                          <td className="px-5 py-3.5 text-gray-400 text-[11px] font-mono whitespace-nowrap">
+                            {new Date(log.created_at).toLocaleString()}
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
             </div>
           </Card>
+
+          {/* Audit Payload Viewer Modal */}
+          {selectedAuditPayload && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
+              <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl space-y-4">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <h3 className="text-sm font-bold text-gray-900">Audit Action Payload</h3>
+                  <button 
+                    onClick={() => setSelectedAuditPayload(null)} 
+                    className="text-gray-400 hover:text-gray-900 p-1 rounded-lg"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto max-h-80 scrollbar-thin">
+                  <pre className="text-xs font-mono text-emerald-400 whitespace-pre-wrap">
+                    {JSON.stringify(selectedAuditPayload, null, 2)}
+                  </pre>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setSelectedAuditPayload(null)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -1069,7 +1148,7 @@ export default function UnifiedSystemSettingsPage() {
           </div>
 
           {/* Search Bar */}
-          <Card className="space-y-3">
+          <Card className="space-y-3 p-5">
             <h3 className="text-sm font-bold text-gray-900">Player Dossier Lookup</h3>
             <form onSubmit={handleSupportSearch} className="flex gap-2">
               <div className="relative flex-1">
@@ -1105,10 +1184,10 @@ export default function UnifiedSystemSettingsPage() {
           {/* Player Dossier Result */}
           {supportUser && supportUser.user && supportUser.wallet && (
             <div className="space-y-6">
-              <Card className="space-y-4">
+              <Card className="space-y-4 p-5">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-gray-100 pb-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-700 font-bold text-sm">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 font-bold text-sm shadow-sm">
                       {(supportUser.user.name || 'P').slice(0, 2).toUpperCase()}
                     </div>
                     <div>
@@ -1135,19 +1214,19 @@ export default function UnifiedSystemSettingsPage() {
 
                 {/* Balances */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-                  <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
                     <span className="text-gray-400 block text-[10px] uppercase font-sans">Total Balance</span>
                     <span className="text-gray-900 text-sm font-bold">₹{(Number(supportUser.wallet.available_balance) / 100).toFixed(2)}</span>
                   </div>
-                  <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
                     <span className="text-gray-400 block text-[10px] uppercase font-sans">Deposit Bucket</span>
                     <span className="text-gray-700 text-sm font-bold">₹{(Number(supportUser.wallet.deposit_balance) / 100).toFixed(2)}</span>
                   </div>
-                  <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
                     <span className="text-gray-400 block text-[10px] uppercase font-sans">Winnings Bucket</span>
                     <span className="text-emerald-600 text-sm font-bold">₹{(Number(supportUser.wallet.winnings_balance) / 100).toFixed(2)}</span>
                   </div>
-                  <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
                     <span className="text-gray-400 block text-[10px] uppercase font-sans">Bonus Bucket</span>
                     <span className="text-gray-700 text-sm font-bold">₹{(Number(supportUser.wallet.rewards_balance) / 100).toFixed(2)}</span>
                   </div>
@@ -1155,16 +1234,16 @@ export default function UnifiedSystemSettingsPage() {
               </Card>
 
               {/* Add Note */}
-              <Card className="space-y-4">
+              <Card className="space-y-4 p-5">
                 <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                   <FileText className="h-4 w-4 text-blue-600" />
                   <span>Record Support / Operator Resolution Note</span>
                 </h4>
 
                 {supportNoteSuccess && (
-                  <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-800">
+                  <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-800">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>Note saved to player dossier!</span>
+                    <span>Note recorded in player profile!</span>
                   </div>
                 )}
 
@@ -1172,7 +1251,7 @@ export default function UnifiedSystemSettingsPage() {
                   <textarea
                     value={supportNoteText}
                     onChange={(e) => setSupportNoteText(e.target.value)}
-                    placeholder="Record notes about player issue, refund decision, verification, etc."
+                    placeholder="Record notes about player issue, dispute resolution, refund decision, verification, etc."
                     className="w-full h-20 rounded-xl border border-gray-200 bg-white p-3 text-xs text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                   <div className="flex justify-end">

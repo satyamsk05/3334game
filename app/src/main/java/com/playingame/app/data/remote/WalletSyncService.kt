@@ -120,19 +120,58 @@ object WalletSyncService {
 
             for (i in 0 until dataArray.length()) {
                 val item = dataArray.getJSONObject(i)
-                val typeStr = item.optString("type", "DEPOSIT").uppercase()
+                val rawTypeStr = item.optString("type", "").uppercase()
+                val rawTxnType = item.optString("transaction_type", "").uppercase()
+                val combinedType = "$rawTypeStr $rawTxnType"
+                val rawDesc = item.optString("description", "")
+                val descUpper = rawDesc.uppercase()
+
                 val type = when {
-                    typeStr.contains("DEP") -> com.playingame.app.game.ringoffuture.backend.TransactionType.DEPOSIT
-                    typeStr.contains("WITHDRAW") -> com.playingame.app.game.ringoffuture.backend.TransactionType.WITHDRAWAL
-                    typeStr.contains("BET") || typeStr.contains("DEBIT") -> com.playingame.app.game.ringoffuture.backend.TransactionType.BET_PLACED
-                    typeStr.contains("WIN") || typeStr.contains("PAYOUT") || typeStr.contains("CREDIT") -> com.playingame.app.game.ringoffuture.backend.TransactionType.WIN_PAYOUT
-                    typeStr.contains("REFUND") -> com.playingame.app.game.ringoffuture.backend.TransactionType.BET_REFUND
-                    else -> com.playingame.app.game.ringoffuture.backend.TransactionType.DEPOSIT
+                    combinedType.contains("REFUND") || descUpper.contains("REFUND") || combinedType.contains("EQUITY") -> 
+                        com.playingame.app.game.ringoffuture.backend.TransactionType.BET_REFUND
+                    combinedType.contains("WIN") || combinedType.contains("PAYOUT") -> 
+                        com.playingame.app.game.ringoffuture.backend.TransactionType.WIN_PAYOUT
+                    combinedType.contains("DEP") -> 
+                        com.playingame.app.game.ringoffuture.backend.TransactionType.DEPOSIT
+                    combinedType.contains("WITHDRAW") -> 
+                        com.playingame.app.game.ringoffuture.backend.TransactionType.WITHDRAWAL
+                    combinedType.contains("BET") || combinedType.contains("DEBIT") -> 
+                        com.playingame.app.game.ringoffuture.backend.TransactionType.BET_PLACED
+                    combinedType.contains("CREDIT") -> 
+                        com.playingame.app.game.ringoffuture.backend.TransactionType.WIN_PAYOUT
+                    else -> 
+                        com.playingame.app.game.ringoffuture.backend.TransactionType.DEPOSIT
+                }
+
+                // Clean and normalize user-facing descriptions
+                val normalizedDesc = when {
+                    descUpper.contains("DRAW REFUND") || descUpper.contains("XO DRAW") -> {
+                        val amount = rawDesc.filter { it.isDigit() }
+                        if (amount.isNotBlank()) "Match Draw Refund (₹$amount returned)" else "Match Draw Refund (Returned)"
+                    }
+                    descUpper.contains("ENTRY FEE FOR BATTLE") || (descUpper.contains("BATTLE") && type == com.playingame.app.game.ringoffuture.backend.TransactionType.BET_PLACED) -> {
+                        val amount = rawDesc.filter { it.isDigit() }
+                        if (amount.isNotBlank()) "XO 1v1 Battle Entry (₹$amount)" else "XO 1v1 Battle Entry"
+                    }
+                    descUpper.contains("WON 1V1") || (descUpper.contains("BATTLE") && type == com.playingame.app.game.ringoffuture.backend.TransactionType.WIN_PAYOUT) -> {
+                        "🏆 XO 1v1 Battle Victory"
+                    }
+                    descUpper.contains("GAME BET") || descUpper.contains("COLOR BET") || (descUpper.contains("RING") && type == com.playingame.app.game.ringoffuture.backend.TransactionType.BET_PLACED) -> {
+                        "🎡 Ring of Future Bet"
+                    }
+                    descUpper.contains("WIN PAYOUT") && !descUpper.contains("XO") -> {
+                        "🏆 Ring of Future Win Payout"
+                    }
+                    rawDesc.isNotBlank() -> rawDesc
+                    type == com.playingame.app.game.ringoffuture.backend.TransactionType.DEPOSIT -> "Instant UPI Deposit"
+                    type == com.playingame.app.game.ringoffuture.backend.TransactionType.WITHDRAWAL -> "UPI Bank Withdrawal"
+                    type == com.playingame.app.game.ringoffuture.backend.TransactionType.BET_REFUND -> "Bet Refund Returned"
+                    else -> "Wallet Transaction"
                 }
 
                 val statusStr = item.optString("status", "SUCCESS").uppercase()
                 val status = when {
-                    statusStr == "SUCCESS" || statusStr == "COMPLETED" -> com.playingame.app.game.ringoffuture.backend.TransactionStatus.SUCCESS
+                    statusStr == "SUCCESS" || statusStr == "COMPLETED" || statusStr == "APPROVED" -> com.playingame.app.game.ringoffuture.backend.TransactionStatus.SUCCESS
                     statusStr == "PENDING" -> com.playingame.app.game.ringoffuture.backend.TransactionStatus.PENDING
                     statusStr == "PROCESSING" -> com.playingame.app.game.ringoffuture.backend.TransactionStatus.PROCESSING
                     else -> com.playingame.app.game.ringoffuture.backend.TransactionStatus.REJECTED
@@ -142,12 +181,12 @@ object WalletSyncService {
                     id = item.optString("id", "TX-$i"),
                     userId = item.optString("userId", targetUserId),
                     type = type,
-                    amountPaise = item.optLong("amountPaise", 0L),
-                    balanceAfterPaise = item.optLong("balanceAfterPaise", 0L),
+                    amountPaise = item.optLong("amountPaise", item.optLong("amount", 0L)),
+                    balanceAfterPaise = item.optLong("balanceAfterPaise", item.optLong("balance_after", 0L)),
                     status = status,
-                    referenceId = item.optString("referenceId", item.optString("id", "")),
-                    description = item.optString("description", "$typeStr Transaction"),
-                    timestamp = item.optLong("timestamp", System.currentTimeMillis())
+                    referenceId = item.optString("referenceId", item.optString("reference_id", item.optString("id", ""))),
+                    description = normalizedDesc,
+                    timestamp = item.optLong("timestamp", item.optLong("created_at_epoch", System.currentTimeMillis()))
                 )
                 list.add(tx)
             }
