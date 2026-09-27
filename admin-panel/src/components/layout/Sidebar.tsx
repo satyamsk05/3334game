@@ -96,27 +96,16 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
       ]
     },
     {
-      title: 'MARKETING & ENGAGEMENT',
+      title: 'MARKETING',
       items: [
         { name: 'Push Notifications', href: '/notifications', icon: Bell, badge: { text: 'FCM', variant: 'info' } },
         { name: 'Promotions & Banners', href: '/promotions', icon: Sparkles, badge: { text: 'App', variant: 'mint' } }
       ]
     },
     {
-      title: 'INSIGHTS',
+      title: 'PREFERENCES',
       items: [
-        { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-        { name: 'Reports', href: '/reports', icon: FileSpreadsheet },
-        { name: 'Support', href: '/support', icon: LifeBuoy }
-      ]
-    },
-    {
-      title: 'SYSTEM & SECURITY',
-      items: [
-        { name: 'System Settings', href: '/system/settings', icon: Settings },
-        { name: 'Server Health', href: '/system/health', icon: Server },
-        { name: 'Staff Admins', href: '/security/admins', icon: ShieldCheck },
-        { name: 'Audit Logs', href: '/security/audit-logs', icon: FileText }
+        { name: 'System & Settings', href: '/system/settings', icon: Settings, badge: { text: 'Hub', variant: 'neutral' } }
       ]
     }
   ];
