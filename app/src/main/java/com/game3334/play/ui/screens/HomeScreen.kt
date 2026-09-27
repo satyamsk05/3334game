@@ -206,6 +206,24 @@ fun HomeScreen(
         )
     }
 
+    fun openDepositInBrowser(amountRupees: Double) {
+        val sessionToken = com.game3334.play.core.session.SessionManager.authToken() ?: ""
+        val amtStr = String.format(java.util.Locale.US, "%.0f", amountRupees)
+        val url = if (sessionToken.isNotBlank()) {
+            "${com.game3334.play.core.config.ClientConfig.SERVER_BASE_URL}/pay?userId=${userProfile.userId}&amount=$amtStr&token=$sessionToken"
+        } else {
+            "${com.game3334.play.core.config.ClientConfig.SERVER_BASE_URL}/pay?userId=${userProfile.userId}&amount=$amtStr"
+        }
+        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)).apply {
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(context, "No browser found to open payment page", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     fun onGameTileClick(gameId: String, title: String) {
         if (gameId == "rings_of_future") {
             activeSubScreen = SubScreen.RingOfFuture
@@ -252,7 +270,7 @@ fun HomeScreen(
                     SubScreen.RingOfFuture -> {
                         com.game3334.play.game.ringoffuture.ui.RingOfFutureScreen(
                             onBackClick = { activeSubScreen = null },
-                            onOpenDepositScreen = { activeSubScreen = SubScreen.DepositPayment(200.0) }
+                            onOpenDepositScreen = { openDepositInBrowser(200.0) }
                         )
                     }
                     is SubScreen.DepositPayment -> {
@@ -468,7 +486,7 @@ fun HomeScreen(
                                 NavItem.REWARD -> {
                                     AddCashScreen(
                                         onOpenDeposit = { amount ->
-                                            activeSubScreen = SubScreen.DepositPayment(amount)
+                                            openDepositInBrowser(amount)
                                         },
                                         onAddCashSuccess = { addedAmount ->
                                             selectedTab = NavItem.PROFILE
