@@ -1,0 +1,26 @@
+package com.game3334.play.data.repository
+
+import com.game3334.play.game.ringoffuture.backend.WalletBalance
+import com.game3334.play.game.ringoffuture.backend.WalletLedger
+import kotlinx.coroutines.flow.StateFlow
+
+/**
+ * Bridge delegating directly to the single source of truth: [WalletLedger].
+ * Enforces Invariant Rule 1: ONE Wallet Source of Truth.
+ */
+object WalletRepository {
+    val walletState: StateFlow<WalletBalance> = WalletLedger.walletBalance
+
+    fun addDeposit(amountPaise: Long) {
+        WalletLedger.addDepositCash(amountPaise)
+    }
+
+    fun requestWithdrawal(amountPaise: Long, upiId: String = "user@upi"): Boolean {
+        return WalletLedger.requestWithdrawal(amountPaise, upiId).first
+    }
+
+    suspend fun refreshBalance(userId: String? = null): Boolean {
+        return com.game3334.play.data.remote.WalletSyncService.syncBalance(userId)
+    }
+}
+

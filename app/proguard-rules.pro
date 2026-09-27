@@ -19,15 +19,11 @@
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt
 
-# ---- Lottie ----
--keep class com.airbnb.lottie.** { *; }
--dontwarn com.airbnb.lottie.**
-
 # ---- Data / Model classes (keep for StateFlow) ----
--keep class com.example.app334.game.ringoffuture.model.** { *; }
--keep class com.example.app334.game.ringoffuture.backend.WalletBalance { *; }
--keep class com.example.app334.game.ringoffuture.backend.WalletTransaction { *; }
--keep class com.example.app334.game.ringoffuture.backend.UserProfile { *; }
+-keep class com.game3334.play.game.ringoffuture.model.** { *; }
+-keep class com.game3334.play.game.ringoffuture.backend.WalletBalance { *; }
+-keep class com.game3334.play.game.ringoffuture.backend.WalletTransaction { *; }
+-keep class com.game3334.play.game.ringoffuture.backend.UserProfile { *; }
 
 # ---- Android standard ----
 -keepattributes SourceFile,LineNumberTable

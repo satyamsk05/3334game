@@ -26,4 +26,7 @@ graphify-out/cache/
 backend/data/
 .vscode/
 admin-panel/.vscode/
+.kotlin/
+app/.idea/
+.idea/
 
