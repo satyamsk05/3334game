@@ -25,6 +25,7 @@ object XOGameRepository {
     )
 
     suspend fun joinBattle(tier: XOTier, playerName: String, userId: String): Result<XORoomState> = withContext(Dispatchers.IO) {
+        var remoteDebited = false
         try {
             val url = URL("${ClientConfig.API_BASE_URL}/games/xo/join")
             val conn = (url.openConnection() as HttpURLConnection).apply {
@@ -51,8 +52,10 @@ object XOGameRepository {
                 val responseText = conn.inputStream.bufferedReader().use { it.readText() }
                 val json = JSONObject(responseText)
                 if (json.optBoolean("success")) {
+                    remoteDebited = true
                     val roomObj = json.optJSONObject("room")
                     if (roomObj != null) {
+                        WalletSyncService.syncBalance(userId)
                         return@withContext Result.success(parseRoom(roomObj, tier))
                     }
                 }
@@ -77,10 +80,15 @@ object XOGameRepository {
             totalGameSecondsRemaining = 163 // 02:43
         )
 
-        // Deduct local wallet
-        val breakdown = WalletLedger.placeBet(Math.round(tier.entryRupees * 100))
-        if (!breakdown.success) {
-            return@withContext Result.failure(Exception("Insufficient balance"))
+        if (remoteDebited) {
+            // Sync authoritative balance from server (already debited once on server as XO-BET-...)
+            WalletSyncService.syncBalance(userId)
+        } else {
+            // Offline fallback: Deduct locally only if server did not debit
+            val breakdown = WalletLedger.placeBet(Math.round(tier.entryRupees * 100))
+            if (!breakdown.success) {
+                return@withContext Result.failure(Exception("Insufficient balance"))
+            }
         }
 
         Result.success(localRoom)
@@ -95,6 +103,7 @@ object XOGameRepository {
                 readTimeout = 3000
                 doOutput = true
                 setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
             }
 
             val payload = JSONObject().apply {
@@ -112,6 +121,47 @@ object XOGameRepository {
         } catch (_: Exception) {
             return@withContext Result.success(true)
         }
+    }
+
+    suspend fun reportGameResult(roomId: String, tier: XOTier, winnerUserId: String?, isDraw: Boolean, userId: String): Result<Boolean> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${ClientConfig.API_BASE_URL}/games/xo/end")
+            val conn = (url.openConnection() as HttpURLConnection).apply {
+                requestMethod = "POST"
+                connectTimeout = 4000
+                readTimeout = 4000
+                doOutput = true
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+            }
+
+            val resultStr = when {
+                winnerUserId == userId -> "WIN"
+                isDraw -> "DRAW"
+                else -> "LOSS"
+            }
+
+            val payload = JSONObject().apply {
+                put("userId", userId)
+                put("roomId", roomId)
+                put("tierId", tier.id)
+                put("result", resultStr)
+            }
+
+            conn.outputStream.use { os ->
+                os.write(payload.toString().toByteArray())
+            }
+
+            val responseCode = conn.responseCode
+            if (responseCode in 200..299) {
+                // Immediately refresh user's authoritative balance from server
+                WalletSyncService.syncBalance(userId)
+                return@withContext Result.success(true)
+            }
+        } catch (_: Exception) {
+            // Local fallback
+        }
+        return@withContext Result.success(false)
     }
 
     private fun parseRoom(json: JSONObject, defaultTier: XOTier): XORoomState {

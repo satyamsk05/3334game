@@ -111,10 +111,16 @@ fun XOBattleScreen(
                         winningIndices = win
                         winnerUserId = roomState.player2?.userId
                         isGameOver = true
+                        coroutineScope.launch {
+                            XOGameRepository.reportGameResult(roomState.roomId, roomState.tier, winnerUserId, false, myUserId)
+                        }
                     } else if (newBoard.all { it != null }) {
                         isDraw = true
                         isGameOver = true
                         WalletLedger.creditWin(Math.round(roomState.tier.entryRupees * 100), "XO Draw Refund")
+                        coroutineScope.launch {
+                            XOGameRepository.reportGameResult(roomState.roomId, roomState.tier, null, true, myUserId)
+                        }
                     } else {
                         currentTurnUserId = myUserId
                         turnSecondsRemaining = 15
@@ -145,10 +151,16 @@ fun XOBattleScreen(
             // Credit Winnings straight to wallet
             val prizePaise = Math.round(roomState.tier.firstPrizeRupees * 100)
             WalletLedger.creditWin(prizePaise, "Won 1v1 ${roomState.tier.name}")
+            coroutineScope.launch {
+                XOGameRepository.reportGameResult(roomState.roomId, roomState.tier, myUserId, false, myUserId)
+            }
         } else if (newBoard.all { it != null }) {
             isDraw = true
             isGameOver = true
             WalletLedger.creditWin(Math.round(roomState.tier.entryRupees * 100), "XO Draw Refund")
+            coroutineScope.launch {
+                XOGameRepository.reportGameResult(roomState.roomId, roomState.tier, null, true, myUserId)
+            }
         } else {
             currentTurnUserId = roomState.player2?.userId ?: "BOT"
         }
