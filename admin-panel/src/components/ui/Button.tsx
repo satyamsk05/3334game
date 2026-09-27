@@ -33,15 +33,15 @@ export function Button({
 
   const variantStyles = {
     primary:
-      'bg-gray-900 text-white font-medium hover:bg-black shadow-button border border-gray-900 focus-visible:ring-2 focus-visible:ring-gray-900',
+      'bg-white text-black font-semibold hover:bg-zinc-200 shadow-button border border-white focus-visible:ring-2 focus-visible:ring-white',
     dark:
-      'bg-gray-900 text-white font-medium hover:bg-black shadow-button border border-gray-900 focus-visible:ring-2 focus-visible:ring-gray-900',
+      'bg-zinc-800 text-white font-medium hover:bg-zinc-700 shadow-button border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-white',
     secondary:
-      'bg-white text-gray-800 font-medium hover:bg-gray-50/90 shadow-card hover:border-gray-300 focus-visible:ring-2 focus-visible:ring-gray-900',
+      'bg-[#141417] text-zinc-200 font-medium hover:bg-zinc-800 hover:text-white border border-white/[0.08] shadow-button focus-visible:ring-2 focus-visible:ring-white',
     danger:
-      'bg-rose-50 text-rose-700 font-medium hover:bg-rose-100/90 border border-rose-200/80 focus-visible:ring-2 focus-visible:ring-rose-600',
+      'bg-rose-950/40 text-rose-300 font-medium hover:bg-rose-900/50 border border-rose-800/50 focus-visible:ring-2 focus-visible:ring-rose-500',
     ghost:
-      'bg-transparent text-gray-600 hover:text-gray-950 hover:bg-gray-100/80 border border-transparent focus-visible:ring-2 focus-visible:ring-gray-900',
+      'bg-transparent text-zinc-400 hover:text-white hover:bg-white/[0.06] border border-transparent focus-visible:ring-2 focus-visible:ring-white',
   };
 
   const tapScale = !isStatic ? 'active:not-disabled:scale-[0.98]' : '';

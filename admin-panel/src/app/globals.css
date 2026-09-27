@@ -15,39 +15,22 @@
   --font-size-2xl: 20px;
   --font-lineheight-base: 22.5px;
 
-  /* Color Semantic Tokens */
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
-  --text-inverse: #ffffff;
+  /* Dark Noir Semantic Tokens */
+  --text-primary: #fcfcfc;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-inverse: #09090b;
 
-  --surface-base: #f9fafb;
-  --surface-raised: #ffffff;
-  --surface-strong: #ffffff;
-  --surface-muted: #f3f4f6;
+  --surface-base: #000000;
+  --surface-raised: #0c0c0e;
+  --surface-strong: #141417;
+  --surface-muted: #18181b;
 
-  --border-default: #e5e7eb;
-  --border-strong: #d1d5db;
-  --border-focus: #111827;
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-focus: #ffffff;
 
-  --accent-primary: #111827;
-
-  /* Spacing Scale */
-  --space-1: 4px;
-  --space-2: 6px;
-  --space-3: 7.5px;
-  --space-4: 8px;
-  --space-5: 10px;
-  --space-6: 12px;
-  --space-7: 14px;
-  --space-8: 15px;
-
-  /* Radius Tokens */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 9999px;
+  --accent-primary: #ffffff;
 
   /* Motion Tokens */
   --motion-instant: 100ms;
@@ -71,26 +54,26 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Accessibility: Universal WCAG 2.2 AA Focus-Visible Ring */
+/* Accessibility: WCAG 2.2 AA Focus-Visible Ring */
 :focus-visible {
-  outline: 2px solid var(--border-focus) !important;
+  outline: 2px solid rgba(255, 255, 255, 0.9) !important;
   outline-offset: 2px !important;
 }
 
-/* Minimalist Scrollbars */
+/* Minimalist Dark Scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Smooth Interactive Micro-Transitions */
@@ -103,7 +86,7 @@ body {
   transition-timing-function: var(--ease-snappy-out);
 }
 
-/* Reduced Motion for Accessibility */
+/* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

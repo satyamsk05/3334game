@@ -16,11 +16,11 @@ export function Card({
   ...props
 }: CardProps) {
   const variantStyles = {
-    default: 'bg-white shadow-card hover:shadow-1 transition-fast',
-    raised: 'bg-white shadow-floating transition-fast',
-    urgent: 'bg-white shadow-card border-l-2 border-l-amber-500',
-    positive: 'bg-white shadow-card border-l-2 border-l-emerald-500',
-    subtle: 'bg-surface-muted shadow-card',
+    default: 'bg-[#0c0c0e] border border-white/[0.08] shadow-card hover:border-white/[0.14] transition-fast',
+    raised: 'bg-[#141417] border border-white/[0.12] shadow-floating transition-fast',
+    urgent: 'bg-[#0c0c0e] border border-white/[0.08] border-l-2 border-l-amber-500 shadow-card',
+    positive: 'bg-[#0c0c0e] border border-white/[0.08] border-l-2 border-l-emerald-500 shadow-card',
+    subtle: 'bg-[#18181b]/50 border border-white/[0.05] shadow-card',
   };
 
   return (

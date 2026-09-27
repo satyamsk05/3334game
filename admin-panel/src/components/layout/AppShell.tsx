@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] text-gray-900 flex font-sans antialiased">
+    <div className="min-h-screen bg-[#000000] text-[#fcfcfc] flex font-sans antialiased selection:bg-white/20 selection:text-white">
       {/* Studio Sidebar Component */}
       <Sidebar
         collapsed={collapsed}
@@ -48,45 +48,45 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div
         className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ease-in-out ${
-          collapsed ? 'md:pl-[72px]' : 'md:pl-64'
+          collapsed ? 'md:pl-[68px]' : 'md:pl-60'
         }`}
       >
         {/* Top Header */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between px-4 sm:px-8 bg-white/90 backdrop-blur-md border-b border-gray-200/80">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between px-4 sm:px-8 bg-[#000000]/80 backdrop-blur-md border-b border-white/[0.08]">
           <div className="flex items-center gap-3">
             {/* Mobile Toggle Button */}
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 md:hidden hover:text-gray-900 transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-white/[0.08] bg-zinc-900 text-zinc-400 md:hidden hover:text-white transition-colors"
               aria-label="Open navigation sidebar"
             >
               <Menu className="h-4 w-4" aria-hidden="true" />
             </button>
 
             {/* Breadcrumb Context */}
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-semibold">
-              <span className="text-gray-400">Admin</span>
-              <span className="text-gray-300" aria-hidden="true">/</span>
-              <span className="text-gray-900 font-bold capitalize">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs">
+              <span className="text-zinc-500 font-medium">Platform</span>
+              <span className="text-zinc-700" aria-hidden="true">/</span>
+              <span className="text-zinc-200 font-semibold capitalize">
                 {getPageTitle(pathname)}
               </span>
             </nav>
           </div>
 
           {/* Quick Universal Search with Pill Input */}
-          <div className="relative w-48 sm:w-64">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" aria-hidden="true" />
+          <div className="relative w-44 sm:w-60">
+            <Search className="absolute left-3 top-2 h-3.5 w-3.5 text-zinc-500" aria-hidden="true" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              placeholder="Search user, ID..."
+              placeholder="Search users, IDs..."
               aria-label="Search users and identifiers"
-              className="w-full rounded-xl border border-gray-200 bg-gray-50/80 py-1.5 pl-9 pr-8 text-xs font-medium text-gray-800 placeholder:text-gray-400 focus:bg-white focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 transition-colors"
+              className="w-full rounded-md border border-white/[0.08] bg-[#0c0c0e] py-1.5 pl-8 pr-8 text-xs font-normal text-white placeholder:text-zinc-500 focus:bg-[#141417] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
             />
-            <kbd className="absolute right-2.5 top-2 flex items-center gap-0.5 rounded bg-white border border-gray-200 px-1 py-0.5 text-[9px] text-gray-400 font-mono shadow-2xs">
+            <kbd className="absolute right-2.5 top-1.5 flex items-center gap-0.5 rounded bg-zinc-800 border border-white/[0.08] px-1 py-0.5 text-[9px] text-zinc-400 font-mono">
               <Command className="h-2.5 w-2.5" aria-hidden="true" /> K
             </kbd>
           </div>
