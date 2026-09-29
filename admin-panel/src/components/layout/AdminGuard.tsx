@@ -17,16 +17,30 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
+    if (!token) {
+      setAuthorized(false);
+      setVerifying(false);
+      if (typeof window !== 'undefined') {
+        window.location.replace('/login');
+      } else {
+        router.replace('/login');
+      }
+      return;
+    }
+
     let isMounted = true;
     const verifySession = async () => {
       try {
-        const res = await api.get('/admin/me');
+        const res = await api.get('/admin/me', { timeout: 5000 });
         if (isMounted) {
           if (res.data?.success && res.data?.data) {
             setAuthorized(true);
           } else {
             setAuthorized(false);
-            router.push('/login');
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            router.replace('/login');
           }
         }
       } catch (err: any) {
@@ -34,7 +48,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
           setAuthorized(false);
           localStorage.removeItem('adminToken');
           localStorage.removeItem('adminUser');
-          router.push('/login');
+          router.replace('/login');
         }
       } finally {
         if (isMounted) {
