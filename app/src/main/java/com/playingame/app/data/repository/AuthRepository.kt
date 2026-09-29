@@ -1,7 +1,12 @@
 package com.playingame.app.data.repository
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
+import android.webkit.CookieManager
+import android.webkit.WebStorage
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.playingame.app.R
 import com.playingame.app.core.config.ClientConfig
 import com.playingame.app.core.session.SessionManager
@@ -34,6 +39,7 @@ data class UserSession(
 
 object AuthRepository {
     private const val PREFS_NAME = "app334_auth_prefs"
+    private const val SECURE_PREFS_NAME = "app334_secure_auth_prefs"
     private const val KEY_USER_ID = "auth_user_id"
     private const val KEY_NAME = "auth_name"
     private const val KEY_PHONE = "auth_phone"
@@ -42,15 +48,57 @@ object AuthRepository {
     private const val KEY_IS_BANNED = "auth_is_banned"
     private const val KEY_AUTH_TOKEN = "auth_jwt_token"
 
-    private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(5, TimeUnit.SECONDS)
-        .build()
+    private val httpClient get() = com.playingame.app.data.remote.RemoteApiClient.client
 
     private val _currentSession = MutableStateFlow(UserSession())
     val currentSession: StateFlow<UserSession> = _currentSession.asStateFlow()
 
     private var appContext: Context? = null
+
+    private fun getSecurePrefs(context: Context): SharedPreferences {
+        return try {
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            val securePrefs = EncryptedSharedPreferences.create(
+                context,
+                SECURE_PREFS_NAME,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+
+            // One-time migration from legacy unencrypted prefs to Keystore encrypted prefs
+            val legacyPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            if (legacyPrefs.all.isNotEmpty()) {
+                val editor = securePrefs.edit()
+                for ((key, value) in legacyPrefs.all) {
+                    when (value) {
+                        is String -> editor.putString(key, value)
+                        is Boolean -> editor.putBoolean(key, value)
+                        is Int -> editor.putInt(key, value)
+                        is Long -> editor.putLong(key, value)
+                        is Float -> editor.putFloat(key, value)
+                    }
+                }
+                editor.apply()
+                legacyPrefs.edit().clear().apply()
+            }
+
+            securePrefs
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Failed to initialize EncryptedSharedPreferences, fallback to private mode", e)
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        }
+    }
+
+    fun getAuthToken(): String {
+        val prefs = appContext?.let { getSecurePrefs(it) }
+        val token = prefs?.getString(KEY_AUTH_TOKEN, "") ?: ""
+        if (token.isNotEmpty()) return token
+        return SessionManager.authToken() ?: ""
+    }
 
     fun getAvatarDrawable(avatarId: String): Int {
         return when (avatarId) {
@@ -68,68 +116,75 @@ object AuthRepository {
 
     fun init(context: Context) {
         appContext = context.applicationContext
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = getSecurePrefs(context)
         val isLoggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
         val isBanned = prefs.getBoolean(KEY_IS_BANNED, false)
-        if (isLoggedIn) {
-            val userId = prefs.getString(KEY_USER_ID, (1000000..9999999).random().toString()) ?: "1000001"
+        val token = prefs.getString(KEY_AUTH_TOKEN, "") ?: ""
+
+        // Reject fake/local offline tokens. Genuine server-issued token required.
+        if (isLoggedIn && token.isNotBlank() && !token.startsWith("SESSION-")) {
+            val userId = prefs.getString(KEY_USER_ID, "") ?: ""
             val name = prefs.getString(KEY_NAME, "Player") ?: "Player"
             val phone = prefs.getString(KEY_PHONE, "") ?: ""
             val avatarId = prefs.getString(KEY_AVATAR, "avatar_1") ?: "avatar_1"
-            val token = prefs.getString(KEY_AUTH_TOKEN, "") ?: ""
-            _currentSession.value = UserSession(userId, name, phone, avatarId, true, isBanned)
-            WalletLedger.updateProfile(
-                name = name,
-                phone = phone,
-                userId = userId,
-                avatarRes = getAvatarDrawable(avatarId),
-                avatarId = avatarId
-            )
-            SessionManager.signIn(userId = userId, username = name, token = token)
+            if (userId.isNotBlank()) {
+                _currentSession.value = UserSession(userId, name, phone, avatarId, true, isBanned)
+                WalletLedger.updateProfile(
+                    name = name,
+                    phone = phone,
+                    userId = userId,
+                    avatarRes = getAvatarDrawable(avatarId),
+                    avatarId = avatarId
+                )
+                SessionManager.signIn(userId = userId, username = name, token = token)
 
-            // Sync with backend so phone, username, and device specs are up-to-date in Admin Panel
-            kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    if (phone.isNotBlank()) {
-                        val ctx = context.applicationContext
-                        val url = "${ClientConfig.API_BASE_URL}/auth/login"
-                        val payload = JSONObject().apply {
-                            put("phone", phone)
-                            put("name", name)
-                            put("deviceModel", DeviceInfoHelper.getDeviceModel())
-                            put("osVersion", DeviceInfoHelper.getOsVersion())
-                            put("appVersion", DeviceInfoHelper.getAppVersion(ctx))
-                            put("networkType", DeviceInfoHelper.getNetworkType(ctx))
-                            put("isEmulator", DeviceInfoHelper.isEmulator())
-                        }
-                        val body = payload.toString().toRequestBody("application/json".toMediaTypeOrNull())
-                        val request = Request.Builder().url(url).post(body).build()
-                        val res = httpClient.newCall(request).execute()
-                        val resString = res.body?.string() ?: ""
-                        if (res.isSuccessful) {
-                            val json = JSONObject(resString)
-                            val syncedToken = json.optJSONObject("data")?.optString("token")
-                            if (!syncedToken.isNullOrBlank()) {
-                                prefs.edit().putString(KEY_AUTH_TOKEN, syncedToken).apply()
-                                withContext(Dispatchers.Main) {
-                                    SessionManager.signIn(userId = userId, username = name, token = syncedToken)
+                // Sync with backend so phone, username, and device specs are up-to-date in Admin Panel
+                kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        if (phone.isNotBlank()) {
+                            val ctx = context.applicationContext
+                            val url = "${ClientConfig.API_BASE_URL}/auth/login"
+                            val payload = JSONObject().apply {
+                                put("phone", phone)
+                                put("name", name)
+                                put("deviceModel", DeviceInfoHelper.getDeviceModel())
+                                put("osVersion", DeviceInfoHelper.getOsVersion())
+                                put("appVersion", DeviceInfoHelper.getAppVersion(ctx))
+                                put("networkType", DeviceInfoHelper.getNetworkType(ctx))
+                                put("isEmulator", DeviceInfoHelper.isEmulator())
+                            }
+                            val body = payload.toString().toRequestBody("application/json".toMediaTypeOrNull())
+                            val request = Request.Builder().url(url).post(body).build()
+                            val res = httpClient.newCall(request).execute()
+                            val resString = res.body?.string() ?: ""
+                            if (res.isSuccessful) {
+                                val json = JSONObject(resString)
+                                val syncedToken = json.optJSONObject("data")?.optString("token")
+                                if (!syncedToken.isNullOrBlank()) {
+                                    prefs.edit().putString(KEY_AUTH_TOKEN, syncedToken).apply()
+                                    withContext(Dispatchers.Main) {
+                                        SessionManager.signIn(userId = userId, username = name, token = syncedToken)
+                                    }
                                 }
                             }
+                            res.close()
                         }
-                        res.close()
+                    } catch (e: Exception) {
+                        Log.w("AuthRepository", "Failed background profile sync: ${e.message}")
                     }
-                } catch (e: Exception) {
-                    Log.w("AuthRepository", "Failed background profile sync: ${e.message}")
                 }
+            } else {
+                _currentSession.value = UserSession(isLoggedIn = false, isBanned = isBanned)
             }
         } else {
             _currentSession.value = UserSession(isLoggedIn = false, isBanned = isBanned)
+            prefs.edit().putBoolean(KEY_IS_LOGGED_IN, false).putString(KEY_AUTH_TOKEN, "").apply()
         }
     }
 
     fun getSavedUserForPhone(phone: String, context: Context? = null): Triple<String, String, String>? {
         val targetContext = context ?: appContext ?: return null
-        val prefs = targetContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = getSecurePrefs(targetContext)
         val cleanPhone = phone.trim()
         val savedPhone = prefs.getString("user_phone_$cleanPhone", null)
         if (savedPhone != null) {
@@ -209,7 +264,7 @@ object AuthRepository {
                 if (isBanned) {
                     withContext(Dispatchers.Main) {
                         _currentSession.value = _currentSession.value.copy(isBanned = true)
-                        appContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)?.edit()?.apply {
+                        appContext?.let { getSecurePrefs(it) }?.edit()?.apply {
                             putBoolean(KEY_IS_BANNED, true)
                             apply()
                         }
@@ -226,7 +281,7 @@ object AuthRepository {
     suspend fun login(phone: String, name: String, context: Context? = null): Result<UserSession> = withContext(Dispatchers.IO) {
         val cleanPhone = phone.trim()
         val targetContext = context ?: appContext
-        val prefs = targetContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = targetContext?.let { getSecurePrefs(it) }
 
         // Check if user previously logged in with this phone
         val existingSaved = getSavedUserForPhone(cleanPhone, targetContext)
@@ -236,11 +291,11 @@ object AuthRepository {
             else -> "Player_${cleanPhone.takeLast(4).ifEmpty { "101" }}"
         }
 
-        var resolvedUserId = existingSaved?.first ?: (1000000..9999999).random().toString()
+        var resolvedUserId = existingSaved?.first ?: ""
         var resolvedAvatar = existingSaved?.third ?: "avatar_1"
-        var authToken = "SESSION-$resolvedUserId"
+        var authToken = ""
 
-        // Sync with live backend server so user is registered and visible in Admin Panel
+        // Authenticate with live backend server - authentic server token is MANDATORY
         try {
             val ctx = targetContext ?: appContext
             val url = "${ClientConfig.API_BASE_URL}/auth/login"
@@ -283,13 +338,21 @@ object AuthRepository {
                 val token = data?.optString("token")
                 if (!token.isNullOrBlank()) {
                     authToken = token
+                } else {
+                    return@withContext Result.failure(Exception("AUTH_FAILED: Server did not return a valid authentication token"))
                 }
                 Log.d("AuthRepository", "Synced login with backend server: $resolvedUserId ($resolvedName)")
             } else {
                 Log.w("AuthRepository", "Backend login returned HTTP ${response.code}")
+                return@withContext Result.failure(Exception("LOGIN_FAILED: Server returned error code ${response.code}"))
             }
         } catch (e: Exception) {
-            Log.e("AuthRepository", "Server sync failed, using persistent offline fallback", e)
+            Log.e("AuthRepository", "Server authentication failed", e)
+            return@withContext Result.failure(Exception("NETWORK_ERROR: Unable to connect to server. Please check your internet connection."))
+        }
+
+        if (resolvedUserId.isBlank() || authToken.isBlank()) {
+            return@withContext Result.failure(Exception("AUTH_FAILED: Incomplete session credentials from server"))
         }
 
         val session = UserSession(
@@ -304,7 +367,7 @@ object AuthRepository {
         withContext(Dispatchers.Main) {
             _currentSession.value = session
 
-            // Save active session + persist user identity map
+            // Save active session + persist user identity map in EncryptedSharedPreferences
             prefs?.edit()?.apply {
                 putString(KEY_USER_ID, resolvedUserId)
                 putString(KEY_NAME, resolvedName)
@@ -337,7 +400,7 @@ object AuthRepository {
 
     suspend fun updateProfile(name: String, avatarId: String = "", context: Context? = null): Result<UserSession> = withContext(Dispatchers.IO) {
         val targetContext = context ?: appContext
-        val prefs = targetContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = targetContext?.let { getSecurePrefs(it) }
         val current = _currentSession.value
         val newName = name.trim().ifEmpty { current.name }
         val newAvatar = avatarId.trim().ifEmpty { current.avatarId }
@@ -368,17 +431,23 @@ object AuthRepository {
             SessionManager.signIn(userId = current.userId, username = newName, token = currentToken)
         }
 
-        // Sync to backend API
+        // Sync to backend API via authenticated PUT /auth/profile
         try {
-            val url = "${ClientConfig.API_BASE_URL}/auth/profile/update"
+            val url = "${ClientConfig.API_BASE_URL}/auth/profile"
             val payload = JSONObject().apply {
-                put("userId", current.userId)
                 put("name", newName)
                 put("avatarUrl", newAvatar)
             }
             val body = payload.toString().toRequestBody("application/json".toMediaTypeOrNull())
-            val request = Request.Builder().url(url).post(body).build()
-            httpClient.newCall(request).execute()
+            val requestBuilder = Request.Builder()
+                .url(url)
+                .put(body)
+
+            if (currentToken.isNotBlank()) {
+                requestBuilder.header("Authorization", "Bearer $currentToken")
+            }
+
+            httpClient.newCall(requestBuilder.build()).execute()
         } catch (e: Exception) {
             Log.w("AuthRepository", "Failed to sync profile update to backend: ${e.message}")
         }
@@ -389,11 +458,20 @@ object AuthRepository {
     fun logout(context: Context? = null) {
         _currentSession.value = UserSession(isLoggedIn = false)
         val targetContext = context ?: appContext
-        targetContext?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)?.edit()?.apply {
+        targetContext?.let { getSecurePrefs(it) }?.edit()?.apply {
             putBoolean(KEY_IS_LOGGED_IN, false)
             putString(KEY_AUTH_TOKEN, "")
             apply()
         }
         SessionManager.signOut()
+
+        // Clear all cached WebView cookies and HTML5 web storage to prevent cross-session data leaks
+        try {
+            CookieManager.getInstance().removeAllCookies(null)
+            CookieManager.getInstance().flush()
+            WebStorage.getInstance().deleteAllData()
+        } catch (e: Exception) {
+            Log.w("AuthRepository", "Failed to clear WebView cookies/storage on logout: ${e.message}")
+        }
     }
 }

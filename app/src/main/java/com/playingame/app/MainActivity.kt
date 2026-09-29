@@ -55,19 +55,17 @@ class MainActivity : ComponentActivity() {
                 val bootstrapState by com.playingame.app.data.remote.AppBootstrapService.bootstrapState.collectAsState()
                 val context = androidx.compose.ui.platform.LocalContext.current
 
-                // Runtime permission launcher for Location + Notification permissions
+                // Runtime permission launcher for Notification permissions
                 val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
                     contract = androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
                 ) { permissionsMap ->
-                    val fineLocation = permissionsMap[android.Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-                    val coarseLocation = permissionsMap[android.Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
                     val notifications = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
                         permissionsMap[android.Manifest.permission.POST_NOTIFICATIONS] ?: false
                     } else true
 
                     android.util.Log.i(
                         "AppPermissions",
-                        "Permissions updated -> Location: ${fineLocation || coarseLocation}, Notifications: $notifications"
+                        "Notification permission updated: $notifications"
                     )
                 }
 

@@ -29,11 +29,7 @@ sealed interface BootstrapState {
 object AppBootstrapService {
 
     private const val TAG = "AppBootstrapService"
-
-    private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(4, TimeUnit.SECONDS)
-        .readTimeout(4, TimeUnit.SECONDS)
-        .build()
+    private val httpClient get() = RemoteApiClient.client
 
     private val _bootstrapState = MutableStateFlow<BootstrapState>(BootstrapState.Idle)
     val bootstrapState: StateFlow<BootstrapState> = _bootstrapState.asStateFlow()
@@ -90,8 +86,13 @@ object AppBootstrapService {
             return@withContext BootstrapState.Ready
         } catch (e: IOException) {
             Log.e(TAG, "Bootstrap network exception: ${e.message}")
-            _bootstrapState.value = BootstrapState.NoInternet
-            return@withContext BootstrapState.NoInternet
+            if (!NetworkMonitor.isOnline.value) {
+                _bootstrapState.value = BootstrapState.NoInternet
+                return@withContext BootstrapState.NoInternet
+            } else {
+                _bootstrapState.value = BootstrapState.ServerMaintenance("Connecting to game servers... Tap Retry to reconnect.")
+                return@withContext _bootstrapState.value
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Bootstrap unexpected error: ${e.message}")
             _bootstrapState.value = BootstrapState.ServerMaintenance("Unable to connect to game servers.")

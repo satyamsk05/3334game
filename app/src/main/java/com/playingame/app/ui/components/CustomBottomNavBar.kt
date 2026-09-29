@@ -23,25 +23,27 @@ import com.playingame.app.ui.theme.NavBarBackground
 import com.playingame.app.ui.theme.NavBarBorder
 import com.playingame.app.ui.theme.TabActiveGold
 
+private val BottomNavShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+
 @Composable
 fun CustomBottomNavBar(
     selectedTab: NavItem,
     onTabSelected: (NavItem) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isScrolling: Boolean = false
 ) {
     val items = remember { listOf(NavItem.HOME, NavItem.REWARD, NavItem.PROFILE) }
-    val navShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(elevation = 16.dp, shape = navShape, spotColor = Color.Black)
-            .clip(navShape)
+            .shadow(elevation = 16.dp, shape = BottomNavShape, spotColor = Color.Black)
+            .clip(BottomNavShape)
             .background(NavBarBackground)
             .border(
                 width = 1.dp,
                 color = NavBarBorder,
-                shape = navShape
+                shape = BottomNavShape
             )
             .height(Dimens.bottomNavHeight + 10.dp)
             .padding(top = 8.dp, bottom = 6.dp)
@@ -71,7 +73,8 @@ fun CustomBottomNavBar(
                                     rawRes = R.raw.home_riv,
                                     inputName = "Tab Home",
                                     isSelected = isSelected,
-                                    size = 30.dp
+                                    size = 30.dp,
+                                    isScrolling = isScrolling
                                 )
                             }
                             NavItem.REWARD -> {
@@ -79,7 +82,8 @@ fun CustomBottomNavBar(
                                     rawRes = R.raw.addcash_riv,
                                     inputName = "Tab Store",
                                     isSelected = isSelected,
-                                    size = 30.dp
+                                    size = 30.dp,
+                                    isScrolling = isScrolling
                                 )
                             }
                             NavItem.PROFILE -> {
@@ -87,7 +91,8 @@ fun CustomBottomNavBar(
                                     rawRes = R.raw.profile_riv,
                                     inputName = "Tab Profile",
                                     isSelected = isSelected,
-                                    size = 30.dp
+                                    size = 30.dp,
+                                    isScrolling = isScrolling
                                 )
                             }
                             else -> {}

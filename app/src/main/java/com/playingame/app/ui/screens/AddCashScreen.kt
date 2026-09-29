@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.playingame.app.R
 import com.playingame.app.game.ringoffuture.backend.WalletLedger
 import com.playingame.app.ui.components.WalletChip
@@ -196,17 +198,20 @@ fun AddCashScreen(
     }
 }
 
+private val ChipCardShape = RoundedCornerShape(16.dp)
+
 @Composable
 private fun ChipPackCard(
     pack: ChipPackItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(ChipCardShape)
             .background(Color(0xFF23242C))
-            .border(1.dp, Color(0xFF32343E), RoundedCornerShape(16.dp))
+            .border(1.dp, Color(0xFF32343E), ChipCardShape)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
@@ -218,9 +223,14 @@ private fun ChipPackCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // 3D Chip Pack Asset
-            Image(
-                painter = painterResource(id = pack.imageRes),
+            // 3D Chip Pack Asset (AsyncImage off-thread decode)
+            AsyncImage(
+                model = remember(pack.imageRes) {
+                    ImageRequest.Builder(context)
+                        .data(pack.imageRes)
+                        .crossfade(false)
+                        .build()
+                },
                 contentDescription = pack.chips,
                 modifier = Modifier
                     .size(56.dp)

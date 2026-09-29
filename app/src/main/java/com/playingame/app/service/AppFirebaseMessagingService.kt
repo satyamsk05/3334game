@@ -31,14 +31,19 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
                     val baseUrl = ClientConfig.SERVER_BASE_URL.trimEnd('/')
                     val url = "$baseUrl/users/fcm-token"
                     val json = JSONObject().apply {
-                        put("userId", session.userId)
                         put("fcmToken", token)
                     }
 
-                    val request = Request.Builder()
+                    val authToken = AuthRepository.getAuthToken()
+                    val requestBuilder = Request.Builder()
                         .url(url)
                         .post(json.toString().toRequestBody("application/json".toMediaType()))
-                        .build()
+
+                    if (authToken.isNotBlank()) {
+                        requestBuilder.header("Authorization", "Bearer $authToken")
+                    }
+
+                    val request = requestBuilder.build()
 
                     val response = RemoteApiClient.httpClient.newCall(request).execute()
                     if (response.isSuccessful) {

@@ -29,4 +29,8 @@ admin-panel/.vscode/
 .kotlin/
 app/.idea/
 .idea/
+*firebase-adminsdk*.json
+*.pem
+!backend/certs/supabase-root-ca.pem
+*.key
 

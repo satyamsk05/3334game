@@ -18,7 +18,8 @@ fun RiveTabIcon(
     inputName: String,
     modifier: Modifier = Modifier,
     size: Dp = 32.dp,
-    stateMachineName: String = "State Machine 1"
+    stateMachineName: String = "State Machine 1",
+    isScrolling: Boolean = false
 ) {
     AndroidView(
         modifier = modifier.size(size),
@@ -42,6 +43,11 @@ fun RiveTabIcon(
         update = { view ->
             try {
                 view.setBooleanState(stateMachineName, inputName, isSelected)
+                if (isScrolling) {
+                    view.pause()
+                } else {
+                    view.play()
+                }
             } catch (e: Throwable) {
                 Log.e("RiveTabIcon", "Failed to update state for $inputName: ${e.message}")
             }

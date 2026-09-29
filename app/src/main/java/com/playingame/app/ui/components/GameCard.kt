@@ -1,7 +1,6 @@
 package com.playingame.app.ui.components
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,16 +14,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.playingame.app.ui.theme.CardBorderColor
 import com.playingame.app.ui.theme.CardNavyBackground
 import com.playingame.app.ui.theme.Dimens
 import com.playingame.app.ui.theme.RubikFont
 import com.playingame.app.ui.theme.TextSecondary
+
+private val CardShape = RoundedCornerShape(18.dp)
+private val InnerArtworkShape = RoundedCornerShape(12.dp)
 
 @Composable
 fun GameCard(
@@ -36,18 +40,17 @@ fun GameCard(
     isFeatured: Boolean = false,
     onPlayClick: () -> Unit = {}
 ) {
-    val cardShape = RoundedCornerShape(18.dp)
-    val innerArtworkShape = RoundedCornerShape(12.dp)
+    val context = LocalContext.current
 
     if (isFeatured) {
         // Featured Game Card (Horizontal Carousel/Row Item)
         Box(
             modifier = modifier
                 .size(width = 240.dp, height = 145.dp)
-                .shadow(elevation = 8.dp, shape = cardShape, spotColor = Color.Black)
-                .clip(cardShape)
+                .shadow(elevation = 6.dp, shape = CardShape, spotColor = Color.Black)
+                .clip(CardShape)
                 .background(CardNavyBackground)
-                .border(width = 1.dp, color = CardBorderColor, shape = cardShape)
+                .border(width = 1.dp, color = CardBorderColor, shape = CardShape)
                 .clickable { onPlayClick() }
                 .padding(10.dp)
         ) {
@@ -60,12 +63,15 @@ fun GameCard(
                 Box(
                     modifier = Modifier
                         .size(115.dp)
-                        .clip(innerArtworkShape)
+                        .clip(InnerArtworkShape)
                         .background(Color(0xFF141923)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = imageRes),
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(imageRes)
+                            .crossfade(false)
+                            .build(),
                         contentDescription = title,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -109,10 +115,10 @@ fun GameCard(
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .shadow(elevation = 8.dp, shape = cardShape, spotColor = Color.Black)
-                .clip(cardShape)
+                .shadow(elevation = 6.dp, shape = CardShape, spotColor = Color.Black)
+                .clip(CardShape)
                 .background(CardNavyBackground)
-                .border(width = 1.dp, color = CardBorderColor, shape = cardShape)
+                .border(width = 1.dp, color = CardBorderColor, shape = CardShape)
                 .clickable { onPlayClick() }
                 .padding(bottom = 10.dp)
         ) {
@@ -122,12 +128,15 @@ fun GameCard(
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .padding(8.dp)
-                    .clip(innerArtworkShape)
+                    .clip(InnerArtworkShape)
                     .background(Color(0xFF141923)),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = imageRes),
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(imageRes)
+                        .crossfade(false)
+                        .build(),
                     contentDescription = title,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop

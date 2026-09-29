@@ -34,15 +34,20 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.playingame.app.R
 import com.playingame.app.data.repository.AuthRepository
 import com.playingame.app.ui.theme.RubikFont
 import kotlinx.coroutines.launch
 
+@Immutable
 data class AvatarItem(
     val id: String,
     val resId: Int
 )
+
+private val ProfileCardShape = RoundedCornerShape(18.dp)
 
 @Composable
 fun ProfileScreen(
@@ -248,8 +253,13 @@ fun ProfileScreen(
                             .clip(CircleShape)
                             .border(2.dp, Color(0xFFFFB800), CircleShape)
                     ) {
-                        Image(
-                            painter = painterResource(id = avatarRes),
+                        AsyncImage(
+                            model = remember(avatarRes) {
+                                ImageRequest.Builder(context)
+                                    .data(avatarRes)
+                                    .crossfade(false)
+                                    .build()
+                            },
                             contentDescription = "User Avatar",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -344,8 +354,13 @@ fun ProfileScreen(
                 }
 
                 // 3D Money Bag Asset
-                Image(
-                    painter = painterResource(id = R.drawable.ic_refer_addcash),
+                AsyncImage(
+                    model = remember {
+                        ImageRequest.Builder(context)
+                            .data(R.drawable.ic_refer_addcash)
+                            .crossfade(false)
+                            .build()
+                    },
                     contentDescription = "Money Bag",
                     modifier = Modifier.size(75.dp)
                 )
@@ -414,8 +429,13 @@ fun ProfileScreen(
                         .border(1.5.dp, Color(0xFFFFB800), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.avatar_8),
+                    AsyncImage(
+                        model = remember {
+                            ImageRequest.Builder(context)
+                                .data(R.drawable.avatar_8)
+                                .crossfade(false)
+                                .build()
+                        },
                         contentDescription = "Contact Support",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -694,8 +714,13 @@ fun ProfileScreen(
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = painterResource(id = item.resId),
+                                AsyncImage(
+                                    model = remember(item.resId) {
+                                        ImageRequest.Builder(context)
+                                            .data(item.resId)
+                                            .crossfade(false)
+                                            .build()
+                                    },
                                     contentDescription = item.id,
                                     modifier = Modifier
                                         .fillMaxSize()

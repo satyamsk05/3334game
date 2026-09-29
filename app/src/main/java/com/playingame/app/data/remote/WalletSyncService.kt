@@ -21,11 +21,7 @@ import java.util.concurrent.TimeUnit
 object WalletSyncService {
 
     private const val TAG = "WalletSyncService"
-
-    private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(5, TimeUnit.SECONDS)
-        .build()
+    private val httpClient get() = RemoteApiClient.client
 
     private var syncJob: Job? = null
 

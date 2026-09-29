@@ -12,29 +12,11 @@ object PermissionUtils {
      * List of runtime permissions required by the application based on OS level.
      */
     fun getRequiredPermissions(): Array<String> {
-        val permissions = mutableListOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
+        val permissions = mutableListOf<String>()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions.add(Manifest.permission.POST_NOTIFICATIONS)
         }
         return permissions.toTypedArray()
-    }
-
-    /**
-     * Check if either FINE or COARSE location permission is granted.
-     */
-    fun hasLocationPermission(context: Context): Boolean {
-        val fineGranted = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        val coarseGranted = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        return fineGranted || coarseGranted
     }
 
     /**

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
@@ -133,6 +134,13 @@ fun DepositPaymentScreen(
                         settings.useWideViewPort = true
                         settings.setSupportZoom(true)
                         settings.builtInZoomControls = false
+                        settings.allowFileAccess = false
+                        settings.allowContentAccess = false
+                        settings.setGeolocationEnabled(false)
+
+                        if (ctx.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE == 0) {
+                            WebView.setWebContentsDebuggingEnabled(false)
+                        }
 
                         webChromeClient = object : WebChromeClient() {
                             override fun onProgressChanged(view: WebView?, newProgress: Int) {
@@ -157,8 +165,7 @@ fun DepositPaymentScreen(
                             private fun handleCustomUri(url: String): Boolean {
                                 // Intercept UPI deep link schemes (upi://, phonepe://, paytmmp://, gpay://, etc.)
                                 if (url.startsWith("upi:") || url.startsWith("phonepe:") ||
-                                    url.startsWith("paytmmp:") || url.startsWith("tez:") ||
-                                    url.startsWith("intent:")
+                                    url.startsWith("paytmmp:") || url.startsWith("tez:")
                                 ) {
                                     return try {
                                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -173,6 +180,30 @@ fun DepositPaymentScreen(
                                         true
                                     }
                                 }
+
+                                if (url.startsWith("intent:")) {
+                                    return try {
+                                        val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                                        intent.addCategory(Intent.CATEGORY_BROWSABLE)
+                                        intent.component = null
+                                        intent.selector = null
+                                        context.startActivity(intent)
+                                        true
+                                    } catch (e: Exception) {
+                                        android.widget.Toast.makeText(
+                                            context,
+                                            "No supported UPI App found for this link",
+                                            android.widget.Toast.LENGTH_SHORT
+                                        ).show()
+                                        true
+                                    }
+                                }
+
+                                // For standard HTTP/HTTPS, allow navigation
+                                val scheme = Uri.parse(url).scheme?.lowercase() ?: ""
+                                if (scheme != "http" && scheme != "https") {
+                                    return true // block unknown or dangerous schemes (file:, javascript:, etc.)
+                                }
                                 return false
                             }
 
@@ -182,7 +213,19 @@ fun DepositPaymentScreen(
                             }
                         }
 
+                        settings.cacheMode = WebSettings.LOAD_NO_CACHE
                         loadUrl(payUrl)
+                    }
+                },
+                onRelease = { webView ->
+                    try {
+                        webView.stopLoading()
+                        webView.clearHistory()
+                        webView.clearCache(true)
+                        webView.removeAllViews()
+                        webView.destroy()
+                    } catch (e: Exception) {
+                        android.util.Log.w("DepositPayment", "Error releasing WebView: ${e.message}")
                     }
                 }
             )

@@ -20,6 +20,7 @@ import {
   PanelLeft
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
+import { api } from '@/services/api';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -70,7 +71,12 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/admin/logout');
+    } catch {
+      // ignore network errors during sign out
+    }
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
     router.push('/login');

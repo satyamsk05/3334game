@@ -28,7 +28,7 @@ object LogginAuthService {
     private const val BUSINESS_PHONE = "919989907408"
     private const val CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
-    private val client = OkHttpClient.Builder()
+    private val client get() = RemoteApiClient.client.newBuilder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(0, TimeUnit.MILLISECONDS) // Indefinite for SSE streaming
         .build()

@@ -11,32 +11,75 @@ import java.util.concurrent.TimeUnit
 object RemoteApiClient {
 
     private const val TAG = "RemoteApiClient"
+    private const val HTTP_CACHE_SIZE_BYTES = 10L * 1024 * 1024 // 10 MB
 
-    val client = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(10, TimeUnit.SECONDS)
-        .build()
+    private val connectionPool = ConnectionPool(8, 5, TimeUnit.MINUTES)
+    private var appContext: android.content.Context? = null
+    private var _client: OkHttpClient? = null
+
+    val client: OkHttpClient
+        get() = _client ?: synchronized(this) {
+            _client ?: buildClient().also { _client = it }
+        }
 
     val httpClient: OkHttpClient
         get() = client
 
-    private var appContext: android.content.Context? = null
+    fun init(context: android.content.Context) {
+        val appCtx = context.applicationContext
+        appContext = appCtx
+        synchronized(this) {
+            if (_client == null || _client?.cache == null) {
+                _client = buildClient(appCtx)
+            }
+        }
+    }
+
+    private fun buildClient(context: android.content.Context? = appContext): OkHttpClient {
+        val builder = OkHttpClient.Builder()
+            .connectionPool(connectionPool)
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+
+        if (context != null) {
+            try {
+                val cacheDir = context.cacheDir.resolve("http_cache")
+                builder.cache(Cache(cacheDir, HTTP_CACHE_SIZE_BYTES))
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to initialize OkHttp cache directory", e)
+            }
+        }
+        return builder.build()
+    }
     private var webSocket: WebSocket? = null
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
 
-    fun init(context: android.content.Context) {
-        appContext = context.applicationContext
-    }
 
     fun connectWebSocket() {
         if (!ClientConfig.IS_REMOTE_SERVER_ENABLED) return
 
+        val token = com.playingame.app.data.repository.AuthRepository.getAuthToken().ifBlank {
+            com.playingame.app.core.session.SessionManager.authToken() ?: ""
+        }
+        if (token.isBlank()) {
+            Log.d(TAG, "WebSocket connection deferred: waiting for user authentication")
+            return
+        }
+
         try {
+            val encodedToken = java.net.URLEncoder.encode(token, "UTF-8")
+            val urlWithToken = if (ClientConfig.WEBSOCKET_URL.contains("?")) {
+                "${ClientConfig.WEBSOCKET_URL}&token=$encodedToken"
+            } else {
+                "${ClientConfig.WEBSOCKET_URL}?token=$encodedToken"
+            }
+
             val request = Request.Builder()
-                .url(ClientConfig.WEBSOCKET_URL)
+                .url(urlWithToken)
+                .header("Authorization", "Bearer $token")
                 .build()
 
             webSocket = client.newWebSocket(request, object : WebSocketListener() {
@@ -46,10 +89,10 @@ object RemoteApiClient {
                 }
 
                 override fun onMessage(webSocket: WebSocket, text: String) {
-                    Log.d(TAG, "WebSocket message received: $text")
                     try {
                         val json = org.json.JSONObject(text)
                         val event = json.optString("event")
+                        Log.d(TAG, "WebSocket event received: $event")
                         val data = json.optJSONObject("data")
                         if (event == "SYSTEM_ANNOUNCEMENT" && data != null) {
                             val title = data.optString("title", "Game In Play Alert")

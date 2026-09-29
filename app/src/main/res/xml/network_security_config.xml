@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- By default enforce strict HTTPS for all domains in production -->
+    <!-- Base configuration: cleartext HTTP traffic disabled globally -->
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
     </base-config>
 
-    <!-- Specific domain configuration for local debugging -->
+    <!-- Specific domain allowlist for local emulator and development debugging only -->
     <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
-        <domain includeSubdomains="true">10.0.2.2</domain>
     </domain-config>
 </network-security-config>

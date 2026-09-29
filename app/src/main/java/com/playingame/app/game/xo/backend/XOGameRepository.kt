@@ -28,6 +28,7 @@ object XOGameRepository {
         var remoteDebited = false
         try {
             val url = URL("${ClientConfig.API_BASE_URL}/games/xo/join")
+            val token = com.playingame.app.data.repository.AuthRepository.getAuthToken()
             val conn = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 connectTimeout = 4000
@@ -35,6 +36,9 @@ object XOGameRepository {
                 doOutput = true
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
+                if (token.isNotBlank()) {
+                    setRequestProperty("Authorization", "Bearer $token")
+                }
             }
 
             val payload = JSONObject().apply {
@@ -97,6 +101,7 @@ object XOGameRepository {
     suspend fun submitMove(roomId: String, cellIndex: Int, userId: String): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
             val url = URL("${ClientConfig.API_BASE_URL}/games/xo/move")
+            val token = com.playingame.app.data.repository.AuthRepository.getAuthToken()
             val conn = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 connectTimeout = 3000
@@ -104,6 +109,9 @@ object XOGameRepository {
                 doOutput = true
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
+                if (token.isNotBlank()) {
+                    setRequestProperty("Authorization", "Bearer $token")
+                }
             }
 
             val payload = JSONObject().apply {
@@ -126,6 +134,7 @@ object XOGameRepository {
     suspend fun reportGameResult(roomId: String, tier: XOTier, winnerUserId: String?, isDraw: Boolean, userId: String): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
             val url = URL("${ClientConfig.API_BASE_URL}/games/xo/end")
+            val token = com.playingame.app.data.repository.AuthRepository.getAuthToken()
             val conn = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 connectTimeout = 4000
@@ -133,6 +142,9 @@ object XOGameRepository {
                 doOutput = true
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
+                if (token.isNotBlank()) {
+                    setRequestProperty("Authorization", "Bearer $token")
+                }
             }
 
             val resultStr = when {

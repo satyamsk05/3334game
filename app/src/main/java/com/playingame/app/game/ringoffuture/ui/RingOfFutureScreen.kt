@@ -52,6 +52,15 @@ fun RingOfFutureScreen(
                     settings.domStorageEnabled = true
                     settings.loadWithOverviewMode = true
                     settings.useWideViewPort = true
+                    settings.allowFileAccess = false
+                    settings.allowContentAccess = false
+                    settings.setGeolocationEnabled(false)
+                    settings.cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
+
+                    // Disable WebView debugging in production
+                    if (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE == 0) {
+                        WebView.setWebContentsDebuggingEnabled(false)
+                    }
 
                     addJavascriptInterface(object {
                         @JavascriptInterface
@@ -60,7 +69,33 @@ fun RingOfFutureScreen(
                         }
                     }, "AndroidBridge")
 
-                    webViewClient = WebViewClient()
+                    webViewClient = object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
+                            val url = request?.url?.toString() ?: return true
+                            return isDisallowedNavigation(url)
+                        }
+
+                        @Deprecated("Deprecated in Java")
+                        override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                            if (url == null) return true
+                            return isDisallowedNavigation(url)
+                        }
+
+                        private fun isDisallowedNavigation(url: String): Boolean {
+                            val parsedUri = android.net.Uri.parse(url)
+                            val baseUri = android.net.Uri.parse(ClientConfig.SERVER_BASE_URL)
+                            val scheme = parsedUri.scheme?.lowercase() ?: ""
+
+                            if (scheme == "https" || scheme == "http") {
+                                if (parsedUri.host.equals(baseUri.host, ignoreCase = true) &&
+                                    parsedUri.port == baseUri.port) {
+                                    return false // Allow internal game navigation
+                                }
+                            }
+                            android.util.Log.w("RingOfFuture", "Blocked unauthorized WebView navigation to: $url")
+                            return true // Block external navigation
+                        }
+                    }
                     loadUrl(gameUrl)
                 }
             },

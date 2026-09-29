@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -68,6 +70,7 @@ fun HomeScreen(
     val walletBalance by WalletLedger.walletBalance.collectAsState()
     val userProfile by WalletLedger.userProfile.collectAsState()
     var showNotificationSheet by remember { mutableStateOf(false) }
+    val homeListState = rememberLazyListState()
 
     // Sync wallet balance only when returning from active sub-screens or on initial load
     LaunchedEffect(activeSubScreen == null) {
@@ -185,7 +188,17 @@ fun HomeScreen(
         }
     }
 
-    val bannerSlides = remember(serverPromotions, activeSubScreen, selectedTab) {
+    fun handlePromoRoute(targetRoute: String) {
+        when {
+            targetRoute.contains("xo", ignoreCase = true) -> activeSubScreen = SubScreen.XOLobby
+            targetRoute.contains("ring", ignoreCase = true) -> activeSubScreen = SubScreen.RingOfFuture
+            targetRoute.contains("withdraw", ignoreCase = true) -> activeSubScreen = SubScreen.Withdraw
+            targetRoute.contains("deposit", ignoreCase = true) || targetRoute.contains("wallet", ignoreCase = true) -> openDepositInBrowser(500.0)
+            else -> selectedTab = NavItem.REWARD
+        }
+    }
+
+    val bannerSlides = remember(serverPromotions) {
         serverPromotions.map { promo ->
             val startColor = try {
                 Color(android.graphics.Color.parseColor(promo.gradientStart))
@@ -219,22 +232,7 @@ fun HomeScreen(
                 backgroundGradient = listOf(startColor, endColor),
                 badgeText = promo.badgeText,
                 ctaText = promo.ctaText,
-                onClick = {
-                    when (promo.targetRoute) {
-                        "/games/xo" -> activeSubScreen = SubScreen.XOLobby
-                        "/games/ring" -> activeSubScreen = SubScreen.RingOfFuture
-                        "/wallet/deposit" -> openDepositInBrowser(500.0)
-                        "/wallet/withdraw" -> activeSubScreen = SubScreen.Withdraw
-                        "/reward" -> selectedTab = NavItem.REWARD
-                        else -> {
-                            if (promo.targetRoute.contains("xo", ignoreCase = true)) activeSubScreen = SubScreen.XOLobby
-                            else if (promo.targetRoute.contains("ring", ignoreCase = true)) activeSubScreen = SubScreen.RingOfFuture
-                            else if (promo.targetRoute.contains("withdraw", ignoreCase = true)) activeSubScreen = SubScreen.Withdraw
-                            else if (promo.targetRoute.contains("deposit", ignoreCase = true) || promo.targetRoute.contains("wallet", ignoreCase = true)) openDepositInBrowser(500.0)
-                            else selectedTab = NavItem.REWARD
-                        }
-                    }
-                }
+                onClick = { handlePromoRoute(promo.targetRoute) }
             )
         }
     }
@@ -405,22 +403,25 @@ fun HomeScreen(
                                             onNotificationClick = { showNotificationSheet = true }
                                         )
 
+                                        val gridGamePairs = remember(gridGames) { gridGames.chunked(2) }
+
                                         LazyColumn(
+                                            state = homeListState,
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .fillMaxWidth(),
-                                            contentPadding = PaddingValues(top = 20.dp, bottom = Dimens.spacingLg),
-                                            verticalArrangement = Arrangement.spacedBy(Dimens.sectionSpacing)
+                                            contentPadding = PaddingValues(top = 20.dp, bottom = Dimens.spacingLg)
                                         ) {
                                             // 4. Hero Banner (HorizontalPager carousel with 3 slides & dot indicators)
-                                            item {
+                                            item(key = "hero_banner") {
                                                 HeroBannerCarousel(
                                                     slides = bannerSlides
                                                 )
+                                                Spacer(modifier = Modifier.height(Dimens.sectionSpacing))
                                             }
 
                                             // 5. Featured Games Section
-                                            item {
+                                            item(key = "featured_games") {
                                                 Column(
                                                     verticalArrangement = Arrangement.spacedBy(Dimens.spacingSm)
                                                 ) {
@@ -444,49 +445,52 @@ fun HomeScreen(
                                                         }
                                                     }
                                                 }
+                                                Spacer(modifier = Modifier.height(Dimens.sectionSpacing))
                                             }
 
                                             // 6. All Games Section (2 columns, 160:230 Aspect Ratio, 16dp Gutter)
-                                            item {
-                                                Column(
-                                                    modifier = Modifier.padding(horizontal = Dimens.screenHorizontalPadding),
-                                                    verticalArrangement = Arrangement.spacedBy(Dimens.spacingSm)
-                                                ) {
-                                                    SectionHeader(
-                                                        title = "All Games",
-                                                        icon = painterResource(id = R.drawable.ic_play_arrow),
-                                                        modifier = Modifier.padding(horizontal = 0.dp)
-                                                    )
+                                            item(key = "all_games_header") {
+                                                SectionHeader(
+                                                    title = "All Games",
+                                                    icon = painterResource(id = R.drawable.ic_play_arrow),
+                                                    modifier = Modifier
+                                                        .padding(horizontal = Dimens.screenHorizontalPadding)
+                                                        .padding(bottom = Dimens.spacingSm)
+                                                )
+                                            }
 
-                                                    for (i in gridGames.indices step 2) {
-                                                        Row(
-                                                            modifier = Modifier.fillMaxWidth(),
-                                                            horizontalArrangement = Arrangement.spacedBy(Dimens.gridGutter)
-                                                        ) {
-                                                            GameCard(
-                                                                title = gridGames[i].title,
-                                                                imageRes = gridGames[i].logoRes,
-                                                                backgroundGradient = gridGames[i].gradientColors,
-                                                                modifier = Modifier.weight(1f),
-                                                                isFeatured = false,
-                                                                onPlayClick = { onGameTileClick(gridGames[i].id, gridGames[i].title) }
-                                                            )
-                                                            if (i + 1 < gridGames.size) {
-                                                                GameCard(
-                                                                    title = gridGames[i + 1].title,
-                                                                    imageRes = gridGames[i + 1].logoRes,
-                                                                    backgroundGradient = gridGames[i + 1].gradientColors,
-                                                                    modifier = Modifier.weight(1f),
-                                                                    isFeatured = false,
-                                                                    onPlayClick = { onGameTileClick(gridGames[i + 1].id, gridGames[i + 1].title) }
-                                                                )
-                                                            } else {
-                                                                Spacer(modifier = Modifier.weight(1f))
-                                                            }
-                                                        }
-                                                        if (i + 2 < gridGames.size) {
-                                                            Spacer(modifier = Modifier.height(Dimens.gridGutter))
-                                                        }
+                                            itemsIndexed(
+                                                items = gridGamePairs,
+                                                key = { _, pair -> "grid_row_${pair.first().id}" }
+                                            ) { index, pair ->
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(horizontal = Dimens.screenHorizontalPadding)
+                                                        .padding(bottom = if (index < gridGamePairs.size - 1) Dimens.gridGutter else 0.dp),
+                                                    horizontalArrangement = Arrangement.spacedBy(Dimens.gridGutter)
+                                                ) {
+                                                    val firstGame = pair[0]
+                                                    GameCard(
+                                                        title = firstGame.title,
+                                                        imageRes = firstGame.logoRes,
+                                                        backgroundGradient = firstGame.gradientColors,
+                                                        modifier = Modifier.weight(1f),
+                                                        isFeatured = false,
+                                                        onPlayClick = { onGameTileClick(firstGame.id, firstGame.title) }
+                                                    )
+                                                    if (pair.size > 1) {
+                                                        val secondGame = pair[1]
+                                                        GameCard(
+                                                            title = secondGame.title,
+                                                            imageRes = secondGame.logoRes,
+                                                            backgroundGradient = secondGame.gradientColors,
+                                                            modifier = Modifier.weight(1f),
+                                                            isFeatured = false,
+                                                            onPlayClick = { onGameTileClick(secondGame.id, secondGame.title) }
+                                                        )
+                                                    } else {
+                                                        Spacer(modifier = Modifier.weight(1f))
                                                     }
                                                 }
                                             }
@@ -532,6 +536,7 @@ fun HomeScreen(
                 // Custom Bottom Navigation Bar
                 CustomBottomNavBar(
                     selectedTab = selectedTab,
+                    isScrolling = homeListState.isScrollInProgress && selectedTab == NavItem.HOME,
                     onTabSelected = { tab ->
                         activeSubScreen = null
                         selectedTab = tab

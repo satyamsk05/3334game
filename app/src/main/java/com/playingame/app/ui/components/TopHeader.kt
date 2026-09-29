@@ -13,8 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.playingame.app.R
 import com.playingame.app.ui.theme.*
 
@@ -28,6 +31,8 @@ fun TopHeader(
     onNotificationClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -54,8 +59,11 @@ fun TopHeader(
                     .clickable { onProfileClick() },
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = avatarRes),
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(avatarRes)
+                        .crossfade(false)
+                        .build(),
                     contentDescription = "Profile Avatar",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop

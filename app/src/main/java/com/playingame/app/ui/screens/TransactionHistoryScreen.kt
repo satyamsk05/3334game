@@ -41,6 +41,12 @@ enum class TransactionFilterCategory(val label: String) {
     WINNINGS("Wins & Refunds")
 }
 
+private val TransactionDateFormatter = object : ThreadLocal<SimpleDateFormat>() {
+    override fun initialValue(): SimpleDateFormat {
+        return SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
+    }
+}
+
 @Composable
 fun TransactionHistoryScreen(
     onBackClick: () -> Unit,
@@ -238,8 +244,7 @@ private fun RushStyleTransactionRow(
     var isCopied by remember { mutableStateOf(false) }
 
     val dateStr = remember(txn.timestamp) {
-        val sdf = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
-        sdf.format(Date(txn.timestamp))
+        TransactionDateFormatter.get()?.format(Date(txn.timestamp)) ?: ""
     }
 
     val isPositive = txn.type == TransactionType.DEPOSIT || 

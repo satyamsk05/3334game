@@ -14,16 +14,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.playingame.app.R
 import com.playingame.app.ui.theme.CardBorderColor
 import com.playingame.app.ui.theme.CardNavyBackground
 import com.playingame.app.ui.theme.RubikFont
+
+private val ChipPillShape = RoundedCornerShape(percent = 50)
 
 @Composable
 fun WalletChip(
@@ -35,7 +39,7 @@ fun WalletChip(
     fontSize: TextUnit = 16.sp,
     minWidth: Dp = 0.dp
 ) {
-    val pillShape = RoundedCornerShape(percent = 50)
+    val context = LocalContext.current
 
     Box(
         modifier = modifier
@@ -52,10 +56,10 @@ fun WalletChip(
                 .padding(start = 12.dp)
                 .height(chipHeight)
                 .wrapContentWidth()
-                .shadow(elevation = 4.dp, shape = pillShape, spotColor = Color.Black)
-                .clip(pillShape)
+                .shadow(elevation = 4.dp, shape = ChipPillShape, spotColor = Color.Black)
+                .clip(ChipPillShape)
                 .background(CardNavyBackground)
-                .border(width = 1.dp, color = CardBorderColor, shape = pillShape)
+                .border(width = 1.dp, color = CardBorderColor, shape = ChipPillShape)
                 .padding(start = 30.dp, end = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -73,8 +77,11 @@ fun WalletChip(
         }
 
         // 3D Gold Star Coin (Placed on left edge without overlapping any digits)
-        Image(
-            painter = painterResource(id = R.drawable.ic_gold_chip),
+        AsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(R.drawable.ic_gold_chip)
+                .crossfade(false)
+                .build(),
             contentDescription = "Wallet Balance",
             modifier = Modifier
                 .size(coinSize)

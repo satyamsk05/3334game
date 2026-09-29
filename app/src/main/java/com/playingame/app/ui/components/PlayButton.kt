@@ -20,6 +20,8 @@ import com.playingame.app.ui.theme.Dimens
 import com.playingame.app.ui.theme.PlayButtonPurple
 import com.playingame.app.ui.theme.RubikFont
 
+private val PlayButtonShape = RoundedCornerShape(Dimens.radiusFull)
+
 @Composable
 fun PlayButton(
     modifier: Modifier = Modifier,
@@ -27,7 +29,7 @@ fun PlayButton(
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(Dimens.radiusFull))
+            .clip(PlayButtonShape)
             .background(Color.White)
             .clickable { onClick() }
             .padding(horizontal = 14.dp, vertical = 7.dp),
