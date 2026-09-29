@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
       if (res.data?.success && res.data?.data?.token) {
         localStorage.setItem('adminToken', res.data.data.token);
         localStorage.setItem('adminUser', res.data.data.username);
-        window.location.href = '/';
+        router.push('/');
       } else {
         setError(res.data?.message || 'Login failed');
       }
@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#000000] px-4 font-sans text-white selection:bg-white/20 selection:text-white">
       <Card className="w-full max-w-[380px] space-y-6 p-7 border border-white/[0.08] bg-[#0c0c0e]">
-        
+
         {/* Brand Header */}
         <div className="text-center">
           <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black font-black text-xs shadow-sm mb-3">
