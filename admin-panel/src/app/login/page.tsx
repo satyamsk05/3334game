@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
       if (res.data?.success && res.data?.data?.token) {
         localStorage.setItem('adminToken', res.data.data.token);
         localStorage.setItem('adminUser', res.data.data.username);
-        router.push('/');
+        window.location.href = '/';
       } else {
         setError(res.data?.message || 'Login failed');
       }
