@@ -55,8 +55,8 @@ fun RingOfFutureScreen(
                     settings.databaseEnabled = true
                     settings.loadWithOverviewMode = true
                     settings.useWideViewPort = true
-                    settings.allowFileAccess = false
-                    settings.allowContentAccess = false
+                    settings.allowFileAccess = true
+                    settings.allowContentAccess = true
                     settings.setGeolocationEnabled(false)
                     settings.cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
 
@@ -70,6 +70,20 @@ fun RingOfFutureScreen(
                         fun closeGame() {
                             post { onBackClick() }
                         }
+
+                        @JavascriptInterface
+                        fun openDeposit() {
+                            post { onOpenDepositScreen() }
+                        }
+
+                        @JavascriptInterface
+                        fun getAuthToken(): String = sessionToken
+
+                        @JavascriptInterface
+                        fun getUserId(): String = com.playingame.app.core.session.SessionManager.currentUserId() ?: ""
+
+                        @JavascriptInterface
+                        fun getServerUrl(): String = ClientConfig.SERVER_BASE_URL
                     }, "AndroidBridge")
 
                     webViewClient = object : WebViewClient() {
@@ -85,6 +99,7 @@ fun RingOfFutureScreen(
                         }
 
                         private fun isDisallowedNavigation(url: String): Boolean {
+                            if (url.startsWith("file:///android_asset/")) return false
                             val parsedUri = android.net.Uri.parse(url)
                             val baseUri = android.net.Uri.parse(ClientConfig.SERVER_BASE_URL)
                             val scheme = parsedUri.scheme?.lowercase() ?: ""
@@ -99,11 +114,9 @@ fun RingOfFutureScreen(
                             return true // Block external navigation
                         }
                     }
-                    if (authHeaders.isNotEmpty()) {
-                        loadUrl(gameUrl, authHeaders)
-                    } else {
-                        loadUrl(gameUrl)
-                    }
+
+                    // Load offline-first local game bundle (Instant 0-lag launch)
+                    loadUrl("file:///android_asset/games/ring_of_future/index.html")
                 }
             },
             onRelease = { webView ->
