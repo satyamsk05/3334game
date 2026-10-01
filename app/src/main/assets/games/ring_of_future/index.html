@@ -539,6 +539,7 @@
     let currentPhase = 'BETTING';
     let currentRotationDeg = 0;
     let isSpinningAnimation = false;
+    let lastSpunRoundId = null;
 
     // 32 Segment Multipliers & Colors
     const SEGMENTS = [
@@ -593,9 +594,10 @@
       ctx.translate(centerX, centerY);
 
       for (let i = 0; i < totalSegments; i++) {
-        const startAngle = i * anglePerSegment;
-        const endAngle = startAngle + anglePerSegment;
-        const midAngle = startAngle + anglePerSegment / 2;
+        // Segment 0 (30x Green) is centered at 12 o'clock (-Math.PI / 2) under needle pointer
+        const midAngle = -Math.PI / 2 + i * anglePerSegment;
+        const startAngle = midAngle - anglePerSegment / 2;
+        const endAngle = midAngle + anglePerSegment / 2;
         const seg = SEGMENTS[i];
 
         // Draw Arc Segment
@@ -624,7 +626,7 @@
         ctx.fillText(seg.mult, 0, 0);
         ctx.restore();
 
-        // Outer LED divider dot
+        // Outer LED divider dot at segment boundary
         const dotX = Math.cos(startAngle) * (outerRadius - 3);
         const dotY = Math.sin(startAngle) * (outerRadius - 3);
         ctx.beginPath();
@@ -699,13 +701,23 @@
       if (state.phase === 'BETTING') {
         document.getElementById('hubStatus').innerText = 'PLACE BETS';
         document.getElementById('hubSeconds').style.color = '#34D399';
+        // Always show 30x Green centered under needle during loading / bet placing
+        const targetDeg = Math.ceil(currentRotationDeg / 360) * 360;
+        if (currentRotationDeg !== targetDeg && !isSpinningAnimation) {
+          canvas.style.transition = 'transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)';
+          canvas.style.transform = `rotate(${targetDeg}deg) translate3d(0, 0, 0)`;
+          currentRotationDeg = targetDeg;
+        }
       } else if (state.phase === 'LOCKED') {
         document.getElementById('hubStatus').innerText = 'LOCKED';
         document.getElementById('hubSeconds').style.color = '#F59E0B';
       } else if (state.phase === 'SPINNING') {
         document.getElementById('hubStatus').innerText = 'SPINNING';
         document.getElementById('hubSeconds').style.color = '#A78BFA';
-        triggerSpin(state.winningSegmentIndex);
+        if (lastSpunRoundId !== state.roundId) {
+          lastSpunRoundId = state.roundId;
+          triggerSpin(state.winningSegmentIndex);
+        }
       } else if (state.phase === 'RESULT_SHOW') {
         document.getElementById('hubStatus').innerText = 'WIN: ' + state.winningType;
         document.getElementById('hubSeconds').style.color = '#34D399';
@@ -746,18 +758,24 @@
       }).join('');
     }
 
-    // 120 FPS GPU Accelerated Spin
+    // 120 FPS GPU Accelerated Spin - Aligns winning segment dead center with needle
     function triggerSpin(winningIndex) {
       if (isSpinningAnimation) return;
       isSpinningAnimation = true;
 
       const totalSegments = 32;
       const degPerSegment = 360 / totalSegments;
-      const segmentCenterDeg = (winningIndex + 0.5) * degPerSegment;
-      const extraSpins = 5 * 360;
-
-      // 12 o'clock needle pointer is at 270 deg
-      const targetDeg = currentRotationDeg + extraSpins + (360 - (currentRotationDeg % 360)) + (270 - segmentCenterDeg);
+      // Segment 0 (30x Green) is centered at 12 o'clock (-90 deg).
+      // Segment i is located at (i * degPerSegment) clockwise from 12 o'clock.
+      // Rotating clockwise by R brings segment i directly under the 12 o'clock needle:
+      const spinOffset = (360 - ((winningIndex * degPerSegment) % 360)) % 360;
+      const currentMod = ((currentRotationDeg % 360) + 360) % 360;
+      let forwardDegrees = spinOffset - currentMod;
+      if (forwardDegrees <= 0) {
+        forwardDegrees += 360;
+      }
+      const extraSpins = 5 * 360; // 5 full dramatic rotations
+      const targetDeg = currentRotationDeg + extraSpins + forwardDegrees;
       currentRotationDeg = targetDeg;
 
       canvas.style.transition = 'transform 4.5s cubic-bezier(0.12, 0.85, 0.22, 1)';
