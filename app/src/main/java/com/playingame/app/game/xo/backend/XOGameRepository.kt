@@ -16,12 +16,12 @@ import kotlin.random.Random
 object XOGameRepository {
 
     val defaultTiers = listOf(
-        XOTier("tier_1", "Battle ₹1", 1.0, 1.5, 0.0, 0.25, 2),
-        XOTier("tier_5", "Battle ₹5", 5.0, 9.0, 0.0, 1.0, 2),
-        XOTier("tier_10", "Battle ₹10", 10.0, 18.0, 0.0, 2.0, 2),
-        XOTier("tier_25", "Battle ₹25", 25.0, 45.0, 0.0, 5.0, 2),
-        XOTier("tier_50", "Battle ₹50", 50.0, 90.0, 0.0, 10.0, 2),
-        XOTier("tier_100", "Battle ₹100", 100.0, 180.0, 0.0, 20.0, 2)
+        XOTier("tier_1", "Battle 1", 1.0, 1.5, 0.0, 0.25, 2),
+        XOTier("tier_5", "Battle 5", 5.0, 9.0, 0.0, 1.0, 2),
+        XOTier("tier_10", "Battle 10", 10.0, 18.0, 0.0, 2.0, 2),
+        XOTier("tier_25", "Battle 25", 25.0, 45.0, 0.0, 5.0, 2),
+        XOTier("tier_50", "Battle 50", 50.0, 90.0, 0.0, 10.0, 2),
+        XOTier("tier_100", "Battle 100", 100.0, 180.0, 0.0, 20.0, 2)
     )
 
     suspend fun joinBattle(tier: XOTier, playerName: String, userId: String): Result<XORoomState> = withContext(Dispatchers.IO) {

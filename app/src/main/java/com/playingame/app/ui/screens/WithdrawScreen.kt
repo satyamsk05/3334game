@@ -30,7 +30,7 @@ import com.playingame.app.ui.theme.RubikFont
 
 @Composable
 fun WithdrawScreen(
-    winningsBalance: String = "₹1250",
+    winningsBalance: String = "1250",
     onBackClick: () -> Unit = {},
     onNextClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
@@ -113,7 +113,7 @@ fun WithdrawScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Enter Amount (₹)",
+                text = "Enter Amount",
                 fontSize = 14.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,
@@ -134,13 +134,6 @@ fun WithdrawScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "₹ ",
-                        fontSize = 18.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.W800,
-                        color = Color.White
-                    )
 
                     BasicTextField(
                         value = amount,
@@ -162,7 +155,7 @@ fun WithdrawScreen(
                             Box(contentAlignment = Alignment.CenterStart) {
                                 if (amount.isEmpty()) {
                                     Text(
-                                        text = "Enter Amount (Min ₹25)",
+                                        text = "Enter Amount (Min 25)",
                                         fontSize = 18.sp,
                                         fontFamily = RubikFont,
                                         fontWeight = FontWeight.W800,
@@ -178,7 +171,7 @@ fun WithdrawScreen(
             }
 
             Text(
-                text = "Min ₹25 - Max ₹5000 twice a day (Winnings Only)",
+                text = "Min 25 - Max 5000 twice a day (Winnings Only)",
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Medium,

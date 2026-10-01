@@ -47,7 +47,7 @@ fun WithdrawDetailsScreen(
     var isSubmitting by remember { mutableStateOf(false) }
 
     val amountNum = withdrawAmount.toDoubleOrNull() ?: 500.0
-    val upiFee = (amountNum * 0.02).coerceAtMost(10.0) // 2% fee max ₹10
+    val upiFee = (amountNum * 0.02).coerceAtMost(10.0) // 2% fee max 10
     val finalNet = (amountNum - upiFee).coerceAtLeast(0.0)
 
     Column(
@@ -106,7 +106,7 @@ fun WithdrawDetailsScreen(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "₹${withdrawAmount.ifEmpty { "500" }}",
+                text = "${withdrawAmount.ifEmpty { "500" }}",
                 fontSize = 40.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.W800,
@@ -162,7 +162,7 @@ fun WithdrawDetailsScreen(
                         color = Color(0xFFD1D5DB)
                     )
                     Text(
-                        text = "- ₹${String.format("%.2f", upiFee)}",
+                        text = "- ${String.format("%.2f", upiFee)}",
                         fontSize = 14.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
@@ -183,7 +183,7 @@ fun WithdrawDetailsScreen(
                         color = Color(0xFFD1D5DB)
                     )
                     Text(
-                        text = "- ₹0",
+                        text = "- 0",
                         fontSize = 14.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
@@ -278,7 +278,7 @@ fun WithdrawDetailsScreen(
                             )
                         } else {
                             Text(
-                                text = "Get ₹${String.format("%.2f", finalNet)}",
+                                text = "Get ${String.format("%.2f", finalNet)}",
                                 fontSize = 14.5.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.W800,

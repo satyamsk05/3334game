@@ -26,10 +26,10 @@ import com.playingame.app.ui.theme.RubikFont
 
 @Composable
 fun WalletScreen(
-    balance: String = "₹33.2",
-    depositBalance: String = "₹1.75",
-    winningsBalance: String = "₹31.45",
-    rewardsBalance: String = "₹1.5",
+    balance: String = "33.2",
+    depositBalance: String = "1.75",
+    winningsBalance: String = "31.45",
+    rewardsBalance: String = "1.5",
     onAddCashClick: () -> Unit = {},
     onWithdrawClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
@@ -329,7 +329,7 @@ fun WalletScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "₹ ↓ WITHDRAW",
+                            text = "↓ WITHDRAW",
                             fontSize = 14.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.W800,
@@ -433,7 +433,7 @@ fun WalletScreen(
                 ) {
                     Column {
                         Text(
-                            text = "₹500",
+                            text = "500",
                             fontSize = 26.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.W800,
@@ -441,7 +441,7 @@ fun WalletScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "+ ₹90 Cashback",
+                            text = "+ 90 Cashback",
                             fontSize = 12.5.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.W700,

@@ -251,7 +251,7 @@ private fun RushStyleTransactionRow(
                      txn.type == TransactionType.WIN_PAYOUT || 
                      txn.type == TransactionType.BET_REFUND
 
-    val amountPrefix = if (isPositive) "+ ₹" else "- ₹"
+    val amountPrefix = if (isPositive) "+ " else "- "
     val amountColor = if (isPositive) Color(0xFF00E676) else Color.White
 
     // Clean Line-Art Vector Icon (NO colored box, NO background square, NO tint block)
@@ -380,7 +380,7 @@ private fun RushStyleTransactionRow(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(text = "Wallet Balance After", fontSize = 12.sp, fontFamily = RubikFont, color = Color(0xFF948BA8))
-                        Text(text = "₹${String.format(Locale.getDefault(), "%.2f", txn.balanceAfterPaise / 100.0)}", fontSize = 12.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(text = String.format(Locale.getDefault(), "%.2f", txn.balanceAfterPaise / 100.0), fontSize = 12.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
 

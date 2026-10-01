@@ -559,14 +559,42 @@
       return 'http://3.7.73.109:4001';
     }
 
-    function updateLocalWalletDisplay() {
+    function updateWalletDisplay(serverPaise) {
+      const display = document.getElementById('walletDisplay');
+      if (!display) return;
+
+      // 1. Check local Android bridge balance first (Native Android Ledger)
       if (window.AndroidBridge && window.AndroidBridge.getLocalWalletBalancePaise) {
         try {
-          const paise = window.AndroidBridge.getLocalWalletBalancePaise();
-          if (paise !== undefined && paise !== null && paise >= 0) {
-            document.getElementById('walletDisplay').innerText = (paise / 100).toFixed(2);
+          const localPaise = window.AndroidBridge.getLocalWalletBalancePaise();
+          if (localPaise !== undefined && localPaise !== null && localPaise > 0) {
+            display.innerText = (localPaise / 100).toFixed(2);
+            return;
           }
         } catch (_) {}
+      }
+
+      // 2. If server has positive balance, show server balance
+      if (serverPaise !== undefined && serverPaise !== null && serverPaise > 0) {
+        display.innerText = (serverPaise / 100).toFixed(2);
+        return;
+      }
+
+      // 3. Fallback to local 0.00 or server 0.00
+      if (window.AndroidBridge && window.AndroidBridge.getLocalWalletBalancePaise) {
+        try {
+          const localPaise = window.AndroidBridge.getLocalWalletBalancePaise();
+          if (localPaise !== undefined && localPaise !== null && localPaise >= 0) {
+            display.innerText = (localPaise / 100).toFixed(2);
+            return;
+          }
+        } catch (_) {}
+      }
+
+      if (serverPaise !== undefined && serverPaise !== null && serverPaise >= 0) {
+        display.innerText = (serverPaise / 100).toFixed(2);
+      } else {
+        display.innerText = '0.00';
       }
     }
 
@@ -685,6 +713,9 @@
       }
     }
 
+    let localBets = { '2x': 0, '3x': 0, '5x': 0, '30x': 0 };
+    let hasCreditedLocalWinForRound = null;
+
     async function handleBet(multiplierType) {
       if (currentPhase !== 'BETTING') {
         alert('Bets are closed for this round');
@@ -694,6 +725,7 @@
       const serverUrl = getServerUrl();
       const token = getAuthToken();
       const uid = getUserId();
+      const betAmountPaise = Math.round(selectedChipRupees * 100);
 
       try {
         const headers = { 'Content-Type': 'application/json' };
@@ -710,15 +742,42 @@
           updateUI(data.data);
           if (data.data && data.data.wallet && window.AndroidBridge && window.AndroidBridge.syncWalletBalance) {
             try {
-              window.AndroidBridge.syncWalletBalance(data.data.wallet.totalPaise);
+              if (data.data.wallet.totalPaise > 0) {
+                window.AndroidBridge.syncWalletBalance(data.data.wallet.totalPaise);
+              }
             } catch (_) {}
           }
-        } else {
-          alert(data.message || 'Unable to place bet');
+          return;
+        } else if (data.message && data.message.toLowerCase().includes('insufficient')) {
+          alert(data.message);
+          return;
         }
-      } catch (_) {
-        alert('Network connection issue');
+      } catch (_) {}
+
+      // Resilient Native Bridge Fallback: Place bet directly in app's WalletLedger
+      if (window.AndroidBridge && window.AndroidBridge.placeLocalBet) {
+        try {
+          const success = window.AndroidBridge.placeLocalBet(betAmountPaise);
+          if (success) {
+            localBets[multiplierType] = (localBets[multiplierType] || 0) + betAmountPaise;
+            updateWalletDisplay();
+
+            const badgeId = multiplierType === '2x' ? 'badge2x' : multiplierType === '3x' ? 'badge3x' : multiplierType === '5x' ? 'badge5x' : 'badge30x';
+            const badgeTextId = multiplierType === '2x' ? 'badgeText2x' : multiplierType === '3x' ? 'badgeText3x' : multiplierType === '5x' ? 'badgeText5x' : 'badgeText30x';
+            const tileId = multiplierType === '2x' ? 'tile2x' : multiplierType === '3x' ? 'tile3x' : multiplierType === '5x' ? 'tile5x' : 'tile30x';
+            const currText = document.getElementById(badgeTextId).innerText;
+            const prevVal = parseInt(currText || '0', 10) || 0;
+            const newVal = prevVal + selectedChipRupees;
+            updateTileBadge(badgeId, badgeTextId, tileId, newVal * 100);
+            return;
+          } else {
+            alert('Insufficient balance');
+            return;
+          }
+        } catch (_) {}
       }
+
+      alert('Unable to place bet');
     }
 
     function updateUI(data) {
@@ -728,16 +787,17 @@
 
       currentPhase = state.phase;
       
-      // Update wallet balance: from server or local bridge
+      // Update wallet balance smoothly: from local bridge or server
       if (wallet && wallet.totalPaise !== undefined) {
-        document.getElementById('walletDisplay').innerText = (wallet.totalPaise / 100).toFixed(2);
+        updateWalletDisplay(wallet.totalPaise);
       } else {
-        updateLocalWalletDisplay();
+        updateWalletDisplay();
       }
 
       document.getElementById('hubSeconds').innerText = state.secondsRemaining + 's';
 
       if (state.phase === 'BETTING') {
+        localBets = { '2x': 0, '3x': 0, '5x': 0, '30x': 0 };
         document.getElementById('hubStatus').innerText = 'PLACE BETS';
         document.getElementById('hubSeconds').style.color = '#34D399';
         // Always show 30x Green centered under needle during loading / bet placing
@@ -760,13 +820,33 @@
       } else if (state.phase === 'RESULT_SHOW') {
         document.getElementById('hubStatus').innerText = 'WIN: ' + state.winningType;
         document.getElementById('hubSeconds').style.color = '#34D399';
+
+        // Check if user won a locally placed bet
+        if (hasCreditedLocalWinForRound !== state.roundId) {
+          hasCreditedLocalWinForRound = state.roundId;
+          const winnerKey = state.winningType;
+          const betOnWin = localBets[winnerKey] || 0;
+          if (betOnWin > 0) {
+            const mult = winnerKey === '30x' ? 30 : parseInt(winnerKey, 10);
+            const winPaise = betOnWin * mult;
+            if (window.AndroidBridge && window.AndroidBridge.creditLocalWinnings) {
+              window.AndroidBridge.creditLocalWinnings(winPaise, winnerKey);
+              updateWalletDisplay();
+            }
+            showWin((winPaise / 100).toFixed(0));
+          }
+        }
       }
 
       // Update Badges & Active Tile Outlines (NUMBERS ONLY)
-      updateTileBadge('badge2x', 'badgeText2x', 'tile2x', state.userBets.grey2x);
-      updateTileBadge('badge3x', 'badgeText3x', 'tile3x', state.userBets.purple3x);
-      updateTileBadge('badge5x', 'badgeText5x', 'tile5x', state.userBets.orange5x);
-      updateTileBadge('badge30x', 'badgeText30x', 'tile30x', state.userBets.green30x);
+      const b2x = (state.userBets && state.userBets.grey2x) || localBets['2x'] || 0;
+      const b3x = (state.userBets && state.userBets.purple3x) || localBets['3x'] || 0;
+      const b5x = (state.userBets && state.userBets.orange5x) || localBets['5x'] || 0;
+      const b30x = (state.userBets && state.userBets.green30x) || localBets['30x'] || 0;
+      updateTileBadge('badge2x', 'badgeText2x', 'tile2x', b2x);
+      updateTileBadge('badge3x', 'badgeText3x', 'tile3x', b3x);
+      updateTileBadge('badge5x', 'badgeText5x', 'tile5x', b5x);
+      updateTileBadge('badge30x', 'badgeText30x', 'tile30x', b30x);
 
       // Render History
       renderHistory(state.recentResults || []);
@@ -852,20 +932,22 @@
           updateUI(json.data);
           if (json.data && json.data.wallet && window.AndroidBridge && window.AndroidBridge.syncWalletBalance) {
             try {
-              window.AndroidBridge.syncWalletBalance(json.data.wallet.totalPaise);
+              if (json.data.wallet.totalPaise > 0) {
+                window.AndroidBridge.syncWalletBalance(json.data.wallet.totalPaise);
+              }
             } catch (_) {}
           }
         }
       } catch (_) {
-        updateLocalWalletDisplay();
+        updateWalletDisplay();
       }
     }
 
     // Instant local wallet balance on boot
-    updateLocalWalletDisplay();
-    setTimeout(updateLocalWalletDisplay, 50);
-    setTimeout(updateLocalWalletDisplay, 200);
-    setTimeout(updateLocalWalletDisplay, 600);
+    updateWalletDisplay();
+    setTimeout(() => updateWalletDisplay(), 50);
+    setTimeout(() => updateWalletDisplay(), 200);
+    setTimeout(() => updateWalletDisplay(), 600);
 
     setInterval(syncLoop, 1000);
     syncLoop();

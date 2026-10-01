@@ -502,8 +502,8 @@ fun XOBattleScreen(
                 ) {
                     Text(
                         text = when {
-                            winnerUserId == myUserId -> "Congratulations! You won ₹${String.format(Locale.getDefault(), "%.2f", roomState.tier.firstPrizeRupees)}"
-                            isDraw -> "Entry fee of ₹${String.format(Locale.getDefault(), "%.2f", roomState.tier.entryRupees)} refunded."
+                            winnerUserId == myUserId -> "Congratulations! You won ${String.format(Locale.getDefault(), "%.2f", roomState.tier.firstPrizeRupees)}"
+                            isDraw -> "Entry fee of ${String.format(Locale.getDefault(), "%.2f", roomState.tier.entryRupees)} refunded."
                             else -> "Better luck next time!"
                         },
                         color = Color.White,

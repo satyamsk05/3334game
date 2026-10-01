@@ -274,7 +274,7 @@ fun XOLobbyScreen(
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = String.format(Locale.getDefault(), "₹%.2f", currentTier.firstPrizeRupees),
+                                    text = String.format(Locale.getDefault(), "%.2f", currentTier.firstPrizeRupees),
                                     color = Color.White,
                                     fontSize = 28.sp,
                                     fontFamily = RubikFont,
@@ -305,7 +305,7 @@ fun XOLobbyScreen(
                                     fontFamily = RubikFont
                                 )
                                 Text(
-                                    text = "₹0.00",
+                                    text = "0.00",
                                     color = Color(0xFFE5E7EB),
                                     fontSize = 18.sp,
                                     fontFamily = RubikFont,
@@ -370,7 +370,7 @@ fun XOLobbyScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Use ₹${String.format(Locale.getDefault(), "%.2f", currentTier.bonusUsableRupees)} from Bonus",
+                        text = "Use ${String.format(Locale.getDefault(), "%.2f", currentTier.bonusUsableRupees)} from Bonus",
                         color = Color(0xFF00E676),
                         fontSize = 13.sp,
                         fontFamily = RubikFont,
@@ -398,7 +398,7 @@ fun XOLobbyScreen(
                     .height(56.dp)
             ) {
                 Text(
-                    text = "Play for ₹${String.format(Locale.getDefault(), "%.0f", currentTier.entryRupees)}",
+                    text = "Play for ${String.format(Locale.getDefault(), "%.0f", currentTier.entryRupees)}",
                     color = Color.Black,
                     fontSize = 18.sp,
                     fontFamily = RubikFont,

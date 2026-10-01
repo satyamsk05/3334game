@@ -109,7 +109,7 @@ fun DepositPaymentScreen(
             }
 
             Text(
-                text = "₹${String.format(java.util.Locale.US, "%.0f", amountRupees)}",
+                text = String.format(java.util.Locale.US, "%.0f", amountRupees),
                 fontSize = 17.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,

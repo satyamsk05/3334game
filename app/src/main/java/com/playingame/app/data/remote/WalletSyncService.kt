@@ -69,7 +69,7 @@ object WalletSyncService {
             withContext(Dispatchers.Main) {
                 WalletLedger.syncBalance(dep, win, bon)
             }
-            Log.d(TAG, "Wallet synced live from server: dep=₹${dep/100.0}, win=₹${win/100.0}, bon=₹${bon/100.0}")
+            Log.d(TAG, "Wallet synced live from server: dep=${dep/100.0}, win=${win/100.0}, bon=${bon/100.0}")
             
             // Also fetch transactions
             fetchTransactions(targetUserId)
@@ -143,11 +143,11 @@ object WalletSyncService {
                 val normalizedDesc = when {
                     descUpper.contains("DRAW REFUND") || descUpper.contains("XO DRAW") -> {
                         val amount = rawDesc.filter { it.isDigit() }
-                        if (amount.isNotBlank()) "Match Draw Refund (₹$amount returned)" else "Match Draw Refund (Returned)"
+                        if (amount.isNotBlank()) "Match Draw Refund ($amount returned)" else "Match Draw Refund (Returned)"
                     }
                     descUpper.contains("ENTRY FEE FOR BATTLE") || (descUpper.contains("BATTLE") && type == com.playingame.app.game.ringoffuture.backend.TransactionType.BET_PLACED) -> {
                         val amount = rawDesc.filter { it.isDigit() }
-                        if (amount.isNotBlank()) "XO 1v1 Battle Entry (₹$amount)" else "XO 1v1 Battle Entry"
+                        if (amount.isNotBlank()) "XO 1v1 Battle Entry ($amount)" else "XO 1v1 Battle Entry"
                     }
                     descUpper.contains("WON 1V1") || (descUpper.contains("BATTLE") && type == com.playingame.app.game.ringoffuture.backend.TransactionType.WIN_PAYOUT) -> {
                         "🏆 XO 1v1 Battle Victory"

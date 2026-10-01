@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.Locale
 
-// Integer Paise Invariants (Rule 1 & 2): 100 paise = ₹1
+// Integer Paise Invariants (Rule 1 & 2): 100 paise = 1 unit
 data class WalletBalance(
-    val depositPaise: Long = 0L,   // ₹0.00
-    val winningPaise: Long = 0L,  // ₹0.00
-    val bonusPaise: Long = 0L      // ₹0.00
+    val depositPaise: Long = 0L,   // 0.00
+    val winningPaise: Long = 0L,  // 0.00
+    val bonusPaise: Long = 0L      // 0.00
 ) {
     val totalPaise: Long get() = depositPaise + winningPaise + bonusPaise
     val totalRupees: Double get() = totalPaise / 100.0
@@ -18,10 +18,10 @@ data class WalletBalance(
     val winningRupees: Double get() = winningPaise / 100.0
     val bonusRupees: Double get() = bonusPaise / 100.0
 
-    val formattedTotal: String get() = String.format(Locale.getDefault(), "₹%.2f", totalRupees)
-    val formattedDeposit: String get() = String.format(Locale.getDefault(), "₹%.2f", depositRupees)
-    val formattedWinnings: String get() = String.format(Locale.getDefault(), "₹%.2f", winningRupees)
-    val formattedBonus: String get() = String.format(Locale.getDefault(), "₹%.2f", bonusRupees)
+    val formattedTotal: String get() = String.format(Locale.getDefault(), "%.2f", totalRupees)
+    val formattedDeposit: String get() = String.format(Locale.getDefault(), "%.2f", depositRupees)
+    val formattedWinnings: String get() = String.format(Locale.getDefault(), "%.2f", winningRupees)
+    val formattedBonus: String get() = String.format(Locale.getDefault(), "%.2f", bonusRupees)
 }
 
 enum class TransactionType {
@@ -51,7 +51,7 @@ data class WalletTransaction(
     val timestamp: Long = System.currentTimeMillis()
 ) {
     val amountRupees: Double get() = amountPaise / 100.0
-    val amountRupeesFormatted: String get() = String.format(Locale.getDefault(), "₹%.2f", amountRupees)
+    val amountRupeesFormatted: String get() = String.format(Locale.getDefault(), "%.2f", amountRupees)
 }
 
 data class UserProfile(
@@ -85,7 +85,7 @@ object WalletLedger {
     }
 
     fun rupeesToPaise(rupees: Double): Long = Math.round(rupees * 100)
-    fun formatPaiseToRupees(paise: Long): String = String.format(Locale.getDefault(), "₹%.2f", paise / 100.0)
+    fun formatPaiseToRupees(paise: Long): String = String.format(Locale.getDefault(), "%.2f", paise / 100.0)
 
     @Synchronized
     fun setTransactions(newTransactions: List<WalletTransaction>) {
@@ -267,10 +267,10 @@ object WalletLedger {
         val maxPaise = 500000L
 
         if (amountPaise < minPaise) {
-            return Pair(false, "Minimum withdrawal amount is ₹25")
+            return Pair(false, "Minimum withdrawal amount is 25")
         }
         if (amountPaise > maxPaise) {
-            return Pair(false, "Maximum withdrawal amount is ₹5,000 per request")
+            return Pair(false, "Maximum withdrawal amount is 5,000 per request")
         }
         if (amountPaise > current.winningPaise) {
             return Pair(false, "Insufficient Winnings Balance (Available: ${current.formattedWinnings})")

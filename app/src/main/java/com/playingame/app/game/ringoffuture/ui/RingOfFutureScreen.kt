@@ -29,6 +29,10 @@ fun RingOfFutureScreen(
         onBackClick()
     }
 
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        com.playingame.app.data.remote.WalletSyncService.syncBalance()
+    }
+
     val sessionToken = com.playingame.app.core.session.SessionManager.authToken() ?: ""
     val gameUrl = "${ClientConfig.SERVER_BASE_URL}/game/ring-of-future"
     val authHeaders = remember(sessionToken) {
@@ -59,6 +63,8 @@ fun RingOfFutureScreen(
                     settings.useWideViewPort = true
                     settings.allowFileAccess = true
                     settings.allowContentAccess = true
+                    settings.allowFileAccessFromFileURLs = true
+                    settings.allowUniversalAccessFromFileURLs = true
                     settings.setGeolocationEnabled(false)
                     settings.cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
 
@@ -89,7 +95,11 @@ fun RingOfFutureScreen(
                         fun getUserId(): String {
                             val uid = com.playingame.app.data.repository.AuthRepository.currentSession.value.userId
                             if (uid.isNotEmpty()) return uid
-                            return com.playingame.app.core.session.SessionManager.currentUserId() ?: ""
+                            val sessionUid = com.playingame.app.core.session.SessionManager.currentUserId()
+                            if (!sessionUid.isNullOrEmpty()) return sessionUid
+                            val ledgerUid = com.playingame.app.game.ringoffuture.backend.WalletLedger.userProfile.value.userId
+                            if (ledgerUid.isNotEmpty()) return ledgerUid
+                            return "player_guest"
                         }
 
                         @JavascriptInterface
@@ -98,7 +108,19 @@ fun RingOfFutureScreen(
                         }
 
                         @JavascriptInterface
+                        fun placeLocalBet(amountPaise: Long): Boolean {
+                            val result = com.playingame.app.game.ringoffuture.backend.WalletLedger.placeBet(amountPaise)
+                            return result.success
+                        }
+
+                        @JavascriptInterface
+                        fun creditLocalWinnings(amountPaise: Long, multiplierLabel: String) {
+                            com.playingame.app.game.ringoffuture.backend.WalletLedger.creditWin(amountPaise, multiplierLabel)
+                        }
+
+                        @JavascriptInterface
                         fun syncWalletBalance(paise: Long) {
+                            if (paise <= 0L) return
                             post {
                                 com.playingame.app.game.ringoffuture.backend.WalletLedger.syncBalance(
                                     depositPaise = paise,

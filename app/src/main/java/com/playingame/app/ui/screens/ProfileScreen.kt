@@ -56,7 +56,7 @@ fun ProfileScreen(
     phone: String = "+91 98765 43210",
     avatarId: String = "avatar_1",
     avatarRes: Int = R.drawable.avatar_1,
-    balance: String = "₹0.00",
+    balance: String = "0.00",
     onBackClick: () -> Unit = {},
     onWalletClick: () -> Unit = {},
     onSupportClick: () -> Unit = {},

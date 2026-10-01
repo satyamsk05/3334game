@@ -150,7 +150,7 @@ fun XOMatchmakingScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Battle ₹${String.format(Locale.getDefault(), "%.1f", tier.entryRupees)}",
+                        text = "Battle ${String.format(Locale.getDefault(), "%.1f", tier.entryRupees)}",
                         color = Color.White,
                         fontSize = 15.sp,
                         fontFamily = RubikFont,
