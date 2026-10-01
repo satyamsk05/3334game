@@ -614,24 +614,12 @@
         ctx.strokeStyle = '#0A0C11';
         ctx.stroke();
 
-        // Draw Multiplier Label (Clean bold number without x)
-        ctx.save();
-        ctx.rotate(midAngle);
-        ctx.translate((outerRadius + innerRadius) / 2, 0);
-        ctx.rotate(Math.PI / 2);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '800 11px Rubik, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(seg.mult, 0, 0);
-        ctx.restore();
-
         // Outer LED divider dot at segment boundary
         const dotX = Math.cos(startAngle) * (outerRadius - 3);
         const dotY = Math.sin(startAngle) * (outerRadius - 3);
         ctx.beginPath();
-        ctx.arc(dotX, dotY, 1.4, 0, 2 * Math.PI);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.arc(dotX, dotY, 1.5, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
         ctx.fill();
       }
 
