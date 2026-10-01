@@ -13,11 +13,7 @@ object ClientConfig {
      * Cleartext is allowlisted only for known hosts in network_security_config.xml.
      * Prefer HTTPS once TLS is terminated on the server.
      */
-    var SERVER_BASE_URL: String = if (BuildConfig.DEBUG) {
-        "http://10.0.2.2:4001"
-    } else {
-        "http://3.7.73.109:4001"
-    }
+    var SERVER_BASE_URL: String = "http://3.7.73.109:4001"
 
     val APP_VERSION: String
         get() = try {
