@@ -44,11 +44,20 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
           }
         }
       } catch (err: any) {
-        if (isMounted) {
+        if (!isMounted) return;
+
+        const status = err?.status ?? err?.original?.response?.status;
+        const isUnauthorized = status === 401 || status === 403 || err?.isUnauthorized || err?.isForbidden;
+
+        // Only wipe the session on real auth failures — not timeouts / network blips
+        if (isUnauthorized) {
           setAuthorized(false);
           localStorage.removeItem('adminToken');
           localStorage.removeItem('adminUser');
           router.replace('/login');
+        } else {
+          // Keep token; allow retry on next navigation. Stay unauthorized for this render.
+          setAuthorized(false);
         }
       } finally {
         if (isMounted) {

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Base configuration: cleartext HTTP traffic allowed -->
-    <base-config cleartextTrafficPermitted="true">
+    <!-- Deny cleartext globally; allow only explicit development / temporary EC2 hosts -->
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
     </base-config>
 
-    <!-- Specific domain allowlist for EC2 backend and local debugging -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">3.7.73.109</domain>
         <domain includeSubdomains="true">10.0.2.2</domain>

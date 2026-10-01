@@ -30,8 +30,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.playingame.app.R
 import com.playingame.app.core.config.ClientConfig
 import com.playingame.app.core.session.SessionManager
-import com.playingame.app.data.remote.WalletSyncService
-import com.playingame.app.game.ringoffuture.backend.WalletLedger
 import com.playingame.app.ui.theme.AppBackground
 import com.playingame.app.ui.theme.CardNavyBackground
 import com.playingame.app.ui.theme.RubikFont
@@ -43,18 +41,20 @@ fun DepositPaymentScreen(
     onBackClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val userProfile by WalletLedger.userProfile.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
     val sessionToken = SessionManager.authToken() ?: ""
 
-    // Build the secure payment gateway URL
-    val payUrl = remember(amountRupees, userProfile.userId) {
+    // Amount only — session JWT is sent via Authorization header, never in the URL
+    val payUrl = remember(amountRupees) {
         val base = "${ClientConfig.SERVER_BASE_URL}/pay"
         val amt = String.format(java.util.Locale.US, "%.0f", amountRupees)
+        "$base?amount=$amt"
+    }
+    val authHeaders = remember(sessionToken) {
         if (sessionToken.isNotBlank()) {
-            "$base?userId=${userProfile.userId}&amount=$amt&token=$sessionToken"
+            mapOf("Authorization" to "Bearer $sessionToken")
         } else {
-            "$base?userId=${userProfile.userId}&amount=$amt"
+            emptyMap()
         }
     }
 
@@ -214,7 +214,11 @@ fun DepositPaymentScreen(
                         }
 
                         settings.cacheMode = WebSettings.LOAD_NO_CACHE
-                        loadUrl(payUrl)
+                        if (authHeaders.isNotEmpty()) {
+                            loadUrl(payUrl, authHeaders)
+                        } else {
+                            loadUrl(payUrl)
+                        }
                     }
                 },
                 onRelease = { webView ->

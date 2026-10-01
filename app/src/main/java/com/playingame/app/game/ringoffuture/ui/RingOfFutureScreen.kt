@@ -17,11 +17,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.playingame.app.core.config.ClientConfig
 import com.playingame.app.ui.theme.RubikFont
-
 import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import com.playingame.app.game.ringoffuture.backend.WalletLedger
+import androidx.compose.runtime.remember
 
 @Composable
 fun RingOfFutureScreen(
@@ -32,12 +29,14 @@ fun RingOfFutureScreen(
         onBackClick()
     }
 
-    val userProfile by WalletLedger.userProfile.collectAsState()
     val sessionToken = com.playingame.app.core.session.SessionManager.authToken() ?: ""
-    val gameUrl = if (sessionToken.isNotBlank()) {
-        "${ClientConfig.SERVER_BASE_URL}/game/ring-of-future?userId=${userProfile.userId}&token=${sessionToken}"
-    } else {
-        "${ClientConfig.SERVER_BASE_URL}/game/ring-of-future?userId=${userProfile.userId}"
+    val gameUrl = "${ClientConfig.SERVER_BASE_URL}/game/ring-of-future"
+    val authHeaders = remember(sessionToken) {
+        if (sessionToken.isNotBlank()) {
+            mapOf("Authorization" to "Bearer $sessionToken")
+        } else {
+            emptyMap()
+        }
     }
 
     Box(
@@ -96,7 +95,11 @@ fun RingOfFutureScreen(
                             return true // Block external navigation
                         }
                     }
-                    loadUrl(gameUrl)
+                    if (authHeaders.isNotEmpty()) {
+                        loadUrl(gameUrl, authHeaders)
+                    } else {
+                        loadUrl(gameUrl)
+                    }
                 }
             },
             onRelease = { webView ->

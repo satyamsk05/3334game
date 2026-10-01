@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
         setError(res.data?.message || 'Login failed');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Invalid admin credentials');
+      setError(err?.message || err?.response?.data?.message || 'Invalid admin credentials');
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,7 @@ export default function AdminLoginPage() {
 
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-500 pt-3 border-t border-white/[0.06]">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" strokeWidth={1.75} />
-          <span>Encrypted 256-bit Session</span>
+          <span>Protected admin session</span>
         </div>
 
       </Card>

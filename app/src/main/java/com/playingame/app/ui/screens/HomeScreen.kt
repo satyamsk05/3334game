@@ -170,22 +170,14 @@ fun HomeScreen(
         com.playingame.app.data.remote.PromotionSyncService.fetchActivePromotions()
     }
 
-    fun openDepositInBrowser(amountRupees: Double) {
-        val sessionToken = com.playingame.app.core.session.SessionManager.authToken() ?: ""
-        val amtStr = String.format(java.util.Locale.US, "%.0f", amountRupees)
-        val url = if (sessionToken.isNotBlank()) {
-            "${com.playingame.app.core.config.ClientConfig.SERVER_BASE_URL}/pay?userId=${userProfile.userId}&amount=$amtStr&token=$sessionToken"
-        } else {
-            "${com.playingame.app.core.config.ClientConfig.SERVER_BASE_URL}/pay?userId=${userProfile.userId}&amount=$amtStr"
+    fun openDepositScreen(amountRupees: Double) {
+        val sessionToken = com.playingame.app.core.session.SessionManager.authToken()
+        if (sessionToken.isNullOrBlank()) {
+            Toast.makeText(context, "Please sign in to deposit", Toast.LENGTH_SHORT).show()
+            return
         }
-        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)).apply {
-            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        try {
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(context, "No browser found to open payment page", Toast.LENGTH_SHORT).show()
-        }
+        // In-app WebView sends Authorization header — never put JWTs in browser URLs
+        activeSubScreen = SubScreen.DepositPayment(amountRupees)
     }
 
     fun handlePromoRoute(targetRoute: String) {
@@ -193,7 +185,7 @@ fun HomeScreen(
             targetRoute.contains("xo", ignoreCase = true) -> activeSubScreen = SubScreen.XOLobby
             targetRoute.contains("ring", ignoreCase = true) -> activeSubScreen = SubScreen.RingOfFuture
             targetRoute.contains("withdraw", ignoreCase = true) -> activeSubScreen = SubScreen.Withdraw
-            targetRoute.contains("deposit", ignoreCase = true) || targetRoute.contains("wallet", ignoreCase = true) -> openDepositInBrowser(500.0)
+            targetRoute.contains("deposit", ignoreCase = true) || targetRoute.contains("wallet", ignoreCase = true) -> openDepositScreen(500.0)
             else -> selectedTab = NavItem.REWARD
         }
     }
@@ -283,7 +275,7 @@ fun HomeScreen(
                     SubScreen.RingOfFuture -> {
                         com.playingame.app.game.ringoffuture.ui.RingOfFutureScreen(
                             onBackClick = { activeSubScreen = null },
-                            onOpenDepositScreen = { openDepositInBrowser(200.0) }
+                            onOpenDepositScreen = { openDepositScreen(200.0) }
                         )
                     }
                     is SubScreen.DepositPayment -> {
@@ -505,7 +497,7 @@ fun HomeScreen(
                                 NavItem.REWARD -> {
                                     AddCashScreen(
                                         onOpenDeposit = { amount ->
-                                            openDepositInBrowser(amount)
+                                            openDepositScreen(amount)
                                         },
                                         onAddCashSuccess = { addedAmount ->
                                             selectedTab = NavItem.PROFILE
