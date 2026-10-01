@@ -42,7 +42,9 @@ fun RingOfFutureScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF2A2A2A))
+            .background(Color(0xFF0A0C11))
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
         AndroidView(
             factory = { context ->
