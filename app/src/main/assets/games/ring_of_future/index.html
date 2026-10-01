@@ -541,40 +541,40 @@
     let isSpinningAnimation = false;
     let lastSpunRoundId = null;
 
-    // 32 Segment Multipliers & Colors
+    // 32 Segment Multipliers & Colors (Pure numbers without x)
     const SEGMENTS = [
-      { mult: '30x', color: '#10B981' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '3x',  color: '#8B5CF6' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '5x',  color: '#EA580C' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '3x',  color: '#8B5CF6' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '5x',  color: '#EA580C' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '3x',  color: '#8B5CF6' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '3x',  color: '#8B5CF6' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '5x',  color: '#EA580C' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '3x',  color: '#8B5CF6' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '3x',  color: '#8B5CF6' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '5x',  color: '#EA580C' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '3x',  color: '#8B5CF6' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '5x',  color: '#EA580C' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '3x',  color: '#8B5CF6' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '3x',  color: '#8B5CF6' },
-      { mult: '2x',  color: '#475569' },
-      { mult: '5x',  color: '#EA580C' },
-      { mult: '3x',  color: '#8B5CF6' }
+      { mult: '30', color: '#10B981' },
+      { mult: '2',  color: '#475569' },
+      { mult: '3',  color: '#8B5CF6' },
+      { mult: '2',  color: '#475569' },
+      { mult: '5',  color: '#EA580C' },
+      { mult: '2',  color: '#475569' },
+      { mult: '3',  color: '#8B5CF6' },
+      { mult: '2',  color: '#475569' },
+      { mult: '5',  color: '#EA580C' },
+      { mult: '2',  color: '#475569' },
+      { mult: '3',  color: '#8B5CF6' },
+      { mult: '2',  color: '#475569' },
+      { mult: '3',  color: '#8B5CF6' },
+      { mult: '2',  color: '#475569' },
+      { mult: '5',  color: '#EA580C' },
+      { mult: '2',  color: '#475569' },
+      { mult: '3',  color: '#8B5CF6' },
+      { mult: '2',  color: '#475569' },
+      { mult: '3',  color: '#8B5CF6' },
+      { mult: '2',  color: '#475569' },
+      { mult: '5',  color: '#EA580C' },
+      { mult: '2',  color: '#475569' },
+      { mult: '3',  color: '#8B5CF6' },
+      { mult: '2',  color: '#475569' },
+      { mult: '5',  color: '#EA580C' },
+      { mult: '2',  color: '#475569' },
+      { mult: '3',  color: '#8B5CF6' },
+      { mult: '2',  color: '#475569' },
+      { mult: '3',  color: '#8B5CF6' },
+      { mult: '2',  color: '#475569' },
+      { mult: '5',  color: '#EA580C' },
+      { mult: '3',  color: '#8B5CF6' }
     ];
 
     const canvas = document.getElementById('wheelCanvas');
@@ -594,7 +594,7 @@
       ctx.translate(centerX, centerY);
 
       for (let i = 0; i < totalSegments; i++) {
-        // Segment 0 (30x Green) is centered at 12 o'clock (-Math.PI / 2) under needle pointer
+        // Segment 0 (30 Green) is centered at 12 o'clock (-Math.PI / 2) under needle pointer
         const midAngle = -Math.PI / 2 + i * anglePerSegment;
         const startAngle = midAngle - anglePerSegment / 2;
         const endAngle = midAngle + anglePerSegment / 2;
@@ -614,13 +614,13 @@
         ctx.strokeStyle = '#0A0C11';
         ctx.stroke();
 
-        // Draw Multiplier Label (2x, 3x, 5x, 30x)
+        // Draw Multiplier Label (Clean bold number without x)
         ctx.save();
         ctx.rotate(midAngle);
         ctx.translate((outerRadius + innerRadius) / 2, 0);
         ctx.rotate(Math.PI / 2);
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 9px Rubik, sans-serif';
+        ctx.font = '800 11px Rubik, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(seg.mult, 0, 0);
