@@ -61,19 +61,20 @@
     html, body {
       width: 100%;
       height: 100%;
+      min-height: 100%;
       margin: 0;
       padding: 0;
       background: var(--bg-app);
       color: var(--text-primary);
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .game-screen {
       width: 100%;
       max-width: 440px;
+      margin: 0 auto;
+      min-height: 100%;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -906,8 +907,16 @@
       }, 4600);
     }
 
+    function showWin(amount) {
+      const toast = document.getElementById('winToast');
+      const amtEl = document.getElementById('winToastAmount');
+      if (amtEl) amtEl.innerText = amount;
+      if (toast) toast.style.display = 'flex';
+    }
+
     function hideWin() {
-      document.getElementById('winToast').style.display = 'none';
+      const toast = document.getElementById('winToast');
+      if (toast) toast.style.display = 'none';
     }
 
     // Polling Loop with Resilient Auth & State Sync

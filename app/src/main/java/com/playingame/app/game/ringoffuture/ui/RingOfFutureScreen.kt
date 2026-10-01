@@ -53,8 +53,12 @@ fun RingOfFutureScreen(
         AndroidView(
             factory = { context ->
                 WebView(context).apply {
-                    // Enable GPU Hardware Acceleration Layer
-                    setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
+                    layoutParams = android.view.ViewGroup.LayoutParams(
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                    setLayerType(android.view.View.LAYER_TYPE_NONE, null)
 
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
@@ -68,10 +72,8 @@ fun RingOfFutureScreen(
                     settings.setGeolocationEnabled(false)
                     settings.cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
 
-                    // Disable WebView debugging in production
-                    if (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE == 0) {
-                        WebView.setWebContentsDebuggingEnabled(false)
-                    }
+                    // Enable WebView debugging for inspection
+                    WebView.setWebContentsDebuggingEnabled(true)
 
                     addJavascriptInterface(object {
                         @JavascriptInterface
@@ -134,32 +136,21 @@ fun RingOfFutureScreen(
                         fun getServerUrl(): String = ClientConfig.SERVER_BASE_URL
                     }, "AndroidBridge")
 
+                    webChromeClient = object : android.webkit.WebChromeClient() {
+                        override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
+                            android.util.Log.d("RingOfFutureJS", "${consoleMessage?.message()} (line ${consoleMessage?.lineNumber()})")
+                            return true
+                        }
+                    }
+
                     webViewClient = object : WebViewClient() {
-                        override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
-                            val url = request?.url?.toString() ?: return true
-                            return isDisallowedNavigation(url)
+                        override fun onPageFinished(view: WebView?, url: String?) {
+                            super.onPageFinished(view, url)
+                            android.util.Log.d("RingOfFuture", "Game WebView loaded: $url")
                         }
 
-                        @Deprecated("Deprecated in Java")
-                        override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                            if (url == null) return true
-                            return isDisallowedNavigation(url)
-                        }
-
-                        private fun isDisallowedNavigation(url: String): Boolean {
-                            if (url.startsWith("file:///android_asset/")) return false
-                            val parsedUri = android.net.Uri.parse(url)
-                            val baseUri = android.net.Uri.parse(ClientConfig.SERVER_BASE_URL)
-                            val scheme = parsedUri.scheme?.lowercase() ?: ""
-
-                            if (scheme == "https" || scheme == "http") {
-                                if (parsedUri.host.equals(baseUri.host, ignoreCase = true) &&
-                                    parsedUri.port == baseUri.port) {
-                                    return false // Allow internal game navigation
-                                }
-                            }
-                            android.util.Log.w("RingOfFuture", "Blocked unauthorized WebView navigation to: $url")
-                            return true // Block external navigation
+                        override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
+                            android.util.Log.e("RingOfFuture", "WebView error: $description ($errorCode) at $failingUrl")
                         }
                     }
 
