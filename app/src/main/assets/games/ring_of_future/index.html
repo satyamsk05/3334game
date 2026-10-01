@@ -3,32 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ring of Future - VIP Arcade</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+  <title>Ring of Future</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #07040D;
-      --card-bg: rgba(22, 14, 38, 0.75);
+      --bg-app: #0A0C11;
+      --card-bg: #1B2230;
+      --card-border: #2F394C;
+      --card-surface: #202A3B;
       --c-2x: #94A3B8;
-      --c-3x: #A855F7;
+      --c-3x: #8B5CF6;
       --c-5x: #F97316;
       --c-30x: #10B981;
-      --gold: #F59E0B;
+      --gold: #FFB800;
+      --purple-primary: #6C47FF;
+      --text-primary: #FFFFFF;
+      --text-muted: #94A3B8;
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Rubik', sans-serif;
       user-select: none;
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: radial-gradient(circle at 50% 15%, #180D2B 0%, #08040F 70%, #040208 100%);
-      color: #FFFFFF;
+      background: var(--bg-app);
+      color: var(--text-primary);
       min-height: 100vh;
       overflow: hidden;
       display: flex;
@@ -36,7 +41,7 @@
       align-items: center;
     }
 
-    .game-viewport {
+    .game-screen {
       width: 100%;
       max-width: 440px;
       height: 100vh;
@@ -44,128 +49,97 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 12px 16px 16px;
+      padding: 16px 18px 20px;
       position: relative;
     }
 
-    /* TOP HEADER */
-    .header-bar {
+    /* 1. TOP APP BAR */
+    .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       height: 44px;
-      z-index: 20;
+      z-index: 10;
     }
 
-    .btn-back {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #E2E8F0;
+    .btn-icon-back {
+      width: 38px;
+      height: 38px;
       border-radius: 12px;
-      padding: 7px 12px;
-      font-size: 13px;
-      font-weight: 700;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
       cursor: pointer;
-      backdrop-filter: blur(8px);
-      transition: transform 0.15s;
+      font-size: 16px;
+      transition: background 0.15s, transform 0.15s;
     }
-    .btn-back:active { transform: scale(0.92); }
+    .btn-icon-back:active { transform: scale(0.92); }
 
-    .live-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 800;
-      color: #34D399;
-      letter-spacing: 0.3px;
-    }
-    .live-dot {
-      width: 6px;
-      height: 6px;
-      background: #10B981;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #10B981;
-      animation: pulse-live 1.5s infinite;
-    }
-    @keyframes pulse-live {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.8); }
+    .game-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: var(--text-primary);
     }
 
+    /* Minimalist Wallet Capsule Matching App */
     .wallet-capsule {
-      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
-      padding: 4px 6px 4px 12px;
-      border-radius: 24px;
+      height: 36px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2px 4px 2px 12px;
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255,255,255,0.3);
       cursor: pointer;
       transition: transform 0.15s;
     }
     .wallet-capsule:active { transform: scale(0.95); }
-    .wallet-amount {
+    .wallet-val {
       font-size: 14px;
-      font-weight: 900;
-      color: #FFFFFF;
-      letter-spacing: -0.2px;
+      font-weight: 700;
+      color: var(--text-primary);
     }
-    .wallet-add {
-      background: #FFFFFF;
-      color: #065F46;
-      width: 24px;
-      height: 24px;
+    .wallet-plus {
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
+      background: var(--purple-primary);
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 900;
-      font-size: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    /* WHEEL STAGE */
+    /* 2. MINIMALIST CLEAN WHEEL */
     .wheel-stage {
       position: relative;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       margin: 4px 0;
     }
 
-    .wheel-wrapper {
+    .wheel-container {
       position: relative;
-      width: 320px;
-      height: 320px;
+      width: 290px;
+      height: 290px;
       display: flex;
-      justify-content: center;
       align-items: center;
-    }
-
-    /* Chrome Outer Ring Bezel */
-    .wheel-chrome-bezel {
-      position: absolute;
-      width: 318px;
-      height: 318px;
-      border-radius: 50%;
-      border: 3px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 0 35px rgba(168, 85, 247, 0.25), inset 0 0 20px rgba(0, 0, 0, 0.8);
-      pointer-events: none;
-      z-index: 2;
+      justify-content: center;
     }
 
     canvas#wheelCanvas {
       display: block;
-      width: 310px;
-      height: 310px;
+      width: 280px;
+      height: 280px;
       border-radius: 50%;
       will-change: transform;
       transform: translate3d(0, 0, 0);
@@ -173,407 +147,296 @@
       z-index: 1;
     }
 
-    /* Sharp Futuristic Indicator Pointer */
-    .wheel-pointer {
+    /* Minimalist Top Indicator Pin */
+    .pointer-needle {
       position: absolute;
-      top: -10px;
+      top: -6px;
       left: 50%;
       transform: translateX(-50%);
-      width: 22px;
-      height: 28px;
-      z-index: 10;
+      width: 14px;
+      height: 18px;
+      z-index: 8;
       pointer-events: none;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
     }
-    .wheel-pointer svg {
+    .pointer-needle svg {
       width: 100%;
       height: 100%;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
     }
 
-    /* Central Holographic Hub */
-    .hub-center {
+    /* Minimalist Center Hub */
+    .center-hub {
       position: absolute;
-      width: 130px;
-      height: 130px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      background: radial-gradient(circle, #1F1535 0%, #0E081A 85%);
-      border: 3px solid rgba(168, 85, 247, 0.4);
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(168, 85, 247, 0.3);
+      background: #141923;
+      border: 2px solid var(--card-border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       z-index: 5;
       pointer-events: none;
     }
-    .hub-timer {
-      font-family: 'JetBrains Mono', monospace;
+    .hub-seconds {
       font-size: 26px;
-      font-weight: 900;
+      font-weight: 800;
       color: #34D399;
-      text-shadow: 0 0 12px rgba(52, 211, 153, 0.6);
       line-height: 1;
     }
-    .hub-phase {
-      font-size: 10px;
-      font-weight: 800;
-      color: #D1D5DB;
+    .hub-status {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.6px;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
       margin-top: 4px;
-      text-align: center;
-      padding: 0 8px;
     }
 
-    /* History Pill Bar */
-    .history-strip {
+    /* History Clean Bar */
+    .history-bar {
       display: flex;
       align-items: center;
       gap: 6px;
       justify-content: center;
-      margin: 4px 0 8px;
+      margin-top: 10px;
     }
-    .history-label {
-      font-size: 10px;
-      font-weight: 800;
-      color: #64748B;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .history-items {
-      display: flex;
-      gap: 5px;
-    }
-    .h-badge {
+    .h-pill {
       font-size: 11px;
-      font-weight: 900;
-      padding: 2px 7px;
-      border-radius: 6px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 8px;
       color: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
-    .h-2x { background: #64748B; }
-    .h-3x { background: #9333EA; }
-    .h-5x { background: #EA580C; }
-    .h-30x { background: #059669; border: 1px solid #34D399; }
+    .hp-2x { background: #475569; }
+    .hp-3x { background: #7C3AED; }
+    .hp-5x { background: #EA580C; }
+    .hp-30x { background: #059669; }
 
-    /* 3D TACTILE BETTING GRID */
+    /* 3. APP-STYLE CLEAN BETTING CARDS */
     .bet-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 8px;
+      gap: 12px;
+      margin-bottom: 12px;
     }
-    .bet-card {
-      height: 82px;
+
+    .card-tile {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
       border-radius: 16px;
+      height: 82px;
+      padding: 10px 14px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      justify-content: space-between;
       cursor: pointer;
       position: relative;
-      transition: transform 0.12s, box-shadow 0.12s;
-      border: 1px solid transparent;
-      overflow: hidden;
+      transition: border-color 0.15s, transform 0.12s, background 0.15s;
     }
-    .bet-card:active {
-      transform: scale(0.95);
+    .card-tile:active {
+      transform: scale(0.96);
     }
 
-    /* Distinct Multiplier Gradients */
-    .card-2x {
-      background: linear-gradient(145deg, #1E293B 0%, #0F172A 100%);
-      border-color: rgba(148, 163, 184, 0.35);
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.6), inset 0 1px 0 rgba(255,255,255,0.15);
-    }
-    .card-2x .mult-val { color: #E2E8F0; text-shadow: 0 0 14px rgba(226, 232, 240, 0.4); }
-
-    .card-3x {
-      background: linear-gradient(145deg, #3B0764 0%, #1E0436 100%);
-      border-color: rgba(168, 85, 247, 0.5);
-      box-shadow: 0 6px 18px rgba(59, 7, 100, 0.5), inset 0 1px 0 rgba(255,255,255,0.2);
-    }
-    .card-3x .mult-val { color: #C084FC; text-shadow: 0 0 16px rgba(192, 132, 252, 0.7); }
-
-    .card-5x {
-      background: linear-gradient(145deg, #431407 0%, #240A03 100%);
-      border-color: rgba(249, 115, 22, 0.5);
-      box-shadow: 0 6px 18px rgba(67, 20, 7, 0.5), inset 0 1px 0 rgba(255,255,255,0.2);
-    }
-    .card-5x .mult-val { color: #FB923C; text-shadow: 0 0 16px rgba(251, 146, 60, 0.7); }
-
-    .card-30x {
-      background: linear-gradient(145deg, #064E3B 0%, #022C22 100%);
-      border-color: rgba(16, 185, 129, 0.6);
-      box-shadow: 0 6px 18px rgba(6, 78, 59, 0.6), inset 0 1px 0 rgba(52, 211, 153, 0.3);
-    }
-    .card-30x .mult-val { color: #34D399; text-shadow: 0 0 18px rgba(52, 211, 153, 0.8); }
-
-    .card-crown {
-      position: absolute;
-      top: 6px;
-      right: 8px;
-      font-size: 11px;
-      color: #FCD34D;
-      text-shadow: 0 0 8px #F59E0B;
-    }
-
-    .mult-val {
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      line-height: 1;
-    }
-    .mult-sub {
-      font-size: 10px;
-      font-weight: 800;
-      color: rgba(255, 255, 255, 0.5);
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      margin-top: 3px;
-    }
-
-    .bet-placed-pill {
-      position: absolute;
-      bottom: 5px;
-      background: rgba(0, 0, 0, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 1px 9px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 900;
-      color: #FCD34D;
-      display: none;
-    }
-
-    /* CASINO POKER CHIP SELECTOR */
-    .chip-dock {
-      background: rgba(15, 9, 26, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
-      padding: 8px 12px;
+    .tile-top {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      backdrop-filter: blur(12px);
+      align-items: baseline;
+    }
+    .tile-mult {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .tile-2x .tile-mult { color: #CBD5E1; }
+    .tile-3x .tile-mult { color: #A78BFA; }
+    .tile-5x .tile-mult { color: #FB923C; }
+    .tile-30x .tile-mult { color: #34D399; }
+
+    .tile-desc {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
     }
 
-    .chip-item {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      position: relative;
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
-      border: 2px dashed rgba(255, 255, 255, 0.4);
-      font-weight: 900;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    }
-    .chip-item:active { transform: scale(0.9); }
-    .chip-item.active {
-      transform: translateY(-8px) scale(1.12);
-      border: 2px solid #FCD34D;
-      box-shadow: 0 8px 20px rgba(252, 211, 77, 0.45);
-    }
-
-    .chip-10 { background: radial-gradient(circle, #0284C7 0%, #0369A1 100%); color: white; }
-    .chip-500 { background: radial-gradient(circle, #7C3AED 0%, #6D28D9 100%); color: white; }
-    .chip-2k { background: radial-gradient(circle, #D97706 0%, #B45309 100%); color: white; }
-    .chip-5k { background: radial-gradient(circle, #059669 0%, #047857 100%); color: white; }
-    .chip-20k { background: radial-gradient(circle, #DC2626 0%, #B91C1C 100%); color: white; }
-
-    .chip-currency { font-size: 8px; font-weight: 800; opacity: 0.85; line-height: 1; }
-    .chip-num { font-size: 13px; font-weight: 900; line-height: 1; margin-top: 1px; }
-
-    /* WINNING MODAL CELEBRATION */
-    .win-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-    }
-    .win-box {
-      background: radial-gradient(circle, #251240 0%, #0C0517 100%);
-      border: 2px solid #FCD34D;
-      box-shadow: 0 0 50px rgba(252, 211, 77, 0.5);
-      border-radius: 28px;
-      padding: 30px;
-      text-align: center;
-      transform: scale(0.7);
-      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-    @keyframes popIn {
-      to { transform: scale(1); }
-    }
-    .win-title {
-      font-size: 16px;
-      font-weight: 900;
-      color: #FCD34D;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-    .win-payout {
-      font-size: 44px;
-      font-weight: 900;
-      color: #FFFFFF;
-      text-shadow: 0 0 25px rgba(52, 211, 153, 0.8);
-      margin: 8px 0;
-    }
-    .win-sub {
-      font-size: 12px;
-      color: #94A3B8;
+    .tile-bet-pill {
+      align-self: flex-start;
+      background: #141923;
+      border: 1px solid var(--card-border);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
       font-weight: 700;
+      color: var(--gold);
+      display: none;
     }
+
+    /* Active Highlight on Placed Bet */
+    .tile-2x.has-bet { border-color: #64748B; background: rgba(30, 41, 59, 0.8); }
+    .tile-3x.has-bet { border-color: #8B5CF6; background: rgba(59, 7, 100, 0.4); }
+    .tile-5x.has-bet { border-color: #F97316; background: rgba(67, 20, 7, 0.4); }
+    .tile-30x.has-bet { border-color: #10B981; background: rgba(6, 78, 59, 0.4); }
+
+    /* 4. CLEAN CHIP SELECTOR */
+    .chip-selector {
+      background: #141923;
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 6px;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .chip-button {
+      flex: 1;
+      height: 38px;
+      border-radius: 12px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chip-button:active { transform: scale(0.94); }
+    .chip-button.active {
+      background: var(--purple-primary);
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 2px 10px rgba(108, 71, 255, 0.35);
+    }
+
+    /* 5. CLEAN WIN NOTIFICATION BANNER */
+    .win-toast {
+      position: absolute;
+      top: 60px;
+      left: 18px;
+      right: 18px;
+      background: #10B981;
+      color: #FFFFFF;
+      padding: 12px 16px;
+      border-radius: 14px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+      z-index: 50;
+      animation: slideDown 0.3s ease forwards;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .win-toast-title { font-size: 13px; font-weight: 800; }
+    .win-toast-amount { font-size: 16px; font-weight: 900; }
   </style>
 </head>
 <body>
 
-  <div class="game-viewport">
+  <div class="game-screen">
 
-    <!-- TOP HEADER -->
-    <div class="header-bar">
-      <button class="btn-back" onclick="handleBack()">◄ Lobby</button>
-      <div class="live-badge">
-        <div class="live-dot"></div>
-        <span>1,842 PLAYING</span>
-      </div>
+    <!-- 1. TOP APP BAR -->
+    <div class="top-bar">
+      <button class="btn-icon-back" onclick="handleBack()">←</button>
+      <div class="game-title">Ring of Future</div>
       <div class="wallet-capsule" onclick="handleDeposit()">
-        <span class="wallet-amount" id="walletAmountDisplay">₹0.00</span>
-        <div class="wallet-add">+</div>
+        <span class="wallet-val" id="walletDisplay">₹0.00</span>
+        <div class="wallet-plus">+</div>
       </div>
     </div>
 
-    <!-- WHEEL STAGE AREA -->
+    <!-- WIN TOAST -->
+    <div class="win-toast" id="winToast" onclick="hideWin()">
+      <div>
+        <div class="win-toast-title">ROUND WON!</div>
+        <div style="font-size: 11px; opacity: 0.85;">Added to your wallet</div>
+      </div>
+      <div class="win-toast-amount" id="winToastAmount">₹0</div>
+    </div>
+
+    <!-- 2. MINIMALIST CLEAN WHEEL -->
     <div class="wheel-stage">
-      <div class="wheel-wrapper">
-        <div class="wheel-chrome-bezel"></div>
-        <canvas id="wheelCanvas" width="310" height="310"></canvas>
+      <div class="wheel-container">
+        <canvas id="wheelCanvas" width="280" height="280"></canvas>
         
-        <!-- Top Indicator Pointer Arrow -->
-        <div class="wheel-pointer">
-          <svg viewBox="0 0 22 28" fill="none">
-            <path d="M11 28L0 6C0 2.68629 2.68629 0 6 0H16C19.3137 0 22 2.68629 22 6L11 28Z" fill="#FCD34D"/>
-            <path d="M11 24L3 7H19L11 24Z" fill="#FFFFFF"/>
+        <!-- Clean Pointer Needle -->
+        <div class="pointer-needle">
+          <svg viewBox="0 0 14 18" fill="none">
+            <path d="M7 18L0 4C0 1.79086 1.79086 0 4 0H10C12.2091 0 14 1.79086 14 4L7 18Z" fill="#FFFFFF"/>
           </svg>
         </div>
 
-        <!-- Center Holographic Hub -->
-        <div class="hub-center">
-          <div class="hub-timer" id="hubTimer">15s</div>
-          <div class="hub-phase" id="hubPhase">PLACE BETS</div>
+        <!-- Minimalist Center Hub -->
+        <div class="center-hub">
+          <div class="hub-seconds" id="hubSeconds">15s</div>
+          <div class="hub-status" id="hubStatus">PLACE BETS</div>
         </div>
+      </div>
+
+      <!-- History Clean Bar -->
+      <div class="history-bar">
+        <span style="font-size: 11px; color: var(--text-muted); font-weight: 600; margin-right: 4px;">Recent:</span>
+        <div id="historyRow" style="display: flex; gap: 5px;"></div>
       </div>
     </div>
 
-    <!-- HISTORY STRIP -->
-    <div class="history-strip">
-      <span class="history-label">History</span>
-      <div class="history-items" id="historyItemsContainer"></div>
-    </div>
-
-    <!-- 2x2 TACTICAL BETTING GRID -->
+    <!-- 3. APP-STYLE CLEAN BETTING GRID -->
     <div>
       <div class="bet-grid">
-        <div class="bet-card card-2x" onclick="handleBet('2x')">
-          <div class="mult-val">2x</div>
-          <div class="mult-sub">PAYS 2X</div>
-          <div class="bet-placed-pill" id="badge2x">₹0</div>
+        <div class="card-tile tile-2x" id="tile2x" onclick="handleBet('2x')">
+          <div class="tile-top">
+            <span class="tile-mult">2x</span>
+            <span class="tile-desc">Low Risk</span>
+          </div>
+          <div class="tile-bet-pill" id="badge2x">₹0</div>
         </div>
-        <div class="bet-card card-3x" onclick="handleBet('3x')">
-          <div class="mult-val">3x</div>
-          <div class="mult-sub">PAYS 3X</div>
-          <div class="bet-placed-pill" id="badge3x">₹0</div>
+
+        <div class="card-tile tile-3x" id="tile3x" onclick="handleBet('3x')">
+          <div class="tile-top">
+            <span class="tile-mult">3x</span>
+            <span class="tile-desc">Medium</span>
+          </div>
+          <div class="tile-bet-pill" id="badge3x">₹0</div>
         </div>
-        <div class="bet-card card-5x" onclick="handleBet('5x')">
-          <div class="mult-val">5x</div>
-          <div class="mult-sub">PAYS 5X</div>
-          <div class="bet-placed-pill" id="badge5x">₹0</div>
+
+        <div class="card-tile tile-5x" id="tile5x" onclick="handleBet('5x')">
+          <div class="tile-top">
+            <span class="tile-mult">5x</span>
+            <span class="tile-desc">High Win</span>
+          </div>
+          <div class="tile-bet-pill" id="badge5x">₹0</div>
         </div>
-        <div class="bet-card card-30x" onclick="handleBet('30x')">
-          <span class="card-crown">👑</span>
-          <div class="mult-val">30x</div>
-          <div class="mult-sub">JACKPOT 30X</div>
-          <div class="bet-placed-pill" id="badge30x">₹0</div>
+
+        <div class="card-tile tile-30x" id="tile30x" onclick="handleBet('30x')">
+          <div class="tile-top">
+            <span class="tile-mult">30x</span>
+            <span class="tile-desc" style="color: #34D399;">Mega Win</span>
+          </div>
+          <div class="tile-bet-pill" id="badge30x">₹0</div>
         </div>
       </div>
 
-      <!-- CASINO CHIP DOCK -->
-      <div class="chip-dock">
-        <div class="chip-item chip-10 active" onclick="selectChip(10, this)">
-          <span class="chip-currency">₹</span>
-          <span class="chip-num">10</span>
-        </div>
-        <div class="chip-item chip-500" onclick="selectChip(500, this)">
-          <span class="chip-currency">₹</span>
-          <span class="chip-num">500</span>
-        </div>
-        <div class="chip-item chip-2k" onclick="selectChip(2000, this)">
-          <span class="chip-currency">₹</span>
-          <span class="chip-num">2K</span>
-        </div>
-        <div class="chip-item chip-5k" onclick="selectChip(5000, this)">
-          <span class="chip-currency">₹</span>
-          <span class="chip-num">5K</span>
-        </div>
-        <div class="chip-item chip-20k" onclick="selectChip(20000, this)">
-          <span class="chip-currency">₹</span>
-          <span class="chip-num">20K</span>
-        </div>
+      <!-- 4. CLEAN CHIP SELECTOR -->
+      <div class="chip-selector">
+        <button class="chip-button active" onclick="selectChip(10, this)">₹10</button>
+        <button class="chip-button" onclick="selectChip(500, this)">₹500</button>
+        <button class="chip-button" onclick="selectChip(2000, this)">₹2K</button>
+        <button class="chip-button" onclick="selectChip(5000, this)">₹5K</button>
+        <button class="chip-button" onclick="selectChip(20000, this)">₹20K</button>
       </div>
     </div>
 
-  </div>
-
-  <!-- WIN POPUP CELEBRATION -->
-  <div class="win-overlay" id="winOverlay" onclick="dismissWin()">
-    <div class="win-box">
-      <div class="win-title">✨ BIG WINNER! ✨</div>
-      <div class="win-payout" id="winPayoutText">₹3,000</div>
-      <div class="win-sub">Credited to your balance</div>
-    </div>
   </div>
 
   <script>
-    // Audio Synthesizer (Zero External Assets - 100% Instant Offline)
-    let audioCtx = null;
-    function playBeep(freq, type, duration) {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type || 'sine';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (_) {}
-    }
-
-    function soundChip() { playBeep(650, 'triangle', 0.08); }
-    function soundTick() { playBeep(880, 'sine', 0.04); }
-    function soundWin() {
-      playBeep(523, 'triangle', 0.2);
-      setTimeout(() => playBeep(659, 'triangle', 0.2), 120);
-      setTimeout(() => playBeep(784, 'triangle', 0.4), 240);
-    }
-
-    // Android Bridge Dynamic Resolution
+    // Android Bridge Integration
     const serverBaseUrl = (window.AndroidBridge && window.AndroidBridge.getServerUrl)
       ? window.AndroidBridge.getServerUrl()
       : 'http://3.7.73.109:4001';
@@ -590,23 +453,23 @@
     let currentRotationDeg = 0;
     let isSpinningAnimation = false;
 
-    // 32 Segment Colors
+    // 32 Segment Palette (Clean contrast matte colors)
     const SEGMENT_COLORS = [
-      '#10B981', '#64748B', '#9333EA', '#64748B', '#EA580C', '#64748B', '#9333EA', '#64748B',
-      '#EA580C', '#64748B', '#9333EA', '#64748B', '#9333EA', '#64748B', '#EA580C', '#64748B',
-      '#9333EA', '#64748B', '#9333EA', '#64748B', '#EA580C', '#64748B', '#9333EA', '#64748B',
-      '#EA580C', '#64748B', '#9333EA', '#64748B', '#9333EA', '#64748B', '#EA580C', '#9333EA'
+      '#10B981', '#64748B', '#8B5CF6', '#64748B', '#F97316', '#64748B', '#8B5CF6', '#64748B',
+      '#F97316', '#64748B', '#8B5CF6', '#64748B', '#8B5CF6', '#64748B', '#F97316', '#64748B',
+      '#8B5CF6', '#64748B', '#8B5CF6', '#64748B', '#F97316', '#64748B', '#8B5CF6', '#64748B',
+      '#F97316', '#64748B', '#8B5CF6', '#64748B', '#8B5CF6', '#64748B', '#F97316', '#8B5CF6'
     ];
 
     const canvas = document.getElementById('wheelCanvas');
     const ctx = canvas.getContext('2d');
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    const outerRadius = 150;
-    const innerRadius = 78;
+    const outerRadius = 136;
+    const innerRadius = 72;
 
-    // Render 32 Segment Wheel with Chrome Dividers and LED Pegs ONCE
-    function initWheel() {
+    // Clean Canvas Wheel Pre-Render
+    function drawCleanWheel() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const totalSegments = 32;
       const anglePerSegment = (2 * Math.PI) / totalSegments;
@@ -626,32 +489,20 @@
         ctx.fillStyle = SEGMENT_COLORS[i];
         ctx.fill();
 
-        // Chrome divider line
-        ctx.lineWidth = 1.8;
-        ctx.strokeStyle = '#1E1233';
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = '#0A0C11';
         ctx.stroke();
-
-        // Neon Golden LED Peg at segment edge
-        const pegAngle = startAngle;
-        const pegX = Math.cos(pegAngle) * (outerRadius - 6);
-        const pegY = Math.sin(pegAngle) * (outerRadius - 6);
-
-        ctx.beginPath();
-        ctx.arc(pegX, pegY, 2.2, 0, 2 * Math.PI);
-        ctx.fillStyle = '#FDE047';
-        ctx.fill();
       }
 
       ctx.restore();
     }
 
-    initWheel();
+    drawCleanWheel();
 
-    function selectChip(amount, elem) {
+    function selectChip(amount, btn) {
       selectedChipRupees = amount;
-      document.querySelectorAll('.chip-item').forEach(c => c.classList.remove('active'));
-      elem.classList.add('active');
-      soundChip();
+      document.querySelectorAll('.chip-button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     }
 
     function handleBack() {
@@ -672,10 +523,9 @@
 
     async function handleBet(multiplierType) {
       if (currentPhase !== 'BETTING') {
-        alert('Bets locked for this round!');
+        alert('Bets are closed for this round');
         return;
       }
-      soundChip();
 
       try {
         const headers = { 'Content-Type': 'application/json' };
@@ -690,10 +540,10 @@
         if (data.success) {
           updateUI(data.data);
         } else {
-          alert(data.message || 'Bet placement failed');
+          alert(data.message || 'Unable to place bet');
         }
-      } catch (e) {
-        alert('Network error placing bet');
+      } catch (_) {
+        alert('Network connection issue');
       }
     }
 
@@ -703,87 +553,86 @@
       const wallet = data.wallet;
 
       currentPhase = state.phase;
-      document.getElementById('walletAmountDisplay').innerText = '₹' + (wallet.totalPaise / 100).toFixed(2);
-      document.getElementById('hubTimer').innerText = state.secondsRemaining + 's';
+      document.getElementById('walletDisplay').innerText = '₹' + (wallet.totalPaise / 100).toFixed(2);
+      document.getElementById('hubSeconds').innerText = state.secondsRemaining + 's';
 
       if (state.phase === 'BETTING') {
-        document.getElementById('hubPhase').innerText = 'PLACE BETS';
-        document.getElementById('hubTimer').style.color = '#34D399';
+        document.getElementById('hubStatus').innerText = 'PLACE BETS';
+        document.getElementById('hubSeconds').style.color = '#34D399';
       } else if (state.phase === 'LOCKED') {
-        document.getElementById('hubPhase').innerText = 'LOCKED';
-        document.getElementById('hubTimer').style.color = '#F59E0B';
+        document.getElementById('hubStatus').innerText = 'LOCKED';
+        document.getElementById('hubSeconds').style.color = '#F59E0B';
       } else if (state.phase === 'SPINNING') {
-        document.getElementById('hubPhase').innerText = 'SPINNING';
-        document.getElementById('hubTimer').style.color = '#C084FC';
-        trigger120FpsSpin(state.winningSegmentIndex);
+        document.getElementById('hubStatus').innerText = 'SPINNING';
+        document.getElementById('hubSeconds').style.color = '#A78BFA';
+        triggerSpin(state.winningSegmentIndex);
       } else if (state.phase === 'RESULT_SHOW') {
-        document.getElementById('hubPhase').innerText = 'WIN: ' + state.winningType;
-        document.getElementById('hubTimer').style.color = '#FCD34D';
+        document.getElementById('hubStatus').innerText = 'WIN: ' + state.winningType;
+        document.getElementById('hubSeconds').style.color = '#34D399';
       }
 
-      // Update Badges
-      updateBadge('badge2x', state.userBets.grey2x);
-      updateBadge('badge3x', state.userBets.purple3x);
-      updateBadge('badge5x', state.userBets.orange5x);
-      updateBadge('badge30x', state.userBets.green30x);
+      // Update Badges & Active Card Highlights
+      updateTileBadge('badge2x', 'tile2x', state.userBets.grey2x);
+      updateTileBadge('badge3x', 'tile3x', state.userBets.purple3x);
+      updateTileBadge('badge5x', 'tile5x', state.userBets.orange5x);
+      updateTileBadge('badge30x', 'tile30x', state.userBets.green30x);
 
       // Render History
       renderHistory(state.recentResults || []);
     }
 
-    function updateBadge(id, paise) {
-      const el = document.getElementById(id);
+    function updateTileBadge(badgeId, tileId, paise) {
+      const badge = document.getElementById(badgeId);
+      const tile = document.getElementById(tileId);
       if (paise > 0) {
-        el.innerText = '₹' + (paise / 100).toFixed(0);
-        el.style.display = 'block';
+        badge.innerText = '₹' + (paise / 100).toFixed(0);
+        badge.style.display = 'block';
+        tile.classList.add('has-bet');
       } else {
-        el.style.display = 'none';
+        badge.style.display = 'none';
+        tile.classList.remove('has-bet');
       }
     }
 
     function renderHistory(results) {
-      const c = document.getElementById('historyItemsContainer');
-      c.innerHTML = results.slice(0, 7).map(type => {
-        let cls = 'h-2x';
-        if (type === '3x') cls = 'h-3x';
-        if (type === '5x') cls = 'h-5x';
-        if (type === '30x') cls = 'h-30x';
-        return `<div class="h-badge ${cls}">${type}</div>`;
+      const row = document.getElementById('historyRow');
+      row.innerHTML = results.slice(0, 6).map(type => {
+        let cls = 'hp-2x';
+        if (type === '3x') cls = 'hp-3x';
+        if (type === '5x') cls = 'hp-5x';
+        if (type === '30x') cls = 'hp-30x';
+        return `<span class="h-pill ${cls}">${type}</span>`;
       }).join('');
     }
 
-    // 120 FPS GPU COMPOSITED SPIN
-    function trigger120FpsSpin(winningIndex) {
+    // 120 FPS GPU Accelerated Spin
+    function triggerSpin(winningIndex) {
       if (isSpinningAnimation) return;
       isSpinningAnimation = true;
 
       const totalSegments = 32;
       const degPerSegment = 360 / totalSegments;
       const segmentCenterDeg = (winningIndex + 0.5) * degPerSegment;
-      const extraSpins = 6 * 360; // 6 full exciting spins
+      const extraSpins = 5 * 360;
 
-      // 12 o'clock pointer is 270 deg
+      // 12 o'clock needle pointer is at 270 deg
       const targetDeg = currentRotationDeg + extraSpins + (360 - (currentRotationDeg % 360)) + (270 - segmentCenterDeg);
       currentRotationDeg = targetDeg;
 
-      canvas.style.transition = 'transform 4.8s cubic-bezier(0.12, 0.88, 0.22, 1)';
+      canvas.style.transition = 'transform 4.5s cubic-bezier(0.12, 0.85, 0.22, 1)';
       canvas.style.willChange = 'transform';
       canvas.style.transform = `rotate(${targetDeg}deg) translate3d(0, 0, 0)`;
 
-      // Wheel ticking sound simulation
-      let tickInterval = setInterval(soundTick, 180);
       setTimeout(() => {
-        clearInterval(tickInterval);
         isSpinningAnimation = false;
-        soundWin();
-      }, 4850);
+      }, 4600);
     }
 
-    function dismissWin() {
-      document.getElementById('winOverlay').style.display = 'none';
+    function hideWin() {
+      document.getElementById('winToast').style.display = 'none';
     }
 
-    // Live State Loop
+    // Polling Loop for live sync
     async function syncLoop() {
       try {
         const headers = {};
