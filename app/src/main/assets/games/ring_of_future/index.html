@@ -4,8 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Ring of Future</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Rubik';
+      src: url('rubik_bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Rubik';
+      src: url('rubik_bold.ttf') format('truetype');
+      font-weight: 800;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Rubik';
+      src: url('rubik_regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Rubik';
+      src: url('rubik_regular.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+    }
+
     :root {
       --bg-app: #0A0C11;
       --card-bg: #1B2230;
@@ -49,7 +76,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 14px 16px 18px;
+      padding: 12px 16px 16px;
       position: relative;
     }
 
@@ -58,14 +85,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 44px;
+      height: 48px;
       z-index: 10;
     }
 
     .btn-icon-back {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       color: var(--text-primary);
@@ -86,45 +113,52 @@
       color: var(--text-primary);
     }
 
-    /* Wallet Capsule with 3D Coin Image */
-    .wallet-capsule {
-      height: 38px;
-      background: var(--card-bg);
-      border: 1.2px solid var(--card-border);
-      border-radius: 20px;
-      padding: 2px 4px 2px 7px;
-      display: flex;
+    /* EXACT NATIVE APP WALLET CHIP (MATCHING WalletChip.kt & SCREENSHOT 2) */
+    .wallet-chip-container {
+      position: relative;
+      display: inline-flex;
       align-items: center;
-      gap: 7px;
+      height: 38px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      transition: transform 0.15s;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: transform 0.12s ease;
     }
-    .wallet-capsule:active { transform: scale(0.95); }
-    .wallet-coin-img {
-      width: 26px;
-      height: 26px;
-      object-fit: contain;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    .wallet-chip-container:active {
+      transform: scale(0.96);
     }
-    .wallet-val {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: 0.2px;
-    }
-    .wallet-plus {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--purple-primary);
-      color: white;
-      font-size: 16px;
-      font-weight: 800;
+    .wallet-pill-bg {
+      height: 36px;
+      margin-left: 12px;
+      padding-left: 30px;
+      padding-right: 14px;
+      background: #1B2230;
+      border: 1px solid #2F394C;
+      border-radius: 9999px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 6px rgba(108, 71, 255, 0.4);
+      box-sizing: border-box;
+    }
+    .wallet-amount-text {
+      font-family: 'Rubik', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.3px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .wallet-coin-img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.45));
+      pointer-events: none;
     }
 
     /* 2. RING / WHEEL STAGE */
@@ -313,7 +347,7 @@
     .tile-5x.has-bet { border-color: #F97316; background: rgba(67, 20, 7, 0.4); }
     .tile-30x.has-bet { border-color: #10B981; background: rgba(6, 78, 59, 0.4); }
 
-    /* 4. CHIP SELECTOR (MATCHING SCREENSHOT 2) */
+    /* 4. CHIP SELECTOR (EXACT MATCH TO SCREENSHOT 2) */
     .chip-selector-dock {
       background: #111722;
       border: 1px solid #202A3C;
@@ -377,16 +411,17 @@
 
   <div class="game-screen">
 
-    <!-- 1. TOP APP BAR -->
+    <!-- 1. TOP APP BAR (EXACT NATIVE APP WALLET PILL) -->
     <div class="top-bar">
       <button class="btn-icon-back" onclick="handleBack()">←</button>
       <div class="game-title">Ring of Future</div>
       
-      <!-- Wallet Capsule with Gold Coin PNG -->
-      <div class="wallet-capsule" onclick="handleDeposit()">
+      <!-- Exact Native App Wallet Chip (Matching Screenshot 2) -->
+      <div class="wallet-chip-container" onclick="handleDeposit()">
+        <div class="wallet-pill-bg">
+          <span class="wallet-amount-text" id="walletDisplay">0.00</span>
+        </div>
         <img src="ic_gold_chip.webp" class="wallet-coin-img" alt="coin" />
-        <span class="wallet-val" id="walletDisplay">₹0.00</span>
-        <div class="wallet-plus">+</div>
       </div>
     </div>
 
@@ -396,7 +431,7 @@
         <div class="win-toast-title">ROUND WON!</div>
         <div style="font-size: 11px; opacity: 0.85;">Added to your wallet balance</div>
       </div>
-      <div class="win-toast-amount" id="winToastAmount">₹0</div>
+      <div class="win-toast-amount" id="winToastAmount">0</div>
     </div>
 
     <!-- 2. MINIMALIST CLEAN RING STAGE -->
@@ -437,7 +472,7 @@
           </div>
           <div class="tile-bet-pill" id="badge2x">
             <img src="ic_gold_chip.webp" class="tile-bet-coin" />
-            <span id="badgeText2x">₹0</span>
+            <span id="badgeText2x">0</span>
           </div>
         </div>
 
@@ -448,7 +483,7 @@
           </div>
           <div class="tile-bet-pill" id="badge3x">
             <img src="ic_gold_chip.webp" class="tile-bet-coin" />
-            <span id="badgeText3x">₹0</span>
+            <span id="badgeText3x">0</span>
           </div>
         </div>
 
@@ -459,7 +494,7 @@
           </div>
           <div class="tile-bet-pill" id="badge5x">
             <img src="ic_gold_chip.webp" class="tile-bet-coin" />
-            <span id="badgeText5x">₹0</span>
+            <span id="badgeText5x">0</span>
           </div>
         </div>
 
@@ -470,18 +505,18 @@
           </div>
           <div class="tile-bet-pill" id="badge30x">
             <img src="ic_gold_chip.webp" class="tile-bet-coin" />
-            <span id="badgeText30x">₹0</span>
+            <span id="badgeText30x">0</span>
           </div>
         </div>
       </div>
 
-      <!-- 4. CHIP SELECTOR (MATCHING SCREENSHOT 2) -->
+      <!-- 4. CHIP SELECTOR (EXACT MATCH TO SCREENSHOT 2, NUMBERS ONLY) -->
       <div class="chip-selector-dock">
-        <button class="chip-btn-item active" onclick="selectChip(10, this)">₹10</button>
-        <button class="chip-btn-item" onclick="selectChip(500, this)">₹500</button>
-        <button class="chip-btn-item" onclick="selectChip(2000, this)">₹2K</button>
-        <button class="chip-btn-item" onclick="selectChip(5000, this)">₹5K</button>
-        <button class="chip-btn-item" onclick="selectChip(20000, this)">₹20K</button>
+        <button class="chip-btn-item active" onclick="selectChip(10, this)">10</button>
+        <button class="chip-btn-item" onclick="selectChip(500, this)">500</button>
+        <button class="chip-btn-item" onclick="selectChip(2000, this)">2K</button>
+        <button class="chip-btn-item" onclick="selectChip(5000, this)">5K</button>
+        <button class="chip-btn-item" onclick="selectChip(20000, this)">20K</button>
       </div>
     </div>
 
@@ -657,7 +692,8 @@
       const wallet = data.wallet;
 
       currentPhase = state.phase;
-      document.getElementById('walletDisplay').innerText = '₹' + (wallet.totalPaise / 100).toFixed(2);
+      // ONLY NUMBER: NO CURRENCY SYMBOL (e.g. "8.20")
+      document.getElementById('walletDisplay').innerText = (wallet.totalPaise / 100).toFixed(2);
       document.getElementById('hubSeconds').innerText = state.secondsRemaining + 's';
 
       if (state.phase === 'BETTING') {
@@ -675,7 +711,7 @@
         document.getElementById('hubSeconds').style.color = '#34D399';
       }
 
-      // Update Badges & Active Tile Outlines
+      // Update Badges & Active Tile Outlines (NUMBERS ONLY)
       updateTileBadge('badge2x', 'badgeText2x', 'tile2x', state.userBets.grey2x);
       updateTileBadge('badge3x', 'badgeText3x', 'tile3x', state.userBets.purple3x);
       updateTileBadge('badge5x', 'badgeText5x', 'tile5x', state.userBets.orange5x);
@@ -690,7 +726,7 @@
       const text = document.getElementById(textId);
       const tile = document.getElementById(tileId);
       if (paise > 0) {
-        text.innerText = '₹' + (paise / 100).toFixed(0);
+        text.innerText = (paise / 100).toFixed(0);
         badge.style.display = 'flex';
         tile.classList.add('has-bet');
       } else {
