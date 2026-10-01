@@ -528,17 +528,47 @@
   </div>
 
   <script>
-    // Android Bridge Dynamic Resolution
-    const serverBaseUrl = (window.AndroidBridge && window.AndroidBridge.getServerUrl)
-      ? window.AndroidBridge.getServerUrl()
-      : 'http://3.7.73.109:4001';
+    // Dynamic Resolution from Android Bridge
+    function getAuthToken() {
+      if (window.AndroidBridge && window.AndroidBridge.getAuthToken) {
+        try {
+          const t = window.AndroidBridge.getAuthToken();
+          if (t) return t;
+        } catch (_) {}
+      }
+      return '';
+    }
 
-    let userId = (window.AndroidBridge && window.AndroidBridge.getUserId)
-      ? window.AndroidBridge.getUserId()
-      : '';
-    let authToken = (window.AndroidBridge && window.AndroidBridge.getAuthToken)
-      ? window.AndroidBridge.getAuthToken()
-      : '';
+    function getUserId() {
+      if (window.AndroidBridge && window.AndroidBridge.getUserId) {
+        try {
+          const u = window.AndroidBridge.getUserId();
+          if (u) return u;
+        } catch (_) {}
+      }
+      return '';
+    }
+
+    function getServerUrl() {
+      if (window.AndroidBridge && window.AndroidBridge.getServerUrl) {
+        try {
+          const s = window.AndroidBridge.getServerUrl();
+          if (s) return s;
+        } catch (_) {}
+      }
+      return 'http://3.7.73.109:4001';
+    }
+
+    function updateLocalWalletDisplay() {
+      if (window.AndroidBridge && window.AndroidBridge.getLocalWalletBalancePaise) {
+        try {
+          const paise = window.AndroidBridge.getLocalWalletBalancePaise();
+          if (paise !== undefined && paise !== null && paise >= 0) {
+            document.getElementById('walletDisplay').innerText = (paise / 100).toFixed(2);
+          }
+        } catch (_) {}
+      }
+    }
 
     let selectedChipRupees = 10;
     let currentPhase = 'BETTING';
@@ -661,18 +691,28 @@
         return;
       }
 
+      const serverUrl = getServerUrl();
+      const token = getAuthToken();
+      const uid = getUserId();
+
       try {
         const headers = { 'Content-Type': 'application/json' };
-        if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        if (uid) headers['X-User-Id'] = uid;
 
-        const res = await fetch(serverBaseUrl + '/api/v1/ring-of-future/bet', {
+        const res = await fetch(serverUrl + '/api/v1/ring-of-future/bet', {
           method: 'POST',
           headers,
-          body: JSON.stringify({ userId, multiplierType, amountRupees: selectedChipRupees, token: authToken })
+          body: JSON.stringify({ userId: uid, multiplierType, amountRupees: selectedChipRupees, token: token })
         });
         const data = await res.json();
         if (data.success) {
           updateUI(data.data);
+          if (data.data && data.data.wallet && window.AndroidBridge && window.AndroidBridge.syncWalletBalance) {
+            try {
+              window.AndroidBridge.syncWalletBalance(data.data.wallet.totalPaise);
+            } catch (_) {}
+          }
         } else {
           alert(data.message || 'Unable to place bet');
         }
@@ -687,8 +727,14 @@
       const wallet = data.wallet;
 
       currentPhase = state.phase;
-      // ONLY NUMBER: NO CURRENCY SYMBOL (e.g. "8.20")
-      document.getElementById('walletDisplay').innerText = (wallet.totalPaise / 100).toFixed(2);
+      
+      // Update wallet balance: from server or local bridge
+      if (wallet && wallet.totalPaise !== undefined) {
+        document.getElementById('walletDisplay').innerText = (wallet.totalPaise / 100).toFixed(2);
+      } else {
+        updateLocalWalletDisplay();
+      }
+
       document.getElementById('hubSeconds').innerText = state.secondsRemaining + 's';
 
       if (state.phase === 'BETTING') {
@@ -784,16 +830,42 @@
       document.getElementById('winToast').style.display = 'none';
     }
 
-    // Polling Loop
+    // Polling Loop with Resilient Auth & State Sync
     async function syncLoop() {
+      const serverUrl = getServerUrl();
+      const token = getAuthToken();
+      const uid = getUserId();
+
       try {
         const headers = {};
-        if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
-        const res = await fetch(serverBaseUrl + '/api/v1/ring-of-future/state', { headers });
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        if (uid) headers['X-User-Id'] = uid;
+
+        const params = [];
+        if (token) params.push('token=' + encodeURIComponent(token));
+        if (uid) params.push('userId=' + encodeURIComponent(uid));
+        const queryStr = params.length ? '?' + params.join('&') : '';
+
+        const res = await fetch(serverUrl + '/api/v1/ring-of-future/state' + queryStr, { headers });
         const json = await res.json();
-        if (json.success) updateUI(json.data);
-      } catch (_) {}
+        if (json.success) {
+          updateUI(json.data);
+          if (json.data && json.data.wallet && window.AndroidBridge && window.AndroidBridge.syncWalletBalance) {
+            try {
+              window.AndroidBridge.syncWalletBalance(json.data.wallet.totalPaise);
+            } catch (_) {}
+          }
+        }
+      } catch (_) {
+        updateLocalWalletDisplay();
+      }
     }
+
+    // Instant local wallet balance on boot
+    updateLocalWalletDisplay();
+    setTimeout(updateLocalWalletDisplay, 50);
+    setTimeout(updateLocalWalletDisplay, 200);
+    setTimeout(updateLocalWalletDisplay, 600);
 
     setInterval(syncLoop, 1000);
     syncLoop();

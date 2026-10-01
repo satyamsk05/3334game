@@ -79,10 +79,34 @@ fun RingOfFutureScreen(
                         }
 
                         @JavascriptInterface
-                        fun getAuthToken(): String = sessionToken
+                        fun getAuthToken(): String {
+                            val token = com.playingame.app.data.repository.AuthRepository.getAuthToken()
+                            if (token.isNotEmpty()) return token
+                            return com.playingame.app.core.session.SessionManager.authToken() ?: ""
+                        }
 
                         @JavascriptInterface
-                        fun getUserId(): String = com.playingame.app.core.session.SessionManager.currentUserId() ?: ""
+                        fun getUserId(): String {
+                            val uid = com.playingame.app.data.repository.AuthRepository.currentSession.value.userId
+                            if (uid.isNotEmpty()) return uid
+                            return com.playingame.app.core.session.SessionManager.currentUserId() ?: ""
+                        }
+
+                        @JavascriptInterface
+                        fun getLocalWalletBalancePaise(): Long {
+                            return com.playingame.app.game.ringoffuture.backend.WalletLedger.walletBalance.value.totalPaise
+                        }
+
+                        @JavascriptInterface
+                        fun syncWalletBalance(paise: Long) {
+                            post {
+                                com.playingame.app.game.ringoffuture.backend.WalletLedger.syncBalance(
+                                    depositPaise = paise,
+                                    winningPaise = 0L,
+                                    bonusPaise = 0L
+                                )
+                            }
+                        }
 
                         @JavascriptInterface
                         fun getServerUrl(): String = ClientConfig.SERVER_BASE_URL
