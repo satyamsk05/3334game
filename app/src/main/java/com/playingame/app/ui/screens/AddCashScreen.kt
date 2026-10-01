@@ -61,42 +61,42 @@ fun AddCashScreen(
             ChipPackItem(
                 id = "pack_100",
                 chips = "100",
-                price = "99.00",
+                price = "₹99.00",
                 amountPaise = 10000L,
                 imageRes = R.drawable.chip_pack_1
             ),
             ChipPackItem(
                 id = "pack_300",
                 chips = "300",
-                price = "299.00",
+                price = "₹299.00",
                 amountPaise = 30000L,
                 imageRes = R.drawable.chip_pack_2
             ),
             ChipPackItem(
                 id = "pack_510",
                 chips = "510",
-                price = "499.00",
+                price = "₹499.00",
                 amountPaise = 51000L,
                 imageRes = R.drawable.chip_pack_3
             ),
             ChipPackItem(
                 id = "pack_1020",
                 chips = "1020",
-                price = "999.00",
+                price = "₹999.00",
                 amountPaise = 102000L,
                 imageRes = R.drawable.chip_pack_4
             ),
             ChipPackItem(
                 id = "pack_2040",
                 chips = "2040",
-                price = "1,999.00",
+                price = "₹1,999.00",
                 amountPaise = 204000L,
                 imageRes = R.drawable.chip_pack_5
             ),
             ChipPackItem(
                 id = "pack_5150",
                 chips = "5150",
-                price = "4,999.00",
+                price = "₹4,999.00",
                 amountPaise = 515000L,
                 imageRes = R.drawable.chip_pack_6
             )
