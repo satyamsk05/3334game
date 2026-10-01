@@ -30,6 +30,27 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // Unlock High Refresh Rate (90Hz / 120Hz) on supported devices
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            try {
+                @Suppress("DEPRECATION")
+                val modes = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    display?.supportedModes
+                } else {
+                    windowManager.defaultDisplay.supportedModes
+                }
+                val maxRefreshMode = modes?.maxByOrNull { it.refreshRate }
+                if (maxRefreshMode != null && maxRefreshMode.refreshRate >= 80f) {
+                    val lp = window.attributes
+                    lp.preferredDisplayModeId = maxRefreshMode.modeId
+                    window.attributes = lp
+                    android.util.Log.i("MainActivity", "Unlocked display refresh rate: ${maxRefreshMode.refreshRate}Hz")
+                }
+            } catch (e: Exception) {
+                android.util.Log.w("MainActivity", "High refresh rate request ignored: ${e.message}")
+            }
+        }
+
         // Initialize persistent user auth session and network monitoring
         AuthRepository.init(this)
         com.playingame.app.data.remote.RemoteApiClient.init(this)

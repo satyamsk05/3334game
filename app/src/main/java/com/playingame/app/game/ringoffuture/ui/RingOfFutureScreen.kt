@@ -47,8 +47,12 @@ fun RingOfFutureScreen(
         AndroidView(
             factory = { context ->
                 WebView(context).apply {
+                    // Enable GPU Hardware Acceleration Layer
+                    setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
+
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
+                    settings.databaseEnabled = true
                     settings.loadWithOverviewMode = true
                     settings.useWideViewPort = true
                     settings.allowFileAccess = false
