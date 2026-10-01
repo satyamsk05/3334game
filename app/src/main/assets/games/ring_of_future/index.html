@@ -11,14 +11,14 @@
       --card-bg: #1B2230;
       --card-border: #2F394C;
       --card-surface: #202A3B;
-      --c-2x: #94A3B8;
+      --c-2x: #64748B;
       --c-3x: #8B5CF6;
       --c-5x: #F97316;
       --c-30x: #10B981;
       --gold: #FFB800;
       --purple-primary: #6C47FF;
       --text-primary: #FFFFFF;
-      --text-muted: #94A3B8;
+      --text-muted: #8E9BAE;
     }
 
     * {
@@ -49,7 +49,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 16px 18px 20px;
+      padding: 14px 16px 18px;
       position: relative;
     }
 
@@ -63,8 +63,8 @@
     }
 
     .btn-icon-back {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -73,73 +73,95 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 18px;
+      font-weight: 700;
       transition: background 0.15s, transform 0.15s;
     }
     .btn-icon-back:active { transform: scale(0.92); }
 
     .game-title {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
       letter-spacing: -0.2px;
       color: var(--text-primary);
     }
 
-    /* Minimalist Wallet Capsule Matching App */
+    /* Wallet Capsule with 3D Coin Image */
     .wallet-capsule {
-      height: 36px;
+      height: 38px;
       background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      border: 1.2px solid var(--card-border);
       border-radius: 20px;
-      padding: 2px 4px 2px 12px;
+      padding: 2px 4px 2px 7px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       transition: transform 0.15s;
     }
     .wallet-capsule:active { transform: scale(0.95); }
-    .wallet-val {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-    .wallet-plus {
+    .wallet-coin-img {
       width: 26px;
       height: 26px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    .wallet-val {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.2px;
+    }
+    .wallet-plus {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: var(--purple-primary);
       color: white;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 6px rgba(108, 71, 255, 0.4);
     }
 
-    /* 2. MINIMALIST CLEAN WHEEL */
+    /* 2. RING / WHEEL STAGE */
     .wheel-stage {
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 4px 0;
+      margin: 2px 0;
     }
 
     .wheel-container {
       position: relative;
-      width: 290px;
-      height: 290px;
+      width: 296px;
+      height: 296px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
+    /* Outer Metallic Bezel Ring */
+    .wheel-bezel {
+      position: absolute;
+      width: 294px;
+      height: 294px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+      z-index: 2;
+    }
+
     canvas#wheelCanvas {
       display: block;
-      width: 280px;
-      height: 280px;
+      width: 286px;
+      height: 286px;
       border-radius: 50%;
       will-change: transform;
       transform: translate3d(0, 0, 0);
@@ -147,32 +169,32 @@
       z-index: 1;
     }
 
-    /* Minimalist Top Indicator Pin */
+    /* Top Indicator Pointer Needle */
     .pointer-needle {
       position: absolute;
-      top: -6px;
+      top: -8px;
       left: 50%;
       transform: translateX(-50%);
-      width: 14px;
-      height: 18px;
+      width: 18px;
+      height: 22px;
       z-index: 8;
       pointer-events: none;
+      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
     }
     .pointer-needle svg {
       width: 100%;
       height: 100%;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
     }
 
-    /* Minimalist Center Hub */
+    /* Center Hub */
     .center-hub {
       position: absolute;
-      width: 120px;
-      height: 120px;
+      width: 122px;
+      height: 122px;
       border-radius: 50%;
-      background: #141923;
+      background: radial-gradient(circle, #18202E 0%, #101520 85%);
       border: 2px solid var(--card-border);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.8), inset 0 0 12px rgba(0, 0, 0, 0.6);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -187,15 +209,15 @@
       line-height: 1;
     }
     .hub-status {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       color: var(--text-muted);
-      letter-spacing: 0.6px;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
       margin-top: 4px;
     }
 
-    /* History Clean Bar */
+    /* History Bar */
     .history-bar {
       display: flex;
       align-items: center;
@@ -203,10 +225,16 @@
       justify-content: center;
       margin-top: 10px;
     }
+    .history-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-right: 4px;
+    }
     .h-pill {
       font-size: 11px;
       font-weight: 700;
-      padding: 3px 8px;
+      padding: 3px 9px;
       border-radius: 8px;
       color: white;
     }
@@ -215,7 +243,7 @@
     .hp-5x { background: #EA580C; }
     .hp-30x { background: #059669; }
 
-    /* 3. APP-STYLE CLEAN BETTING CARDS */
+    /* 3. APP-STYLE BETTING CARDS */
     .bet-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -227,7 +255,7 @@
       background: var(--card-bg);
       border: 1.5px solid var(--card-border);
       border-radius: 16px;
-      height: 82px;
+      height: 84px;
       padding: 10px 14px;
       display: flex;
       flex-direction: column;
@@ -271,71 +299,78 @@
       font-weight: 700;
       color: var(--gold);
       display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .tile-bet-coin {
+      width: 12px;
+      height: 12px;
+      object-fit: contain;
     }
 
-    /* Active Highlight on Placed Bet */
     .tile-2x.has-bet { border-color: #64748B; background: rgba(30, 41, 59, 0.8); }
     .tile-3x.has-bet { border-color: #8B5CF6; background: rgba(59, 7, 100, 0.4); }
     .tile-5x.has-bet { border-color: #F97316; background: rgba(67, 20, 7, 0.4); }
     .tile-30x.has-bet { border-color: #10B981; background: rgba(6, 78, 59, 0.4); }
 
-    /* 4. CLEAN CHIP SELECTOR */
-    .chip-selector {
-      background: #141923;
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 6px;
+    /* 4. CHIP SELECTOR (MATCHING SCREENSHOT 2) */
+    .chip-selector-dock {
+      background: #111722;
+      border: 1px solid #202A3C;
+      border-radius: 16px;
+      padding: 5px;
       display: flex;
       justify-content: space-between;
-      gap: 6px;
+      align-items: center;
     }
 
-    .chip-button {
+    .chip-btn-item {
       flex: 1;
-      height: 38px;
+      height: 40px;
       border-radius: 12px;
       background: transparent;
-      border: 1px solid transparent;
+      border: 1.5px solid transparent;
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.15s ease-out;
     }
-    .chip-button:active { transform: scale(0.94); }
-    .chip-button.active {
+    .chip-btn-item:active { transform: scale(0.94); }
+    .chip-btn-item.active {
       background: var(--purple-primary);
       color: #FFFFFF;
-      border-color: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 2px 10px rgba(108, 71, 255, 0.35);
+      border: 1.5px solid #3B82F6;
+      box-shadow: 0 0 12px rgba(108, 71, 255, 0.5);
+      font-weight: 800;
     }
 
-    /* 5. CLEAN WIN NOTIFICATION BANNER */
+    /* 5. WIN NOTIFICATION */
     .win-toast {
       position: absolute;
-      top: 60px;
-      left: 18px;
-      right: 18px;
+      top: 58px;
+      left: 16px;
+      right: 16px;
       background: #10B981;
       color: #FFFFFF;
-      padding: 12px 16px;
+      padding: 12px 18px;
       border-radius: 14px;
       display: none;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
       z-index: 50;
-      animation: slideDown 0.3s ease forwards;
+      animation: toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
-    @keyframes slideDown {
+    @keyframes toastIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .win-toast-title { font-size: 13px; font-weight: 800; }
-    .win-toast-amount { font-size: 16px; font-weight: 900; }
+    .win-toast-amount { font-size: 17px; font-weight: 900; }
   </style>
 </head>
 <body>
@@ -346,7 +381,10 @@
     <div class="top-bar">
       <button class="btn-icon-back" onclick="handleBack()">←</button>
       <div class="game-title">Ring of Future</div>
+      
+      <!-- Wallet Capsule with Gold Coin PNG -->
       <div class="wallet-capsule" onclick="handleDeposit()">
+        <img src="ic_gold_chip.webp" class="wallet-coin-img" alt="coin" />
         <span class="wallet-val" id="walletDisplay">₹0.00</span>
         <div class="wallet-plus">+</div>
       </div>
@@ -356,38 +394,40 @@
     <div class="win-toast" id="winToast" onclick="hideWin()">
       <div>
         <div class="win-toast-title">ROUND WON!</div>
-        <div style="font-size: 11px; opacity: 0.85;">Added to your wallet</div>
+        <div style="font-size: 11px; opacity: 0.85;">Added to your wallet balance</div>
       </div>
       <div class="win-toast-amount" id="winToastAmount">₹0</div>
     </div>
 
-    <!-- 2. MINIMALIST CLEAN WHEEL -->
+    <!-- 2. MINIMALIST CLEAN RING STAGE -->
     <div class="wheel-stage">
       <div class="wheel-container">
-        <canvas id="wheelCanvas" width="280" height="280"></canvas>
+        <div class="wheel-bezel"></div>
+        <canvas id="wheelCanvas" width="286" height="286"></canvas>
         
         <!-- Clean Pointer Needle -->
         <div class="pointer-needle">
-          <svg viewBox="0 0 14 18" fill="none">
-            <path d="M7 18L0 4C0 1.79086 1.79086 0 4 0H10C12.2091 0 14 1.79086 14 4L7 18Z" fill="#FFFFFF"/>
+          <svg viewBox="0 0 18 22" fill="none">
+            <path d="M9 22L0 4C0 1.79086 1.79086 0 4 0H14C16.2091 0 18 1.79086 18 4L9 22Z" fill="#FFFFFF"/>
+            <path d="M9 17L3 4H15L9 17Z" fill="#FFB800"/>
           </svg>
         </div>
 
-        <!-- Minimalist Center Hub -->
+        <!-- Center Hub -->
         <div class="center-hub">
           <div class="hub-seconds" id="hubSeconds">15s</div>
           <div class="hub-status" id="hubStatus">PLACE BETS</div>
         </div>
       </div>
 
-      <!-- History Clean Bar -->
+      <!-- History Bar -->
       <div class="history-bar">
-        <span style="font-size: 11px; color: var(--text-muted); font-weight: 600; margin-right: 4px;">Recent:</span>
+        <span class="history-label">Recent:</span>
         <div id="historyRow" style="display: flex; gap: 5px;"></div>
       </div>
     </div>
 
-    <!-- 3. APP-STYLE CLEAN BETTING GRID -->
+    <!-- 3. APP-STYLE BETTING GRID -->
     <div>
       <div class="bet-grid">
         <div class="card-tile tile-2x" id="tile2x" onclick="handleBet('2x')">
@@ -395,7 +435,10 @@
             <span class="tile-mult">2x</span>
             <span class="tile-desc">Low Risk</span>
           </div>
-          <div class="tile-bet-pill" id="badge2x">₹0</div>
+          <div class="tile-bet-pill" id="badge2x">
+            <img src="ic_gold_chip.webp" class="tile-bet-coin" />
+            <span id="badgeText2x">₹0</span>
+          </div>
         </div>
 
         <div class="card-tile tile-3x" id="tile3x" onclick="handleBet('3x')">
@@ -403,7 +446,10 @@
             <span class="tile-mult">3x</span>
             <span class="tile-desc">Medium</span>
           </div>
-          <div class="tile-bet-pill" id="badge3x">₹0</div>
+          <div class="tile-bet-pill" id="badge3x">
+            <img src="ic_gold_chip.webp" class="tile-bet-coin" />
+            <span id="badgeText3x">₹0</span>
+          </div>
         </div>
 
         <div class="card-tile tile-5x" id="tile5x" onclick="handleBet('5x')">
@@ -411,7 +457,10 @@
             <span class="tile-mult">5x</span>
             <span class="tile-desc">High Win</span>
           </div>
-          <div class="tile-bet-pill" id="badge5x">₹0</div>
+          <div class="tile-bet-pill" id="badge5x">
+            <img src="ic_gold_chip.webp" class="tile-bet-coin" />
+            <span id="badgeText5x">₹0</span>
+          </div>
         </div>
 
         <div class="card-tile tile-30x" id="tile30x" onclick="handleBet('30x')">
@@ -419,24 +468,27 @@
             <span class="tile-mult">30x</span>
             <span class="tile-desc" style="color: #34D399;">Mega Win</span>
           </div>
-          <div class="tile-bet-pill" id="badge30x">₹0</div>
+          <div class="tile-bet-pill" id="badge30x">
+            <img src="ic_gold_chip.webp" class="tile-bet-coin" />
+            <span id="badgeText30x">₹0</span>
+          </div>
         </div>
       </div>
 
-      <!-- 4. CLEAN CHIP SELECTOR -->
-      <div class="chip-selector">
-        <button class="chip-button active" onclick="selectChip(10, this)">₹10</button>
-        <button class="chip-button" onclick="selectChip(500, this)">₹500</button>
-        <button class="chip-button" onclick="selectChip(2000, this)">₹2K</button>
-        <button class="chip-button" onclick="selectChip(5000, this)">₹5K</button>
-        <button class="chip-button" onclick="selectChip(20000, this)">₹20K</button>
+      <!-- 4. CHIP SELECTOR (MATCHING SCREENSHOT 2) -->
+      <div class="chip-selector-dock">
+        <button class="chip-btn-item active" onclick="selectChip(10, this)">₹10</button>
+        <button class="chip-btn-item" onclick="selectChip(500, this)">₹500</button>
+        <button class="chip-btn-item" onclick="selectChip(2000, this)">₹2K</button>
+        <button class="chip-btn-item" onclick="selectChip(5000, this)">₹5K</button>
+        <button class="chip-btn-item" onclick="selectChip(20000, this)">₹20K</button>
       </div>
     </div>
 
   </div>
 
   <script>
-    // Android Bridge Integration
+    // Android Bridge Dynamic Resolution
     const serverBaseUrl = (window.AndroidBridge && window.AndroidBridge.getServerUrl)
       ? window.AndroidBridge.getServerUrl()
       : 'http://3.7.73.109:4001';
@@ -453,23 +505,51 @@
     let currentRotationDeg = 0;
     let isSpinningAnimation = false;
 
-    // 32 Segment Palette (Clean contrast matte colors)
-    const SEGMENT_COLORS = [
-      '#10B981', '#64748B', '#8B5CF6', '#64748B', '#F97316', '#64748B', '#8B5CF6', '#64748B',
-      '#F97316', '#64748B', '#8B5CF6', '#64748B', '#8B5CF6', '#64748B', '#F97316', '#64748B',
-      '#8B5CF6', '#64748B', '#8B5CF6', '#64748B', '#F97316', '#64748B', '#8B5CF6', '#64748B',
-      '#F97316', '#64748B', '#8B5CF6', '#64748B', '#8B5CF6', '#64748B', '#F97316', '#8B5CF6'
+    // 32 Segment Multipliers & Colors
+    const SEGMENTS = [
+      { mult: '30x', color: '#10B981' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '3x',  color: '#8B5CF6' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '5x',  color: '#EA580C' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '3x',  color: '#8B5CF6' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '5x',  color: '#EA580C' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '3x',  color: '#8B5CF6' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '3x',  color: '#8B5CF6' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '5x',  color: '#EA580C' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '3x',  color: '#8B5CF6' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '3x',  color: '#8B5CF6' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '5x',  color: '#EA580C' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '3x',  color: '#8B5CF6' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '5x',  color: '#EA580C' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '3x',  color: '#8B5CF6' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '3x',  color: '#8B5CF6' },
+      { mult: '2x',  color: '#475569' },
+      { mult: '5x',  color: '#EA580C' },
+      { mult: '3x',  color: '#8B5CF6' }
     ];
 
     const canvas = document.getElementById('wheelCanvas');
     const ctx = canvas.getContext('2d');
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    const outerRadius = 136;
+    const outerRadius = 140;
     const innerRadius = 72;
 
-    // Clean Canvas Wheel Pre-Render
-    function drawCleanWheel() {
+    // High-Resolution Crisp Donut Wheel Rendering with Multiplier Labels
+    function renderDetailedWheel() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const totalSegments = 32;
       const anglePerSegment = (2 * Math.PI) / totalSegments;
@@ -480,28 +560,52 @@
       for (let i = 0; i < totalSegments; i++) {
         const startAngle = i * anglePerSegment;
         const endAngle = startAngle + anglePerSegment;
+        const midAngle = startAngle + anglePerSegment / 2;
+        const seg = SEGMENTS[i];
 
+        // Draw Arc Segment
         ctx.beginPath();
         ctx.arc(0, 0, outerRadius, startAngle, endAngle);
         ctx.arc(0, 0, innerRadius, endAngle, startAngle, true);
         ctx.closePath();
 
-        ctx.fillStyle = SEGMENT_COLORS[i];
+        ctx.fillStyle = seg.color;
         ctx.fill();
 
+        // Divider Line
         ctx.lineWidth = 1.2;
         ctx.strokeStyle = '#0A0C11';
         ctx.stroke();
+
+        // Draw Multiplier Label (2x, 3x, 5x, 30x)
+        ctx.save();
+        ctx.rotate(midAngle);
+        ctx.translate((outerRadius + innerRadius) / 2, 0);
+        ctx.rotate(Math.PI / 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 9px Rubik, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(seg.mult, 0, 0);
+        ctx.restore();
+
+        // Outer LED divider dot
+        const dotX = Math.cos(startAngle) * (outerRadius - 3);
+        const dotY = Math.sin(startAngle) * (outerRadius - 3);
+        ctx.beginPath();
+        ctx.arc(dotX, dotY, 1.4, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fill();
       }
 
       ctx.restore();
     }
 
-    drawCleanWheel();
+    renderDetailedWheel();
 
     function selectChip(amount, btn) {
       selectedChipRupees = amount;
-      document.querySelectorAll('.chip-button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.chip-btn-item').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     }
 
@@ -571,22 +675,23 @@
         document.getElementById('hubSeconds').style.color = '#34D399';
       }
 
-      // Update Badges & Active Card Highlights
-      updateTileBadge('badge2x', 'tile2x', state.userBets.grey2x);
-      updateTileBadge('badge3x', 'tile3x', state.userBets.purple3x);
-      updateTileBadge('badge5x', 'tile5x', state.userBets.orange5x);
-      updateTileBadge('badge30x', 'tile30x', state.userBets.green30x);
+      // Update Badges & Active Tile Outlines
+      updateTileBadge('badge2x', 'badgeText2x', 'tile2x', state.userBets.grey2x);
+      updateTileBadge('badge3x', 'badgeText3x', 'tile3x', state.userBets.purple3x);
+      updateTileBadge('badge5x', 'badgeText5x', 'tile5x', state.userBets.orange5x);
+      updateTileBadge('badge30x', 'badgeText30x', 'tile30x', state.userBets.green30x);
 
       // Render History
       renderHistory(state.recentResults || []);
     }
 
-    function updateTileBadge(badgeId, tileId, paise) {
+    function updateTileBadge(badgeId, textId, tileId, paise) {
       const badge = document.getElementById(badgeId);
+      const text = document.getElementById(textId);
       const tile = document.getElementById(tileId);
       if (paise > 0) {
-        badge.innerText = '₹' + (paise / 100).toFixed(0);
-        badge.style.display = 'block';
+        text.innerText = '₹' + (paise / 100).toFixed(0);
+        badge.style.display = 'flex';
         tile.classList.add('has-bet');
       } else {
         badge.style.display = 'none';
@@ -632,7 +737,7 @@
       document.getElementById('winToast').style.display = 'none';
     }
 
-    // Polling Loop for live sync
+    // Polling Loop
     async function syncLoop() {
       try {
         const headers = {};
