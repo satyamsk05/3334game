@@ -1,3 +1,68 @@
+// Sleek In-Game Notification Manager (Replaces all intrusive browser alert dialogs)
+let noticeTimeout = null;
+
+function showGameNotice(message, type = 'warning') {
+  const noticeEl = document.getElementById('gameNotice');
+  const iconEl = document.getElementById('gameNoticeIcon');
+  const textEl = document.getElementById('gameNoticeText');
+  
+  if (!noticeEl || !textEl) return;
+  
+  if (noticeTimeout) {
+    clearTimeout(noticeTimeout);
+    noticeTimeout = null;
+  }
+
+  const cleanText = String(message || '').replace(/^[⏳⚠️❌✅ℹ️]\s*/, '');
+  textEl.innerText = cleanText;
+  
+  let icon = '⚠️';
+  const lower = cleanText.toLowerCase();
+  if (type === 'error' || lower.includes('insufficient') || lower.includes('unable')) {
+    icon = '⚠️';
+    noticeEl.className = 'game-notice notice-error show';
+  } else if (lower.includes('closed') || lower.includes('locked')) {
+    icon = '⏳';
+    noticeEl.className = 'game-notice notice-warning show';
+  } else {
+    icon = 'ℹ️';
+    noticeEl.className = 'game-notice notice-info show';
+  }
+  if (iconEl) iconEl.innerText = icon;
+
+  noticeTimeout = setTimeout(() => {
+    hideNotice();
+  }, 2200);
+}
+
+function hideNotice() {
+  const noticeEl = document.getElementById('gameNotice');
+  if (noticeEl) {
+    noticeEl.classList.remove('show');
+  }
+  if (noticeTimeout) {
+    clearTimeout(noticeTimeout);
+    noticeTimeout = null;
+  }
+}
+
+function triggerWalletShake() {
+  const walletContainer = document.querySelector('.wallet-chip-container') || document.getElementById('walletDisplay');
+  if (walletContainer) {
+    walletContainer.classList.remove('shake');
+    void walletContainer.offsetWidth;
+    walletContainer.classList.add('shake');
+    setTimeout(() => {
+      walletContainer.classList.remove('shake');
+    }, 500);
+  }
+}
+
+// Override native window.alert globally so no alert modal can ever pop up
+window.alert = function(msg) {
+  showGameNotice(String(msg || ''));
+};
+
 // Dynamic Resolution from Android Bridge
 function getAuthToken() {
   if (window.AndroidBridge && window.AndroidBridge.getAuthToken) {
@@ -188,7 +253,7 @@ let hasCreditedLocalWinForRound = null;
 
 async function handleBet(multiplierType) {
   if (currentPhase !== 'BETTING') {
-    alert('Bets are closed for this round');
+    showGameNotice('Bets are closed for this round', 'warning');
     return;
   }
 
@@ -219,7 +284,11 @@ async function handleBet(multiplierType) {
       }
       return;
     } else if (data.message && data.message.toLowerCase().includes('insufficient')) {
-      alert(data.message);
+      showGameNotice('Insufficient balance — Tap + to deposit', 'error');
+      triggerWalletShake();
+      return;
+    } else if (data.message) {
+      showGameNotice(data.message, 'warning');
       return;
     }
   } catch (_) {}
@@ -241,13 +310,14 @@ async function handleBet(multiplierType) {
         updateTileBadge(badgeId, badgeTextId, tileId, newVal * 100);
         return;
       } else {
-        alert('Insufficient balance');
+        showGameNotice('Insufficient balance — Tap + to deposit', 'error');
+        triggerWalletShake();
         return;
       }
     } catch (_) {}
   }
 
-  alert('Unable to place bet');
+  showGameNotice('Unable to place bet. Please retry', 'error');
 }
 
 function updateUI(data) {

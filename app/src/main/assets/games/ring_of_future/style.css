@@ -401,3 +401,71 @@ canvas#wheelCanvas {
 }
 .win-toast-title { font-size: 13px; font-weight: 800; }
 .win-toast-amount { font-size: 17px; font-weight: 900; }
+
+/* 6. SLEEK IN-GAME FLOATING NOTICE (NO BROWSER POPUPS) */
+.game-notice {
+  position: absolute;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-15px);
+  background: rgba(30, 41, 59, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+  padding: 9px 18px;
+  border-radius: 9999px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(245, 158, 11, 0.2);
+  z-index: 100;
+  max-width: 90%;
+  pointer-events: auto;
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.game-notice.show {
+  display: flex;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.game-notice.notice-warning {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(245, 158, 11, 0.25);
+}
+
+.game-notice.notice-error {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(239, 68, 68, 0.25);
+}
+
+.game-notice.notice-info {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(99, 102, 241, 0.25);
+}
+
+.game-notice-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.game-notice-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+/* Subtle wallet shake when balance is low */
+@keyframes walletShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+.shake {
+  animation: walletShake 0.4s ease-in-out;
+}
+

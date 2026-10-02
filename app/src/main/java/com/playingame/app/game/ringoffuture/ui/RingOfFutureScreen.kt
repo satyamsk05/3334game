@@ -137,6 +137,27 @@ fun RingOfFutureScreen(
                     }, "AndroidBridge")
 
                     webChromeClient = object : android.webkit.WebChromeClient() {
+                        override fun onJsAlert(
+                            view: WebView?,
+                            url: String?,
+                            message: String?,
+                            result: android.webkit.JsResult?
+                        ): Boolean {
+                            // Completely suppress ugly "The page at 'file://' says:" system dialog
+                            result?.confirm()
+                            return true
+                        }
+
+                        override fun onJsConfirm(
+                            view: WebView?,
+                            url: String?,
+                            message: String?,
+                            result: android.webkit.JsResult?
+                        ): Boolean {
+                            result?.confirm()
+                            return true
+                        }
+
                         override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
                             android.util.Log.d("RingOfFutureJS", "${consoleMessage?.message()} (line ${consoleMessage?.lineNumber()})")
                             return true
