@@ -42,20 +42,20 @@
 }
 
 .dark {
-  /* Dark Mode Semantic Tokens (Night Mode Toggle) */
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #94a3b8;
-  --text-inverse: #09090b;
+  /* Casino & Gaming Dark Slate / Charcoal Palette (Exact Reference Match) */
+  --text-primary: #ffffff;
+  --text-secondary: #9aa3af;
+  --text-tertiary: #6b7280;
+  --text-inverse: #141619;
 
-  --surface-base: #0a0a0c;
-  --surface-raised: #121216;
-  --surface-strong: #18181e;
-  --surface-muted: #22222a;
-  --surface-subtle: #14141a;
+  --surface-base: #1a1d20;     /* Deep main content background */
+  --surface-raised: #141619;   /* Left navigation rail / elevated cards */
+  --surface-strong: #26292e;   /* Elevated icon tiles / inputs / action boxes */
+  --surface-muted: #2d3137;    /* Active highlight states & hovers */
+  --surface-subtle: #1e2126;   /* Subtle inner section backgrounds */
 
   --border-default: rgba(255, 255, 255, 0.08);
-  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-subtle: rgba(255, 255, 255, 0.05);
   --border-strong: rgba(255, 255, 255, 0.16);
   --border-focus: #ffffff;
 

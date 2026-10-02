@@ -121,7 +121,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 onClick={() => setCollapsed(false)}
                 title="Expand sidebar"
                 aria-label="Expand sidebar"
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-all duration-150"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all duration-150"
               >
                 <PanelLeft className="h-5 w-5" />
               </button>
@@ -139,8 +139,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Dashboard"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconDashboard size={20} />
@@ -154,8 +154,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Games Management"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/games')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconGamepad size={20} />
@@ -169,8 +169,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Deposits"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/payments/deposits')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconWallet size={20} />
@@ -187,8 +187,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Withdrawals"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/payments/withdrawals')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconWithdraw size={20} />
@@ -205,8 +205,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Wallet Ledger & Transactions"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/transactions/ledger')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconTransactions size={20} />
@@ -220,8 +220,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Player Accounts"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/users')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconPlayers size={20} />
@@ -235,8 +235,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="VIP Club & Promotions"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/promotions')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconCrown size={20} />
@@ -250,8 +250,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Push Notifications"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/notifications')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconBell size={20} />
@@ -266,7 +266,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 onClick={toggleTheme}
                 title={`Switch to ${theme === 'dark' ? 'Light' : 'Night'} Mode`}
                 aria-label="Toggle theme"
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-all duration-150 shrink-0"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all duration-150 shrink-0"
               >
                 {theme === 'dark' ? (
                   <IconMoonSolid size={20} />
@@ -283,8 +283,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Global Settings"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/system/settings')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconSettings size={20} />
@@ -298,8 +298,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="System Health"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/system/health')
-                    ? 'bg-accent-primary text-text-inverse shadow-xs'
-                    : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 <IconChart size={20} />
@@ -315,7 +315,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 rel="noreferrer"
                 title="Documentation"
                 aria-label="Documentation"
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-all duration-150 shrink-0"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all duration-150 shrink-0"
               >
                 <IconBook size={20} />
               </a>
@@ -327,7 +327,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 rel="noreferrer"
                 title="Contact Support"
                 aria-label="Contact Support"
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-all duration-150 shrink-0"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all duration-150 shrink-0"
               >
                 <IconChat size={20} />
               </a>
@@ -350,7 +350,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 onClick={handleLogout}
                 title="Sign out"
                 aria-label="Sign out of admin session"
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-colors"
               >
                 <IconLogOut size={20} />
               </button>
@@ -368,15 +368,15 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 className="flex items-center gap-2.5 overflow-hidden group"
                 onClick={() => setMobileOpen(false)}
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent-primary text-text-inverse font-black text-xs shadow-sm">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-surface-strong text-text-primary font-black text-xs border border-border-default shadow-sm">
                   BA
                 </div>
 
                 <div className="flex flex-col min-w-0">
-                  <span className="font-semibold text-text-primary text-sm tracking-tight truncate">
+                  <span className="font-bold text-text-primary text-sm tracking-tight truncate">
                     Bit Arcade
                   </span>
-                  <span className="text-xs text-text-tertiary truncate">
+                  <span className="text-xs text-text-secondary truncate">
                     Admin Platform
                   </span>
                 </div>
@@ -386,7 +386,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 type="button"
                 onClick={() => setCollapsed(true)}
                 aria-label="Collapse sidebar"
-                className="hidden md:flex h-8 w-8 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors"
+                className="hidden md:flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-colors"
                 title="Collapse sidebar"
               >
                 <PanelLeftClose className="h-5 w-5" />
@@ -415,12 +415,12 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       onClick={() => setMobileOpen(false)}
                       className={`group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                         isLinkActive('/')
-                          ? 'bg-accent-primary text-text-inverse shadow-xs'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                       }`}
                     >
                       <IconDashboard size={20} className="shrink-0" />
-                      <span>Dashboard</span>
+                      <span className={isLinkActive('/') ? 'font-bold' : ''}>Dashboard</span>
                     </Link>
 
                     {/* Games Management - Tree Node with Sub-items */}
@@ -428,16 +428,16 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       <div
                         className={`group flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium cursor-pointer transition-all ${
                           pathname.startsWith('/games')
-                            ? 'text-text-primary bg-surface-strong/70'
-                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                            ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                         }`}
                         onClick={() => setGamesTreeOpen(!gamesTreeOpen)}
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <IconGamepad size={20} className="shrink-0" />
-                          <span>Games</span>
+                          <span className={pathname.startsWith('/games') ? 'font-bold' : ''}>Games</span>
                         </div>
-                        <span className="text-text-tertiary group-hover:text-text-primary transition-colors">
+                        <span className="text-text-secondary group-hover:text-text-primary transition-colors">
                           {gamesTreeOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                         </span>
                       </div>
@@ -454,7 +454,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                                 : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/50'
                             }`}
                           >
-                            <span className="h-1.5 w-1.5 rounded-full bg-text-tertiary group-hover:bg-text-primary transition-colors shrink-0" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-text-secondary group-hover:bg-text-primary transition-colors shrink-0" />
                             <span>All Games Overview</span>
                           </Link>
                           <Link
@@ -462,7 +462,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                             onClick={() => setMobileOpen(false)}
                             className="group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
                           >
-                            <span className="h-1.5 w-1.5 rounded-full bg-text-tertiary group-hover:bg-text-primary transition-colors shrink-0" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-text-secondary group-hover:bg-text-primary transition-colors shrink-0" />
                             <span>Ring of Future</span>
                           </Link>
                           <Link
@@ -470,7 +470,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                             onClick={() => setMobileOpen(false)}
                             className="group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
                           >
-                            <span className="h-1.5 w-1.5 rounded-full bg-text-tertiary group-hover:bg-text-primary transition-colors shrink-0" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-text-secondary group-hover:bg-text-primary transition-colors shrink-0" />
                             <span>Tic-Tac-Toe</span>
                           </Link>
                         </div>
@@ -483,13 +483,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       onClick={() => setMobileOpen(false)}
                       className={`group relative flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                         isLinkActive('/payments/deposits')
-                          ? 'bg-accent-primary text-text-inverse shadow-xs'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <IconWallet size={20} className="shrink-0" />
-                        <span>Wallet Deposits</span>
+                        <span className={isLinkActive('/payments/deposits') ? 'font-bold' : ''}>Wallet Deposits</span>
                       </div>
                       {pendingCounts.pendingDeposits > 0 && (
                         <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-surface-strong text-text-primary border border-border-default tabular-nums">
@@ -504,13 +504,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       onClick={() => setMobileOpen(false)}
                       className={`group relative flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                         isLinkActive('/payments/withdrawals')
-                          ? 'bg-accent-primary text-text-inverse shadow-xs'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <IconWithdraw size={20} className="shrink-0" />
-                        <span>Withdrawals</span>
+                        <span className={isLinkActive('/payments/withdrawals') ? 'font-bold' : ''}>Withdrawals</span>
                       </div>
                       {pendingCounts.pendingWithdrawals > 0 && (
                         <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-surface-strong text-text-primary border border-border-default tabular-nums">
@@ -525,12 +525,12 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                         isLinkActive('/transactions/ledger')
-                          ? 'bg-accent-primary text-text-inverse shadow-xs'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                       }`}
                     >
                       <IconTransactions size={20} className="shrink-0" />
-                      <span>Transactions Ledger</span>
+                      <span className={isLinkActive('/transactions/ledger') ? 'font-bold' : ''}>Transactions Ledger</span>
                     </Link>
 
                     {/* Player Accounts */}
@@ -539,12 +539,12 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                         isLinkActive('/users')
-                          ? 'bg-accent-primary text-text-inverse shadow-xs'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                       }`}
                     >
                       <IconPlayers size={20} className="shrink-0" />
-                      <span>Player Accounts</span>
+                      <span className={isLinkActive('/users') ? 'font-bold' : ''}>Player Accounts</span>
                     </Link>
 
                     {/* Promotions & VIP Club */}
@@ -553,13 +553,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                         isLinkActive('/promotions')
-                          ? 'bg-accent-primary text-text-inverse shadow-xs'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <IconCrown size={20} className="shrink-0" />
-                        <span>VIP & Promotions</span>
+                        <span className={isLinkActive('/promotions') ? 'font-bold' : ''}>VIP & Promotions</span>
                       </div>
                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-strong text-text-secondary border border-border-default">
                         Live
@@ -572,12 +572,12 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                         isLinkActive('/notifications')
-                          ? 'bg-accent-primary text-text-inverse shadow-xs'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                       }`}
                     >
                       <IconBell size={20} className="shrink-0" />
-                      <span>Notifications</span>
+                      <span className={isLinkActive('/notifications') ? 'font-bold' : ''}>Notifications</span>
                     </Link>
                   </div>
                 )}
@@ -599,7 +599,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     {/* Night Mode Switch Toggle */}
                     <div
                       onClick={toggleTheme}
-                      className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium cursor-pointer transition-all text-text-secondary hover:text-text-primary hover:bg-surface-strong"
+                      className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium cursor-pointer transition-all text-text-secondary hover:text-text-primary hover:bg-surface-strong/60"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {theme === 'dark' ? (
@@ -629,12 +629,12 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                         isLinkActive('/system/settings')
-                          ? 'bg-accent-primary text-text-inverse shadow-xs'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                       }`}
                     >
                       <IconSettings size={20} className="shrink-0" />
-                      <span>Global Settings</span>
+                      <span className={isLinkActive('/system/settings') ? 'font-bold' : ''}>Global Settings</span>
                     </Link>
 
                     {/* System Health / Analytics Overview */}
@@ -643,12 +643,12 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                         isLinkActive('/system/health')
-                          ? 'bg-accent-primary text-text-inverse shadow-xs'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
                       }`}
                     >
                       <IconChart size={20} className="shrink-0" />
-                      <span>Rollover & System Health</span>
+                      <span className={isLinkActive('/system/health') ? 'font-bold' : ''}>Rollover & System Health</span>
                     </Link>
                   </div>
                 )}
@@ -671,7 +671,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       href="/documentation"
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/60 transition-all"
                     >
                       <IconBook size={20} className="shrink-0" />
                       <span>Documentation</span>
@@ -681,7 +681,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       href="https://t.me/"
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/60 transition-all"
                     >
                       <IconChat size={20} className="shrink-0" />
                       <span>Contact Support</span>
@@ -705,7 +705,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     <span className="text-sm font-semibold text-text-primary truncate">
                       {adminName}
                     </span>
-                    <span className="text-xs text-text-tertiary truncate">
+                    <span className="text-xs text-text-secondary truncate">
                       Superadmin
                     </span>
                   </div>
@@ -716,7 +716,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   onClick={handleLogout}
                   title="Sign out"
                   aria-label="Sign out of admin session"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors shrink-0"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-colors shrink-0"
                 >
                   <IconLogOut size={20} className="shrink-0" />
                 </button>
