@@ -22,7 +22,7 @@ import {
   Moon,
   PanelLeftClose,
   PanelLeft,
-  CircleDot
+  Circle
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
 import { api } from '@/services/api';
@@ -99,7 +99,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
         />
       )}
 
-      {/* Modern Adaptive Dock / Tree Sidebar */}
+      {/* Modern Minimalist Monochrome Dock / Tree Sidebar */}
       <aside
         aria-label="Admin Navigation Sidebar"
         className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-surface-raised border-r border-border-default transition-all duration-200 ease-in-out select-none ${
@@ -109,11 +109,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
         }`}
       >
         {/* ============================================================== */}
-        {/* CASE 1: COLLAPSED MODE (PIXEL-PERFECT VERTICAL DOCK / RAIL)   */}
+        {/* CASE 1: COLLAPSED MODE (MINIMALIST MONOCHROME DOCK)            */}
         {/* ============================================================== */}
         {collapsed ? (
           <div className="flex flex-col h-full w-full items-center py-2.5">
-            {/* Top Collapse/Expand Toggle */}
+            {/* Top Expand Toggle */}
             <div className="flex h-11 w-full items-center justify-center shrink-0">
               <button
                 type="button"
@@ -174,7 +174,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               >
                 <ArrowDownLeft className="h-5 w-5" strokeWidth={1.8} />
                 {pendingCounts.pendingDeposits > 0 && (
-                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-surface-raised" />
+                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent-primary ring-2 ring-surface-raised" />
                 )}
               </Link>
 
@@ -192,7 +192,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               >
                 <ArrowUpRight className="h-5 w-5" strokeWidth={1.8} />
                 {pendingCounts.pendingWithdrawals > 0 && (
-                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-surface-raised" />
+                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent-primary ring-2 ring-surface-raised" />
                 )}
               </Link>
 
@@ -341,7 +341,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-surface-strong text-text-primary font-bold text-xs border border-border-default shadow-xs"
               >
                 {adminName.slice(0, 2).toUpperCase()}
-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-surface-raised" />
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-accent-primary ring-2 ring-surface-raised" />
               </div>
 
               <button
@@ -349,7 +349,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 onClick={handleLogout}
                 title="Sign out"
                 aria-label="Sign out of admin session"
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors"
               >
                 <LogOut className="h-5 w-5" strokeWidth={1.8} />
               </button>
@@ -357,14 +357,14 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
           </div>
         ) : (
           /* ============================================================== */
-          /* CASE 2: EXPANDED MODE (FULL TREE SIDEBAR WITH HEADERS & LABELS) */
+          /* CASE 2: EXPANDED MODE (MONOCHROME MINIMALIST TREE SIDEBAR)      */
           /* ============================================================== */
           <>
             {/* Workspace Brand Header */}
             <div className="flex h-14 shrink-0 items-center justify-between px-3.5 border-b border-border-subtle">
               <Link
                 href="/"
-                className="flex items-center gap-2.5 overflow-hidden"
+                className="flex items-center gap-2.5 overflow-hidden group"
                 onClick={() => setMobileOpen(false)}
               >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent-primary text-text-inverse font-black text-xs shadow-sm">
@@ -372,9 +372,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 </div>
 
                 <div className="flex flex-col min-w-0">
-                  <span className="font-semibold text-text-primary text-sm tracking-tight truncate flex items-center gap-1.5">
+                  <span className="font-semibold text-text-primary text-sm tracking-tight truncate">
                     Bit Arcade
-                    <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
                   </span>
                   <span className="text-xs text-text-tertiary truncate">
                     Admin Platform
@@ -426,7 +425,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     {/* Games Management - Tree Node with Sub-items */}
                     <div>
                       <div
-                        className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium cursor-pointer transition-all ${
+                        className={`group flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium cursor-pointer transition-all ${
                           pathname.startsWith('/games')
                             ? 'text-text-primary bg-surface-strong/70'
                             : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
@@ -437,7 +436,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           <Gamepad2 className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                           <span>Games</span>
                         </div>
-                        <span className="text-text-tertiary">
+                        <span className="text-text-tertiary group-hover:text-text-primary transition-colors">
                           {gamesTreeOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                         </span>
                       </div>
@@ -448,29 +447,29 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           <Link
                             href="/games"
                             onClick={() => setMobileOpen(false)}
-                            className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                            className={`group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                               pathname === '/games'
                                 ? 'text-text-primary font-semibold bg-surface-strong'
                                 : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/50'
                             }`}
                           >
-                            <CircleDot className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-text-tertiary group-hover:bg-text-primary transition-colors shrink-0" />
                             <span>All Games Overview</span>
                           </Link>
                           <Link
                             href="/games?game=ring_of_future"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
+                            className="group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
                           >
-                            <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-text-tertiary group-hover:bg-text-primary transition-colors shrink-0" />
                             <span>Ring of Future</span>
                           </Link>
                           <Link
                             href="/games?game=tictactoe"
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
+                            className="group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
                           >
-                            <span className="h-2 w-2 rounded-full bg-purple-500 shrink-0" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-text-tertiary group-hover:bg-text-primary transition-colors shrink-0" />
                             <span>Tic-Tac-Toe</span>
                           </Link>
                         </div>
@@ -488,11 +487,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <ArrowDownLeft className="h-5 w-5 shrink-0 text-emerald-500" strokeWidth={1.8} />
+                        <ArrowDownLeft className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                         <span>Deposits</span>
                       </div>
                       {pendingCounts.pendingDeposits > 0 && (
-                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 tabular-nums">
+                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-surface-strong text-text-primary border border-border-default tabular-nums">
                           {pendingCounts.pendingDeposits}
                         </span>
                       )}
@@ -509,11 +508,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <ArrowUpRight className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={1.8} />
+                        <ArrowUpRight className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                         <span>Withdrawals</span>
                       </div>
                       {pendingCounts.pendingWithdrawals > 0 && (
-                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/25 tabular-nums">
+                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-surface-strong text-text-primary border border-border-default tabular-nums">
                           {pendingCounts.pendingWithdrawals}
                         </span>
                       )}
@@ -529,7 +528,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <ArrowLeftRight className="h-5 w-5 shrink-0 text-blue-500" strokeWidth={1.8} />
+                      <ArrowLeftRight className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                       <span>Wallet Ledger</span>
                     </Link>
 
@@ -543,7 +542,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <Users className="h-5 w-5 shrink-0 text-purple-500" strokeWidth={1.8} />
+                      <Users className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                       <span>Player Accounts</span>
                     </Link>
 
@@ -558,10 +557,10 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <Sparkles className="h-5 w-5 shrink-0 text-amber-500" strokeWidth={1.8} />
+                        <Sparkles className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                         <span>Promotions</span>
                       </div>
-                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-strong text-text-secondary border border-border-default">
                         Live
                       </span>
                     </Link>
@@ -576,7 +575,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <Bell className="h-5 w-5 shrink-0 text-sky-500" strokeWidth={1.8} />
+                      <Bell className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                       <span>Notifications</span>
                     </Link>
                   </div>
@@ -603,16 +602,16 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {theme === 'dark' ? (
-                          <Moon className="h-5 w-5 shrink-0 text-indigo-400" strokeWidth={1.8} />
+                          <Moon className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                         ) : (
-                          <Sun className="h-5 w-5 shrink-0 text-amber-500" strokeWidth={1.8} />
+                          <Sun className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                         )}
                         <span>Night Mode</span>
                       </div>
 
                       <div
                         className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                          theme === 'dark' ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-zinc-700'
+                          theme === 'dark' ? 'bg-accent-primary' : 'bg-slate-300 dark:bg-zinc-700'
                         }`}
                       >
                         <span
@@ -647,7 +646,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <Activity className="h-5 w-5 shrink-0 text-emerald-500" strokeWidth={1.8} />
+                      <Activity className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                       <span>System Health</span>
                     </Link>
                   </div>
@@ -698,7 +697,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface-strong text-text-primary font-bold text-xs border border-border-default shadow-xs">
                     {adminName.slice(0, 2).toUpperCase()}
-                    <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-surface-raised" />
+                    <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-accent-primary ring-2 ring-surface-raised" />
                   </div>
 
                   <div className="flex flex-col min-w-0">
@@ -716,7 +715,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   onClick={handleLogout}
                   title="Sign out"
                   aria-label="Sign out of admin session"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary hover:text-rose-500 hover:bg-rose-500/10 transition-colors shrink-0"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors shrink-0"
                 >
                   <LogOut className="h-5 w-5" aria-hidden="true" strokeWidth={1.8} />
                 </button>
