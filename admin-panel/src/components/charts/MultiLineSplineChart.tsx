@@ -128,7 +128,7 @@ export function MultiLineSplineChart({
       </div>
 
       {/* Time Labels */}
-      <div className="flex justify-between px-3 text-[10px] text-text-tertiary font-mono">
+      <div className="flex justify-between px-3 text-xs text-text-tertiary font-mono">
         {labels.map((lbl, idx) => (
           <span key={idx}>{lbl}</span>
         ))}

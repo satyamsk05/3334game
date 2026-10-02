@@ -106,10 +106,10 @@ export default function AdminsManagementPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Administrative Staff</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Administrative Staff</h1>
             <Badge variant="positive">RBAC Protected</Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">Authoritative operator accounts, role boundaries and session governance</p>
+          <p className="text-sm text-text-secondary mt-1">Authoritative operator accounts, role boundaries and session governance</p>
         </div>
 
         <Button
@@ -118,7 +118,7 @@ export default function AdminsManagementPage() {
           onClick={() => setModalOpen(true)}
           aria-label="Create staff account"
         >
-          <UserPlus className="h-3.5 w-3.5" />
+          <UserPlus className="h-4 w-4" />
           <span>New Staff Account</span>
         </Button>
       </div>
@@ -132,15 +132,15 @@ export default function AdminsManagementPage() {
       {/* Admins Table */}
       <Card className="overflow-hidden p-0">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-text-secondary">
-            <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-[10px] font-mono tracking-wider">
+          <table className="w-full text-left text-sm text-text-secondary min-w-[800px]">
+            <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-xs font-mono tracking-wider">
               <tr>
-                <th className="px-4 py-3">Admin Username</th>
-                <th className="px-4 py-3">Assigned Role</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Account ID</th>
-                <th className="px-4 py-3">Created</th>
-                <th className="px-4 py-3 text-center">Action</th>
+                <th className="px-5 py-3.5">Admin Username</th>
+                <th className="px-5 py-3.5">Assigned Role</th>
+                <th className="px-5 py-3.5">Status</th>
+                <th className="px-5 py-3.5">Account ID</th>
+                <th className="px-5 py-3.5">Created</th>
+                <th className="px-5 py-3.5 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border-muted text-xs">
@@ -162,7 +162,7 @@ export default function AdminsManagementPage() {
                   const isToggling = togglingId === a.id;
                   return (
                     <tr key={a.id} className="hover:bg-surface-subtle transition-fast">
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2">
                           <div className="flex h-7 w-7 items-center justify-center rounded bg-surface-subtle font-semibold text-text-primary text-xs">
                             {a.username.slice(0, 2).toUpperCase()}
@@ -170,7 +170,7 @@ export default function AdminsManagementPage() {
                           <span className="font-medium text-text-primary">{a.username}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 font-mono">
+                      <td className="px-5 py-3.5 font-mono">
                         <Badge
                           variant={
                             a.role === 'SUPER_ADMIN' ? 'info' :
@@ -182,7 +182,7 @@ export default function AdminsManagementPage() {
                           {a.role}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-3.5">
                         <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${
                           a.is_active ? 'text-status-positive' : 'text-status-negative'
                         }`}>
@@ -190,13 +190,13 @@ export default function AdminsManagementPage() {
                           {a.is_active ? 'ACTIVE' : 'DISABLED'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-text-tertiary text-xs">
+                      <td className="px-5 py-3.5 font-mono text-text-tertiary text-xs">
                         {a.id}
                       </td>
-                      <td className="px-4 py-3 font-mono text-text-tertiary text-xs">
+                      <td className="px-5 py-3.5 font-mono text-text-tertiary text-xs">
                         {new Date(a.created_at).toLocaleDateString()}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-5 py-3.5 text-center">
                         <Button
                           variant={a.is_active ? 'danger' : 'secondary'}
                           size="sm"
@@ -236,7 +236,7 @@ export default function AdminsManagementPage() {
 
             {modalError && (
               <div className="flex items-center gap-2 rounded border border-status-negative/20 bg-status-negative/10 p-2 text-xs text-status-negative">
-                <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{modalError}</span>
               </div>
             )}

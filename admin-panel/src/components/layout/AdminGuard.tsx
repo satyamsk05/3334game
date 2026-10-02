@@ -81,9 +81,9 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
   if (verifying) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-surface-base text-xs text-text-tertiary">
-        <div className="flex items-center gap-2 rounded-md border border-border-default bg-surface-raised px-4 py-2.5 shadow-sm">
-          <Loader2 className="h-4 w-4 animate-spin text-accent-primary" />
+      <div className="flex h-screen w-full items-center justify-center bg-surface-base text-sm text-text-tertiary">
+        <div className="flex items-center gap-2.5 rounded-lg border border-border-default bg-surface-raised px-4 py-3 shadow-sm">
+          <Loader2 className="h-5 w-5 animate-spin text-accent-primary" />
           <span>Verifying Studio Authorization...</span>
         </div>
       </div>
@@ -92,23 +92,23 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
   if (!authorized) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-surface-base px-4 font-sans text-xs text-text-primary">
-        <div className="w-full max-w-sm rounded-2xl border border-border-default bg-surface-raised p-6 shadow-sm text-center space-y-4">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-500">
-            <AlertCircle className="h-5 w-5" />
+      <div className="flex h-screen w-full items-center justify-center bg-surface-base px-4 font-sans text-sm text-text-primary">
+        <div className="w-full max-w-sm rounded-xl border border-border-default bg-surface-raised p-6 shadow-lg text-center space-y-4">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10 text-rose-500">
+            <AlertCircle className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-text-primary">Authorization Notice</h2>
-            <p className="mt-1 text-xs text-text-secondary">
+            <h2 className="text-base font-semibold text-text-primary">Authorization Notice</h2>
+            <p className="mt-1 text-sm text-text-secondary">
               {errorMsg || 'Session verification could not be completed.'}
             </p>
           </div>
-          <div className="flex items-center justify-center gap-2 pt-2">
+          <div className="flex items-center justify-center gap-2.5 pt-2">
             <Button
               variant="secondary"
               size="sm"
               onClick={() => verifySession()}
-              icon={<RefreshCw className="h-3.5 w-3.5" />}
+              icon={<RefreshCw className="h-4 w-4" />}
             >
               Retry
             </Button>
@@ -120,7 +120,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
                 localStorage.removeItem('adminUser');
                 window.location.replace('/login');
               }}
-              icon={<LogIn className="h-3.5 w-3.5" />}
+              icon={<LogIn className="h-4 w-4" />}
             >
               Go to Login
             </Button>

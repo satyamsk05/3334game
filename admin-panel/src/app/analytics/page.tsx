@@ -56,23 +56,23 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Platform Analytics & Telemetry</h1>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Platform Analytics & Telemetry</h1>
             <Badge variant="info">Aggregated Metrics</Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">Statistical performance indicators, player turnover and financial margins</p>
+          <p className="text-sm text-text-secondary mt-1">Statistical performance indicators, player turnover and financial margins</p>
         </div>
 
         {/* Range Selector */}
-        <div className="flex items-center rounded-md border border-border-default bg-surface-raised p-0.5 text-xs font-medium text-text-secondary">
+        <div className="flex items-center rounded-lg border border-border-default bg-surface-raised p-1 text-xs font-medium text-text-secondary shadow-xs">
           {(['24h', '7d', '30d', 'all'] as const).map((t) => (
             <button
               key={t}
               onClick={() => setRange(t)}
-              className={`rounded px-2.5 py-1 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
-                range === t ? 'text-text-primary bg-surface-subtle font-semibold shadow-sm' : 'hover:text-text-primary'
+              className={`rounded-md px-3 py-1.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus ${
+                range === t ? 'text-text-primary bg-surface-strong font-semibold shadow-xs' : 'hover:text-text-primary'
               }`}
             >
               {t.toUpperCase()}
@@ -82,147 +82,147 @@ export default function AnalyticsPage() {
       </div>
 
       {error && (
-        <div className="rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative">
+        <div className="rounded-lg border border-rose-500/20 bg-rose-500/10 p-3.5 text-sm text-rose-600 dark:text-rose-400">
           {error}
         </div>
       )}
 
       {loading ? (
         <div className="py-20 text-center text-text-tertiary">
-          <Loader2 className="mx-auto h-6 w-6 animate-spin text-accent-primary mb-2" />
-          <span>Crunching PostgreSQL analytics...</span>
+          <Loader2 className="mx-auto h-7 w-7 animate-spin text-accent-primary mb-3" />
+          <span className="text-sm">Crunching PostgreSQL analytics...</span>
         </div>
       ) : (
         <div className="space-y-6">
           
           {/* Section 1: Financial & GGR Overview */}
           <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-status-positive" />
+            <h2 className="text-base font-semibold text-text-primary flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               <span>Gross Gaming Revenue & Performance</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Card>
-                <span className="text-xs font-mono text-text-tertiary uppercase">Total Wagered Turnover</span>
-                <div className="mt-2 text-2xl font-bold font-mono text-text-primary">
+              <Card className="rounded-xl p-5">
+                <span className="text-xs font-mono text-text-tertiary uppercase tracking-wider">Total Wagered Turnover</span>
+                <div className="mt-2 text-2xl sm:text-3xl font-bold font-mono text-text-primary tabular-nums">
                   ₹{totalWagered.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </div>
-                <p className="mt-1 text-xs text-text-tertiary">{games.totalBetsPlaced || 0} bets placed in range</p>
+                <p className="mt-1.5 text-xs text-text-tertiary">{games.totalBetsPlaced || 0} bets placed in range</p>
               </Card>
 
-              <Card>
-                <span className="text-xs font-mono text-text-tertiary uppercase">Total Won / Payouts</span>
-                <div className="mt-2 text-2xl font-bold font-mono text-status-positive">
+              <Card className="rounded-xl p-5">
+                <span className="text-xs font-mono text-text-tertiary uppercase tracking-wider">Total Won / Payouts</span>
+                <div className="mt-2 text-2xl sm:text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">
                   ₹{totalWon.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </div>
-                <p className="mt-1 text-xs text-text-tertiary">Disbursed win credits</p>
+                <p className="mt-1.5 text-xs text-text-tertiary">Disbursed win credits</p>
               </Card>
 
-              <Card>
-                <span className="text-xs font-mono text-text-tertiary uppercase">Gross Gaming Revenue (GGR)</span>
-                <div className={`mt-2 text-2xl font-bold font-mono ${ggr >= 0 ? 'text-status-positive' : 'text-status-negative'}`}>
+              <Card className="rounded-xl p-5">
+                <span className="text-xs font-mono text-text-tertiary uppercase tracking-wider">Gross Gaming Revenue (GGR)</span>
+                <div className={`mt-2 text-2xl sm:text-3xl font-bold font-mono tabular-nums ${ggr >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                   ₹{ggr.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </div>
-                <p className="mt-1 text-xs text-text-tertiary">Turnover minus player wins</p>
+                <p className="mt-1.5 text-xs text-text-tertiary">Turnover minus player wins</p>
               </Card>
             </div>
           </div>
 
           {/* Section 2: RTP & Fairness Health */}
-          <Card className="space-y-4">
-            <div className="flex items-center justify-between border-b border-border-muted pb-3">
+          <Card className="rounded-xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-border-subtle pb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-accent-primary" />
-                <h3 className="text-sm font-semibold text-text-primary">RTP Compliance & Game Math Verification</h3>
+                <ShieldCheck className="h-5 w-5 text-accent-primary" />
+                <h3 className="text-base font-semibold text-text-primary">RTP Compliance & Game Math Verification</h3>
               </div>
               <Badge variant="positive">95.0% Invariant Target</Badge>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs font-mono">
               <div>
-                <span className="text-text-tertiary block text-[11px] uppercase font-sans">Engine Target RTP</span>
-                <span className="text-text-primary text-base font-bold">
+                <span className="text-text-tertiary block text-xs uppercase font-sans tracking-wider">Engine Target RTP</span>
+                <span className="text-text-primary text-lg font-bold">
                   {games.rtpConfig?.targetPercent || '95.0'}%
                 </span>
-                <span className="text-[11px] text-text-tertiary block mt-0.5 font-sans">Green 30x, Red 5.06x, Purple 3.04x, Grey 2.03x</span>
+                <span className="text-xs text-text-tertiary block mt-1 font-sans">Green 30x, Red 5.06x, Purple 3.04x, Grey 2.03x</span>
               </div>
 
               <div>
-                <span className="text-text-tertiary block text-[11px] uppercase font-sans">Actual Observed RTP</span>
-                <span className={`text-base font-bold ${Math.abs(rtpActual - 95) <= 3 ? 'text-status-positive' : 'text-status-warning'}`}>
+                <span className="text-text-tertiary block text-xs uppercase font-sans tracking-wider">Actual Observed RTP</span>
+                <span className={`text-lg font-bold ${Math.abs(rtpActual - 95) <= 3 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
                   {rtpActual.toFixed(2)}%
                 </span>
-                <span className="text-[11px] text-text-tertiary block mt-0.5 font-sans">Derived from PostgreSQL bets table</span>
+                <span className="text-xs text-text-tertiary block mt-1 font-sans">Derived from PostgreSQL bets table</span>
               </div>
 
               <div>
-                <span className="text-text-tertiary block text-[11px] uppercase font-sans">Total Engine Rounds</span>
-                <span className="text-text-primary text-base font-bold">
+                <span className="text-text-tertiary block text-xs uppercase font-sans tracking-wider">Total Engine Rounds</span>
+                <span className="text-text-primary text-lg font-bold">
                   #{games.totalRoundsPlayed || 0}
                 </span>
-                <span className="text-[11px] text-text-tertiary block mt-0.5 font-sans">Authoritative server rounds</span>
+                <span className="text-xs text-text-tertiary block mt-1 font-sans">Authoritative server rounds</span>
               </div>
             </div>
           </Card>
 
           {/* Section 3: Cash Inflow vs Outflow */}
           <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-              <Coins className="h-4 w-4 text-accent-primary" />
+            <h2 className="text-base font-semibold text-text-primary flex items-center gap-2">
+              <Coins className="h-5 w-5 text-accent-primary" />
               <span>Cash Flow & Liquidity</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Card>
-                <span className="text-xs font-mono text-text-tertiary uppercase">Settled Deposits (In)</span>
-                <div className="mt-2 text-2xl font-bold font-mono text-status-positive">
+              <Card className="rounded-xl p-5">
+                <span className="text-xs font-mono text-text-tertiary uppercase tracking-wider">Settled Deposits (In)</span>
+                <div className="mt-2 text-2xl sm:text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">
                   ₹{totalDeposited.toFixed(2)}
                 </div>
-                <p className="mt-1 text-xs text-text-tertiary">UPI & manual deposit credits</p>
+                <p className="mt-1.5 text-xs text-text-tertiary">UPI & manual deposit credits</p>
               </Card>
 
-              <Card>
-                <span className="text-xs font-mono text-text-tertiary uppercase">Settled Withdrawals (Out)</span>
-                <div className="mt-2 text-2xl font-bold font-mono text-status-negative">
+              <Card className="rounded-xl p-5">
+                <span className="text-xs font-mono text-text-tertiary uppercase tracking-wider">Settled Withdrawals (Out)</span>
+                <div className="mt-2 text-2xl sm:text-3xl font-bold font-mono text-rose-600 dark:text-rose-400 tabular-nums">
                   ₹{totalWithdrawn.toFixed(2)}
                 </div>
-                <p className="mt-1 text-xs text-text-tertiary">Processed player payouts</p>
+                <p className="mt-1.5 text-xs text-text-tertiary">Processed player payouts</p>
               </Card>
 
-              <Card>
-                <span className="text-xs font-mono text-text-tertiary uppercase">Net Cash Flow</span>
-                <div className={`mt-2 text-2xl font-bold font-mono ${netFinancial >= 0 ? 'text-status-positive' : 'text-status-negative'}`}>
+              <Card className="rounded-xl p-5">
+                <span className="text-xs font-mono text-text-tertiary uppercase tracking-wider">Net Cash Flow</span>
+                <div className={`mt-2 text-2xl sm:text-3xl font-bold font-mono tabular-nums ${netFinancial >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                   ₹{netFinancial.toFixed(2)}
                 </div>
-                <p className="mt-1 text-xs text-text-tertiary">Deposits minus withdrawals</p>
+                <p className="mt-1.5 text-xs text-text-tertiary">Deposits minus withdrawals</p>
               </Card>
             </div>
           </div>
 
           {/* Section 4: Player Community Demographics */}
-          <Card className="space-y-4">
-            <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
-              <Users className="h-4 w-4 text-accent-primary" />
+          <Card className="rounded-xl p-6 space-y-4">
+            <h3 className="text-base font-semibold text-text-primary flex items-center gap-2">
+              <Users className="h-5 w-5 text-accent-primary" />
               <span>Player Retention & Account Health</span>
             </h3>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
-              <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-                <span className="text-text-tertiary block text-[10px] uppercase font-sans">Registered Total</span>
-                <span className="text-text-primary text-base font-bold">{users.totalUsers || 0}</span>
+              <div className="p-3.5 rounded-lg bg-surface-strong/60 border border-border-subtle">
+                <span className="text-text-tertiary block text-xs uppercase font-sans tracking-wider">Registered Total</span>
+                <span className="text-text-primary text-xl font-bold block mt-1 tabular-nums">{users.totalUsers || 0}</span>
               </div>
-              <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-                <span className="text-text-tertiary block text-[10px] uppercase font-sans">Active Accounts</span>
-                <span className="text-status-positive text-base font-bold">{users.activeUsers || 0}</span>
+              <div className="p-3.5 rounded-lg bg-surface-strong/60 border border-border-subtle">
+                <span className="text-text-tertiary block text-xs uppercase font-sans tracking-wider">Active Accounts</span>
+                <span className="text-emerald-600 dark:text-emerald-400 text-xl font-bold block mt-1 tabular-nums">{users.activeUsers || 0}</span>
               </div>
-              <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-                <span className="text-text-tertiary block text-[10px] uppercase font-sans">Banned / Suspended</span>
-                <span className="text-status-negative text-base font-bold">{users.bannedUsers || 0}</span>
+              <div className="p-3.5 rounded-lg bg-surface-strong/60 border border-border-subtle">
+                <span className="text-text-tertiary block text-xs uppercase font-sans tracking-wider">Banned / Suspended</span>
+                <span className="text-rose-600 dark:text-rose-400 text-xl font-bold block mt-1 tabular-nums">{users.bannedUsers || 0}</span>
               </div>
-              <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-                <span className="text-text-tertiary block text-[10px] uppercase font-sans">New in Period</span>
-                <span className="text-accent-primary text-base font-bold">+{users.newUsers || 0}</span>
+              <div className="p-3.5 rounded-lg bg-surface-strong/60 border border-border-subtle">
+                <span className="text-text-tertiary block text-xs uppercase font-sans tracking-wider">New in Period</span>
+                <span className="text-accent-primary text-xl font-bold block mt-1 tabular-nums">+{users.newUsers || 0}</span>
               </div>
             </div>
           </Card>

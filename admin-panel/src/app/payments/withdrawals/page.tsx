@@ -116,8 +116,8 @@ export default function WithdrawalsQueuePage() {
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-text-primary">Withdrawal Verification Queue</h1>
-          <p className="text-xs text-text-secondary mt-1">Live UPI payout processing connected to winnings bucket ledger</p>
+          <h1 className="text-2xl font-bold tracking-tight text-text-primary">Withdrawal Verification Queue</h1>
+          <p className="text-sm text-text-secondary mt-1">Live UPI payout processing connected to winnings bucket ledger</p>
         </div>
 
         {/* Filter Segmented Control */}
@@ -131,7 +131,7 @@ export default function WithdrawalsQueuePage() {
             }`}
           >
             <span>🟡 New Requests</span>
-            <span className="rounded-full bg-status-warning/20 px-1.5 py-0.5 text-[10px] font-bold">
+            <span className="rounded-full bg-status-warning/20 px-1.5 py-0.5 text-xs font-bold">
               {withdrawals.filter((w) => w.status === 'PENDING').length}
             </span>
           </button>
@@ -144,7 +144,7 @@ export default function WithdrawalsQueuePage() {
             }`}
           >
             <span>🔵 In Processing</span>
-            <span className="rounded-full bg-sky-500/20 px-1.5 py-0.5 text-[10px] font-bold">
+            <span className="rounded-full bg-sky-500/20 px-1.5 py-0.5 text-xs font-bold">
               {withdrawals.filter((w) => w.status === 'PROCESSING').length}
             </span>
           </button>
@@ -157,7 +157,7 @@ export default function WithdrawalsQueuePage() {
             }`}
           >
             <span>🟢 Completed</span>
-            <span className="rounded-full bg-status-positive/20 px-1.5 py-0.5 text-[10px] font-bold">
+            <span className="rounded-full bg-status-positive/20 px-1.5 py-0.5 text-xs font-bold">
               {withdrawals.filter((w) => w.status === 'APPROVED').length}
             </span>
           </button>
@@ -170,7 +170,7 @@ export default function WithdrawalsQueuePage() {
             }`}
           >
             <span>🔴 Rejected</span>
-            <span className="rounded-full bg-status-negative/20 px-1.5 py-0.5 text-[10px] font-bold">
+            <span className="rounded-full bg-status-negative/20 px-1.5 py-0.5 text-xs font-bold">
               {withdrawals.filter((w) => w.status === 'REJECTED').length}
             </span>
           </button>
@@ -198,16 +198,16 @@ export default function WithdrawalsQueuePage() {
         /* Table */
         <Card className="overflow-hidden p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-text-secondary">
-              <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-[10px] font-mono tracking-wider">
+            <table className="w-full text-left text-sm text-text-secondary min-w-[900px]">
+              <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-xs uppercase tracking-wider font-semibold">
                 <tr>
-                  <th className="px-4 py-3">Withdrawal ID</th>
-                  <th className="px-4 py-3">User ID</th>
-                  <th className="px-4 py-3">Payout Amount</th>
-                  <th className="px-4 py-3">Target UPI ID</th>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Approval Action</th>
+                  <th className="px-5 py-3.5">Withdrawal ID</th>
+                  <th className="px-5 py-3.5">User ID</th>
+                  <th className="px-5 py-3.5">Payout Amount</th>
+                  <th className="px-5 py-3.5">Target UPI ID</th>
+                  <th className="px-5 py-3.5">Date</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  <th className="px-5 py-3.5 text-right">Approval Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-muted text-xs">
@@ -221,7 +221,7 @@ export default function WithdrawalsQueuePage() {
                   filtered.map((w) => (
                     <tr key={w.withdrawalId} className="hover:bg-surface-subtle transition-fast">
                       
-                      <td className="px-4 py-3 font-mono text-xs text-text-primary">
+                      <td className="px-5 py-3.5 font-mono text-xs text-text-primary">
                         <div className="flex items-center gap-1.5">
                           <span className="truncate max-w-[120px]">{w.withdrawalId}</span>
                           <button 
@@ -229,18 +229,18 @@ export default function WithdrawalsQueuePage() {
                             className="text-text-tertiary hover:text-text-primary transition-fast p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
                             aria-label={`Copy withdrawal ID ${w.withdrawalId}`}
                           >
-                            {copiedId === w.withdrawalId ? <Check className="h-3 w-3 text-status-positive" /> : <Copy className="h-3 w-3" />}
+                            {copiedId === w.withdrawalId ? <Check className="h-4 w-4 text-status-positive" /> : <Copy className="h-4 w-4" />}
                           </button>
                         </div>
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-xs text-text-secondary">{w.userId}</td>
+                      <td className="px-5 py-3.5 font-mono text-xs text-text-secondary">{w.userId}</td>
 
-                      <td className="px-4 py-3 font-mono font-semibold text-sm text-status-negative">
+                      <td className="px-5 py-3.5 font-mono font-semibold text-sm text-status-negative">
                         -₹{w.amountRupees.toFixed(2)}
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-xs text-text-primary">
+                      <td className="px-5 py-3.5 font-mono text-xs text-text-primary">
                         <div className="flex items-center gap-1.5">
                           <span className="rounded bg-surface-subtle px-1.5 py-0.5 text-xs border border-border-default text-accent-primary">{w.upiId}</span>
                           <button 
@@ -248,16 +248,16 @@ export default function WithdrawalsQueuePage() {
                             className="text-text-tertiary hover:text-text-primary transition-fast p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
                             aria-label={`Copy UPI ID ${w.upiId}`}
                           >
-                            {copiedId === w.upiId ? <Check className="h-3 w-3 text-status-positive" /> : <Copy className="h-3 w-3" />}
+                            {copiedId === w.upiId ? <Check className="h-4 w-4 text-status-positive" /> : <Copy className="h-4 w-4" />}
                           </button>
                         </div>
                       </td>
 
-                      <td className="px-4 py-3 text-text-tertiary text-xs font-mono">
+                      <td className="px-5 py-3.5 text-text-tertiary text-xs font-mono">
                         {w.createdAt ? new Date(w.createdAt).toLocaleDateString() : 'Today'}
                       </td>
 
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-3.5">
                         <Badge
                           variant={
                             w.status === 'PENDING' ? 'warning' : w.status === 'PROCESSING' ? 'neutral' : w.status === 'APPROVED' ? 'positive' : 'negative'
@@ -267,7 +267,7 @@ export default function WithdrawalsQueuePage() {
                         </Badge>
                       </td>
 
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-5 py-3.5 text-right">
                         {(w.status === 'PENDING' || w.status === 'PROCESSING') && (
                           <div className="flex items-center justify-end gap-2">
                             {w.status === 'PENDING' && (
@@ -278,7 +278,7 @@ export default function WithdrawalsQueuePage() {
                                 isLoading={processingId === w.withdrawalId}
                                 onClick={() => handleProcess(w.withdrawalId)}
                               >
-                                <Loader2 className="h-3 w-3 text-sky-400" />
+                                <Loader2 className="h-4 w-4 text-sky-400" />
                                 <span>Process</span>
                               </Button>
                             )}
@@ -289,7 +289,7 @@ export default function WithdrawalsQueuePage() {
                               isLoading={processingId === w.withdrawalId}
                               onClick={() => handleApprove(w.withdrawalId, w.amountRupees, w.upiId)}
                             >
-                              <CheckCircle2 className="h-3 w-3" />
+                              <CheckCircle2 className="h-4 w-4" />
                               <span>Approve & Pay</span>
                             </Button>
                             <Button
@@ -299,7 +299,7 @@ export default function WithdrawalsQueuePage() {
                               isLoading={processingId === w.withdrawalId}
                               onClick={() => handleReject(w.withdrawalId)}
                             >
-                              <XCircle className="h-3 w-3" />
+                              <XCircle className="h-4 w-4" />
                               <span>Reject & Refund</span>
                             </Button>
                           </div>

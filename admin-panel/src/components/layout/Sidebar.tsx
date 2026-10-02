@@ -15,11 +15,9 @@ import {
   Sparkles,
   ChevronDown,
   ChevronRight,
-  Shield,
   Activity,
   FileText,
   LifeBuoy,
-  Globe,
   Sun,
   Moon,
   PanelLeftClose,
@@ -123,11 +121,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
 
             {!collapsed && (
               <div className="flex flex-col min-w-0">
-                <span className="font-semibold text-text-primary text-[13px] tracking-tight truncate flex items-center gap-1.5">
+                <span className="font-semibold text-text-primary text-sm tracking-tight truncate flex items-center gap-1.5">
                   Bit Arcade
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
                 </span>
-                <span className="text-[11px] text-text-tertiary truncate">
+                <span className="text-xs text-text-tertiary truncate">
                   Admin Platform
                 </span>
               </div>
@@ -139,10 +137,10 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               type="button"
               onClick={() => setCollapsed(true)}
               aria-label="Collapse sidebar"
-              className="hidden md:flex h-7 w-7 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors"
+              className="hidden md:flex h-8 w-8 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors"
               title="Collapse sidebar"
             >
-              <PanelLeftClose className="h-4 w-4" />
+              <PanelLeftClose className="h-5 w-5" />
             </button>
           )}
         </div>
@@ -154,10 +152,10 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               type="button"
               onClick={() => setCollapsed(false)}
               aria-label="Expand sidebar"
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors"
               title="Expand sidebar"
             >
-              <PanelLeft className="h-4 w-4" />
+              <PanelLeft className="h-5 w-5" />
             </button>
           </div>
         )}
@@ -171,38 +169,38 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               <button
                 type="button"
                 onClick={() => setNavigateOpen(!navigateOpen)}
-                className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-text-tertiary tracking-wider uppercase hover:text-text-secondary transition-colors"
+                className="w-full flex items-center justify-between px-2 py-1 text-xs font-semibold text-text-tertiary tracking-wider uppercase hover:text-text-secondary transition-colors"
               >
                 <span>Navigate</span>
-                {navigateOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                {navigateOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </button>
             ) : null}
 
             {(navigateOpen || collapsed) && (
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 {/* Dashboard */}
                 <Link
                   href="/"
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? 'Dashboard' : undefined}
-                  className={`group relative flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`group relative flex items-center gap-3 rounded-xl text-sm font-medium transition-all ${
                     isLinkActive('/')
                       ? 'bg-accent-primary text-text-inverse shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                  } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                  } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                 >
-                  <LayoutGrid className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+                  <LayoutGrid className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                   {!collapsed && <span>Dashboard</span>}
                 </Link>
 
                 {/* Games Management - Tree Node with Sub-items */}
                 <div>
                   <div
-                    className={`flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-medium cursor-pointer transition-all ${
+                    className={`flex items-center justify-between rounded-xl text-sm font-medium cursor-pointer transition-all ${
                       pathname.startsWith('/games') && !collapsed
-                        ? 'text-text-primary bg-surface-strong/60'
+                        ? 'text-text-primary bg-surface-strong/70'
                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                    } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                    } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                     onClick={() => {
                       if (collapsed) {
                         router.push('/games');
@@ -213,46 +211,46 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     }}
                     title={collapsed ? 'Games' : undefined}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <Gamepad2 className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Gamepad2 className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                       {!collapsed && <span>Games</span>}
                     </div>
                     {!collapsed && (
                       <span className="text-text-tertiary">
-                        {gamesTreeOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                        {gamesTreeOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </span>
                     )}
                   </div>
 
                   {/* Nested Tree Children with vertical connector lines */}
                   {!collapsed && gamesTreeOpen && (
-                    <div className="relative ml-4 pl-3 border-l border-border-default space-y-0.5 mt-0.5 py-1">
+                    <div className="relative ml-4 pl-3 border-l border-border-default space-y-1 mt-1 py-1">
                       <Link
                         href="/games"
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-2 rounded-lg px-2 py-1 text-[11px] font-medium transition-colors ${
+                        className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                           pathname === '/games'
                             ? 'text-text-primary font-semibold bg-surface-strong'
                             : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/50'
                         }`}
                       >
-                        <CircleDot className="h-2 w-2 text-emerald-500 shrink-0" />
+                        <CircleDot className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                         <span>All Games Overview</span>
                       </Link>
                       <Link
                         href="/games?game=ring_of_future"
                         onClick={() => setMobileOpen(false)}
-                        className="flex items-center gap-2 rounded-lg px-2 py-1 text-[11px] font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
+                        className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
                       >
-                        <span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
+                        <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0" />
                         <span>Ring of Future</span>
                       </Link>
                       <Link
                         href="/games?game=tictactoe"
                         onClick={() => setMobileOpen(false)}
-                        className="flex items-center gap-2 rounded-lg px-2 py-1 text-[11px] font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
+                        className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
                       >
-                        <span className="h-1.5 w-1.5 rounded-full bg-purple-500 shrink-0" />
+                        <span className="h-2 w-2 rounded-full bg-purple-500 shrink-0" />
                         <span>Tic-Tac-Toe</span>
                       </Link>
                     </div>
@@ -264,18 +262,18 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   href="/payments/deposits"
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? `Deposits (${pendingCounts.pendingDeposits})` : undefined}
-                  className={`group relative flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`group relative flex items-center justify-between rounded-xl text-sm font-medium transition-all ${
                     isLinkActive('/payments/deposits')
                       ? 'bg-accent-primary text-text-inverse shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                  } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                  } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <ArrowDownLeft className="h-4 w-4 shrink-0 text-emerald-500" strokeWidth={1.8} />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <ArrowDownLeft className="h-5 w-5 shrink-0 text-emerald-500" strokeWidth={1.8} />
                     {!collapsed && <span>Deposits</span>}
                   </div>
                   {!collapsed && pendingCounts.pendingDeposits > 0 && (
-                    <span className="flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 tabular-nums">
+                    <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 tabular-nums">
                       {pendingCounts.pendingDeposits}
                     </span>
                   )}
@@ -286,18 +284,18 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   href="/payments/withdrawals"
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? `Withdrawals (${pendingCounts.pendingWithdrawals})` : undefined}
-                  className={`group relative flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`group relative flex items-center justify-between rounded-xl text-sm font-medium transition-all ${
                     isLinkActive('/payments/withdrawals')
                       ? 'bg-accent-primary text-text-inverse shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                  } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                  } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <ArrowUpRight className="h-4 w-4 shrink-0 text-rose-500" strokeWidth={1.8} />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <ArrowUpRight className="h-5 w-5 shrink-0 text-rose-500" strokeWidth={1.8} />
                     {!collapsed && <span>Withdrawals</span>}
                   </div>
                   {!collapsed && pendingCounts.pendingWithdrawals > 0 && (
-                    <span className="flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full text-[10px] font-semibold bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 tabular-nums">
+                    <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/25 tabular-nums">
                       {pendingCounts.pendingWithdrawals}
                     </span>
                   )}
@@ -308,13 +306,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   href="/transactions/ledger"
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? 'Ledger' : undefined}
-                  className={`flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`flex items-center gap-3 rounded-xl text-sm font-medium transition-all ${
                     isLinkActive('/transactions/ledger')
                       ? 'bg-accent-primary text-text-inverse shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                  } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                  } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                 >
-                  <ArrowLeftRight className="h-4 w-4 shrink-0 text-blue-500" strokeWidth={1.8} />
+                  <ArrowLeftRight className="h-5 w-5 shrink-0 text-blue-500" strokeWidth={1.8} />
                   {!collapsed && <span>Wallet Ledger</span>}
                 </Link>
 
@@ -323,13 +321,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   href="/users"
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? 'Players' : undefined}
-                  className={`flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`flex items-center gap-3 rounded-xl text-sm font-medium transition-all ${
                     isLinkActive('/users')
                       ? 'bg-accent-primary text-text-inverse shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                  } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                  } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                 >
-                  <Users className="h-4 w-4 shrink-0 text-purple-500" strokeWidth={1.8} />
+                  <Users className="h-5 w-5 shrink-0 text-purple-500" strokeWidth={1.8} />
                   {!collapsed && <span>Player Accounts</span>}
                 </Link>
 
@@ -338,18 +336,18 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   href="/promotions"
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? 'Promotions' : undefined}
-                  className={`flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`flex items-center justify-between rounded-xl text-sm font-medium transition-all ${
                     isLinkActive('/promotions')
                       ? 'bg-accent-primary text-text-inverse shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                  } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                  } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Sparkles className="h-4 w-4 shrink-0 text-amber-500" strokeWidth={1.8} />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Sparkles className="h-5 w-5 shrink-0 text-amber-500" strokeWidth={1.8} />
                     {!collapsed && <span>Promotions</span>}
                   </div>
                   {!collapsed && (
-                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
                       Live
                     </span>
                   )}
@@ -360,13 +358,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   href="/notifications"
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? 'Notifications' : undefined}
-                  className={`flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`flex items-center gap-3 rounded-xl text-sm font-medium transition-all ${
                     isLinkActive('/notifications')
                       ? 'bg-accent-primary text-text-inverse shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                  } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                  } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                 >
-                  <Bell className="h-4 w-4 shrink-0 text-sky-500" strokeWidth={1.8} />
+                  <Bell className="h-5 w-5 shrink-0 text-sky-500" strokeWidth={1.8} />
                   {!collapsed && <span>Notifications</span>}
                 </Link>
               </div>
@@ -379,28 +377,28 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               <button
                 type="button"
                 onClick={() => setMoreOpen(!moreOpen)}
-                className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-text-tertiary tracking-wider uppercase hover:text-text-secondary transition-colors"
+                className="w-full flex items-center justify-between px-2 py-1 text-xs font-semibold text-text-tertiary tracking-wider uppercase hover:text-text-secondary transition-colors"
               >
                 <span>More</span>
-                {moreOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                {moreOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </button>
             ) : null}
 
             {(moreOpen || collapsed) && (
-              <div className="space-y-0.5">
-                {/* Night Mode Switch Toggle (directly in sidebar as requested in photo) */}
+              <div className="space-y-1">
+                {/* Night Mode Switch Toggle */}
                 <div
                   onClick={toggleTheme}
                   title={`Switch to ${theme === 'dark' ? 'Light' : 'Night'} Mode`}
-                  className={`flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs font-medium cursor-pointer transition-all text-text-secondary hover:text-text-primary hover:bg-surface-strong ${
-                    collapsed ? 'justify-center px-0 h-8' : ''
+                  className={`flex items-center justify-between rounded-xl text-sm font-medium cursor-pointer transition-all text-text-secondary hover:text-text-primary hover:bg-surface-strong ${
+                    collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="flex items-center gap-3 min-w-0">
                     {theme === 'dark' ? (
-                      <Moon className="h-4 w-4 shrink-0 text-indigo-400" strokeWidth={1.8} />
+                      <Moon className="h-5 w-5 shrink-0 text-indigo-400" strokeWidth={1.8} />
                     ) : (
-                      <Sun className="h-4 w-4 shrink-0 text-amber-500" strokeWidth={1.8} />
+                      <Sun className="h-5 w-5 shrink-0 text-amber-500" strokeWidth={1.8} />
                     )}
                     {!collapsed && <span>Night Mode</span>}
                   </div>
@@ -412,7 +410,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       }`}
                     >
                       <span
-                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-surface-raised shadow-sm ring-0 transition duration-200 ease-in-out ${
                           theme === 'dark' ? 'translate-x-4' : 'translate-x-0'
                         }`}
                       />
@@ -425,13 +423,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   href="/system/settings"
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? 'Platform Settings' : undefined}
-                  className={`flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`flex items-center gap-3 rounded-xl text-sm font-medium transition-all ${
                     isLinkActive('/system/settings')
                       ? 'bg-accent-primary text-text-inverse shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                  } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                  } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                 >
-                  <Settings className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+                  <Settings className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                   {!collapsed && <span>Settings</span>}
                 </Link>
 
@@ -440,13 +438,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   href="/system/health"
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? 'System Health' : undefined}
-                  className={`flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`flex items-center gap-3 rounded-xl text-sm font-medium transition-all ${
                     isLinkActive('/system/health')
                       ? 'bg-accent-primary text-text-inverse shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                  } ${collapsed ? 'justify-center px-0 h-8' : ''}`}
+                  } ${collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'}`}
                 >
-                  <Activity className="h-4 w-4 shrink-0 text-emerald-500" strokeWidth={1.8} />
+                  <Activity className="h-5 w-5 shrink-0 text-emerald-500" strokeWidth={1.8} />
                   {!collapsed && <span>System Health</span>}
                 </Link>
               </div>
@@ -459,25 +457,25 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               <button
                 type="button"
                 onClick={() => setLinksOpen(!linksOpen)}
-                className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-text-tertiary tracking-wider uppercase hover:text-text-secondary transition-colors"
+                className="w-full flex items-center justify-between px-2 py-1 text-xs font-semibold text-text-tertiary tracking-wider uppercase hover:text-text-secondary transition-colors"
               >
                 <span>Links</span>
-                {linksOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                {linksOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </button>
             ) : null}
 
             {(linksOpen || collapsed) && (
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 <a
                   href="/documentation"
                   target="_blank"
                   rel="noreferrer"
                   title={collapsed ? 'Documentation' : undefined}
-                  className={`flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all ${
-                    collapsed ? 'justify-center px-0 h-8' : ''
+                  className={`flex items-center gap-3 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all ${
+                    collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'
                   }`}
                 >
-                  <FileText className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+                  <FileText className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                   {!collapsed && <span>Documentation</span>}
                 </a>
 
@@ -486,11 +484,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   target="_blank"
                   rel="noreferrer"
                   title={collapsed ? 'Contact Support' : undefined}
-                  className={`flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all ${
-                    collapsed ? 'justify-center px-0 h-8' : ''
+                  className={`flex items-center gap-3 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all ${
+                    collapsed ? 'justify-center w-10 h-10 mx-auto px-0' : 'px-3 py-2'
                   }`}
                 >
-                  <LifeBuoy className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+                  <LifeBuoy className="h-5 w-5 shrink-0" strokeWidth={1.8} />
                   {!collapsed && <span>Contact Support</span>}
                 </a>
               </div>
@@ -500,20 +498,20 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
         </nav>
 
         {/* User Profile & Sign Out Footer */}
-        <div className="shrink-0 p-2.5 border-t border-border-subtle bg-surface-base/60">
+        <div className="shrink-0 p-3 border-t border-border-subtle bg-surface-base/60">
           <div className={`flex items-center gap-2 ${collapsed ? 'justify-center flex-col' : 'justify-between'}`}>
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-surface-strong text-text-primary font-bold text-xs border border-border-default shadow-xs">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface-strong text-text-primary font-bold text-xs border border-border-default shadow-xs">
                 {adminName.slice(0, 2).toUpperCase()}
-                <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-surface-raised" />
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-surface-raised" />
               </div>
 
               {!collapsed && (
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-semibold text-text-primary truncate">
+                  <span className="text-sm font-semibold text-text-primary truncate">
                     {adminName}
                   </span>
-                  <span className="text-[11px] text-text-tertiary truncate">
+                  <span className="text-xs text-text-tertiary truncate">
                     Superadmin
                   </span>
                 </div>
@@ -525,9 +523,9 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               onClick={handleLogout}
               title="Sign out"
               aria-label="Sign out of admin session"
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-text-tertiary hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary hover:text-rose-500 hover:bg-rose-500/10 transition-colors shrink-0"
             >
-              <LogOut className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.8} />
+              <LogOut className="h-5 w-5" aria-hidden="true" strokeWidth={1.8} />
             </button>
           </div>
         </div>

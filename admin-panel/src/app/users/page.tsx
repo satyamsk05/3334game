@@ -19,7 +19,6 @@ import { adminService, UserSummary } from '@/services/adminService';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-
 import { Modal } from '@/components/ui/Modal';
 
 export default function UsersManagementPage() {
@@ -120,20 +119,20 @@ export default function UsersManagementPage() {
     <div className="space-y-6">
       
       {/* Page Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Player Directory</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Player Directory</h1>
             <Badge variant="mint">Live Accounts</Badge>
           </div>
-          <p className="text-sm font-medium text-gray-500 mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Authoritative player accounts and integer paise wallet balances ({total} registered)
           </p>
         </div>
 
         {/* Search & Filters */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center rounded-2xl bg-white p-1 border border-gray-200/80 shadow-sm text-xs font-semibold text-gray-600">
+          <div className="flex items-center rounded-lg bg-surface-raised p-1 border border-border-default shadow-xs text-xs font-semibold text-text-secondary">
             {['ALL', 'ACTIVE', 'BANNED'].map((st) => (
               <button
                 key={st}
@@ -142,10 +141,10 @@ export default function UsersManagementPage() {
                   setStatus(st);
                   setPage(1);
                 }}
-                className={`rounded-xl px-3.5 py-1.5 transition-fast ${
+                className={`rounded-md px-3.5 py-1.5 transition-all ${
                   status === st
-                    ? 'bg-gray-900 text-white shadow-sm'
-                    : 'hover:text-gray-900 hover:bg-gray-50'
+                    ? 'bg-accent-primary text-text-inverse shadow-xs'
+                    : 'hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
                 {st}
@@ -154,43 +153,43 @@ export default function UsersManagementPage() {
           </div>
 
           <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-            <Search className="absolute left-3.5 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3.5 top-3 h-4 w-4 text-text-tertiary" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search player, phone, ID..."
-              className="h-9 w-48 sm:w-60 rounded-full border border-gray-200/80 bg-white pl-9 pr-3 text-xs font-medium text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-primary/20 shadow-sm transition-fast"
+              className="h-10 w-48 sm:w-64 rounded-lg border border-border-default bg-surface-strong/70 pl-9 pr-3 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-strong focus:bg-surface-raised shadow-xs transition-all"
             />
           </form>
 
           <Button
             variant="secondary"
-            size="sm"
+            size="md"
             onClick={() => {
               setPage(1);
               fetchUsers();
             }}
             disabled={loading}
+            icon={<Filter className="h-4 w-4" />}
           >
-            <Filter className="h-3.5 w-3.5" />
             <span>Filter</span>
           </Button>
         </div>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-semibold text-rose-700">
-          <AlertCircle className="h-4 w-4 shrink-0" />
+        <div className="flex items-center gap-2.5 rounded-lg border border-rose-500/25 bg-rose-500/10 p-3.5 text-sm text-rose-600 dark:text-rose-400">
+          <AlertCircle className="h-5 w-5 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Users Table */}
-      <Card className="overflow-hidden p-0">
+      <Card className="overflow-hidden p-0 rounded-xl bg-surface-raised border border-border-default shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600">
-            <thead className="bg-[#f9fafb] border-b border-gray-100 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+          <table className="w-full text-left text-sm text-text-secondary min-w-[900px]">
+            <thead className="bg-surface-strong/50 border-b border-border-subtle text-text-tertiary text-xs font-semibold uppercase tracking-wider">
               <tr>
                 <th className="py-3.5 px-6">Player / ID</th>
                 <th className="py-3.5 px-6">Phone</th>
@@ -203,17 +202,17 @@ export default function UsersManagementPage() {
                 <th className="py-3.5 px-6 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border-subtle">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-gray-400 text-sm">
-                    <Loader2 className="mx-auto h-5 w-5 animate-spin text-blue-600 mb-2" />
+                  <td colSpan={9} className="py-16 text-center text-text-tertiary text-sm">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-accent-primary mb-2" />
                     <span>Loading player accounts...</span>
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-gray-400 text-sm">
+                  <td colSpan={9} className="py-16 text-center text-text-tertiary text-sm">
                     No player records found matching criteria.
                   </td>
                 </tr>
@@ -228,35 +227,35 @@ export default function UsersManagementPage() {
                   const isProcessing = processingId === u.id;
 
                   return (
-                    <tr key={u.id} className="hover:bg-gray-50/70 transition-colors duration-100 ease-out">
+                    <tr key={u.id} className="hover:bg-surface-strong/40 transition-colors duration-150">
                       <td className="py-3.5 px-6">
                         <div className="flex flex-col">
                           <Link 
                             href={`/users/${u.id}`}
-                            className="font-bold text-gray-900 hover:text-blue-600 flex items-center gap-1.5 transition-colors duration-150 text-xs"
+                            className="font-semibold text-text-primary hover:text-accent-primary flex items-center gap-1.5 transition-colors text-sm"
                           >
                             <span>{u.name || 'Unnamed Player'}</span>
-                            <ExternalLink className="h-3 w-3 text-gray-400" />
+                            <ExternalLink className="h-3.5 w-3.5 text-text-tertiary" />
                           </Link>
-                          <div className="flex items-center gap-1 text-[11px] text-gray-400 font-mono mt-0.5">
-                            <span className="truncate max-w-[110px]">{u.id}</span>
+                          <div className="flex items-center gap-1 text-xs text-text-tertiary font-mono mt-0.5">
+                            <span className="truncate max-w-[120px]">{u.id}</span>
                             <button
                               type="button"
                               onClick={() => copyToClipboard(u.id)}
-                              className="p-0.5 rounded hover:text-gray-700 transition-colors duration-100"
+                              className="p-1 rounded text-text-tertiary hover:text-text-primary transition-colors"
                               aria-label={`Copy player ID ${u.id}`}
                             >
                               {copiedId === u.id ? (
-                                <Check className="h-3 w-3 text-emerald-600" />
+                                <Check className="h-3.5 w-3.5 text-emerald-500" />
                               ) : (
-                                <Copy className="h-3 w-3" />
+                                <Copy className="h-3.5 w-3.5" />
                               )}
                             </button>
                           </div>
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-6 text-xs text-gray-700 font-mono">
+                      <td className="py-3.5 px-6 text-sm text-text-primary font-mono">
                         {u.phone ? (u.phone.startsWith('91') && u.phone.length === 12 ? `+91 ${u.phone.slice(2)}` : u.phone) : '—'}
                       </td>
 
@@ -268,23 +267,23 @@ export default function UsersManagementPage() {
                         )}
                       </td>
 
-                      <td className="py-3.5 px-6 text-right text-xs text-gray-500 font-medium">
+                      <td className="py-3.5 px-6 text-right text-sm text-text-secondary font-medium tabular-nums">
                         ₹{depositRupees.toFixed(2)}
                       </td>
 
-                      <td className="py-3.5 px-6 text-right text-xs text-emerald-600 font-medium">
+                      <td className="py-3.5 px-6 text-right text-sm text-emerald-600 dark:text-emerald-400 font-medium tabular-nums">
                         ₹{winningsRupees.toFixed(2)}
                       </td>
 
-                      <td className="py-3.5 px-6 text-right text-xs text-gray-500 font-medium">
+                      <td className="py-3.5 px-6 text-right text-sm text-text-secondary font-medium tabular-nums">
                         ₹{bonusRupees.toFixed(2)}
                       </td>
 
-                      <td className="py-3.5 px-6 text-right font-bold text-xs text-gray-900">
+                      <td className="py-3.5 px-6 text-right font-bold text-sm text-text-primary tabular-nums">
                         ₹{totalRupees.toFixed(2)}
                       </td>
 
-                      <td className="py-3.5 px-6 text-xs text-gray-400 whitespace-nowrap">
+                      <td className="py-3.5 px-6 text-sm text-text-tertiary whitespace-nowrap">
                         {createdDate ? new Date(createdDate).toLocaleDateString() : '—'}
                       </td>
 
@@ -299,19 +298,20 @@ export default function UsersManagementPage() {
                             type="button"
                             onClick={() => openBanModal(u)}
                             disabled={isProcessing}
+                            aria-label={isBlocked ? `Unban user ${u.name || u.id}` : `Ban user ${u.name || u.id}`}
                             title={isBlocked ? 'Unban User' : 'Ban User'}
-                            className={`rounded-xl p-2 text-xs transition-all duration-150 ease-out active:scale-[0.96] ${
+                            className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs transition-all ${
                               isBlocked
-                                ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                                : 'bg-rose-50 text-rose-700 hover:bg-rose-100'
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/25'
+                                : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 border border-rose-500/25'
                             }`}
                           >
                             {isProcessing ? (
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              <Loader2 className="h-4 w-4 animate-spin" />
                             ) : isBlocked ? (
-                              <UserCheck className="h-3.5 w-3.5" />
+                              <UserCheck className="h-4 w-4" />
                             ) : (
-                              <UserX className="h-3.5 w-3.5" />
+                              <UserX className="h-4 w-4" />
                             )}
                           </button>
                         </div>
@@ -325,7 +325,7 @@ export default function UsersManagementPage() {
 
           {/* Pagination Footer */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-gray-100 bg-[#f9fafb] px-6 py-3 text-xs text-gray-500 font-medium">
+            <div className="flex items-center justify-between border-t border-border-subtle bg-surface-strong/30 px-6 py-3.5 text-xs text-text-secondary font-medium">
               <div>
                 Showing {users.length > 0 ? (page - 1) * limit + 1 : 0} to {Math.min(page * limit, total)} of {total} players
               </div>
@@ -334,18 +334,20 @@ export default function UsersManagementPage() {
                   type="button"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1 || loading}
-                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-all duration-150 ease-out active:scale-[0.96] disabled:opacity-40 shadow-sm"
+                  aria-label="Previous page"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-raised border border-border-default hover:bg-surface-strong transition-all disabled:opacity-40 shadow-xs"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
-                <span className="font-semibold text-gray-900 px-2">
+                <span className="font-semibold text-text-primary px-2">
                   {page} / {totalPages}
                 </span>
                 <button
                   type="button"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages || loading}
-                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-all duration-150 ease-out active:scale-[0.96] disabled:opacity-40 shadow-sm"
+                  aria-label="Next page"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-raised border border-border-default hover:bg-surface-strong transition-all disabled:opacity-40 shadow-xs"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
@@ -369,21 +371,21 @@ export default function UsersManagementPage() {
         <div className="space-y-4">
           {!banModalUser?.is_blocked && (
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700">Reason for restriction</label>
+              <label className="text-xs font-semibold text-text-secondary">Reason for restriction</label>
               <input
                 type="text"
                 value={banReason}
                 onChange={(e) => setBanReason(e.target.value)}
                 placeholder="E.g., Suspicious activity, Terms violation..."
-                className="w-full rounded-xl border border-gray-200 p-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-accent-primary/20"
+                className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-strong focus:bg-surface-raised transition-all"
               />
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-gray-100">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border-subtle">
             <Button
               variant="secondary"
-              size="sm"
+              size="md"
               onClick={() => setBanModalUser(null)}
               disabled={Boolean(processingId)}
             >
@@ -391,7 +393,7 @@ export default function UsersManagementPage() {
             </Button>
             <Button
               variant={banModalUser?.is_blocked ? 'primary' : 'danger'}
-              size="sm"
+              size="md"
               loading={Boolean(processingId)}
               onClick={handleConfirmBanToggle}
             >

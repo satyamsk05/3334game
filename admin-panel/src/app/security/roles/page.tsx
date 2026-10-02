@@ -84,10 +84,10 @@ export default function RolesMatrixPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Role-Based Access Control (RBAC)</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Role-Based Access Control (RBAC)</h1>
             <Badge variant="positive">Server Enforced</Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">Authoritative permissions matrix verified on every backend API request</p>
+          <p className="text-sm text-text-secondary mt-1">Authoritative permissions matrix verified on every backend API request</p>
         </div>
       </div>
 
@@ -100,7 +100,7 @@ export default function RolesMatrixPage() {
                 <Badge variant={r.badgeVariant}>
                   {r.name}
                 </Badge>
-                <Lock className="h-3.5 w-3.5 text-text-tertiary" />
+                <Lock className="h-4 w-4 text-text-tertiary" />
               </div>
               <h3 className="mt-2 text-sm font-semibold text-text-primary">{r.title}</h3>
               <p className="mt-1 text-xs text-text-secondary leading-relaxed">{r.description}</p>
@@ -118,10 +118,10 @@ export default function RolesMatrixPage() {
 
         <Card className="overflow-hidden p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-text-secondary">
-              <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-[10px] font-mono tracking-wider">
+            <table className="w-full text-left text-sm text-text-secondary min-w-[800px]">
+              <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-xs font-mono tracking-wider">
                 <tr>
-                  <th className="px-4 py-3 min-w-[220px]">Granular Permission</th>
+                  <th className="px-5 py-3.5 min-w-[220px]">Granular Permission</th>
                   <th className="px-3 py-3 text-center">SUPER_ADMIN</th>
                   <th className="px-3 py-3 text-center">FINANCE_ADMIN</th>
                   <th className="px-3 py-3 text-center">GAME_OPERATOR</th>
@@ -132,9 +132,9 @@ export default function RolesMatrixPage() {
               <tbody className="divide-y divide-border-muted text-xs">
                 {PERMISSIONS.map((perm) => (
                   <tr key={perm.key} className="hover:bg-surface-subtle transition-fast">
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <div className="font-medium text-text-primary">{perm.label}</div>
-                      <div className="text-[11px] text-text-tertiary font-mono">{perm.key} • {perm.desc}</div>
+                      <div className="text-xs text-text-tertiary font-mono">{perm.key} • {perm.desc}</div>
                     </td>
                     {['SUPER_ADMIN', 'FINANCE_ADMIN', 'GAME_OPERATOR', 'SUPPORT_ADMIN', 'VIEWER'].map((role) => {
                       const hasPerm = MATRIX[role]?.includes(perm.key);
@@ -142,11 +142,11 @@ export default function RolesMatrixPage() {
                         <td key={role} className="px-3 py-3 text-center">
                           {hasPerm ? (
                             <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-status-positive/10 text-status-positive border border-status-positive/20">
-                              <Check className="h-3 w-3" />
+                              <Check className="h-4 w-4" />
                             </div>
                           ) : (
                             <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-subtle text-text-tertiary">
-                              <X className="h-3 w-3" />
+                              <X className="h-4 w-4" />
                             </div>
                           )}
                         </td>

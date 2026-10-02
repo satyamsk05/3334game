@@ -155,10 +155,10 @@ export default function OverviewDashboard() {
       {/* Header Bar with Title, Range Filters, and Action Pill */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-2 border-b border-border-default">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-text-primary">
+          <h1 className="text-2xl font-bold tracking-tight text-text-primary">
             Overview Statistics
           </h1>
-          <p className="text-xs text-text-secondary mt-0.5">
+          <p className="text-sm text-text-secondary mt-1">
             Real-time analytics for Bit Arcade gaming platform, liquidity, and operations.
           </p>
         </div>
@@ -187,8 +187,8 @@ export default function OverviewDashboard() {
             <Button
               variant="primary"
               size="sm"
-              icon={<Plus className="h-3.5 w-3.5" />}
-              className="rounded-xl font-semibold shadow-xs"
+              icon={<Plus className="h-4 w-4" />}
+              className="rounded-lg font-semibold shadow-xs"
             >
               Add Game
             </Button>
@@ -201,16 +201,16 @@ export default function OverviewDashboard() {
             onClick={() => fetchLiveMetrics(range)}
             disabled={loading}
             aria-label="Refresh telemetry"
-            className="rounded-xl"
+            className="rounded-lg"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-text-primary' : 'text-text-secondary'}`} strokeWidth={1.8} />
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-text-primary' : 'text-text-secondary'}`} strokeWidth={1.8} />
             <span className="hidden sm:inline">Sync</span>
           </Button>
         </div>
       </div>
 
       {error && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-rose-500/25 bg-rose-500/10 p-3.5 text-xs text-rose-600 dark:text-rose-300">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-rose-500/25 bg-rose-500/10 p-3.5 text-xs text-rose-600 dark:text-rose-300">
           <div className="flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" strokeWidth={1.8} />
             <span>{error}</span>
@@ -223,7 +223,7 @@ export default function OverviewDashboard() {
               disabled={loading}
               className="self-start sm:self-auto"
             >
-              <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} strokeWidth={1.8} />
+              <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} strokeWidth={1.8} />
               Retry
             </Button>
           )}
@@ -234,7 +234,7 @@ export default function OverviewDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Projects / Games in Work (Green Bar Chart) */}
-        <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs hover:shadow-sm transition-all">
+        <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-xl shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
@@ -247,7 +247,7 @@ export default function OverviewDashboard() {
                 <span className="text-3xl font-bold tracking-tight text-text-primary tabular-nums">
                   {games.activeGames ?? 2}
                 </span>
-                <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
                   Active
                 </span>
               </div>
@@ -259,14 +259,14 @@ export default function OverviewDashboard() {
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-[11px] text-text-secondary">
+          <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-text-secondary">
             <span>Ring of Future • XO • TTT</span>
             <span className="text-emerald-600 dark:text-emerald-400 font-medium">100% online</span>
           </div>
         </Card>
 
         {/* Card 2: Tasks / Bets in Work (Blue Bar Chart) */}
-        <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs hover:shadow-sm transition-all">
+        <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-xl shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
@@ -279,7 +279,7 @@ export default function OverviewDashboard() {
                 <span className="text-3xl font-bold tracking-tight text-text-primary tabular-nums">
                   {games.totalRounds ?? games.totalRoundsPlayed ?? 0}
                 </span>
-                <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">
+                <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
                   Rounds
                 </span>
               </div>
@@ -291,14 +291,14 @@ export default function OverviewDashboard() {
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-[11px] text-text-secondary">
+          <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-text-secondary">
             <span>Volume: <strong className="text-text-primary font-medium">₹{totalWageredRupees.toFixed(0)}</strong></span>
             <span className="text-blue-600 dark:text-blue-400 font-medium">{games.totalBets ?? 0} bets</span>
           </div>
         </Card>
 
         {/* Card 3: Members / Active Players (Donut Ring) */}
-        <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs hover:shadow-sm transition-all">
+        <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-xl shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
@@ -312,14 +312,14 @@ export default function OverviewDashboard() {
                   <span className="text-2xl font-bold tracking-tight text-text-primary tabular-nums">
                     {activeUserCount}
                   </span>
-                  <span className="text-[10px] text-text-tertiary block">In Play</span>
+                  <span className="text-xs text-text-tertiary block">In Play</span>
                 </div>
                 <span className="text-border-default text-xl">/</span>
                 <div>
                   <span className="text-2xl font-bold tracking-tight text-text-secondary tabular-nums">
                     {Math.max(totalUserCount - activeUserCount, 0)}
                   </span>
-                  <span className="text-[10px] text-text-tertiary block">In Lobby</span>
+                  <span className="text-xs text-text-tertiary block">In Lobby</span>
                 </div>
               </div>
             </div>
@@ -328,14 +328,14 @@ export default function OverviewDashboard() {
             <DonutProgressRing percentage={activePercentage} size={50} color="#8B5CF6" />
           </div>
 
-          <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-[11px] text-text-secondary">
+          <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-text-secondary">
             <span>Total: <strong className="text-text-primary font-medium">{totalUserCount}</strong></span>
             <span className="text-purple-600 dark:text-purple-400 font-medium">{bannedUserCount} banned</span>
           </div>
         </Card>
 
         {/* Card 4: Total Platform Profit / Revenue (Purple Accent) */}
-        <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs hover:shadow-sm transition-all">
+        <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-xl shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
@@ -351,13 +351,13 @@ export default function OverviewDashboard() {
               </div>
             </div>
 
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              <ArrowUpRight className="h-3 w-3" />
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              <ArrowUpRight className="h-4 w-4" />
               Margin
             </span>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-[11px] text-text-secondary">
+          <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-text-secondary">
             <span>RTP: <strong className="text-text-primary font-medium">95.0%</strong></span>
             <span>Player Balances: <strong className="text-text-primary font-medium">₹{totalAvailableRupees.toFixed(0)}</strong></span>
           </div>
@@ -369,13 +369,13 @@ export default function OverviewDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         
         {/* Spline Chart: Deposits vs Payouts Over Time (2 Columns) */}
-        <Card className="lg:col-span-2 p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs space-y-4">
+        <Card className="lg:col-span-2 p-5 bg-surface-raised border border-border-default rounded-xl shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <h2 className="text-sm font-semibold text-text-primary">
                 Financial Flow
               </h2>
-              <p className="text-xs text-text-secondary mt-0.5">
+              <p className="text-sm text-text-secondary mt-1">
                 Approved player deposits vs processed withdrawal payouts.
               </p>
             </div>
@@ -403,15 +403,15 @@ export default function OverviewDashboard() {
 
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border-subtle text-center text-xs">
             <div className="p-2 rounded-xl bg-surface-strong/50">
-              <span className="text-text-tertiary block text-[10px]">Net Deposit Flow</span>
+              <span className="text-text-tertiary block text-xs">Net Deposit Flow</span>
               <span className="font-semibold text-text-primary tabular-nums">₹{approvedDepositRupees.toFixed(0)}</span>
             </div>
             <div className="p-2 rounded-xl bg-surface-strong/50">
-              <span className="text-text-tertiary block text-[10px]">Settled Payouts</span>
+              <span className="text-text-tertiary block text-xs">Settled Payouts</span>
               <span className="font-semibold text-text-primary tabular-nums">₹{approvedWithdrawRupees.toFixed(0)}</span>
             </div>
             <div className="p-2 rounded-xl bg-surface-strong/50">
-              <span className="text-text-tertiary block text-[10px]">Platform Margin</span>
+              <span className="text-text-tertiary block text-xs">Platform Margin</span>
               <span className="font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
                 +₹{Math.max(approvedDepositRupees - approvedWithdrawRupees, 0).toFixed(0)}
               </span>
@@ -420,15 +420,15 @@ export default function OverviewDashboard() {
         </Card>
 
         {/* Task & Action Queues (1 Column) */}
-        <Card className="p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs space-y-4 flex flex-col justify-between">
+        <Card className="p-5 bg-surface-raised border border-border-default rounded-xl shadow-xs space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-text-primary">
                 Task & Queue Statistics
               </h2>
-              <span className="text-[11px] text-text-tertiary font-mono">Live</span>
+              <span className="text-xs text-text-tertiary font-mono">Live</span>
             </div>
-            <p className="text-xs text-text-secondary mt-0.5">
+            <p className="text-sm text-text-secondary mt-1">
               Current operational queues and settlement status.
             </p>
 
@@ -443,13 +443,13 @@ export default function OverviewDashboard() {
                     <span className="text-xs font-semibold text-text-primary block">
                       Withdrawal Queue
                     </span>
-                    <span className="text-[11px] text-text-tertiary">
+                    <span className="text-xs text-text-tertiary">
                       {pendingPayoutsCount > 0 ? `${pendingPayoutsCount} pending approval` : 'All requests settled'}
                     </span>
                   </div>
                 </div>
                 <Link href="/payments/withdrawals">
-                  <Button variant={pendingPayoutsCount > 0 ? 'primary' : 'outline'} size="sm" className="rounded-lg h-7 text-[11px]">
+                  <Button variant={pendingPayoutsCount > 0 ? 'primary' : 'outline'} size="sm" className="rounded-lg h-8 text-xs">
                     Review
                   </Button>
                 </Link>
@@ -463,13 +463,13 @@ export default function OverviewDashboard() {
                     <span className="text-xs font-semibold text-text-primary block">
                       Ring of Future
                     </span>
-                    <span className="text-[11px] text-text-tertiary">
+                    <span className="text-xs text-text-tertiary">
                       Round #{games.totalRoundsPlayed || 1} • {games.engineState?.timeLeft || 15}s left
                     </span>
                   </div>
                 </div>
                 <Link href="/games">
-                  <Button variant="outline" size="sm" className="rounded-lg h-7 text-[11px]">
+                  <Button variant="outline" size="sm" className="rounded-lg h-8 text-xs">
                     Manage
                   </Button>
                 </Link>
@@ -483,13 +483,13 @@ export default function OverviewDashboard() {
                     <span className="text-xs font-semibold text-text-primary block">
                       Verified KYC Status
                     </span>
-                    <span className="text-[11px] text-text-tertiary">
+                    <span className="text-xs text-text-tertiary">
                       {users.totalUsers || 12} active player profiles
                     </span>
                   </div>
                 </div>
                 <Link href="/users">
-                  <Button variant="outline" size="sm" className="rounded-lg h-7 text-[11px]">
+                  <Button variant="outline" size="sm" className="rounded-lg h-8 text-xs">
                     Inspect
                   </Button>
                 </Link>
@@ -500,7 +500,7 @@ export default function OverviewDashboard() {
 
           <div className="pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-text-secondary">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
               Audit engine active
             </span>
             <span className="text-text-tertiary font-mono">v2.4</span>
@@ -510,7 +510,7 @@ export default function OverviewDashboard() {
       </div>
 
       {/* BOTTOM SECTION: Workload Table / Recent Activity Stream */}
-      <Card className="p-0 bg-surface-raised border border-border-default rounded-2xl shadow-xs overflow-hidden">
+      <Card className="p-0 bg-surface-raised border border-border-default rounded-xl shadow-xs overflow-hidden">
         
         {/* Table Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 py-4 border-b border-border-default gap-3">
@@ -518,7 +518,7 @@ export default function OverviewDashboard() {
             <h2 className="text-sm font-semibold text-text-primary">
               Recent Player Activity & Authoritative Ledger
             </h2>
-            <p className="text-xs text-text-secondary mt-0.5">
+            <p className="text-sm text-text-secondary mt-1">
               Real-time audit log of ledger debits, payouts, and deposit settlements.
             </p>
           </div>
@@ -527,7 +527,7 @@ export default function OverviewDashboard() {
             <Link href="/transactions/ledger">
               <Button variant="outline" size="sm" className="rounded-xl text-xs">
                 <span>View Full Ledger</span>
-                <ExternalLink className="h-3 w-3 ml-1 text-text-tertiary" />
+                <ExternalLink className="h-4 w-4 ml-1.5 text-text-tertiary" />
               </Button>
             </Link>
           </div>
@@ -535,17 +535,17 @@ export default function OverviewDashboard() {
 
         {/* Minimalist Data Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-text-secondary">
-            <thead className="border-b border-border-subtle text-text-tertiary font-medium bg-surface-strong/40">
+          <table className="w-full text-left text-sm text-text-secondary">
+            <thead className="border-b border-border-subtle text-text-tertiary font-semibold uppercase tracking-wider text-xs bg-surface-strong/40">
               <tr>
-                <th className="py-3 px-5 font-semibold">Transaction ID</th>
-                <th className="py-3 px-5 font-semibold">Player</th>
-                <th className="py-3 px-5 font-semibold">Type</th>
-                <th className="py-3 px-5 font-semibold">Bucket</th>
-                <th className="py-3 px-5 text-right font-semibold">Amount</th>
-                <th className="py-3 px-5 text-right font-semibold">Balance After</th>
-                <th className="py-3 px-5 font-semibold">Reference</th>
-                <th className="py-3 px-5 font-semibold">Time</th>
+                <th className="py-3.5 px-5 font-semibold">Transaction ID</th>
+                <th className="py-3.5 px-5 font-semibold">Player</th>
+                <th className="py-3.5 px-5 font-semibold">Type</th>
+                <th className="py-3.5 px-5 font-semibold">Bucket</th>
+                <th className="py-3.5 px-5 text-right font-semibold">Amount</th>
+                <th className="py-3.5 px-5 text-right font-semibold">Balance After</th>
+                <th className="py-3.5 px-5 font-semibold">Reference</th>
+                <th className="py-3.5 px-5 font-semibold">Time</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border-subtle">
@@ -565,7 +565,7 @@ export default function OverviewDashboard() {
                   return (
                     <tr key={tx.id} className="hover:bg-surface-strong/50 transition-colors">
                       {/* ID with Copy Button */}
-                      <td className="py-3 px-5 font-mono text-xs text-text-primary">
+                      <td className="py-3.5 px-5 font-mono text-sm text-text-primary">
                         <div className="flex items-center gap-1.5">
                           <span className="truncate max-w-[110px]" title={tx.id}>
                             {tx.id}
@@ -577,18 +577,18 @@ export default function OverviewDashboard() {
                             aria-label={`Copy transaction ID ${tx.id}`}
                           >
                             {copiedId === tx.id ? (
-                              <Check className="h-3 w-3 text-emerald-500" />
+                              <Check className="h-4 w-4 text-emerald-500" />
                             ) : (
-                              <Copy className="h-3 w-3" />
+                              <Copy className="h-4 w-4" />
                             )}
                           </button>
                         </div>
                       </td>
 
                       {/* Player Profile with Avatar */}
-                      <td className="py-3 px-5">
+                      <td className="py-3.5 px-5">
                         <div className="flex items-center gap-2">
-                          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-strong text-text-primary font-bold text-[10px] border border-border-default">
+                          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-strong text-text-primary font-bold text-xs border border-border-default">
                             {String(tx.user_name || tx.user_id || 'U').slice(0, 1).toUpperCase()}
                           </div>
                           <span className="font-medium text-text-primary truncate max-w-[120px]" title={tx.user_name || tx.user_id}>
@@ -598,34 +598,34 @@ export default function OverviewDashboard() {
                       </td>
 
                       {/* Type Badge */}
-                      <td className="py-3 px-5">
+                      <td className="py-3.5 px-5">
                         {getTransactionBadge(txType)}
                       </td>
 
                       {/* Bucket */}
-                      <td className="py-3 px-5 text-text-secondary capitalize">
+                      <td className="py-3.5 px-5 text-text-secondary capitalize">
                         {String(tx.bucket || '').toLowerCase()}
                       </td>
 
                       {/* Amount */}
-                      <td className={`py-3 px-5 text-right font-semibold tabular-nums ${
+                      <td className={`py-3.5 px-5 text-right font-semibold tabular-nums ${
                         isCredit ? 'text-emerald-600 dark:text-emerald-400' : 'text-text-primary'
                       }`}>
                         {isCredit ? '+' : '-'}₹{Math.abs(amountRupees).toFixed(2)}
                       </td>
 
                       {/* Balance After */}
-                      <td className="py-3 px-5 text-right font-mono text-text-secondary tabular-nums">
+                      <td className="py-3.5 px-5 text-right font-mono text-text-secondary tabular-nums">
                         ₹{balanceAfterRupees.toFixed(2)}
                       </td>
 
                       {/* Reference Description */}
-                      <td className="py-3 px-5 text-text-tertiary truncate max-w-[140px]" title={tx.description || tx.reference_id}>
+                      <td className="py-3.5 px-5 text-text-tertiary truncate max-w-[140px]" title={tx.description || tx.reference_id}>
                         {tx.description || tx.reference_id || '—'}
                       </td>
 
                       {/* Time */}
-                      <td className="py-3 px-5 text-text-tertiary whitespace-nowrap">
+                      <td className="py-3.5 px-5 text-text-tertiary whitespace-nowrap">
                         {new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </td>
                     </tr>

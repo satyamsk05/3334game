@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Button } from './Button';
 
@@ -20,6 +20,8 @@ export function Modal({
   children,
   maxWidth = 'md',
 }: ModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -55,35 +57,36 @@ export function Modal({
       {/* Interruptible Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm transition-opacity duration-200 ease-out"
+        className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-200 ease-out"
         aria-hidden="true"
       />
 
       {/* Modal Dialog Content Container */}
       <div
-        className={`relative w-full ${maxWidthStyles[maxWidth]} rounded-3xl bg-white border border-gray-100 p-6 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.12)] transition-all duration-200 ease-out transform scale-100 opacity-100 z-10`}
+        ref={modalRef}
+        className={`relative w-full ${maxWidthStyles[maxWidth]} rounded-2xl bg-surface-raised border border-border-default p-6 shadow-2xl transition-all duration-200 ease-out transform scale-100 opacity-100 z-10`}
       >
         <div className="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <h3 id="modal-title" className="text-lg font-bold text-gray-900 font-sans tracking-tight">
+          <div className="min-w-0 pr-2">
+            <h3 id="modal-title" className="text-lg font-bold text-text-primary font-sans tracking-tight">
               {title}
             </h3>
             {description && (
-              <p className="mt-1 text-xs text-gray-500 font-medium">{description}</p>
+              <p className="mt-1 text-xs text-text-tertiary font-medium">{description}</p>
             )}
           </div>
           <Button
             variant="ghost"
-            size="sm"
+            size="md"
             onClick={onClose}
             aria-label="Close dialog"
-            className="h-8 w-8 !p-0 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+            className="w-10 h-10 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-strong shrink-0"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" aria-hidden="true" />
           </Button>
         </div>
 
-        <div className="mt-2 text-sm text-gray-700">
+        <div className="mt-2 text-sm text-text-secondary leading-relaxed">
           {children}
         </div>
       </div>

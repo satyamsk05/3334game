@@ -168,10 +168,10 @@ export default function PushNotificationsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Push Notifications Hub</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Push Notifications Hub</h1>
             <Badge variant="positive">Firebase Cloud Messaging (FCM)</Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Send instant real-time push alerts directly to players' mobile lock screens and notification trays
           </p>
         </div>
@@ -201,7 +201,7 @@ export default function PushNotificationsPage() {
             
             {/* Target Audience Mode Switcher */}
             <div>
-              <label className="block text-xs font-semibold text-text-primary mb-2 uppercase tracking-wider text-[11px]">
+              <label className="block text-xs font-semibold text-text-primary mb-2 uppercase tracking-wider text-xs">
                 Target Audience
               </label>
               <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-surface-base border border-border-default">
@@ -242,7 +242,7 @@ export default function PushNotificationsPage() {
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div>
-                    <label className="block text-[11px] text-text-secondary mb-1">User ID</label>
+                    <label className="block text-xs text-text-secondary mb-1">User ID</label>
                     <input
                       type="text"
                       value={targetUserId}
@@ -252,7 +252,7 @@ export default function PushNotificationsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-text-secondary mb-1">Or Phone Number</label>
+                    <label className="block text-xs text-text-secondary mb-1">Or Phone Number</label>
                     <input
                       type="text"
                       value={targetUserPhone}
@@ -268,10 +268,10 @@ export default function PushNotificationsPage() {
             {/* Quick Templates */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-text-primary uppercase tracking-wider text-[11px]">
+                <span className="text-xs font-semibold text-text-primary uppercase tracking-wider text-xs">
                   One-Click Templates
                 </span>
-                <span className="text-[10px] text-text-tertiary">Click to auto-fill</span>
+                <span className="text-xs text-text-tertiary">Click to auto-fill</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {TEMPLATES.map((t, idx) => (
@@ -279,7 +279,7 @@ export default function PushNotificationsPage() {
                     key={idx}
                     type="button"
                     onClick={() => handleApplyTemplate(t)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-border-default bg-surface-base text-[11px] text-text-secondary hover:text-text-primary hover:border-accent-primary/40 hover:bg-surface-subtle transition-fast"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-border-default bg-surface-base text-xs text-text-secondary hover:text-text-primary hover:border-accent-primary/40 hover:bg-surface-subtle transition-fast"
                   >
                     <span>{t.name}</span>
                   </button>
@@ -313,14 +313,14 @@ export default function PushNotificationsPage() {
                   rows={3}
                   className="w-full rounded-xl border border-border-default bg-surface-base p-3 text-xs text-text-primary placeholder:text-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
                 />
-                <span className="text-[11px] text-text-tertiary mt-1 block">
+                <span className="text-xs text-text-tertiary mt-1 block">
                   Keep it punchy (1-2 sentences) for best CTR on mobile lock screens.
                 </span>
               </div>
 
               {/* Submit Button */}
               <div className="pt-2 flex items-center justify-between">
-                <span className="text-[11px] text-text-tertiary flex items-center gap-1">
+                <span className="text-xs text-text-tertiary flex items-center gap-1">
                   <Volume2 className="h-3 w-3 text-status-positive" />
                   <span>High priority with sound & heads-up banner</span>
                 </span>
@@ -343,48 +343,48 @@ export default function PushNotificationsPage() {
         {/* Right Column: Interactive Android Mockup (5 Cols) */}
         <div className="lg:col-span-5 space-y-4">
           <div className="p-1">
-            <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider text-[11px] block mb-2">
+            <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider text-xs block mb-2">
               📱 Live Android Phone Preview
             </span>
 
             {/* Phone Bezel */}
-            <div className="relative mx-auto w-full max-w-[320px] rounded-[36px] bg-gray-950 p-3 shadow-2xl border-[3px] border-gray-800">
+            <div className="relative mx-auto w-full max-w-[320px] rounded-[36px] bg-zinc-950 p-3 shadow-2xl border-[3px] border-zinc-800">
               
               {/* Camera Notch */}
               <div className="absolute top-4 left-1/2 -translate-x-1/2 h-4 w-20 rounded-full bg-black flex items-center justify-center">
-                <div className="h-2.5 w-2.5 rounded-full bg-gray-900 border border-gray-800" />
+                <div className="h-2.5 w-2.5 rounded-full bg-zinc-900 border border-zinc-800" />
               </div>
 
               {/* Phone Screen Area */}
               <div className="relative h-[480px] w-full rounded-[26px] bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 p-4 overflow-hidden flex flex-col justify-between text-white font-sans">
                 
                 {/* Status Bar */}
-                <div className="flex items-center justify-between text-[11px] font-mono text-gray-400 pt-1 px-1">
+                <div className="flex items-center justify-between text-xs font-mono text-zinc-400 pt-1 px-1">
                   <span>15:45</span>
-                  <div className="flex items-center gap-1.5 text-[10px]">
+                  <div className="flex items-center gap-1.5 text-xs">
                     <span>5G</span>
-                    <div className="h-2 w-4 rounded-sm border border-gray-400 bg-gray-400/80" />
+                    <div className="h-2 w-4 rounded-sm border border-zinc-400 bg-zinc-400/80" />
                   </div>
                 </div>
 
                 {/* Lock Screen Clock */}
                 <div className="text-center mt-6 space-y-1">
                   <div className="text-4xl font-extrabold tracking-tight text-white/90 font-mono">15:45</div>
-                  <div className="text-[11px] text-indigo-200/70 font-medium">Sunday, 27 September</div>
+                  <div className="text-xs text-indigo-200/70 font-medium">Sunday, 27 September</div>
                 </div>
 
                 {/* Floating Push Notification Banner */}
-                <div className="mt-4 mb-auto p-3.5 rounded-2xl bg-gray-900/90 backdrop-blur-md border border-white/10 shadow-xl space-y-2 animate-in slide-in-from-top-3 duration-300">
+                <div className="mt-4 mb-auto p-3.5 rounded-2xl bg-zinc-900/90 backdrop-blur-md border border-white/10 shadow-xl space-y-2 animate-in slide-in-from-top-3 duration-300">
                   
                   {/* App Header Row */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="h-5 w-5 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[10px] font-bold text-black shadow-sm">
+                      <div className="h-5 w-5 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-xs font-bold text-black shadow-sm">
                         BIT
                       </div>
                       <span className="text-xs font-semibold text-white/90 tracking-wide">Bit Arcade Game</span>
                     </div>
-                    <span className="text-[10px] text-gray-400 font-mono">Just now</span>
+                    <span className="text-xs text-zinc-400 font-mono">Just now</span>
                   </div>
 
                   {/* Notification Content */}
@@ -392,13 +392,13 @@ export default function PushNotificationsPage() {
                     <h4 className="text-xs font-bold text-amber-300 leading-snug">
                       {title.trim() || 'Notification Title'}
                     </h4>
-                    <p className="text-[11px] text-gray-200/90 leading-relaxed break-words">
+                    <p className="text-xs text-zinc-200/90 leading-relaxed break-words">
                       {body.trim() || 'Notification message description will appear here on player device...'}
                     </p>
                   </div>
 
                   {/* Sound & Action indicator */}
-                  <div className="flex items-center justify-between pt-1 border-t border-white/5 text-[9px] text-gray-400">
+                  <div className="flex items-center justify-between pt-1 border-t border-white/5 text-xs text-zinc-400">
                     <span className="flex items-center gap-1">
                       <Volume2 className="h-2.5 w-2.5 text-emerald-400" /> Sound Alert
                     </span>
@@ -407,7 +407,7 @@ export default function PushNotificationsPage() {
                 </div>
 
                 {/* Lock Screen Bottom Bar */}
-                <div className="flex items-center justify-between px-3 text-[10px] text-gray-400 pb-1">
+                <div className="flex items-center justify-between px-3 text-xs text-zinc-400 pb-1">
                   <span>Swipe up to unlock</span>
                   <div className="h-1 w-24 mx-auto rounded-full bg-white/30" />
                 </div>
@@ -427,7 +427,7 @@ export default function PushNotificationsPage() {
         <Card className="p-0 overflow-hidden border-border-default bg-surface-raised">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-text-secondary">
-              <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-[10px] font-mono tracking-wider">
+              <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-xs font-mono tracking-wider">
                 <tr>
                   <th className="px-4 py-3">Alert Title & Content</th>
                   <th className="px-4 py-3">Audience Target</th>
@@ -447,7 +447,7 @@ export default function PushNotificationsPage() {
                     <tr key={l.id} className="hover:bg-surface-subtle transition-fast">
                       <td className="px-4 py-3 max-w-md">
                         <div className="font-semibold text-text-primary">{l.title}</div>
-                        <div className="text-[11px] text-text-tertiary line-clamp-1 mt-0.5">{l.body}</div>
+                        <div className="text-xs text-text-tertiary line-clamp-1 mt-0.5">{l.body}</div>
                       </td>
                       <td className="px-4 py-3">
                         {l.targetAudience === 'ALL' ? (
@@ -461,7 +461,7 @@ export default function PushNotificationsPage() {
                           <Check className="h-3 w-3" /> Delivered ({l.deviceCount || 1} devices)
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-[11px] text-text-tertiary">
+                      <td className="px-4 py-3 font-mono text-xs text-text-tertiary">
                         {new Date(l.sentAt).toLocaleString('en-IN', {
                           day: '2-digit',
                           month: 'short',

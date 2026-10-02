@@ -71,13 +71,13 @@ export default function SystemHealthPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Authoritative Node Health</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Authoritative Node Health</h1>
             <Badge variant="positive">
               <span className="h-1.5 w-1.5 rounded-full bg-status-positive animate-pulse mr-1" />
               Pulse Active (10s)
             </Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">Real-time Node.js runtime process and PostgreSQL connection pool status</p>
+          <p className="text-sm text-text-secondary mt-1">Real-time Node.js runtime process and PostgreSQL connection pool status</p>
         </div>
 
         <Button
@@ -87,7 +87,7 @@ export default function SystemHealthPage() {
           disabled={loading}
           aria-label="Refresh node health"
         >
-          <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin text-accent-primary' : 'text-text-tertiary'}`} />
+          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-accent-primary' : 'text-text-tertiary'}`} />
           <span>Refresh</span>
         </Button>
       </div>
@@ -169,17 +169,17 @@ export default function SystemHealthPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-xs font-mono">
           <div>
-            <span className="text-text-tertiary block text-[11px] font-sans">System Uptime</span>
+            <span className="text-text-tertiary block text-xs font-sans">System Uptime</span>
             <span className="text-text-primary font-semibold text-sm">
               {uptimeSec ? formatUptime(uptimeSec) : '0s'}
             </span>
           </div>
           <div>
-            <span className="text-text-tertiary block text-[11px] font-sans">Node.js Version</span>
+            <span className="text-text-tertiary block text-xs font-sans">Node.js Version</span>
             <span className="text-text-primary font-semibold text-sm">{nodeVer}</span>
           </div>
           <div>
-            <span className="text-text-tertiary block text-[11px] font-sans">Server Timestamp</span>
+            <span className="text-text-tertiary block text-xs font-sans">Server Timestamp</span>
             <span className="text-text-primary">{serverTime}</span>
           </div>
         </div>

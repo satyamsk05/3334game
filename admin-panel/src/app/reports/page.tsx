@@ -4,7 +4,6 @@ import { Download, ShieldCheck, CheckCircle2, Loader2, AlertCircle } from 'lucid
 import { adminService } from '@/services/adminService';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
 
 export default function SystemicReportsPage() {
   const [totalDeposits, setTotalDeposits] = useState(0);
@@ -89,10 +88,10 @@ export default function SystemicReportsPage() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-text-primary">Financial Ledger Reports</h1>
-          <p className="text-xs text-text-secondary mt-1">Authoritative integer paise wallet audits and payout summaries</p>
+          <h1 className="text-2xl font-bold tracking-tight text-text-primary">Financial Ledger Reports</h1>
+          <p className="text-sm text-text-secondary mt-1">Authoritative integer paise wallet audits and payout summaries</p>
         </div>
 
         <Button
@@ -101,17 +100,17 @@ export default function SystemicReportsPage() {
           onClick={exportCsv}
           disabled={loading}
           aria-label="Export CSV Audit"
+          icon={<Download className="h-4 w-4" />}
         >
-          <Download className="h-3 w-3 text-text-tertiary" /> 
           <span>Export CSV Audit</span>
         </Button>
       </div>
 
       {/* Error state */}
       {error && (
-        <div className="rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative flex items-center justify-between">
+        <div className="rounded-lg border border-rose-500/20 bg-rose-500/10 p-3.5 text-sm text-rose-600 dark:text-rose-400 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+            <AlertCircle className="h-5 w-5 shrink-0" />
             <span>Telemetry Sync Error: {error}</span>
           </div>
           <Button variant="danger" size="sm" onClick={fetchFinancials}>Retry</Button>
@@ -120,46 +119,46 @@ export default function SystemicReportsPage() {
 
       {/* Summary Cards */}
       {loading ? (
-        <div className="py-16 text-center text-xs text-text-tertiary flex items-center justify-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin text-accent-primary" />
+        <div className="py-20 text-center text-sm text-text-tertiary flex flex-col items-center justify-center gap-3">
+          <Loader2 className="h-7 w-7 animate-spin text-accent-primary" />
           <span>Calculating authoritative financial audit...</span>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           
-          <Card className="space-y-2">
+          <Card className="rounded-xl p-5 space-y-2">
             <div className="text-xs font-mono uppercase tracking-wider text-text-tertiary">Approved System Deposits</div>
-            <div className="text-2xl font-semibold font-mono text-text-primary">₹{totalDeposits.toFixed(2)}</div>
+            <div className="text-2xl sm:text-3xl font-bold font-mono text-text-primary tabular-nums">₹{totalDeposits.toFixed(2)}</div>
             <div className="text-xs text-text-tertiary font-mono">{depositPaise.toLocaleString()} paise credited</div>
           </Card>
 
-          <Card className="space-y-2">
+          <Card className="rounded-xl p-5 space-y-2">
             <div className="text-xs font-mono uppercase tracking-wider text-text-tertiary">Approved Paid Withdrawals</div>
-            <div className="text-2xl font-semibold font-mono text-text-primary">₹{totalWithdrawals.toFixed(2)}</div>
+            <div className="text-2xl sm:text-3xl font-bold font-mono text-text-primary tabular-nums">₹{totalWithdrawals.toFixed(2)}</div>
             <div className="text-xs text-text-tertiary font-mono">{withdrawalPaise.toLocaleString()} paise debited</div>
           </Card>
 
-          <Card className="space-y-2">
+          <Card className="rounded-xl p-5 space-y-2">
             <div className="text-xs font-mono uppercase tracking-wider text-text-tertiary">Retained System Reserves</div>
-            <div className="text-2xl font-semibold font-mono text-status-positive">₹{netReserves.toFixed(2)}</div>
-            <div className="text-xs text-status-positive/80 font-mono">{reservePaise.toLocaleString()} paise liquid reserve</div>
+            <div className="text-2xl sm:text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">₹{netReserves.toFixed(2)}</div>
+            <div className="text-xs text-emerald-600/80 dark:text-emerald-400/80 font-mono">{reservePaise.toLocaleString()} paise liquid reserve</div>
           </Card>
 
         </div>
       )}
 
       {/* Ledger Integrity Card */}
-      <Card variant="default" className="border-l-2 border-l-accent-primary space-y-3">
-        <div className="flex items-center gap-2 text-text-primary font-medium text-sm">
-          <ShieldCheck className="h-4 w-4 text-accent-primary" />
+      <Card variant="default" className="rounded-xl border-l-4 border-l-accent-primary p-6 space-y-3">
+        <div className="flex items-center gap-2.5 text-text-primary font-semibold text-base">
+          <ShieldCheck className="h-5 w-5 text-accent-primary" />
           <span>Double-Entry Wallet Bucket Accounting Audit</span>
         </div>
-        <p className="text-xs text-text-secondary leading-relaxed max-w-2xl">
-          All balances are strictly tracked as integer paise (<code className="text-text-primary font-mono text-xs">totalBalance = depositBalance + winningBalance + bonusBalance</code>).
-          Bucket debit order (<code className="text-text-primary font-mono text-xs">deposit → winnings → bonus</code>) and refund equity are maintained 100% server-side.
+        <p className="text-sm text-text-secondary leading-relaxed max-w-2xl">
+          All balances are strictly tracked as integer paise (<code className="text-text-primary font-mono text-xs bg-surface-strong px-1.5 py-0.5 rounded">totalBalance = depositBalance + winningBalance + bonusBalance</code>).
+          Bucket debit order (<code className="text-text-primary font-mono text-xs bg-surface-strong px-1.5 py-0.5 rounded">deposit → winnings → bonus</code>) and refund equity are maintained 100% server-side.
         </p>
-        <div className="flex items-center gap-1.5 text-xs font-medium text-status-positive font-mono pt-1">
-          <CheckCircle2 className="h-3.5 w-3.5" />
+        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-mono pt-1">
+          <CheckCircle2 className="h-4 w-4" />
           <span>Audit Status: 100% RECONCILED</span>
         </div>
       </Card>

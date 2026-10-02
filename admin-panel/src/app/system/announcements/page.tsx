@@ -130,10 +130,10 @@ export default function AnnouncementsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Push Notifications & Broadcasts</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Push Notifications & Broadcasts</h1>
             <Badge variant="positive">Firebase Push Active</Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">Send instant mobile push alerts to lock screens, notification trays and in-app banners</p>
+          <p className="text-sm text-text-secondary mt-1">Send instant mobile push alerts to lock screens, notification trays and in-app banners</p>
         </div>
       </div>
 
@@ -209,7 +209,7 @@ export default function AnnouncementsPage() {
         </div>
 
         <div className="flex justify-between items-center pt-1">
-          <span className="text-[11px] text-text-tertiary">
+          <span className="text-xs text-text-tertiary">
             ⚡ Pops up on lock screen & status bar even when app is closed
           </span>
           <Button
@@ -219,7 +219,7 @@ export default function AnnouncementsPage() {
             disabled={pushSending || !pushBody.trim()}
             isLoading={pushSending}
           >
-            <Bell className="h-3.5 w-3.5 mr-1" />
+            <Bell className="h-4 w-4 mr-1" />
             <span>Send Mobile Push Alert</span>
           </Button>
         </div>
@@ -282,7 +282,7 @@ export default function AnnouncementsPage() {
             disabled={submitting || !title.trim() || !message.trim()}
             isLoading={submitting}
           >
-            <Send className="h-3.5 w-3.5" />
+            <Send className="h-4 w-4" />
             <span>Publish Broadcast</span>
           </Button>
         </div>
@@ -294,14 +294,14 @@ export default function AnnouncementsPage() {
 
         <Card className="overflow-hidden p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-text-secondary">
-              <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-[10px] font-mono tracking-wider">
+            <table className="w-full text-left text-sm text-text-secondary min-w-[800px]">
+              <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-xs font-mono tracking-wider">
                 <tr>
-                  <th className="px-4 py-3">Headline & Details</th>
-                  <th className="px-4 py-3">Priority</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Published At</th>
-                  <th className="px-4 py-3 text-center">Toggle</th>
+                  <th className="px-5 py-3.5">Headline & Details</th>
+                  <th className="px-5 py-3.5">Priority</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  <th className="px-5 py-3.5">Published At</th>
+                  <th className="px-5 py-3.5 text-center">Toggle</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-muted text-xs">
@@ -323,11 +323,11 @@ export default function AnnouncementsPage() {
                     const isToggling = togglingId === a.id;
                     return (
                       <tr key={a.id} className="hover:bg-surface-subtle transition-fast">
-                        <td className="px-4 py-3">
+                        <td className="px-5 py-3.5">
                           <div className="font-medium text-text-primary">{a.title}</div>
                           <p className="text-xs text-text-tertiary line-clamp-1 mt-0.5">{a.message}</p>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-5 py-3.5">
                           <Badge
                             variant={
                               a.type === 'URGENT' ? 'negative' : a.type === 'WARNING' ? 'warning' : 'info'
@@ -336,7 +336,7 @@ export default function AnnouncementsPage() {
                             {a.type}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-5 py-3.5">
                           <span className={`inline-flex items-center gap-1.5 font-medium text-xs ${
                             a.is_active ? 'text-status-positive' : 'text-text-tertiary'
                           }`}>
@@ -344,10 +344,10 @@ export default function AnnouncementsPage() {
                             {a.is_active ? 'LIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-text-tertiary font-mono text-xs">
+                        <td className="px-5 py-3.5 text-text-tertiary font-mono text-xs">
                           {new Date(a.created_at).toLocaleString()}
                         </td>
-                        <td className="px-4 py-3 text-center">
+                        <td className="px-5 py-3.5 text-center">
                           <Button
                             variant={a.is_active ? 'danger' : 'secondary'}
                             size="sm"

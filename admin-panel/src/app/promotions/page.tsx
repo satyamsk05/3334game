@@ -272,7 +272,7 @@ export default function PromotionsPage() {
             </h1>
             <Badge variant="mint">100% Server Driven</Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Dynamic carousel promotion cards delivered live to the Android & iOS player home screen
           </p>
         </div>
@@ -334,7 +334,7 @@ export default function PromotionsPage() {
               Live Player App Simulation (Home Carousel)
             </h2>
           </div>
-          <span className="text-[11px] text-text-tertiary">
+          <span className="text-xs text-text-tertiary">
             Real-time visual rendering as shown on player smartphones
           </span>
         </div>
@@ -365,10 +365,10 @@ export default function PromotionsPage() {
                   
                   {/* Top Bar: Badge & Priority */}
                   <div className="flex items-center justify-between z-10">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-black/40 backdrop-blur-md text-[10px] font-black uppercase tracking-wider text-amber-300 border border-white/15 shadow-sm">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-black/40 backdrop-blur-md text-xs font-black uppercase tracking-wider text-amber-300 border border-white/15 shadow-sm">
                       {p.badge_text || 'HOT'}
                     </span>
-                    <span className="text-[10px] font-mono font-bold bg-white/10 px-2 py-0.5 rounded text-white/90">
+                    <span className="text-xs font-mono font-bold bg-white/10 px-2 py-0.5 rounded text-white/90">
                       Rank #{p.display_order}
                     </span>
                   </div>
@@ -379,7 +379,7 @@ export default function PromotionsPage() {
                       <h3 className="text-sm font-extrabold leading-tight tracking-wide drop-shadow-md text-white">
                         {p.title}
                       </h3>
-                      <p className="text-[11px] text-white/90 line-clamp-2 mt-1 leading-normal font-medium">
+                      <p className="text-xs text-white/90 line-clamp-2 mt-1 leading-normal font-medium">
                         {p.subtitle}
                       </p>
                     </div>
@@ -391,13 +391,13 @@ export default function PromotionsPage() {
 
                   {/* Bottom Bar: Action Route & CTA Button */}
                   <div className="flex items-center justify-between pt-1 z-10 border-t border-white/10">
-                    <span className="text-[10px] font-mono text-white/70 truncate max-w-[170px]">
+                    <span className="text-xs font-mono text-white/70 truncate max-w-[170px]">
                       {p.target_route}
                     </span>
                     
-                    <div className="px-3.5 py-1.5 rounded-xl bg-white text-gray-900 shadow-md text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 transition-transform">
+                    <div className="px-3.5 py-1.5 rounded-xl bg-white text-zinc-900 shadow-md text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5 transition-transform">
                       <span>{p.cta_text || 'PLAY NOW'}</span>
-                      <ArrowRight className="h-3 w-3 text-gray-900" />
+                      <ArrowRight className="h-3 w-3 text-zinc-900" />
                     </div>
                   </div>
                 </div>
@@ -440,7 +440,7 @@ export default function PromotionsPage() {
                     </Badge>
                   </div>
 
-                  <span className="text-[11px] font-mono font-medium text-text-secondary">
+                  <span className="text-xs font-mono font-medium text-text-secondary">
                     Seq: #{p.display_order}
                   </span>
                 </div>
@@ -448,19 +448,19 @@ export default function PromotionsPage() {
                 {/* Banner Metadata */}
                 <div>
                   <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[10px] font-bold uppercase text-accent-primary bg-accent-primary/10 px-2 py-0.5 rounded-md">
+                    <span className="text-xs font-bold uppercase text-accent-primary bg-accent-primary/10 px-2 py-0.5 rounded-md">
                       {p.badge_text}
                     </span>
-                    <span className="text-[10px] font-mono text-text-tertiary uppercase">
+                    <span className="text-xs font-mono text-text-tertiary uppercase">
                       Icon: {p.icon_type || 'welcome'}
                     </span>
                   </div>
                   <h3 className="text-sm font-bold text-text-primary leading-snug">{p.title}</h3>
-                  <p className="text-xs text-text-secondary mt-1 line-clamp-2 leading-relaxed">{p.subtitle}</p>
+                  <p className="text-sm text-text-secondary mt-1 line-clamp-2 leading-relaxed">{p.subtitle}</p>
                 </div>
 
                 {/* Action Details */}
-                <div className="flex items-center justify-between text-[11px] font-mono text-text-tertiary pt-2 border-t border-border-muted">
+                <div className="flex items-center justify-between text-xs font-mono text-text-tertiary pt-2 border-t border-border-muted">
                   <span className="text-text-secondary font-semibold">CTA: {p.cta_text}</span>
                   <span className="truncate max-w-[130px] text-text-tertiary" title={p.target_route}>{p.target_route}</span>
                 </div>
@@ -505,7 +505,7 @@ export default function PromotionsPage() {
 
       {/* Create / Edit Promotion Modal with Live Mobile Preview */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/75 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
           <Card className="w-full max-w-4xl p-6 bg-surface-raised border border-border-default shadow-2xl rounded-2xl max-h-[92vh] overflow-y-auto">
             
             {/* Modal Header */}
@@ -620,7 +620,7 @@ export default function PromotionsPage() {
                           }`}
                         >
                           <IconComp className="h-4 w-4 mb-1" />
-                          <span className="text-[10px] leading-tight">{ic.label.split(' ')[1] || ic.label}</span>
+                          <span className="text-xs leading-tight">{ic.label.split(' ')[1] || ic.label}</span>
                         </button>
                       );
                     })}
@@ -640,7 +640,7 @@ export default function PromotionsPage() {
                           setGradientEnd(g.end);
                         }}
                         style={{ background: `linear-gradient(135deg, ${g.start}, ${g.end})` }}
-                        className={`h-7 px-2.5 rounded-lg text-[10px] font-bold text-white shadow-sm flex items-center gap-1 border ${
+                        className={`h-7 px-2.5 rounded-lg text-xs font-bold text-white shadow-sm flex items-center gap-1 border ${
                           gradientStart === g.start ? 'ring-2 ring-accent-primary ring-offset-2 ring-offset-surface-raised border-white' : 'border-white/20'
                         }`}
                       >
@@ -653,25 +653,25 @@ export default function PromotionsPage() {
                   {/* Custom Hex Color Inputs */}
                   <div className="flex items-center gap-3 pt-2">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-text-tertiary">Start:</span>
+                      <span className="text-xs text-text-tertiary">Start:</span>
                       <input
                         type="color"
                         value={gradientStart}
                         onChange={(e) => setGradientStart(e.target.value)}
                         className="h-6 w-7 rounded cursor-pointer border-0 bg-transparent"
                       />
-                      <span className="text-[10px] font-mono text-text-secondary">{gradientStart}</span>
+                      <span className="text-xs font-mono text-text-secondary">{gradientStart}</span>
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-text-tertiary">End:</span>
+                      <span className="text-xs text-text-tertiary">End:</span>
                       <input
                         type="color"
                         value={gradientEnd}
                         onChange={(e) => setGradientEnd(e.target.value)}
                         className="h-6 w-7 rounded cursor-pointer border-0 bg-transparent"
                       />
-                      <span className="text-[10px] font-mono text-text-secondary">{gradientEnd}</span>
+                      <span className="text-xs font-mono text-text-secondary">{gradientEnd}</span>
                     </div>
                   </div>
                 </div>
@@ -713,7 +713,7 @@ export default function PromotionsPage() {
                   
                   {/* Smartphone Top Bezel / Dynamic Island */}
                   <div className="w-full flex justify-between items-center px-2 pt-1 pb-2">
-                    <span className="text-[9px] font-semibold text-white/80 font-mono">9:41</span>
+                    <span className="text-xs font-semibold text-white/80 font-mono">9:41</span>
                     <div className="w-16 h-3.5 rounded-full bg-black border border-white/10" />
                     <div className="flex items-center gap-1">
                       <div className="w-2.5 h-2 rounded-xs border border-white/80" />
@@ -723,20 +723,20 @@ export default function PromotionsPage() {
                   {/* App Header Simulation */}
                   <div className="w-full px-1 py-1 flex items-center justify-between border-b border-white/10 mb-2">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-[9px] font-bold text-white">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-xs font-bold text-white">
                         BA
                       </div>
-                      <span className="text-[11px] font-black tracking-wider text-white">BIT ARCADE GAME</span>
+                      <span className="text-xs font-black tracking-wider text-white">BIT ARCADE GAME</span>
                     </div>
 
-                    <div className="px-2 py-0.5 rounded-full bg-[#1E1634] border border-white/10 text-[10px] font-bold text-emerald-400">
+                    <div className="px-2 py-0.5 rounded-full bg-[#1E1634] border border-white/10 text-xs font-bold text-emerald-400">
                       ₹ 2,450.00
                     </div>
                   </div>
 
                   {/* LIVE BANNER CARD PREVIEW */}
                   <div className="my-auto w-full">
-                    <div className="text-[9px] uppercase tracking-wider text-white/50 font-bold mb-1 px-1">
+                    <div className="text-xs uppercase tracking-wider text-white/50 font-bold mb-1 px-1">
                       Hero Carousel
                     </div>
 
@@ -751,10 +751,10 @@ export default function PromotionsPage() {
 
                       {/* Top row */}
                       <div className="flex items-center justify-between z-10">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md text-[9px] font-black uppercase tracking-wider text-amber-300 border border-white/15">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md text-xs font-black uppercase tracking-wider text-amber-300 border border-white/15">
                           {badgeText || 'HOT'}
                         </span>
-                        <span className="text-[9px] font-mono font-bold bg-white/10 px-1.5 py-0.5 rounded text-white/90">
+                        <span className="text-xs font-mono font-bold bg-white/10 px-1.5 py-0.5 rounded text-white/90">
                           #{displayOrder || 1}
                         </span>
                       </div>
@@ -765,7 +765,7 @@ export default function PromotionsPage() {
                           <h4 className="text-xs font-black leading-tight tracking-wide drop-shadow text-white">
                             {title || 'BANNER TITLE'}
                           </h4>
-                          <p className="text-[10px] text-white/90 line-clamp-2 mt-0.5 leading-snug font-medium">
+                          <p className="text-xs text-white/90 line-clamp-2 mt-0.5 leading-snug font-medium">
                             {subtitle || 'Banner description will appear here on user phones.'}
                           </p>
                         </div>
@@ -777,12 +777,12 @@ export default function PromotionsPage() {
 
                       {/* CTA button */}
                       <div className="flex items-center justify-between pt-1 z-10 border-t border-white/10">
-                        <span className="text-[9px] font-mono text-white/70 truncate max-w-[120px]">
+                        <span className="text-xs font-mono text-white/70 truncate max-w-[120px]">
                           {targetRoute}
                         </span>
-                        <div className="px-2.5 py-1 rounded-lg bg-white text-gray-900 shadow text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                        <div className="px-2.5 py-1 rounded-lg bg-white text-zinc-900 shadow text-xs font-black uppercase tracking-wider flex items-center gap-1">
                           <span>{ctaText || 'PLAY NOW'}</span>
-                          <ArrowRight className="h-2.5 w-2.5 text-gray-900" />
+                          <ArrowRight className="h-2.5 w-2.5 text-zinc-900" />
                         </div>
                       </div>
                     </div>
@@ -797,15 +797,15 @@ export default function PromotionsPage() {
 
                   {/* Smartphone Home Screen Games Grid Preview Bottom */}
                   <div className="space-y-1.5 pt-2 border-t border-white/10">
-                    <div className="text-[9px] font-bold text-white/40 uppercase">Featured Games</div>
+                    <div className="text-xs font-bold text-white/40 uppercase">Featured Games</div>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="h-12 rounded-xl bg-[#1E1634] border border-white/5 flex items-center px-2 gap-2">
                         <div className="w-7 h-7 rounded-lg bg-purple-600/30 flex items-center justify-center text-xs">⚔️</div>
-                        <div className="text-[9px] font-bold text-white leading-tight">1v1 XO</div>
+                        <div className="text-xs font-bold text-white leading-tight">1v1 XO</div>
                       </div>
                       <div className="h-12 rounded-xl bg-[#1E1634] border border-white/5 flex items-center px-2 gap-2">
                         <div className="w-7 h-7 rounded-lg bg-teal-600/30 flex items-center justify-center text-xs">🎡</div>
-                        <div className="text-[9px] font-bold text-white leading-tight">Ring of Future</div>
+                        <div className="text-xs font-bold text-white leading-tight">Ring of Future</div>
                       </div>
                     </div>
                   </div>

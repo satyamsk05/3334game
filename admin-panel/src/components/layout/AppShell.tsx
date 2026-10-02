@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './Sidebar';
-import { Search, Command, Menu, Bell, Home, ChevronRight, Plus, ExternalLink } from 'lucide-react';
+import { Search, Command, Menu, Bell, Home, ChevronRight, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -55,7 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Skip Link for Accessibility */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2.5 focus:left-2.5 focus:z-50 focus:px-3 focus:py-1.5 focus:rounded-xl focus:bg-accent-primary focus:text-text-inverse focus:font-medium focus:text-xs focus:shadow-md focus:outline-none"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-accent-primary focus:text-text-inverse focus:font-medium focus:text-sm focus:shadow-lg focus:outline-none"
       >
         Skip to main content
       </a>
@@ -75,29 +75,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         }`}
       >
         {/* Top Navigation Bar */}
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between px-4 sm:px-8 bg-surface-raised/80 backdrop-blur-md border-b border-border-default transition-colors">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between px-4 sm:px-8 bg-surface-raised/80 backdrop-blur-md border-b border-border-default transition-colors">
           <div className="flex items-center gap-3">
             {/* Mobile Toggle Button */}
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-border-default bg-surface-strong text-text-secondary md:hidden hover:text-text-primary transition-colors"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-border-default bg-surface-strong text-text-secondary md:hidden hover:text-text-primary transition-colors focus-visible:ring-2 focus-visible:ring-border-focus"
               aria-label="Open navigation sidebar"
             >
-              <Menu className="h-4 w-4" aria-hidden="true" />
+              <Menu className="h-5 w-5" aria-hidden="true" />
             </button>
 
             {/* Breadcrumb Context */}
-            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm">
               <Link
                 href="/"
-                className="flex items-center gap-1 text-text-tertiary hover:text-text-primary transition-colors"
+                className="flex items-center gap-1.5 text-text-tertiary hover:text-text-primary transition-colors"
                 title="Go to Dashboard"
               >
-                <Home className="h-3.5 w-3.5" />
+                <Home className="h-4 w-4" />
                 <span className="hidden sm:inline font-medium">Dashboard</span>
               </Link>
-              <ChevronRight className="h-3 w-3 text-text-tertiary" />
+              <ChevronRight className="h-4 w-4 text-text-tertiary" />
               <span className="text-text-tertiary font-normal hidden sm:inline">
                 {pageInfo.section}
               </span>
@@ -109,11 +109,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Right Header Controls: Universal Search Pill, Notifications, Quick Actions */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             {/* Universal Search Pill Input */}
             <div className="relative w-44 sm:w-64">
               <Search
-                className="absolute left-3 top-2.5 h-3.5 w-3.5 text-text-tertiary pointer-events-none"
+                className="absolute left-3 top-3 h-4 w-4 text-text-tertiary pointer-events-none"
                 aria-hidden="true"
                 strokeWidth={1.8}
               />
@@ -125,21 +125,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 onKeyDown={handleSearchKeyDown}
                 placeholder="Search users, UTR, ID..."
                 aria-label="Search users and identifiers"
-                className="w-full rounded-xl border border-border-default bg-surface-strong/70 py-1.5 pl-8 pr-12 text-xs font-normal text-text-primary placeholder:text-text-tertiary focus:bg-surface-raised focus:border-border-strong focus:outline-none transition-all shadow-xs"
+                className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/70 pl-9 pr-14 text-sm font-normal text-text-primary placeholder:text-text-tertiary focus:bg-surface-raised focus:border-border-strong focus:outline-none transition-all shadow-xs"
               />
-              <kbd className="absolute right-2.5 top-2 flex items-center gap-0.5 rounded-md bg-surface-base border border-border-default px-1 py-0.5 text-[9px] text-text-tertiary font-mono pointer-events-none">
-                <Command className="h-2.5 w-2.5" aria-hidden="true" strokeWidth={1.8} /> K
+              <kbd className="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-md bg-surface-base border border-border-default px-1.5 py-0.5 text-xs text-text-tertiary font-mono pointer-events-none">
+                <Command className="h-3 w-3" aria-hidden="true" strokeWidth={1.8} /> K
               </kbd>
             </div>
 
             {/* Notification Bell */}
             <Link
               href="/payments/deposits"
-              className="relative flex h-8 w-8 items-center justify-center rounded-xl border border-border-default bg-surface-strong/70 text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors"
+              className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-border-default bg-surface-strong/70 text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors focus-visible:ring-2 focus-visible:ring-border-focus"
               title="Deposit & Payment Alerts"
+              aria-label="Deposit and payment alerts"
             >
-              <Bell className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.8} />
-              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <Bell className="h-5 w-5" aria-hidden="true" strokeWidth={1.8} />
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-surface-raised" />
             </Link>
 
             {/* Live Web App Shortcut */}
@@ -147,11 +148,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href="https://bitarcade-pay.vercel.app"
               target="_blank"
               rel="noreferrer"
-              className="hidden lg:flex items-center gap-1.5 h-8 px-2.5 rounded-xl border border-border-default bg-surface-strong/70 text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors text-xs font-medium"
+              className="hidden lg:flex items-center gap-2 h-10 px-3.5 rounded-lg border border-border-default bg-surface-strong/70 text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors text-sm font-medium focus-visible:ring-2 focus-visible:ring-border-focus"
               title="Open Payment Gateway"
             >
               <span>Gateway</span>
-              <ExternalLink className="h-3 w-3 text-text-tertiary" />
+              <ExternalLink className="h-4 w-4 text-text-tertiary" />
             </a>
           </div>
         </header>

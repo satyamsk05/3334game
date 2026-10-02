@@ -66,10 +66,10 @@ export default function AuditLogsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Immutable Security Audit Logs</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Immutable Security Audit Logs</h1>
             <Badge variant="info">Tamper Evident</Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">Authoritative audit trail of every administrative mutation and policy action</p>
+          <p className="text-sm text-text-secondary mt-1">Authoritative audit trail of every administrative mutation and policy action</p>
         </div>
 
         <Button
@@ -79,7 +79,7 @@ export default function AuditLogsPage() {
           disabled={loading}
           aria-label="Refresh audit logs"
         >
-          <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin text-accent-primary' : 'text-text-tertiary'}`} />
+          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-accent-primary' : 'text-text-tertiary'}`} />
           <span>Refresh</span>
         </Button>
       </div>
@@ -117,7 +117,7 @@ export default function AuditLogsPage() {
           variant="primary"
           size="sm"
         >
-          <Filter className="h-3 w-3" />
+          <Filter className="h-4 w-4" />
           <span>Filter Logs</span>
         </Button>
       </Card>
@@ -125,15 +125,15 @@ export default function AuditLogsPage() {
       {/* Audit Logs Table */}
       <Card className="overflow-hidden p-0">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-text-secondary">
-            <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-[10px] font-mono tracking-wider">
+          <table className="w-full text-left text-sm text-text-secondary min-w-[900px]">
+            <thead className="border-b border-border-default bg-surface-base text-text-tertiary uppercase text-xs font-mono tracking-wider">
               <tr>
-                <th className="px-4 py-3">Log ID</th>
-                <th className="px-4 py-3">Action</th>
-                <th className="px-4 py-3">Staff Operator</th>
-                <th className="px-4 py-3">Target Subject</th>
-                <th className="px-4 py-3">Action Details Payload</th>
-                <th className="px-4 py-3">Timestamp</th>
+                <th className="px-5 py-3.5">Log ID</th>
+                <th className="px-5 py-3.5">Action</th>
+                <th className="px-5 py-3.5">Staff Operator</th>
+                <th className="px-5 py-3.5">Target Subject</th>
+                <th className="px-5 py-3.5">Action Details Payload</th>
+                <th className="px-5 py-3.5">Timestamp</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border-muted font-mono text-xs">
@@ -153,7 +153,7 @@ export default function AuditLogsPage() {
               ) : (
                 logs.map((log) => (
                   <tr key={log.id} className="hover:bg-surface-subtle transition-fast">
-                    <td className="px-4 py-3 text-text-primary">
+                    <td className="px-5 py-3.5 text-text-primary">
                       <div className="flex items-center gap-1.5">
                         <span className="truncate max-w-[80px]">{log.id}</span>
                         <button
@@ -161,25 +161,25 @@ export default function AuditLogsPage() {
                           className="text-text-tertiary hover:text-text-primary p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
                           aria-label={`Copy log ID ${log.id}`}
                         >
-                          {copiedId === log.id ? <Check className="h-2.5 w-2.5 text-status-positive" /> : <Copy className="h-2.5 w-2.5" />}
+                          {copiedId === log.id ? <Check className="h-4 w-4 text-status-positive" /> : <Copy className="h-4 w-4" />}
                         </button>
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-sans">
+                    <td className="px-5 py-3.5 font-sans">
                       <Badge variant="info">
                         {log.action}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-text-primary">
+                    <td className="px-5 py-3.5 text-text-primary">
                       {log.admin_id}
                     </td>
-                    <td className="px-4 py-3 text-text-secondary truncate max-w-[120px]" title={log.target_id}>
+                    <td className="px-5 py-3.5 text-text-secondary truncate max-w-[120px]" title={log.target_id}>
                       {log.target_id || 'SYSTEM'}
                     </td>
-                    <td className="px-4 py-3 text-text-tertiary truncate max-w-[240px]" title={JSON.stringify(log.details)}>
+                    <td className="px-5 py-3.5 text-text-tertiary truncate max-w-[240px]" title={JSON.stringify(log.details)}>
                       {JSON.stringify(log.details)}
                     </td>
-                    <td className="px-4 py-3 text-text-tertiary text-[11px] whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-text-tertiary text-xs whitespace-nowrap">
                       {new Date(log.created_at).toLocaleString()}
                     </td>
                   </tr>

@@ -80,20 +80,20 @@ export default function GamesManagementPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight text-text-primary">Game Catalog & Operations</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Game Catalog & Operations</h1>
             <Badge variant="positive">Live Engine Control</Badge>
           </div>
-          <p className="text-xs text-text-secondary mt-1">Authoritative catalog routing and real-time state machine configuration</p>
+          <p className="text-sm text-text-secondary mt-1">Authoritative catalog routing and real-time state machine configuration</p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Status Tabs */}
-          <div className="flex items-center rounded-md border border-border-default bg-surface-raised p-0.5 text-xs font-medium text-text-secondary">
+          <div className="flex items-center rounded-lg border border-border-default bg-surface-raised p-1 text-xs font-medium text-text-secondary">
             {['ALL', 'LIVE', 'COMING_SOON', 'MAINTENANCE'].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`rounded px-2.5 py-1 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
+                className={`rounded-md px-3.5 py-1.5 transition-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary ${
                   filter === f
                     ? 'text-text-primary bg-surface-subtle font-semibold shadow-sm'
                     : 'hover:text-text-primary'
@@ -111,7 +111,7 @@ export default function GamesManagementPage() {
             disabled={loading}
             aria-label="Sync game instances"
           >
-            <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin text-accent-primary' : 'text-text-tertiary'}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-accent-primary' : 'text-text-tertiary'}`} />
             <span>Sync</span>
           </Button>
         </div>
@@ -153,7 +153,7 @@ export default function GamesManagementPage() {
                       </div>
                       <div className="min-w-0">
                         <h3 className="text-sm font-semibold text-text-primary tracking-tight truncate">{game.name}</h3>
-                        <span className="text-[10px] font-mono text-text-tertiary block truncate">{game.slug}</span>
+                        <span className="text-xs font-mono text-text-tertiary block truncate">{game.slug}</span>
                       </div>
                     </div>
 
@@ -189,7 +189,7 @@ export default function GamesManagementPage() {
                       value={game.status}
                       onChange={(e) => handleStatusChange(game.id, e.target.value as any)}
                       disabled={isUpdating}
-                      className="h-8 rounded-xl border border-border-default bg-surface-base px-2.5 text-xs font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary shrink-0"
+                      className="h-9 rounded-lg border border-border-default bg-surface-strong/60 px-3 text-xs font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary shrink-0"
                     >
                       <option value="LIVE">LIVE</option>
                       <option value="COMING_SOON">COMING SOON</option>
@@ -199,7 +199,7 @@ export default function GamesManagementPage() {
 
                   <Link href={`/games/${game.id}`} className="shrink-0">
                     <Button variant="secondary" size="sm" className="whitespace-nowrap shrink-0">
-                      <Settings2 className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+                      <Settings2 className="h-4 w-4 text-text-tertiary shrink-0" />
                       <span>Configure</span>
                     </Button>
                   </Link>

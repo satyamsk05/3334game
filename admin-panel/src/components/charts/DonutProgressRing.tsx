@@ -10,8 +10,8 @@ interface DonutProgressRingProps {
 
 export function DonutProgressRing({
   percentage = 67,
-  size = 52,
-  strokeWidth = 5.5,
+  size = 56,
+  strokeWidth = 5,
   color = '#10B981',
   label
 }: DonutProgressRingProps) {
@@ -50,11 +50,11 @@ export function DonutProgressRing({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <span className="text-[11px] font-bold text-text-primary tabular-nums">
+        <span className="text-xs font-bold text-text-primary tabular-nums leading-none">
           {percentage}%
         </span>
         {label && (
-          <span className="text-[8px] text-text-tertiary">
+          <span className="text-xs text-text-tertiary leading-tight scale-90">
             {label}
           </span>
         )}

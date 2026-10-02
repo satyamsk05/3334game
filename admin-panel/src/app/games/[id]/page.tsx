@@ -116,9 +116,9 @@ export default function GameDetailsPage() {
     return (
       <div className="space-y-4">
         <Link href="/games" className="inline-flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-primary">
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to Games
+          <ArrowLeft className="h-4 w-4" /> Back to Games
         </Link>
-        <div className="rounded-md border border-status-negative/20 bg-status-negative/10 p-4 text-xs text-status-negative">
+        <div className="rounded-lg border border-status-negative/20 bg-status-negative/10 p-4 text-xs text-status-negative">
           {error}
         </div>
       </div>
@@ -141,7 +141,7 @@ export default function GameDetailsPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 border-b border-border-default pb-5">
         <Link href="/games" className="inline-flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-primary transition-fast w-fit">
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to Catalog
+          <ArrowLeft className="h-4 w-4" /> Back to Catalog
         </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -151,7 +151,7 @@ export default function GameDetailsPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold tracking-tight text-text-primary">{game?.name || game?.game?.name}</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-text-primary">{game?.name || game?.game?.name}</h1>
                 <Badge
                   variant={
                     (game?.status || game?.game?.status) === 'LIVE' ? 'positive' : (game?.status || game?.game?.status) === 'MAINTENANCE' ? 'warning' : 'neutral'
@@ -171,14 +171,14 @@ export default function GameDetailsPage() {
       </div>
 
       {successMsg && (
-        <div className="flex items-center gap-2 rounded-md border border-status-positive/20 bg-status-positive/10 p-3 text-xs text-status-positive">
+        <div className="flex items-center gap-2 rounded-lg border border-status-positive/20 bg-status-positive/10 p-3 text-xs text-status-positive">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 rounded-md border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative">
+        <div className="flex items-center gap-2 rounded-lg border border-status-negative/20 bg-status-negative/10 p-3 text-xs text-status-negative">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
@@ -187,33 +187,33 @@ export default function GameDetailsPage() {
       {/* Game Financial & Performance Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card className="p-4 bg-surface-raised border border-border-default">
-          <span className="text-[11px] uppercase tracking-wider text-text-tertiary block font-semibold">Total Wagers</span>
+          <span className="text-xs uppercase tracking-wider text-text-tertiary block font-semibold">Total Wagers</span>
           <span className="text-xl font-bold font-mono text-text-primary mt-1 block">{totalBets}</span>
-          <span className="text-[10px] text-text-tertiary mt-0.5 block">Player Bets Placed</span>
+          <span className="text-xs text-text-tertiary mt-0.5 block">Player Bets Placed</span>
         </Card>
         <Card className="p-4 bg-surface-raised border border-border-default">
-          <span className="text-[11px] uppercase tracking-wider text-text-tertiary block font-semibold">Volume Wagered</span>
+          <span className="text-xs uppercase tracking-wider text-text-tertiary block font-semibold">Volume Wagered</span>
           <span className="text-xl font-bold font-mono text-accent-primary mt-1 block">₹{(totalWageredPaise / 100).toFixed(2)}</span>
-          <span className="text-[10px] text-text-tertiary mt-0.5 block">Total turnover</span>
+          <span className="text-xs text-text-tertiary mt-0.5 block">Total turnover</span>
         </Card>
         <Card className="p-4 bg-surface-raised border border-border-default">
-          <span className="text-[11px] uppercase tracking-wider text-text-tertiary block font-semibold">Prizes Paid</span>
+          <span className="text-xs uppercase tracking-wider text-text-tertiary block font-semibold">Prizes Paid</span>
           <span className="text-xl font-bold font-mono text-status-warning mt-1 block">₹{(totalPayoutsPaise / 100).toFixed(2)}</span>
-          <span className="text-[10px] text-text-tertiary mt-0.5 block">Win payouts</span>
+          <span className="text-xs text-text-tertiary mt-0.5 block">Win payouts</span>
         </Card>
         <Card className="p-4 bg-surface-raised border border-border-default">
-          <span className="text-[11px] uppercase tracking-wider text-text-tertiary block font-semibold">Gross Gaming Rev</span>
+          <span className="text-xs uppercase tracking-wider text-text-tertiary block font-semibold">Gross Gaming Rev</span>
           <span className={`text-xl font-bold font-mono mt-1 block ${ggrPaise >= 0 ? 'text-status-positive' : 'text-status-negative'}`}>
             ₹{(ggrPaise / 100).toFixed(2)}
           </span>
-          <span className="text-[10px] text-text-tertiary mt-0.5 block">House GGR (Margin)</span>
+          <span className="text-xs text-text-tertiary mt-0.5 block">House GGR (Margin)</span>
         </Card>
       </div>
 
       {/* Runtime Telemetry Card (If Ring of Future is live) */}
       {isRingOfFuture && (
         <Card className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border-muted pb-3">
+          <div className="flex items-center justify-between border-b border-border-subtle pb-3">
             <div className="flex items-center gap-2">
               <Activity className="h-4 w-4 text-accent-primary" />
               <h2 className="text-sm font-semibold text-text-primary">Ring of Future Engine Telemetry</h2>
@@ -225,20 +225,20 @@ export default function GameDetailsPage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
-            <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-              <span className="text-text-tertiary block text-[10px] uppercase font-sans">Engine State</span>
+            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
+              <span className="text-text-tertiary block text-xs uppercase font-sans">Engine State</span>
               <span className="text-status-positive text-base font-bold uppercase">{runtime.phase || runtime.engineState?.state || 'ACTIVE'}</span>
             </div>
-            <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-              <span className="text-text-tertiary block text-[10px] uppercase font-sans">Current Round</span>
+            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
+              <span className="text-text-tertiary block text-xs uppercase font-sans">Current Round</span>
               <span className="text-text-primary text-base font-bold">#{runtime.currentRound || runtime.roundCount || 0}</span>
             </div>
-            <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-              <span className="text-text-tertiary block text-[10px] uppercase font-sans">Phase Time Left</span>
+            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
+              <span className="text-text-tertiary block text-xs uppercase font-sans">Phase Time Left</span>
               <span className="text-accent-primary text-base font-bold">{runtime.secondsRemaining ?? runtime.engineState?.timeLeft ?? 0}s</span>
             </div>
-            <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-              <span className="text-text-tertiary block text-[10px] uppercase font-sans">Active Sockets</span>
+            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
+              <span className="text-text-tertiary block text-xs uppercase font-sans">Active Sockets</span>
               <span className="text-text-primary text-base font-bold">{runtime.connectedPlayers || 0}</span>
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function GameDetailsPage() {
       {/* Runtime Telemetry Card (If XO Battle is active) */}
       {isXoBattle && (
         <Card className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border-muted pb-3">
+          <div className="flex items-center justify-between border-b border-border-subtle pb-3">
             <div className="flex items-center gap-2">
               <Activity className="h-4 w-4 text-accent-primary" />
               <h2 className="text-sm font-semibold text-text-primary">XO 1v1 Battle Engine Telemetry</h2>
@@ -260,20 +260,20 @@ export default function GameDetailsPage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
-            <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-              <span className="text-text-tertiary block text-[10px] uppercase font-sans">Engine Status</span>
+            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
+              <span className="text-text-tertiary block text-xs uppercase font-sans">Engine Status</span>
               <span className="text-status-positive text-base font-bold uppercase">{runtime.isRunning ? 'RUNNING' : 'ONLINE'}</span>
             </div>
-            <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-              <span className="text-text-tertiary block text-[10px] uppercase font-sans">Active Battle Rooms</span>
+            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
+              <span className="text-text-tertiary block text-xs uppercase font-sans">Active Battle Rooms</span>
               <span className="text-text-primary text-base font-bold">{runtime.activeRooms || 0}</span>
             </div>
-            <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-              <span className="text-text-tertiary block text-[10px] uppercase font-sans">Active Stake Tiers</span>
+            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
+              <span className="text-text-tertiary block text-xs uppercase font-sans">Active Stake Tiers</span>
               <span className="text-accent-primary text-base font-bold">{runtime.availableTiers || 5} Tiers (₹1-₹100)</span>
             </div>
-            <div className="p-3 rounded-md bg-surface-base border border-border-muted">
-              <span className="text-text-tertiary block text-[10px] uppercase font-sans">Connected Players</span>
+            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
+              <span className="text-text-tertiary block text-xs uppercase font-sans">Connected Players</span>
               <span className="text-text-primary text-base font-bold">{runtime.connectedPlayers || 0}</span>
             </div>
           </div>
@@ -293,7 +293,7 @@ export default function GameDetailsPage() {
 
       {/* Configuration Form */}
       <Card as="form" onSubmit={handleSaveConfig} className="space-y-5">
-        <h2 className="text-sm font-semibold text-text-primary border-b border-border-muted pb-3">
+        <h2 className="text-sm font-semibold text-text-primary border-b border-border-subtle pb-3">
           Runtime Parameters & Timing
         </h2>
 
@@ -306,9 +306,9 @@ export default function GameDetailsPage() {
               max="120"
               value={bettingDuration}
               onChange={(e) => setBettingDuration(e.target.value)}
-              className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+              className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
             />
-            <span className="text-[11px] text-text-tertiary mt-1 block">Default: 15s. Range: 5s - 120s.</span>
+            <span className="text-xs text-text-tertiary mt-1 block">Default: 15s. Range: 5s - 120s.</span>
           </div>
 
           <div>
@@ -319,9 +319,9 @@ export default function GameDetailsPage() {
               max="30"
               value={resultDisplayDuration}
               onChange={(e) => setResultDisplayDuration(e.target.value)}
-              className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+              className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
             />
-            <span className="text-[11px] text-text-tertiary mt-1 block">Default: 5s. Range: 2s - 30s.</span>
+            <span className="text-xs text-text-tertiary mt-1 block">Default: 5s. Range: 2s - 30s.</span>
           </div>
         </div>
 
@@ -332,18 +332,18 @@ export default function GameDetailsPage() {
             value={maintenanceBanner}
             onChange={(e) => setMaintenanceBanner(e.target.value)}
             placeholder="e.g. Scheduled maintenance window in progress. Game resumes shortly."
-            className="w-full h-8 rounded border border-border-default bg-surface-base px-2.5 text-xs text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+            className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm text-xs text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
           />
         </div>
 
-        <div className="flex justify-end pt-3 border-t border-border-muted">
+        <div className="flex justify-end pt-3 border-t border-border-subtle">
           <Button
             type="submit"
             variant="primary"
             disabled={saving}
             isLoading={saving}
           >
-            <Save className="h-3.5 w-3.5" />
+            <Save className="h-4 w-4" />
             <span>Save Configuration</span>
           </Button>
         </div>
