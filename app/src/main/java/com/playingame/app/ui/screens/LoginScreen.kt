@@ -59,7 +59,12 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     fun completeLogin(phone: String, name: String) {
         isLoading = true
         scope.launch {
-            val result = AuthRepository.login(phone = phone, name = name.ifBlank { "Player" }, context = context)
+            val result = if (name.isNotBlank()) {
+                val updateRes = AuthRepository.updateProfile(name = name, context = context)
+                if (updateRes.isSuccess) updateRes else AuthRepository.login(phone = phone, name = name, context = context)
+            } else {
+                AuthRepository.login(phone = phone, name = "", context = context)
+            }
             isLoading = false
             result.onSuccess {
                 onLoginSuccess()
@@ -76,19 +81,27 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     fun processPhoneForLogin(phone: String) {
         val cleanPhone = phone.trim()
         isLoading = true
-        statusMessage = "Checking player account..."
+        statusMessage = "Logging in..."
         scope.launch {
-            val existing = AuthRepository.fetchExistingUser(cleanPhone)
+            val result = AuthRepository.login(phone = cleanPhone, name = "", context = context)
             isLoading = false
             statusMessage = null
-            if (existing != null && existing.name.isNotBlank() && !existing.name.startsWith("Player_") && !existing.name.startsWith("WhatsAppUser_")) {
-                // Returning registered user -> directly log in with exact same identity, phone, ID & balance!
-                completeLogin(cleanPhone, existing.name)
-            } else {
-                // First-time user or needs name setup -> ask for name on Screen 3
-                verifiedPhoneHolder = cleanPhone
-                showPhoneSheet = false
-                showNameSetup = true
+            result.onSuccess { session ->
+                // If user already exists on server (!isNewUser) and has an established name, enter directly!
+                if (!session.isNewUser && session.name.isNotBlank() && !session.name.startsWith("Player_") && !session.name.startsWith("WhatsAppUser_")) {
+                    onLoginSuccess()
+                } else {
+                    // New user or name not yet set -> ask for name on Screen 3
+                    verifiedPhoneHolder = cleanPhone
+                    showPhoneSheet = false
+                    showNameSetup = true
+                }
+            }.onFailure { error ->
+                if (error.message?.contains("ACCOUNT_BANNED") == true) {
+                    showBannedModal = true
+                } else {
+                    statusMessage = error.message ?: "Login failed. Please try again."
+                }
             }
         }
     }

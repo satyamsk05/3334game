@@ -20,6 +20,17 @@ import androidx.compose.ui.unit.dp
 import com.playingame.app.R
 import com.playingame.app.data.repository.AuthRepository
 import com.playingame.app.game.ringoffuture.backend.WalletLedger
+import android.content.Intent
+import android.net.Uri
+import com.playingame.app.core.config.ClientConfig
+import com.playingame.app.data.remote.RemoteApiClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import com.playingame.app.ui.components.*
 import com.playingame.app.ui.navigation.NavItem
 import com.playingame.app.ui.theme.*
@@ -63,6 +74,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var selectedTab by remember { mutableStateOf(NavItem.HOME) }
     var activeSubScreen by remember { mutableStateOf<SubScreen?>(null) }
     var withdrawAmountInput by remember { mutableStateOf("500") }
@@ -176,8 +188,39 @@ fun HomeScreen(
             Toast.makeText(context, "Please sign in to deposit", Toast.LENGTH_SHORT).show()
             return
         }
-        // In-app WebView sends Authorization header — never put JWTs in browser URLs
-        activeSubScreen = SubScreen.DepositPayment(amountRupees)
+
+        Toast.makeText(context, "Redirecting to payment gateway...", Toast.LENGTH_SHORT).show()
+        scope.launch(Dispatchers.IO) {
+            val paymentUrl = try {
+                val url = "${ClientConfig.API_BASE_URL}/deposits/initiate"
+                val jsonBody = JSONObject().apply {
+                    put("amountRupees", amountRupees)
+                }
+                val req = Request.Builder()
+                    .url(url)
+                    .header("Authorization", "Bearer $sessionToken")
+                    .header("Content-Type", "application/json")
+                    .post(jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+                    .build()
+                val resp = RemoteApiClient.client.newCall(req).execute()
+                val respStr = resp.body?.string() ?: ""
+                val respJson = JSONObject(respStr)
+                respJson.optJSONObject("data")?.optString("paymentUrl")?.takeIf { it.isNotBlank() }
+            } catch (_: Exception) {
+                null
+            } ?: "${ClientConfig.PAYMENT_GATEWAY_URL}/pay?amount=${amountRupees.toInt()}"
+
+            withContext(Dispatchers.Main) {
+                try {
+                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl)).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    context.startActivity(browserIntent)
+                } catch (e: Exception) {
+                    Toast.makeText(context, "Unable to open browser: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     fun handlePromoRoute(targetRoute: String) {

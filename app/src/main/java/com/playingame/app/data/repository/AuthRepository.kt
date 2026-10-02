@@ -33,6 +33,7 @@ data class UserSession(
     val avatarId: String = "avatar_1",
     val isLoggedIn: Boolean = false,
     val isBanned: Boolean = false,
+    val isNewUser: Boolean = false,
     val deviceModel: String = "",
     val osVersion: String = ""
 )
@@ -295,6 +296,8 @@ object AuthRepository {
         var resolvedAvatar = existingSaved?.third ?: "avatar_1"
         var authToken = ""
 
+        var isNewUserServer = false
+
         // Authenticate with live backend server - authentic server token is MANDATORY
         try {
             val ctx = targetContext ?: appContext
@@ -326,6 +329,7 @@ object AuthRepository {
             if (response.isSuccessful) {
                 val json = JSONObject(resString)
                 val data = json.optJSONObject("data")
+                isNewUserServer = data?.optBoolean("isNewUser", false) ?: false
                 val user = data?.optJSONObject("user")
                 val serverUserId = user?.optString("id")
                 val serverName = user?.optString("name")
@@ -341,7 +345,7 @@ object AuthRepository {
                 } else {
                     return@withContext Result.failure(Exception("AUTH_FAILED: Server did not return a valid authentication token"))
                 }
-                Log.d("AuthRepository", "Synced login with backend server: $resolvedUserId ($resolvedName)")
+                Log.d("AuthRepository", "Synced login with backend server: $resolvedUserId ($resolvedName), isNewUser: $isNewUserServer")
             } else {
                 Log.w("AuthRepository", "Backend login returned HTTP ${response.code}")
                 return@withContext Result.failure(Exception("LOGIN_FAILED: Server returned error code ${response.code}"))
@@ -361,7 +365,8 @@ object AuthRepository {
             phone = cleanPhone,
             avatarId = resolvedAvatar,
             isLoggedIn = true,
-            isBanned = false
+            isBanned = false,
+            isNewUser = isNewUserServer
         )
 
         withContext(Dispatchers.Main) {
