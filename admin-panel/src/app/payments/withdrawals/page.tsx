@@ -131,7 +131,7 @@ export default function WithdrawalsQueuePage() {
             }`}
           >
             <span>🟡 New Requests</span>
-            <span className="rounded-full bg-status-warning/20 px-1.5 py-0.2 text-[10px] font-bold">
+            <span className="rounded-full bg-status-warning/20 px-1.5 py-0.5 text-[10px] font-bold">
               {withdrawals.filter((w) => w.status === 'PENDING').length}
             </span>
           </button>
@@ -144,7 +144,7 @@ export default function WithdrawalsQueuePage() {
             }`}
           >
             <span>🔵 In Processing</span>
-            <span className="rounded-full bg-sky-500/20 px-1.5 py-0.2 text-[10px] font-bold">
+            <span className="rounded-full bg-sky-500/20 px-1.5 py-0.5 text-[10px] font-bold">
               {withdrawals.filter((w) => w.status === 'PROCESSING').length}
             </span>
           </button>
@@ -157,7 +157,7 @@ export default function WithdrawalsQueuePage() {
             }`}
           >
             <span>🟢 Completed</span>
-            <span className="rounded-full bg-status-positive/20 px-1.5 py-0.2 text-[10px] font-bold">
+            <span className="rounded-full bg-status-positive/20 px-1.5 py-0.5 text-[10px] font-bold">
               {withdrawals.filter((w) => w.status === 'APPROVED').length}
             </span>
           </button>
@@ -170,7 +170,7 @@ export default function WithdrawalsQueuePage() {
             }`}
           >
             <span>🔴 Rejected</span>
-            <span className="rounded-full bg-status-negative/20 px-1.5 py-0.2 text-[10px] font-bold">
+            <span className="rounded-full bg-status-negative/20 px-1.5 py-0.5 text-[10px] font-bold">
               {withdrawals.filter((w) => w.status === 'REJECTED').length}
             </span>
           </button>

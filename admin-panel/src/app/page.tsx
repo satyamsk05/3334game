@@ -84,24 +84,32 @@ export default function OverviewDashboard() {
   };
 
   const users = stats?.users || {};
-  const wallet = stats?.wallet || {};
-  const deposits = stats?.deposits || {};
-  const withdrawals = stats?.withdrawals || {};
+  const wallet = stats?.financials || stats?.wallet || {};
+  const deposits = stats?.deposits || stats?.financials || {};
+  const withdrawals = stats?.withdrawals || stats?.financials || {};
   const games = stats?.games || {};
   const recentActivity = stats?.recentActivity || [];
 
-  const totalDepositRupees = Number(wallet.totalDepositPaise || 0) / 100;
-  const totalWinningRupees = Number(wallet.totalWinningPaise || 0) / 100;
-  const totalBonusRupees = Number(wallet.totalBonusPaise || 0) / 100;
-  const totalAvailableRupees = Number(wallet.totalAvailablePaise || 0) / 100;
+  const totalDepositRupees = Number(wallet.totalDepositPaise ?? 0) / 100;
+  const totalWinningRupees = Number(wallet.totalWinningPaise ?? 0) / 100;
+  const totalBonusRupees = Number(wallet.totalBonusPaise ?? 0) / 100;
+  const totalAvailableRupees = Number(wallet.totalAvailablePaise ?? 0) / 100;
 
-  const totalWageredRupees = Number(games.totalWageredPaise || 0) / 100;
-  const ggrRupees = Number(games.ggrPaise || 0) / 100;
+  const totalWageredRupees = Number(games.totalWageredPaise ?? 0) / 100;
+  const totalPayoutsRupees = Number(games.totalPayoutsPaise ?? 0) / 100;
+  const ggrRupees = Number(
+    games.ggrPaise ?? (games.totalWageredPaise ? Math.max(0, Number(games.totalWageredPaise) - Number(games.totalPayoutsPaise || 0)) : 0)
+  ) / 100;
 
-  const approvedDepositRupees = Number(deposits.approvedAmountPaise || 0) / 100;
-  const approvedWithdrawRupees = Number(withdrawals.approvedAmountPaise || 0) / 100;
-  const pendingWithdrawRupees = Number(withdrawals.pendingAmountPaise || 0) / 100;
-  const pendingPayoutsCount = Number(withdrawals.pendingCount || 0);
+  const approvedDepositRupees = Number(deposits.approvedAmountPaise ?? deposits.approvedDepositsPaise ?? 0) / 100;
+  const approvedWithdrawRupees = Number(withdrawals.approvedAmountPaise ?? withdrawals.approvedWithdrawalsPaise ?? 0) / 100;
+  const pendingWithdrawRupees = Number(withdrawals.pendingAmountPaise ?? withdrawals.pendingWithdrawalsPaise ?? 0) / 100;
+  const pendingPayoutsCount = Number(withdrawals.pendingCount ?? withdrawals.pendingWithdrawalsCount ?? 0);
+
+  const activeUserCount = Number(users.active ?? users.activeUsers ?? 0);
+  const totalUserCount = Math.max(Number(users.total ?? users.totalUsers ?? 0), 1);
+  const bannedUserCount = Number(users.banned ?? users.bannedUsers ?? 0);
+  const activePercentage = Math.round((activeUserCount / totalUserCount) * 100) || (stats ? 0 : 75);
 
   const formatRupees = (val: number) => {
     if (val >= 10000000) return `₹ ${(val / 10000000).toFixed(2)}Cr`;
@@ -111,7 +119,8 @@ export default function OverviewDashboard() {
   };
 
   const getTransactionBadge = (txType: string) => {
-    switch (txType) {
+    const norm = String(txType || '').toUpperCase();
+    switch (norm) {
       case 'DEPOSIT':
         return <Badge variant="positive">Deposit</Badge>;
       case 'WIN_PAYOUT':
@@ -119,8 +128,11 @@ export default function OverviewDashboard() {
       case 'BET_REFUND':
         return <Badge variant="info">Refund</Badge>;
       case 'BET_DEBIT':
+      case 'BET_PLACED':
+      case 'BET':
         return <Badge variant="blue">Bet Debit</Badge>;
       case 'WITHDRAWAL_HOLD':
+      case 'PENDING':
         return <Badge variant="warning">Pending</Badge>;
       case 'WITHDRAWAL_SETTLE':
         return <Badge variant="neutral">Paid Out</Badge>;
@@ -137,10 +149,6 @@ export default function OverviewDashboard() {
     }
   };
 
-  const activeUserCount = Number(users.activeUsers || 0);
-  const totalUserCount = Math.max(Number(users.totalUsers || 0), 1);
-  const activePercentage = Math.round((activeUserCount / totalUserCount) * 100) || 75;
-
   return (
     <div className="space-y-6">
       
@@ -148,7 +156,7 @@ export default function OverviewDashboard() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-2 border-b border-border-default">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-text-primary">
-            Statistic
+            Overview Statistics
           </h1>
           <p className="text-xs text-text-secondary mt-0.5">
             Real-time analytics for Bit Arcade gaming platform, liquidity, and operations.
@@ -229,13 +237,15 @@ export default function OverviewDashboard() {
         <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-1.5 text-xs text-text-secondary font-medium">
-                <Gamepad2 className="h-3.5 w-3.5 text-emerald-500" />
+              <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                  <Gamepad2 className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
+                </div>
                 <span>Games in Work</span>
               </div>
-              <div className="mt-2 flex items-baseline gap-2">
+              <div className="mt-2.5 flex items-baseline gap-2">
                 <span className="text-3xl font-bold tracking-tight text-text-primary tabular-nums">
-                  3
+                  {games.activeGames ?? 2}
                 </span>
                 <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                   Active
@@ -259,13 +269,15 @@ export default function OverviewDashboard() {
         <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-1.5 text-xs text-text-secondary font-medium">
-                <Activity className="h-3.5 w-3.5 text-blue-500" />
-                <span>Bets & Rounds in Work</span>
+              <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shrink-0">
+                  <Activity className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
+                </div>
+                <span>Bets & Rounds</span>
               </div>
-              <div className="mt-2 flex items-baseline gap-2">
+              <div className="mt-2.5 flex items-baseline gap-2">
                 <span className="text-3xl font-bold tracking-tight text-text-primary tabular-nums">
-                  {games.totalRoundsPlayed || 64}
+                  {games.totalRounds ?? games.totalRoundsPlayed ?? 0}
                 </span>
                 <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">
                   Rounds
@@ -281,7 +293,7 @@ export default function OverviewDashboard() {
 
           <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-[11px] text-text-secondary">
             <span>Volume: <strong className="text-text-primary font-medium">₹{totalWageredRupees.toFixed(0)}</strong></span>
-            <span className="text-blue-600 dark:text-blue-400 font-medium">+18% flow</span>
+            <span className="text-blue-600 dark:text-blue-400 font-medium">{games.totalBets ?? 0} bets</span>
           </div>
         </Card>
 
@@ -289,21 +301,23 @@ export default function OverviewDashboard() {
         <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-1.5 text-xs text-text-secondary font-medium">
-                <Users className="h-3.5 w-3.5 text-purple-500" />
+              <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shrink-0">
+                  <Users className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
+                </div>
                 <span>Active Players</span>
               </div>
-              <div className="mt-2 flex items-baseline gap-3">
+              <div className="mt-2.5 flex items-baseline gap-3">
                 <div>
                   <span className="text-2xl font-bold tracking-tight text-text-primary tabular-nums">
-                    {users.activeUsers || 9}
+                    {activeUserCount}
                   </span>
                   <span className="text-[10px] text-text-tertiary block">In Play</span>
                 </div>
                 <span className="text-border-default text-xl">/</span>
                 <div>
                   <span className="text-2xl font-bold tracking-tight text-text-secondary tabular-nums">
-                    {Math.max((users.totalUsers || 12) - (users.activeUsers || 9), 1)}
+                    {Math.max(totalUserCount - activeUserCount, 0)}
                   </span>
                   <span className="text-[10px] text-text-tertiary block">In Lobby</span>
                 </div>
@@ -315,8 +329,8 @@ export default function OverviewDashboard() {
           </div>
 
           <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-[11px] text-text-secondary">
-            <span>Total: <strong className="text-text-primary font-medium">{users.totalUsers || 12}</strong></span>
-            <span className="text-purple-600 dark:text-purple-400 font-medium">{users.bannedUsers || 0} banned</span>
+            <span>Total: <strong className="text-text-primary font-medium">{totalUserCount}</strong></span>
+            <span className="text-purple-600 dark:text-purple-400 font-medium">{bannedUserCount} banned</span>
           </div>
         </Card>
 
@@ -324,20 +338,22 @@ export default function OverviewDashboard() {
         <Card className="flex flex-col justify-between p-5 bg-surface-raised border border-border-default rounded-2xl shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-1.5 text-xs text-text-secondary font-medium">
-                <Wallet className="h-3.5 w-3.5 text-amber-500" />
-                <span>Total Platform Profit</span>
+              <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                  <Wallet className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
+                </div>
+                <span>Platform Profit</span>
               </div>
-              <div className="mt-2">
+              <div className="mt-2.5">
                 <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text-primary tabular-nums">
-                  {formatRupees(ggrRupees > 0 ? ggrRupees : 14000)}
+                  {formatRupees(ggrRupees)}
                 </span>
               </div>
             </div>
 
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
               <ArrowUpRight className="h-3 w-3" />
-              11.5%
+              Margin
             </span>
           </div>
 
@@ -543,7 +559,8 @@ export default function OverviewDashboard() {
                 recentActivity.map((tx: any) => {
                   const amountRupees = Number(tx.amount || 0) / 100;
                   const balanceAfterRupees = Number(tx.balance_after || 0) / 100;
-                  const isCredit = ['DEPOSIT', 'WIN_PAYOUT', 'BET_REFUND', 'PROMO_BONUS', 'ADMIN_CREDIT'].includes(tx.transaction_type);
+                  const txType = String(tx.transaction_type || tx.type || '').toUpperCase();
+                  const isCredit = tx.direction === 'CREDIT' || ['DEPOSIT', 'WIN_PAYOUT', 'BET_REFUND', 'PROMO_BONUS', 'ADMIN_CREDIT'].includes(txType);
 
                   return (
                     <tr key={tx.id} className="hover:bg-surface-strong/50 transition-colors">
@@ -582,7 +599,7 @@ export default function OverviewDashboard() {
 
                       {/* Type Badge */}
                       <td className="py-3 px-5">
-                        {getTransactionBadge(tx.transaction_type)}
+                        {getTransactionBadge(txType)}
                       </td>
 
                       {/* Bucket */}

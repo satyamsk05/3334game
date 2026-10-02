@@ -85,10 +85,14 @@
       256-Bit SSL Encrypted
     </div>
     <h1>Bit Arcade Pay</h1>
-    <p>Authoritative Payment & UTR Processing Gateway for Bit Arcade Game.</p>
     <div class="security-note">
       🔒 PCI-DSS Compliant & Protected Connection
     </div>
   </div>
+  <script>
+    if (window.location.search && (window.location.search.includes('ticket=') || window.location.search.includes('token=') || window.location.search.includes('orderId=') || window.location.search.includes('amount='))) {
+      window.location.replace('/pay' + window.location.search);
+    }
+  </script>
 </body>
 </html>

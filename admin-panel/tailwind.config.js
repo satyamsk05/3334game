@@ -95,10 +95,20 @@ module.exports = {
         mono: ['SFMono-Regular', 'Roboto Mono', 'Menlo', 'monospace'],
       },
       boxShadow: {
+        xs: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         '1': 'inset 0px 0px 0px 1px rgba(255, 255, 255, 0.08), 0px 2px 8px rgba(0, 0, 0, 0.4)',
         card: 'inset 0px 0px 0px 1px rgba(255, 255, 255, 0.07), 0px 1px 3px rgba(0, 0, 0, 0.3)',
         floating: 'inset 0px 0px 0px 1px rgba(255, 255, 255, 0.12), 0px 12px 32px -4px rgba(0, 0, 0, 0.7)',
         button: 'inset 0px 0px 0px 1px rgba(255, 255, 255, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.3)',
+      },
+      dropShadow: {
+        xs: '0 1px 1px rgba(0, 0, 0, 0.05)',
+      },
+      borderWidth: {
+        '3': '3px',
+      },
+      backdropBlur: {
+        xs: '2px',
       },
       transitionDuration: {
         instant: '100ms',

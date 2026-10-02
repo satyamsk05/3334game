@@ -205,10 +205,26 @@ fun HomeScreen(
                 val resp = RemoteApiClient.client.newCall(req).execute()
                 val respStr = resp.body?.string() ?: ""
                 val respJson = JSONObject(respStr)
-                respJson.optJSONObject("data")?.optString("paymentUrl")?.takeIf { it.isNotBlank() }
+                val dataObj = respJson.optJSONObject("data")
+                val candidateUrl = dataObj?.optString("paymentUrl")?.takeIf { it.isNotBlank() }
+                    ?: dataObj?.optString("payUrl")?.takeIf { it.isNotBlank() }
+
+                if (!candidateUrl.isNullOrBlank()) {
+                    if (candidateUrl.startsWith("http://") || candidateUrl.startsWith("https://")) {
+                        candidateUrl
+                    } else {
+                        val path = if (candidateUrl.startsWith("/")) candidateUrl else "/$candidateUrl"
+                        "${ClientConfig.PAYMENT_GATEWAY_URL}$path"
+                    }
+                } else {
+                    null
+                }
             } catch (_: Exception) {
                 null
-            } ?: "${ClientConfig.PAYMENT_GATEWAY_URL}/pay?amount=${amountRupees.toInt()}"
+            } ?: run {
+                val encodedToken = java.net.URLEncoder.encode(sessionToken, "UTF-8")
+                "${ClientConfig.PAYMENT_GATEWAY_URL}/pay?token=$encodedToken&amount=${amountRupees.toInt()}"
+            }
 
             withContext(Dispatchers.Main) {
                 try {

@@ -138,8 +138,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="relative flex h-8 w-8 items-center justify-center rounded-xl border border-border-default bg-surface-strong/70 text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors"
               title="Deposit & Payment Alerts"
             >
-              <Bell className="h-3.5 w-3.5" />
-              <span className="absolute 1 top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <Bell className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.8} />
+              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500" />
             </Link>
 
             {/* Live Web App Shortcut */}
