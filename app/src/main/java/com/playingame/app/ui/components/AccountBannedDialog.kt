@@ -75,7 +75,7 @@ fun AccountBannedDialog(
                 )
 
                 Text(
-                    text = "Aapka account administrator dwara security & policy violation ke karan BAN kar diya gaya hai. Aap 334Game me login ya play nahi kar sakte.",
+                    text = "Aapka account administrator dwara security & policy violation ke karan BAN kar diya gaya hai. Aap Bit Arcade Game me login ya play nahi kar sakte.",
                     fontSize = 13.5.sp,
                     fontFamily = RubikFont,
                     color = Color(0xFF9CA3AF),
@@ -93,7 +93,7 @@ fun AccountBannedDialog(
                         .clip(RoundedCornerShape(24.dp))
                         .background(Color(0xFF25D366))
                         .clickable {
-                            val msg = "Hello Admin, my 334Game account has been suspended. Please check."
+                            val msg = "Hello Admin, my Bit Arcade Game account has been suspended. Please check."
                             val waIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/919989907408?text=${Uri.encode(msg)}"))
                             context.startActivity(waIntent)
                         },

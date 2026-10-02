@@ -380,9 +380,9 @@ export default function PushNotificationsPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="h-5 w-5 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[10px] font-bold text-black shadow-sm">
-                        334
+                        BIT
                       </div>
-                      <span className="text-xs font-semibold text-white/90 tracking-wide">Play In Game</span>
+                      <span className="text-xs font-semibold text-white/90 tracking-wide">Bit Arcade Game</span>
                     </div>
                     <span className="text-[10px] text-gray-400 font-mono">Just now</span>
                   </div>

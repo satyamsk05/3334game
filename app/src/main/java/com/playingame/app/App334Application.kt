@@ -10,7 +10,7 @@ import com.playingame.app.data.remote.PromotionSyncService
 import com.playingame.app.data.remote.RemoteApiClient
 import com.playingame.app.data.repository.AuthRepository
 
-class App334Application : Application(), ImageLoaderFactory {
+open class BitArcadeApplication : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
@@ -48,3 +48,6 @@ class App334Application : Application(), ImageLoaderFactory {
             .build()
     }
 }
+
+class App334Application : BitArcadeApplication()
+

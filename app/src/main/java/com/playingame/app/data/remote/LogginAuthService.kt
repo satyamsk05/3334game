@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 /**
- * Official Loggin.dev WhatsApp Authentication Integration for 334Game.
+ * Official Loggin.dev WhatsApp Authentication Integration for Bit Arcade Game.
  * Implements token generation, wa.me deep linking, and SSE verification stream.
  * Docs: https://loggin.dev/docs
  */

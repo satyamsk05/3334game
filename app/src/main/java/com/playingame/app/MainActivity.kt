@@ -22,7 +22,7 @@ import com.playingame.app.data.repository.AuthRepository
 import com.playingame.app.ui.screens.HomeScreen
 import com.playingame.app.ui.screens.LoginScreen
 import com.playingame.app.ui.screens.SplashScreen
-import com.playingame.app.ui.theme.App334Theme
+import com.playingame.app.ui.theme.BitArcadeTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
         windowInsetsController.isAppearanceLightNavigationBars = false
 
         setContent {
-            App334Theme {
+            BitArcadeTheme {
                 var isSplashFinished by remember { mutableStateOf(false) }
                 var isRetryingBootstrap by remember { mutableStateOf(false) }
                 val session by AuthRepository.currentSession.collectAsState()

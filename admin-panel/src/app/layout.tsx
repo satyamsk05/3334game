@@ -1,22 +1,25 @@
 import React from 'react';
 import './globals.css';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { AppShell } from '@/components/layout/AppShell';
 import { AdminGuard } from '@/components/layout/AdminGuard';
 
 export const metadata = {
-  title: '3334Game — Authoritative Admin Portal',
-  description: 'Protected Admin Dashboard for 3334Game Platform',
+  title: 'Bit Arcade Game — Authoritative Admin Portal',
+  description: 'Protected Admin Dashboard for Bit Arcade Game Platform',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="bg-surface-base text-text-primary min-h-screen antialiased selection:bg-accent-primary/20 selection:text-accent-primary font-sans">
-        <AdminGuard>
-          <AppShell>
-            {children}
-          </AppShell>
-        </AdminGuard>
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-surface-base text-text-primary min-h-screen antialiased selection:bg-accent-primary/20 selection:text-accent-primary font-sans transition-colors duration-150">
+        <ThemeProvider>
+          <AdminGuard>
+            <AppShell>
+              {children}
+            </AppShell>
+          </AdminGuard>
+        </ThemeProvider>
       </body>
     </html>
   );

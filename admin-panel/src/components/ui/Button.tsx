@@ -2,7 +2,7 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'dark';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'dark' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   isLoading?: boolean;
@@ -27,25 +27,27 @@ export function Button({
 
   const hasIcon = Boolean(icon || isSpinning);
   const sizeStyles = {
-    sm: `h-8 ${hasIcon && children ? 'ps-2.5 pe-3' : 'px-3'} text-xs gap-1.5 rounded-md`,
-    md: `h-9 ${hasIcon && children ? 'ps-3 pe-3.5' : 'px-3.5'} text-xs gap-2 rounded-md`,
-    lg: `h-10 ${hasIcon && children ? 'ps-3.5 pe-4' : 'px-4'} text-sm gap-2.5 rounded-lg`,
+    sm: `h-8 ${hasIcon && children ? 'ps-2.5 pe-3' : 'px-3'} text-xs gap-1.5 rounded-xl`,
+    md: `h-9 ${hasIcon && children ? 'ps-3 pe-3.5' : 'px-3.5'} text-xs gap-2 rounded-xl`,
+    lg: `h-10 ${hasIcon && children ? 'ps-3.5 pe-4' : 'px-4'} text-sm gap-2.5 rounded-xl`,
   };
 
   const variantStyles = {
     primary:
-      'bg-white text-black font-medium hover:bg-zinc-200 border border-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-    dark:
-      'bg-zinc-900 text-white font-medium hover:bg-zinc-800 border border-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+      'bg-accent-primary text-text-inverse font-medium hover:opacity-90 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus',
     secondary:
-      'bg-[#0c0c0e] text-zinc-300 font-medium hover:bg-[#141417] hover:text-white border border-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+      'bg-surface-strong text-text-primary font-medium hover:bg-surface-muted border border-border-default shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus',
+    outline:
+      'bg-transparent text-text-secondary font-medium hover:text-text-primary hover:bg-surface-strong border border-border-default focus-visible:outline-none',
     danger:
-      'bg-rose-950/30 text-rose-300 font-medium hover:bg-rose-950/50 border border-rose-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+      'bg-rose-500/10 text-rose-600 dark:text-rose-400 font-medium hover:bg-rose-500/20 border border-rose-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500',
     ghost:
-      'bg-transparent text-zinc-400 hover:text-white hover:bg-white/[0.06] border border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+      'bg-transparent text-text-secondary hover:text-text-primary hover:bg-surface-strong border border-transparent focus-visible:outline-none',
+    dark:
+      'bg-zinc-900 text-white font-medium hover:bg-zinc-800 border border-white/[0.08] shadow-xs focus-visible:outline-none',
   };
 
-  const tapScale = !isStatic ? 'active:not-disabled:scale-[0.96]' : '';
+  const tapScale = !isStatic ? 'active:not-disabled:scale-[0.97]' : '';
 
   return (
     <button

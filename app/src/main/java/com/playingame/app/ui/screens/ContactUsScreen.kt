@@ -79,7 +79,7 @@ fun ContactUsScreen(
         // Contact Option 1: Email Support
         ContactCard(
             title = "Email Support",
-            detail = "support@ingames334.com",
+            detail = "support@bitarcadegame.com",
             subtext = "Average response time: 2 hours",
             iconRes = R.drawable.ic_settings_contact
         )
@@ -87,7 +87,7 @@ fun ContactUsScreen(
         // Contact Option 2: Telegram
         ContactCard(
             title = "Telegram Channel",
-            detail = "@InGames334Support",
+            detail = "@BitArcadeGameSupport",
             subtext = "Instant support & community announcements",
             iconRes = R.drawable.ic_settings_help
         )

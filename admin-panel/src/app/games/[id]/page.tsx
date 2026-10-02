@@ -287,7 +287,7 @@ export default function GameDetailsPage() {
           <span>Fair Play & House Rigging Invariant (Hard Rule 9 & 10)</span>
         </div>
         <p className="text-xs text-text-tertiary leading-relaxed">
-          In strict compliance with 334 Game Platform Invariants, all wheel RNG outcomes are cryptographically generated on the server using authoritative CSPRNG. House rigging, outcome injection, and client-side manipulation are strictly barred by backend code and rejected at the API layer.
+          In strict compliance with Bit Arcade Game Platform Invariants, all wheel RNG outcomes are cryptographically generated on the server using authoritative CSPRNG. House rigging, outcome injection, and client-side manipulation are strictly barred by backend code and rejected at the API layer.
         </p>
       </Card>
 

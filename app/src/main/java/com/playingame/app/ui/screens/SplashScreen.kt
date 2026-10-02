@@ -109,7 +109,7 @@ fun SplashScreen(
 
             // Bold Title
             Text(
-                text = "334Game",
+                text = "Bit Arcade Game",
                 fontSize = 32.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,

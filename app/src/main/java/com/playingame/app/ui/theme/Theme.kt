@@ -20,9 +20,12 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 @Composable
-fun App334Theme(content: @Composable () -> Unit) {
+fun BitArcadeTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = DarkColorScheme,
         content = content
     )
 }
+
+@Composable
+fun App334Theme(content: @Composable () -> Unit) = BitArcadeTheme(content)

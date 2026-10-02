@@ -724,9 +724,9 @@ export default function PromotionsPage() {
                   <div className="w-full px-1 py-1 flex items-center justify-between border-b border-white/10 mb-2">
                     <div className="flex items-center gap-1.5">
                       <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-[9px] font-bold text-white">
-                        33
+                        BA
                       </div>
-                      <span className="text-[11px] font-black tracking-wider text-white">3334 GAME</span>
+                      <span className="text-[11px] font-black tracking-wider text-white">BIT ARCADE GAME</span>
                     </div>
 
                     <div className="px-2 py-0.5 rounded-full bg-[#1E1634] border border-white/10 text-[10px] font-bold text-emerald-400">

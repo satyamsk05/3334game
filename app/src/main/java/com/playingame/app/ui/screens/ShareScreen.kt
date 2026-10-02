@@ -47,7 +47,7 @@ fun ShareScreen(
     val referrals = remember { emptyList<ReferralUser>() }
 
     fun shareAppText(whatsappOnly: Boolean = false) {
-        val shareMessage = "Join me on 3334Game and play Ring of Future! Use my Referral Code: REF334 to get 50 bonus cash."
+        val shareMessage = "Join me on Bit Arcade Game and play Ring of Future! Use my Referral Code: REF334 to get 50 bonus cash."
         val sendIntent = Intent(Intent.ACTION_SEND).apply {
             putExtra(Intent.EXTRA_TEXT, shareMessage)
             type = "text/plain"

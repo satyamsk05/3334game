@@ -3,7 +3,7 @@ package com.playingame.app.core.config
 import com.playingame.app.BuildConfig
 
 /**
- * Public Client Configuration for 334Game Android App.
+ * Public Client Configuration for Bit Arcade Game Android App.
  * Specifies the remote EC2 backend server endpoints and environment keys.
  */
 object ClientConfig {
@@ -14,6 +14,7 @@ object ClientConfig {
      * Prefer HTTPS once TLS is terminated on the server.
      */
     var SERVER_BASE_URL: String = "http://3.7.73.109:4001"
+    var PAYMENT_GATEWAY_URL: String = "https://bitarcade-pay.vercel.app"
 
     val APP_VERSION: String
         get() = try {

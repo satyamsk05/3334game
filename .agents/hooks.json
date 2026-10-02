@@ -1,0 +1,15 @@
+{
+  "graphify-file-exploration-guard": {
+    "PreToolUse": [
+      {
+        "matcher": "grep_search|list_dir",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"decision\":\"allow\",\"reason\":\"Graphify reminder: Use query_graph or get_node with project_path=/Users/satyamkumar/Desktop/1356 before doing recursive searches.\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}

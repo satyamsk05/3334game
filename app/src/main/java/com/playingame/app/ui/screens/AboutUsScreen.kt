@@ -88,7 +88,7 @@ fun AboutUsScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "InGames 334",
+                text = "Bit Arcade Game",
                 fontSize = 22.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Black,
@@ -98,7 +98,7 @@ fun AboutUsScreen(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Version 1.0.0 (Build 334)",
+                text = "Version 1.0.0",
                 fontSize = 13.sp,
                 fontFamily = RubikFont,
                 color = Color(0xFFA78BFA)
@@ -116,7 +116,7 @@ fun AboutUsScreen(
         ) {
             Column {
                 Text(
-                    text = "Welcome to InGames 334",
+                    text = "Welcome to Bit Arcade Game",
                     fontSize = 16.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Bold,
@@ -126,7 +126,7 @@ fun AboutUsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "InGames 334 is a premier real-money gaming platform offering classic dice, mines, color prediction, and skill-based arcade games. Designed with 100% security, instant withdrawals, and certified fair play.",
+                    text = "Bit Arcade Game is a premier gaming platform offering classic dice, mines, color prediction, and skill-based arcade games. Designed with 100% security, instant withdrawals, and certified fair play.",
                     fontSize = 13.sp,
                     fontFamily = RubikFont,
                     color = Color(0xFFD1D5DB),

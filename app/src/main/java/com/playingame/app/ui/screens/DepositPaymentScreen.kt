@@ -46,7 +46,7 @@ fun DepositPaymentScreen(
 
     // Amount only — session JWT is sent via Authorization header, never in the URL
     val payUrl = remember(amountRupees) {
-        val base = "${ClientConfig.SERVER_BASE_URL}/pay"
+        val base = "${ClientConfig.PAYMENT_GATEWAY_URL}/pay"
         val amt = String.format(java.util.Locale.US, "%.0f", amountRupees)
         "$base?amount=$amt"
     }

@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:name=".App334Application"
+        android:name=".BitArcadeApplication"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:usesCleartextTraffic="false"
@@ -14,13 +14,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.App334">
+        android:theme="@style/Theme.BitArcade">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.App334">
+            android:theme="@style/Theme.BitArcade">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

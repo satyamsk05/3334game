@@ -39,22 +39,22 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#000000] px-4 font-sans text-white selection:bg-white/20 selection:text-white">
-      <Card className="w-full max-w-[380px] space-y-6 p-7 border border-white/[0.08] bg-[#0c0c0e]">
+    <div className="flex min-h-screen items-center justify-center bg-surface-base px-4 font-sans text-text-primary selection:bg-accent-primary/20 selection:text-accent-primary">
+      <Card className="w-full max-w-[400px] space-y-6 p-8 border border-border-default bg-surface-raised rounded-3xl shadow-sm">
 
         {/* Brand Header */}
         <div className="text-center">
-          <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black font-black text-xs shadow-sm mb-3">
-            334
+          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-primary text-text-inverse font-black text-sm shadow-xs mb-3.5">
+            BA
           </div>
-          <h1 className="text-lg font-semibold tracking-tight text-white text-balance">334 Admin</h1>
-          <p className="text-xs text-zinc-400 mt-1 text-pretty">Sign in to manage platform operations</p>
+          <h1 className="text-xl font-bold tracking-tight text-text-primary">Bit Arcade</h1>
+          <p className="text-xs text-text-secondary mt-1">Authoritative Admin Console Sign In</p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="flex items-center gap-2 rounded-md border border-rose-500/25 bg-rose-950/20 p-2.5 text-xs text-rose-300">
-            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" strokeWidth={1.75} />
+          <div className="flex items-center gap-2 rounded-xl border border-rose-500/25 bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-300">
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" strokeWidth={1.8} />
             <span>{error}</span>
           </div>
         )}
@@ -62,29 +62,29 @@ export default function AdminLoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block mb-1.5 font-medium text-zinc-300">Username</label>
+            <label className="block mb-1.5 font-medium text-text-secondary">Username</label>
             <div className="relative">
-              <User className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" strokeWidth={1.75} />
+              <User className="absolute left-3 top-2.5 h-4 w-4 text-text-tertiary" strokeWidth={1.8} />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username (e.g. admin)"
-                className="w-full rounded-md border border-white/[0.08] bg-[#141417] py-2 pl-9 pr-3 text-base sm:text-xs text-white placeholder:text-zinc-500 focus:bg-[#18181b] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
+                className="w-full rounded-xl border border-border-default bg-surface-strong/70 py-2.5 pl-9 pr-3 text-xs text-text-primary placeholder:text-text-tertiary focus:bg-surface-raised focus:border-border-strong focus:outline-none transition-all shadow-xs"
               />
             </div>
           </div>
 
           <div>
-            <label className="block mb-1.5 font-medium text-zinc-300">Password</label>
+            <label className="block mb-1.5 font-medium text-text-secondary">Password</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" strokeWidth={1.75} />
+              <Lock className="absolute left-3 top-2.5 h-4 w-4 text-text-tertiary" strokeWidth={1.8} />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full rounded-md border border-white/[0.08] bg-[#141417] py-2 pl-9 pr-3 text-base sm:text-xs text-white placeholder:text-zinc-500 focus:bg-[#18181b] focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 transition-colors"
+                className="w-full rounded-xl border border-border-default bg-surface-strong/70 py-2.5 pl-9 pr-3 text-xs text-text-primary placeholder:text-text-tertiary focus:bg-surface-raised focus:border-border-strong focus:outline-none transition-all shadow-xs"
               />
             </div>
           </div>
@@ -95,15 +95,15 @@ export default function AdminLoginPage() {
             size="md"
             disabled={loading}
             isLoading={loading}
-            className="w-full mt-2"
+            className="w-full mt-3 rounded-xl font-semibold shadow-xs"
           >
-            Sign in to Console
+            Sign In to Platform
           </Button>
         </form>
 
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-500 pt-3 border-t border-white/[0.06]">
-          <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" strokeWidth={1.75} />
-          <span>Protected admin session</span>
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-text-tertiary pt-3 border-t border-border-subtle">
+          <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" strokeWidth={1.8} />
+          <span>Encrypted cryptographic admin session</span>
         </div>
 
       </Card>

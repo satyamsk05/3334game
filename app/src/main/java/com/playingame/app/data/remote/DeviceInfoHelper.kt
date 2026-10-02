@@ -7,7 +7,7 @@ import android.os.Build
 import java.util.Locale
 
 /**
- * Device and hardware telemetry helper for 334Game.
+ * Device and hardware telemetry helper for Bit Arcade Game.
  * Collects non-intrusive system specifications for security, admin auditing, and player session tracking.
  */
 object DeviceInfoHelper {
