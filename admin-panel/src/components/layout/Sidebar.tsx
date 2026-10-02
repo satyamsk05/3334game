@@ -3,27 +3,28 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  LayoutGrid,
-  Users,
-  Gamepad2,
-  ArrowDownLeft,
-  ArrowUpRight,
-  ArrowLeftRight,
-  Settings,
-  LogOut,
-  Bell,
-  Sparkles,
   ChevronDown,
   ChevronRight,
-  Activity,
-  FileText,
-  LifeBuoy,
-  Sun,
-  Moon,
   PanelLeftClose,
-  PanelLeft,
-  Circle
+  PanelLeft
 } from 'lucide-react';
+import {
+  IconDashboard,
+  IconGamepad,
+  IconWallet,
+  IconWithdraw,
+  IconTransactions,
+  IconPlayers,
+  IconCrown,
+  IconBell,
+  IconSettings,
+  IconChart,
+  IconBook,
+  IconChat,
+  IconLogOut,
+  IconMoonSolid,
+  IconSunSolid
+} from '@/components/icons/GamingIcons';
 import { adminService } from '@/services/adminService';
 import { api } from '@/services/api';
 import { useTheme } from '@/context/ThemeContext';
@@ -99,7 +100,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
         />
       )}
 
-      {/* Modern Minimalist Monochrome Dock / Tree Sidebar */}
+      {/* Modern Casino/Gaming Minimalist Dock Sidebar */}
       <aside
         aria-label="Admin Navigation Sidebar"
         className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-surface-raised border-r border-border-default transition-all duration-200 ease-in-out select-none ${
@@ -109,7 +110,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
         }`}
       >
         {/* ============================================================== */}
-        {/* CASE 1: COLLAPSED MODE (MINIMALIST MONOCHROME DOCK)            */}
+        {/* CASE 1: COLLAPSED MODE (SOLID GAMING ICON DOCK / RAIL)         */}
         {/* ============================================================== */}
         {collapsed ? (
           <div className="flex flex-col h-full w-full items-center py-2.5">
@@ -122,7 +123,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Expand sidebar"
                 className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-all duration-150"
               >
-                <PanelLeft className="h-5 w-5" strokeWidth={1.8} />
+                <PanelLeft className="h-5 w-5" />
               </button>
             </div>
 
@@ -142,7 +143,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <LayoutGrid className="h-5 w-5" strokeWidth={1.8} />
+                <IconDashboard size={20} />
               </Link>
 
               {/* Games */}
@@ -157,7 +158,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <Gamepad2 className="h-5 w-5" strokeWidth={1.8} />
+                <IconGamepad size={20} />
               </Link>
 
               {/* Deposits */}
@@ -172,7 +173,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <ArrowDownLeft className="h-5 w-5" strokeWidth={1.8} />
+                <IconWallet size={20} />
                 {pendingCounts.pendingDeposits > 0 && (
                   <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent-primary ring-2 ring-surface-raised" />
                 )}
@@ -190,7 +191,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <ArrowUpRight className="h-5 w-5" strokeWidth={1.8} />
+                <IconWithdraw size={20} />
                 {pendingCounts.pendingWithdrawals > 0 && (
                   <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent-primary ring-2 ring-surface-raised" />
                 )}
@@ -200,15 +201,15 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               <Link
                 href="/transactions/ledger"
                 onClick={() => setMobileOpen(false)}
-                title="Wallet Ledger"
-                aria-label="Wallet Ledger"
+                title="Wallet Ledger & Transactions"
+                aria-label="Wallet Ledger & Transactions"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/transactions/ledger')
                     ? 'bg-accent-primary text-text-inverse shadow-xs'
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <ArrowLeftRight className="h-5 w-5" strokeWidth={1.8} />
+                <IconTransactions size={20} />
               </Link>
 
               {/* Player Accounts */}
@@ -223,22 +224,22 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <Users className="h-5 w-5" strokeWidth={1.8} />
+                <IconPlayers size={20} />
               </Link>
 
               {/* Promotions */}
               <Link
                 href="/promotions"
                 onClick={() => setMobileOpen(false)}
-                title="Promotions & VIP"
-                aria-label="Promotions & VIP"
+                title="VIP Club & Promotions"
+                aria-label="VIP Club & Promotions"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/promotions')
                     ? 'bg-accent-primary text-text-inverse shadow-xs'
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <Sparkles className="h-5 w-5" strokeWidth={1.8} />
+                <IconCrown size={20} />
               </Link>
 
               {/* Notifications */}
@@ -253,7 +254,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <Bell className="h-5 w-5" strokeWidth={1.8} />
+                <IconBell size={20} />
               </Link>
 
               {/* Section Divider */}
@@ -268,9 +269,9 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-all duration-150 shrink-0"
               >
                 {theme === 'dark' ? (
-                  <Moon className="h-5 w-5" strokeWidth={1.8} />
+                  <IconMoonSolid size={20} />
                 ) : (
-                  <Sun className="h-5 w-5" strokeWidth={1.8} />
+                  <IconSunSolid size={20} />
                 )}
               </button>
 
@@ -278,22 +279,22 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
               <Link
                 href="/system/settings"
                 onClick={() => setMobileOpen(false)}
-                title="Platform Settings"
-                aria-label="Platform Settings"
+                title="Global Settings"
+                aria-label="Global Settings"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/system/settings')
                     ? 'bg-accent-primary text-text-inverse shadow-xs'
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <Settings className="h-5 w-5" strokeWidth={1.8} />
+                <IconSettings size={20} />
               </Link>
 
-              {/* System Health */}
+              {/* System Health / Analytics */}
               <Link
                 href="/system/health"
                 onClick={() => setMobileOpen(false)}
-                title="System Health & Diagnostics"
+                title="System Health & Rollover Overview"
                 aria-label="System Health"
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
                   isLinkActive('/system/health')
@@ -301,7 +302,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     : 'text-text-tertiary hover:text-text-primary hover:bg-surface-strong'
                 }`}
               >
-                <Activity className="h-5 w-5" strokeWidth={1.8} />
+                <IconChart size={20} />
               </Link>
 
               {/* Section Divider */}
@@ -316,7 +317,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Documentation"
                 className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-all duration-150 shrink-0"
               >
-                <FileText className="h-5 w-5" strokeWidth={1.8} />
+                <IconBook size={20} />
               </a>
 
               {/* Support */}
@@ -328,7 +329,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Contact Support"
                 className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-all duration-150 shrink-0"
               >
-                <LifeBuoy className="h-5 w-5" strokeWidth={1.8} />
+                <IconChat size={20} />
               </a>
             </nav>
 
@@ -351,13 +352,13 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 aria-label="Sign out of admin session"
                 className="flex h-10 w-10 items-center justify-center rounded-xl text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors"
               >
-                <LogOut className="h-5 w-5" strokeWidth={1.8} />
+                <IconLogOut size={20} />
               </button>
             </div>
           </div>
         ) : (
           /* ============================================================== */
-          /* CASE 2: EXPANDED MODE (MONOCHROME MINIMALIST TREE SIDEBAR)      */
+          /* CASE 2: EXPANDED MODE (SOLID GAMING ICONS + LABELS)            */
           /* ============================================================== */
           <>
             {/* Workspace Brand Header */}
@@ -418,7 +419,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <LayoutGrid className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+                      <IconDashboard size={20} className="shrink-0" />
                       <span>Dashboard</span>
                     </Link>
 
@@ -433,7 +434,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                         onClick={() => setGamesTreeOpen(!gamesTreeOpen)}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <Gamepad2 className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+                          <IconGamepad size={20} className="shrink-0" />
                           <span>Games</span>
                         </div>
                         <span className="text-text-tertiary group-hover:text-text-primary transition-colors">
@@ -476,7 +477,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       )}
                     </div>
 
-                    {/* Deposits */}
+                    {/* Deposits / Wallet */}
                     <Link
                       href="/payments/deposits"
                       onClick={() => setMobileOpen(false)}
@@ -487,8 +488,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <ArrowDownLeft className="h-5 w-5 shrink-0" strokeWidth={1.8} />
-                        <span>Deposits</span>
+                        <IconWallet size={20} className="shrink-0" />
+                        <span>Wallet Deposits</span>
                       </div>
                       {pendingCounts.pendingDeposits > 0 && (
                         <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-surface-strong text-text-primary border border-border-default tabular-nums">
@@ -508,7 +509,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <ArrowUpRight className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+                        <IconWithdraw size={20} className="shrink-0" />
                         <span>Withdrawals</span>
                       </div>
                       {pendingCounts.pendingWithdrawals > 0 && (
@@ -518,7 +519,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       )}
                     </Link>
 
-                    {/* Ledger */}
+                    {/* Transactions / Ledger */}
                     <Link
                       href="/transactions/ledger"
                       onClick={() => setMobileOpen(false)}
@@ -528,11 +529,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <ArrowLeftRight className="h-5 w-5 shrink-0" strokeWidth={1.8} />
-                      <span>Wallet Ledger</span>
+                      <IconTransactions size={20} className="shrink-0" />
+                      <span>Transactions Ledger</span>
                     </Link>
 
-                    {/* Players */}
+                    {/* Player Accounts */}
                     <Link
                       href="/users"
                       onClick={() => setMobileOpen(false)}
@@ -542,11 +543,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <Users className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+                      <IconPlayers size={20} className="shrink-0" />
                       <span>Player Accounts</span>
                     </Link>
 
-                    {/* Promotions & VIP */}
+                    {/* Promotions & VIP Club */}
                     <Link
                       href="/promotions"
                       onClick={() => setMobileOpen(false)}
@@ -557,8 +558,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <Sparkles className="h-5 w-5 shrink-0" strokeWidth={1.8} />
-                        <span>Promotions</span>
+                        <IconCrown size={20} className="shrink-0" />
+                        <span>VIP & Promotions</span>
                       </div>
                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-strong text-text-secondary border border-border-default">
                         Live
@@ -575,7 +576,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <Bell className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+                      <IconBell size={20} className="shrink-0" />
                       <span>Notifications</span>
                     </Link>
                   </div>
@@ -602,9 +603,9 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {theme === 'dark' ? (
-                          <Moon className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+                          <IconMoonSolid size={20} className="shrink-0" />
                         ) : (
-                          <Sun className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+                          <IconSunSolid size={20} className="shrink-0" />
                         )}
                         <span>Night Mode</span>
                       </div>
@@ -622,7 +623,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       </div>
                     </div>
 
-                    {/* System Settings */}
+                    {/* Global Settings */}
                     <Link
                       href="/system/settings"
                       onClick={() => setMobileOpen(false)}
@@ -632,11 +633,11 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <Settings className="h-5 w-5 shrink-0" strokeWidth={1.8} />
-                      <span>Settings</span>
+                      <IconSettings size={20} className="shrink-0" />
+                      <span>Global Settings</span>
                     </Link>
 
-                    {/* System Health / Diagnostics */}
+                    {/* System Health / Analytics Overview */}
                     <Link
                       href="/system/health"
                       onClick={() => setMobileOpen(false)}
@@ -646,8 +647,8 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                           : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong'
                       }`}
                     >
-                      <Activity className="h-5 w-5 shrink-0" strokeWidth={1.8} />
-                      <span>System Health</span>
+                      <IconChart size={20} className="shrink-0" />
+                      <span>Rollover & System Health</span>
                     </Link>
                   </div>
                 )}
@@ -672,7 +673,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       rel="noreferrer"
                       className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all"
                     >
-                      <FileText className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+                      <IconBook size={20} className="shrink-0" />
                       <span>Documentation</span>
                     </a>
 
@@ -682,7 +683,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       rel="noreferrer"
                       className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong transition-all"
                     >
-                      <LifeBuoy className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+                      <IconChat size={20} className="shrink-0" />
                       <span>Contact Support</span>
                     </a>
                   </div>
@@ -717,7 +718,7 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                   aria-label="Sign out of admin session"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-strong transition-colors shrink-0"
                 >
-                  <LogOut className="h-5 w-5" aria-hidden="true" strokeWidth={1.8} />
+                  <IconLogOut size={20} className="shrink-0" />
                 </button>
               </div>
             </div>
