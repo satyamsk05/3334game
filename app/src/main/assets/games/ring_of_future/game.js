@@ -138,6 +138,7 @@ let currentPhase = 'BETTING';
 let currentRotationDeg = 0;
 let isSpinningAnimation = false;
 let lastSpunRoundId = null;
+let currentRoundId = '';  // tracks active round for bet-grouping
 
 // 32 Segment Multipliers & Colors (Pure numbers without x)
 const SEGMENTS = [
@@ -296,7 +297,7 @@ async function handleBet(multiplierType) {
   // Resilient Native Bridge Fallback: Place bet directly in app's WalletLedger
   if (window.AndroidBridge && window.AndroidBridge.placeLocalBet) {
     try {
-      const success = window.AndroidBridge.placeLocalBet(betAmountPaise);
+      const success = window.AndroidBridge.placeLocalBet(betAmountPaise, currentRoundId);
       if (success) {
         localBets[multiplierType] = (localBets[multiplierType] || 0) + betAmountPaise;
         updateWalletDisplay();
@@ -337,6 +338,10 @@ function updateUI(data) {
   document.getElementById('hubSeconds').innerText = state.secondsRemaining + 's';
 
   if (state.phase === 'BETTING') {
+    // New round opened: update the currentRoundId so subsequent bets are tagged correctly
+    if (state.roundId && currentRoundId !== state.roundId) {
+      currentRoundId = state.roundId;
+    }
     localBets = { '2x': 0, '3x': 0, '5x': 0, '30x': 0 };
     document.getElementById('hubStatus').innerText = 'PLACE BETS';
     document.getElementById('hubSeconds').style.color = '#34D399';
@@ -348,6 +353,10 @@ function updateUI(data) {
       currentRotationDeg = targetDeg;
     }
   } else if (state.phase === 'LOCKED') {
+    // Betting is now closed — flush the round's accumulated bets as a single transaction
+    if (window.AndroidBridge && window.AndroidBridge.commitRoundBets) {
+      try { window.AndroidBridge.commitRoundBets(); } catch (_) {}
+    }
     document.getElementById('hubStatus').innerText = 'LOCKED';
     document.getElementById('hubSeconds').style.color = '#F59E0B';
   } else if (state.phase === 'SPINNING') {

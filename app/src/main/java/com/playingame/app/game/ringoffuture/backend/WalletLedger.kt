@@ -80,6 +80,13 @@ object WalletLedger {
     private val _transactions = MutableStateFlow<List<WalletTransaction>>(emptyList())
     val transactions: StateFlow<List<WalletTransaction>> = _transactions.asStateFlow()
 
+    // Round-level bet aggregation: buffer all bets within a single round
+    // and flush as ONE transaction when the round concludes.
+    private var _pendingRoundId: String? = null
+    private var _pendingRoundBetPaise: Long = 0L
+    private var _pendingRoundBetCount: Int = 0
+    private var _pendingRoundBalanceBeforePaise: Long = 0L
+
     init {
         _transactions.value = emptyList()
     }
@@ -102,8 +109,15 @@ object WalletLedger {
         _transactions.update { listOf(tx) + it }
     }
 
+    /**
+     * Place a bet for [roundId]. Multiple calls with the same roundId accumulate into
+     * a single pending bucket. The bucket is flushed as ONE "Ring of Future" transaction
+     * when [commitRoundBets] is called (or automatically when [creditWin] fires).
+     *
+     * Pass an empty string for [roundId] to use legacy single-transaction behaviour.
+     */
     @Synchronized
-    fun placeBet(amountPaise: Long): BetDebitBreakdown {
+    fun placeBet(amountPaise: Long, roundId: String = ""): BetDebitBreakdown {
         val current = _walletBalance.value
         if (amountPaise <= 0L || current.totalPaise < amountPaise) {
             return BetDebitBreakdown(success = false)
@@ -150,17 +164,32 @@ object WalletLedger {
         val newBalance = WalletBalance(depositPaise = dep, winningPaise = win, bonusPaise = bon)
         _walletBalance.value = newBalance
 
-        val tx = WalletTransaction(
-            userId = _userProfile.value.userId,
-            type = TransactionType.BET_PLACED,
-            amountPaise = amountPaise,
-            balanceAfterPaise = newBalance.totalPaise,
-            status = TransactionStatus.SUCCESS,
-            referenceId = "BET-${System.currentTimeMillis().toString().takeLast(6)}",
-            description = "Game Bet Placed"
-        )
-
-        _transactions.update { listOf(tx) + it }
+        if (roundId.isNotEmpty()) {
+            // ── Round-aggregation mode ──────────────────────────────────────────────
+            // If the roundId has changed, flush the previous round first.
+            if (_pendingRoundId != null && _pendingRoundId != roundId) {
+                flushPendingRoundBets()
+            }
+            // Start or extend the current round's bucket.
+            if (_pendingRoundId == null) {
+                _pendingRoundId = roundId
+                _pendingRoundBalanceBeforePaise = current.totalPaise  // balance BEFORE this bet
+            }
+            _pendingRoundBetPaise += amountPaise
+            _pendingRoundBetCount += 1
+        } else {
+            // ── Legacy single-transaction mode (no roundId provided) ────────────────
+            val tx = WalletTransaction(
+                userId = _userProfile.value.userId,
+                type = TransactionType.BET_PLACED,
+                amountPaise = amountPaise,
+                balanceAfterPaise = newBalance.totalPaise,
+                status = TransactionStatus.SUCCESS,
+                referenceId = "BET-${System.currentTimeMillis().toString().takeLast(6)}",
+                description = "Game Bet Placed"
+            )
+            _transactions.update { listOf(tx) + it }
+        }
 
         return BetDebitBreakdown(
             depositDebited = depDebited,
@@ -171,8 +200,48 @@ object WalletLedger {
         )
     }
 
+    /**
+     * Flush any pending round bets as a single consolidated transaction.
+     * Call this when a round ends (spin starts, or new round opens).
+     */
+    @Synchronized
+    fun commitRoundBets() {
+        flushPendingRoundBets()
+    }
+
+    /** Internal flush — must be called from a @Synchronized context. */
+    private fun flushPendingRoundBets() {
+        val rid = _pendingRoundId ?: return
+        val total = _pendingRoundBetPaise
+        val count = _pendingRoundBetCount
+        if (total <= 0L) {
+            _pendingRoundId = null
+            _pendingRoundBetPaise = 0L
+            _pendingRoundBetCount = 0
+            return
+        }
+        val balanceAfter = _walletBalance.value.totalPaise
+        val shortId = rid.takeLast(6)
+        val desc = if (count > 1) "Ring of Future · $count bets · Round #$shortId"
+                   else "Ring of Future · Round #$shortId"
+        val tx = WalletTransaction(
+            userId = _userProfile.value.userId,
+            type = TransactionType.BET_PLACED,
+            amountPaise = total,
+            balanceAfterPaise = balanceAfter,
+            status = TransactionStatus.SUCCESS,
+            referenceId = "RND-$shortId",
+            description = desc
+        )
+        _transactions.update { listOf(tx) + it }
+        _pendingRoundId = null
+        _pendingRoundBetPaise = 0L
+        _pendingRoundBetCount = 0
+    }
+
     @Synchronized
     fun refundBet(depositRefund: Long, winningRefund: Long, bonusRefund: Long) {
+        flushPendingRoundBets()
         val current = _walletBalance.value
         val newBalance = WalletBalance(
             depositPaise = current.depositPaise + depositRefund,
@@ -198,6 +267,10 @@ object WalletLedger {
 
     @Synchronized
     fun creditWin(winPayoutPaise: Long, multiplierLabel: String) {
+        // Ensure any buffered round bets are committed before crediting the win,
+        // so the history shows: [Bet ₹100 · Round #XXXXX] then [Win +₹200 · 2x]
+        flushPendingRoundBets()
+
         val current = _walletBalance.value
         val newBalance = current.copy(winningPaise = current.winningPaise + winPayoutPaise)
         _walletBalance.value = newBalance

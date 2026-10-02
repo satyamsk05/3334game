@@ -110,9 +110,14 @@ fun RingOfFutureScreen(
                         }
 
                         @JavascriptInterface
-                        fun placeLocalBet(amountPaise: Long): Boolean {
-                            val result = com.playingame.app.game.ringoffuture.backend.WalletLedger.placeBet(amountPaise)
+                        fun placeLocalBet(amountPaise: Long, roundId: String): Boolean {
+                            val result = com.playingame.app.game.ringoffuture.backend.WalletLedger.placeBet(amountPaise, roundId)
                             return result.success
+                        }
+
+                        @JavascriptInterface
+                        fun commitRoundBets() {
+                            com.playingame.app.game.ringoffuture.backend.WalletLedger.commitRoundBets()
                         }
 
                         @JavascriptInterface
