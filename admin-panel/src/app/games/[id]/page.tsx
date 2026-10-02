@@ -306,7 +306,7 @@ export default function GameDetailsPage() {
               max="120"
               value={bettingDuration}
               onChange={(e) => setBettingDuration(e.target.value)}
-              className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+              className="w-full h-10 rounded-lg border border-border-default bg-surface-strong px-3.5 text-sm font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
             />
             <span className="text-xs text-text-tertiary mt-1 block">Default: 15s. Range: 5s - 120s.</span>
           </div>
@@ -319,7 +319,7 @@ export default function GameDetailsPage() {
               max="30"
               value={resultDisplayDuration}
               onChange={(e) => setResultDisplayDuration(e.target.value)}
-              className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+              className="w-full h-10 rounded-lg border border-border-default bg-surface-strong px-3.5 text-sm font-mono text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
             />
             <span className="text-xs text-text-tertiary mt-1 block">Default: 5s. Range: 2s - 30s.</span>
           </div>
@@ -332,7 +332,7 @@ export default function GameDetailsPage() {
             value={maintenanceBanner}
             onChange={(e) => setMaintenanceBanner(e.target.value)}
             placeholder="e.g. Scheduled maintenance window in progress. Game resumes shortly."
-            className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm text-xs text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
+            className="w-full h-10 rounded-lg border border-border-default bg-surface-strong px-3.5 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
           />
         </div>
 

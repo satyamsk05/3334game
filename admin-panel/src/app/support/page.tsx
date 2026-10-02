@@ -110,7 +110,7 @@ export default function SupportOperationsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by Mobile Phone (e.g. 919876543210) or User ID (e.g. USR-...)"
-              className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 pl-10 pr-3.5 text-sm text-text-primary placeholder:text-text-tertiary focus:bg-surface-raised focus:border-border-strong focus:outline-none transition-all shadow-xs"
+              className="w-full h-10 rounded-lg border border-border-default bg-surface-strong pl-10 pr-3.5 text-sm text-text-primary placeholder:text-text-tertiary focus:bg-surface-strong focus:border-border-strong focus:outline-none transition-all shadow-xs"
             />
           </div>
           <Button
@@ -204,7 +204,7 @@ export default function SupportOperationsPage() {
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
                 placeholder="Log details: player dispute, transaction verification, resolution notes..."
-                className="w-full h-24 rounded-lg border border-border-default bg-surface-strong/60 p-3 text-sm text-text-primary placeholder:text-text-tertiary focus:bg-surface-raised focus:border-border-strong focus:outline-none transition-all"
+                className="w-full h-24 rounded-lg border border-border-default bg-surface-strong p-3 text-sm text-text-primary placeholder:text-text-tertiary focus:bg-surface-strong focus:border-border-strong focus:outline-none transition-all"
               />
               <div className="flex justify-end">
                 <Button

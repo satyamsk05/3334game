@@ -159,7 +159,7 @@ export default function UsersManagementPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search player, phone, ID..."
-              className="h-10 w-48 sm:w-64 rounded-lg border border-border-default bg-surface-strong/70 pl-9 pr-3 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-strong focus:bg-surface-raised shadow-xs transition-all"
+              className="h-10 w-48 sm:w-64 rounded-lg border border-border-default bg-surface-strong pl-9 pr-3 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-strong focus:bg-surface-strong shadow-xs transition-all"
             />
           </form>
 
@@ -377,7 +377,7 @@ export default function UsersManagementPage() {
                 value={banReason}
                 onChange={(e) => setBanReason(e.target.value)}
                 placeholder="E.g., Suspicious activity, Terms violation..."
-                className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-strong focus:bg-surface-raised transition-all"
+                className="w-full h-10 rounded-lg border border-border-default bg-surface-strong px-3.5 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-strong focus:bg-surface-strong transition-all"
               />
             </div>
           )}

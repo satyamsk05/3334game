@@ -189,7 +189,7 @@ export default function GamesManagementPage() {
                       value={game.status}
                       onChange={(e) => handleStatusChange(game.id, e.target.value as any)}
                       disabled={isUpdating}
-                      className="h-9 rounded-lg border border-border-default bg-surface-strong/60 px-3 text-xs font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary shrink-0"
+                      className="h-9 rounded-lg border border-border-default bg-surface-strong px-3 text-xs font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary shrink-0"
                     >
                       <option value="LIVE">LIVE</option>
                       <option value="COMING_SOON">COMING SOON</option>

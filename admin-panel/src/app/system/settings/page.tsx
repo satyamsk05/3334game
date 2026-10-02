@@ -425,7 +425,7 @@ export default function UnifiedSystemSettingsPage() {
                     max="98"
                     value={rtpTarget}
                     onChange={(e) => setRtpTarget(e.target.value)}
-                    className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm font-mono text-text-primary text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="w-full h-10 rounded-lg border border-border-default bg-surface-strong px-3.5 text-sm font-mono text-text-primary text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                   <Button
                     variant="primary"
@@ -459,7 +459,7 @@ export default function UnifiedSystemSettingsPage() {
                     min="1"
                     value={minBet}
                     onChange={(e) => setMinBet(e.target.value)}
-                    className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm font-mono text-text-primary focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="w-full h-10 rounded-lg border border-border-default bg-surface-strong px-3.5 text-sm font-mono text-text-primary focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -469,7 +469,7 @@ export default function UnifiedSystemSettingsPage() {
                     min="10"
                     value={maxBet}
                     onChange={(e) => setMaxBet(e.target.value)}
-                    className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/60 px-3.5 text-sm font-mono text-text-primary focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="w-full h-10 rounded-lg border border-border-default bg-surface-strong px-3.5 text-sm font-mono text-text-primary focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -1158,7 +1158,7 @@ export default function UnifiedSystemSettingsPage() {
                   value={supportQuery}
                   onChange={(e) => setSupportQuery(e.target.value)}
                   placeholder="Search by Mobile Phone (e.g. 919876543210) or User ID (e.g. USR-...)"
-                  className="w-full h-10 rounded-xl border border-border-default bg-surface-raised pl-10 pr-3 text-xs text-text-primary placeholder:text-text-tertiary focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full h-10 rounded-xl border border-border-default bg-surface-strong pl-10 pr-3 text-xs text-text-primary placeholder:text-text-tertiary focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
               <Button

@@ -125,7 +125,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 onKeyDown={handleSearchKeyDown}
                 placeholder="Search users, UTR, ID..."
                 aria-label="Search users and identifiers"
-                className="w-full h-10 rounded-lg border border-border-default bg-surface-strong/70 pl-9 pr-14 text-sm font-normal text-text-primary placeholder:text-text-tertiary focus:bg-surface-raised focus:border-border-strong focus:outline-none transition-all shadow-xs"
+                className="w-full h-10 rounded-lg border border-border-default bg-surface-strong pl-9 pr-14 text-sm font-normal text-text-primary placeholder:text-text-tertiary focus:bg-surface-strong focus:border-border-strong focus:outline-none transition-all shadow-xs"
               />
               <kbd className="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-md bg-surface-base border border-border-default px-1.5 py-0.5 text-xs text-text-tertiary font-mono pointer-events-none">
                 <Command className="h-3 w-3" aria-hidden="true" strokeWidth={1.8} /> K
@@ -135,7 +135,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {/* Notification Bell */}
             <Link
               href="/payments/deposits"
-              className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-border-default bg-surface-strong/70 text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors focus-visible:ring-2 focus-visible:ring-border-focus"
+              className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-border-default bg-surface-strong text-text-secondary hover:text-text-primary hover:bg-surface-muted transition-colors focus-visible:ring-2 focus-visible:ring-border-focus"
               title="Deposit & Payment Alerts"
               aria-label="Deposit and payment alerts"
             >
@@ -148,7 +148,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href="https://bitarcade-pay.vercel.app"
               target="_blank"
               rel="noreferrer"
-              className="hidden lg:flex items-center gap-2 h-10 px-3.5 rounded-lg border border-border-default bg-surface-strong/70 text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors text-sm font-medium focus-visible:ring-2 focus-visible:ring-border-focus"
+              className="hidden lg:flex items-center gap-2 h-10 px-3.5 rounded-lg border border-border-default bg-surface-strong text-text-secondary hover:text-text-primary hover:bg-surface-muted transition-colors text-sm font-medium focus-visible:ring-2 focus-visible:ring-border-focus"
               title="Open Payment Gateway"
             >
               <span>Gateway</span>

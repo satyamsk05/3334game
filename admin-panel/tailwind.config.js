@@ -1,4 +1,12 @@
-/** @type {import('tailwindcss').Config} */
+function withOpacity(variableName) {
+  return ({ opacityValue }) => {
+    if (opacityValue !== undefined) {
+      return `color-mix(in srgb, var(${variableName}) calc(${opacityValue} * 100%), transparent)`;
+    }
+    return `var(${variableName})`;
+  };
+}
+
 module.exports = {
   darkMode: 'class',
   content: [
@@ -10,26 +18,26 @@ module.exports = {
     extend: {
       colors: {
         text: {
-          primary: 'var(--text-primary)',
-          secondary: 'var(--text-secondary)',
-          tertiary: 'var(--text-tertiary)',
-          inverse: 'var(--text-inverse)',
+          primary: withOpacity('--text-primary'),
+          secondary: withOpacity('--text-secondary'),
+          tertiary: withOpacity('--text-tertiary'),
+          inverse: withOpacity('--text-inverse'),
         },
         surface: {
-          base: 'var(--surface-base)',
-          raised: 'var(--surface-raised)',
-          strong: 'var(--surface-strong)',
-          muted: 'var(--surface-muted)',
-          subtle: 'var(--surface-subtle)',
+          base: withOpacity('--surface-base'),
+          raised: withOpacity('--surface-raised'),
+          strong: withOpacity('--surface-strong'),
+          muted: withOpacity('--surface-muted'),
+          subtle: withOpacity('--surface-subtle'),
         },
         border: {
-          default: 'var(--border-default)',
-          subtle: 'var(--border-subtle)',
-          strong: 'var(--border-strong)',
-          focus: 'var(--border-focus)',
+          default: withOpacity('--border-default'),
+          subtle: withOpacity('--border-subtle'),
+          strong: withOpacity('--border-strong'),
+          focus: withOpacity('--border-focus'),
         },
         accent: {
-          primary: 'var(--accent-primary)',
+          primary: withOpacity('--accent-primary'),
           dark: '#000000',
           blue: '#2563eb',
           emerald: '#10b981',

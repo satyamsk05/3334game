@@ -172,7 +172,7 @@ export default function LedgerManagementPage() {
       {/* Filter Bar */}
       <Card className="p-4 sm:p-5">
         <form onSubmit={handleFilterSubmit} className="flex flex-wrap items-center gap-3 text-xs">
-          <div className="flex items-center gap-2 flex-1 min-w-[200px] bg-surface-strong/70 rounded-xl px-3.5 py-1.5 border border-border-default">
+          <div className="flex items-center gap-2 flex-1 min-w-[200px] bg-surface-strong rounded-xl px-3.5 py-1.5 border border-border-default">
             <Search className="h-4 w-4 text-text-tertiary shrink-0" />
             <input
               type="text"
