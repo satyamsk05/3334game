@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -17,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,14 +52,7 @@ fun HelpCentreScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF130924),
-                        Color(0xFF090412)
-                    )
-                )
-            )
+            .background(Color(0xFF0A0C11))
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -75,16 +66,17 @@ fun HelpCentreScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF1E1634))
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(20.dp),
                     tint = Color.White
                 )
             }
@@ -104,19 +96,19 @@ fun HelpCentreScreen(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = { Text("Search help topics...", color = Color(0xFF948BA8), fontSize = 14.sp) },
+            placeholder = { Text("Search help topics...", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFF1E1634),
-                unfocusedContainerColor = Color(0xFF1E1634),
-                focusedBorderColor = Color(0xFF7C3AED),
-                unfocusedBorderColor = Color(0xFF281C44),
+                focusedContainerColor = Color(0xFF0F1015),
+                unfocusedContainerColor = Color(0xFF0F1015),
+                focusedBorderColor = Color(0xFF00E676),
+                unfocusedBorderColor = Color(0xFF1E2028),
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
-                cursorColor = Color(0xFF7C3AED)
+                cursorColor = Color(0xFF00E676)
             ),
             singleLine = true
         )
@@ -126,8 +118,8 @@ fun HelpCentreScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF1E1634))
-                .border(1.dp, Color(0xFF281C44), RoundedCornerShape(16.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
                 .clickable { onContactSupportClick() }
                 .padding(16.dp)
         ) {
@@ -149,14 +141,14 @@ fun HelpCentreScreen(
                         text = "Our support team is active 24/7 to help you",
                         fontSize = 12.sp,
                         fontFamily = RubikFont,
-                        color = Color(0xFF948BA8)
+                        color = Color(0xFF9CA3AF)
                     )
                 }
 
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFF7C3AED))
+                        .background(Color(0xFF00E676))
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text(
@@ -164,7 +156,7 @@ fun HelpCentreScreen(
                         fontSize = 12.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color(0xFF0A0C11)
                     )
                 }
             }
@@ -189,13 +181,13 @@ fun HelpCentreScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 10.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFF1E1634))
-                .border(1.dp, Color(0xFF281C44), RoundedCornerShape(14.dp))
-                .clickable {
-                    expandedFaqId = if (isExpanded) null else faq.id
-                }
-                .padding(14.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
+                    .clickable {
+                        expandedFaqId = if (isExpanded) null else faq.id
+                    }
+                    .padding(14.dp)
             ) {
                 Column {
                     Row(
@@ -225,7 +217,7 @@ fun HelpCentreScreen(
                                 text = faq.answer,
                                 fontSize = 13.sp,
                                 fontFamily = RubikFont,
-                                color = Color(0xFF948BA8),
+                                color = Color(0xFFD1D5DB),
                                 lineHeight = 18.sp
                             )
                         }

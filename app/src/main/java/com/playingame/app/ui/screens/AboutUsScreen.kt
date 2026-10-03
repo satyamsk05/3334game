@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -16,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,14 +32,7 @@ fun AboutUsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF130924),
-                        Color(0xFF090412)
-                    )
-                )
-            )
+            .background(Color.Black)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -54,16 +45,16 @@ fun AboutUsScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF1E1634))
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFF240E38))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(20.dp),
                     tint = Color.White
                 )
             }
@@ -118,9 +109,9 @@ fun AboutUsScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF1E1634))
-                .border(1.dp, Color(0xFF281C44), RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(14.dp))
+                .background(Color(0xFF1E0A30))
+                .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(14.dp))
                 .padding(16.dp)
         ) {
             Column {
@@ -138,7 +129,7 @@ fun AboutUsScreen(
                     text = "Bit Arcade Game is a premier gaming platform offering classic dice, mines, color prediction, and skill-based arcade games. Designed with 100% security, instant withdrawals, and certified fair play.",
                     fontSize = 13.sp,
                     fontFamily = RubikFont,
-                    color = Color(0xFF948BA8),
+                    color = Color(0xFFD1D5DB),
                     lineHeight = 19.sp
                 )
             }
@@ -150,16 +141,16 @@ fun AboutUsScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF1E1634))
-                .border(1.dp, Color(0xFF281C44), RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(14.dp))
+                .background(Color(0xFF1E0A30))
+                .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(14.dp))
         ) {
             AboutRowItem(title = "Terms of Service")
-            HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
+            HorizontalDivider(color = Color(0xFF2D0A4E), thickness = 1.dp)
             AboutRowItem(title = "Privacy Policy")
-            HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
+            HorizontalDivider(color = Color(0xFF2D0A4E), thickness = 1.dp)
             AboutRowItem(title = "Responsible Gaming")
-            HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
+            HorizontalDivider(color = Color(0xFF2D0A4E), thickness = 1.dp)
             AboutRowItem(title = "RNG Certification")
         }
 
@@ -169,7 +160,7 @@ fun AboutUsScreen(
             text = "Copyright 2026 InGames. All rights reserved.",
             fontSize = 12.sp,
             fontFamily = RubikFont,
-            color = Color(0xFF948BA8),
+            color = Color(0xFF6B7280),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
@@ -199,7 +190,7 @@ private fun AboutRowItem(title: String) {
             text = "›",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF948BA8)
+            color = Color(0xFF9CA3AF)
         )
     }
 }

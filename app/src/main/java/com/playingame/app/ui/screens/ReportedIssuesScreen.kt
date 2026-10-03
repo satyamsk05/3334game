@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -14,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,14 +44,7 @@ fun ReportedIssuesScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF130924),
-                        Color(0xFF090412)
-                    )
-                )
-            )
+            .background(Color(0xFF0A0C11))
             .padding(horizontal = 16.dp)
     ) {
         // Top Header
@@ -66,16 +57,17 @@ fun ReportedIssuesScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF1E1634))
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(20.dp),
                     tint = Color.White
                 )
             }
@@ -102,7 +94,7 @@ fun ReportedIssuesScreen(
                     text = "No reported issues found",
                     fontSize = 15.sp,
                     fontFamily = RubikFont,
-                    color = Color(0xFF948BA8)
+                    color = Color(0xFF9CA3AF)
                 )
             }
         } else {
@@ -116,8 +108,8 @@ fun ReportedIssuesScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFF1E1634))
-                            .border(1.dp, Color(0xFF281C44), RoundedCornerShape(16.dp))
+                            .background(Color(0xFF0F1015))
+                            .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
                             .padding(16.dp)
                     ) {
                         Column {
@@ -172,13 +164,13 @@ fun ReportedIssuesScreen(
                                     text = ticket.category,
                                     fontSize = 12.sp,
                                     fontFamily = RubikFont,
-                                    color = Color(0xFF948BA8)
+                                    color = Color(0xFF9CA3AF)
                                 )
                                 Text(
                                     text = ticket.date,
                                     fontSize = 12.sp,
                                     fontFamily = RubikFont,
-                                    color = Color(0xFF948BA8)
+                                    color = Color(0xFF6B7280)
                                 )
                             }
                         }

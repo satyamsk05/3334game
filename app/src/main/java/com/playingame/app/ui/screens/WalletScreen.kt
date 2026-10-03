@@ -40,14 +40,7 @@ fun WalletScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF130924),
-                        Color(0xFF090412)
-                    )
-                )
-            )
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
             .padding(bottom = 120.dp),
@@ -79,8 +72,8 @@ fun WalletScreen(
                         .width(66.dp)
                         .height(66.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFF1E1634))
-                        .border(1.dp, Color(0xFF281C44), RoundedCornerShape(14.dp))
+                        .background(Color(0xFF161922))
+                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
                         .clickable { onSupportClick() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -92,7 +85,7 @@ fun WalletScreen(
                             painter = painterResource(id = R.drawable.ic_headset),
                             contentDescription = "Support",
                             modifier = Modifier.size(22.dp),
-                            tint = Color(0xFFA78BFA)
+                            tint = Color.White
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -100,7 +93,7 @@ fun WalletScreen(
                             fontSize = 11.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF948BA8)
+                            color = Color(0xFFD1D5DB)
                         )
                     }
                 }
@@ -111,8 +104,8 @@ fun WalletScreen(
                         .width(66.dp)
                         .height(66.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFF1E1634))
-                        .border(1.dp, Color(0xFF281C44), RoundedCornerShape(14.dp))
+                        .background(Color(0xFF161922))
+                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
                         .clickable { onSettingsClick() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -124,7 +117,7 @@ fun WalletScreen(
                             painter = painterResource(id = R.drawable.ic_setting),
                             contentDescription = "Settings",
                             modifier = Modifier.size(22.dp),
-                            tint = Color(0xFFA78BFA)
+                            tint = Color.White
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -132,7 +125,7 @@ fun WalletScreen(
                             fontSize = 11.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF948BA8)
+                            color = Color(0xFFD1D5DB)
                         )
                     }
                 }
@@ -151,11 +144,11 @@ fun WalletScreen(
                     fontSize = 13.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF948BA8)
+                    color = Color(0xFF8E899B)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "₹$balance",
+                    text = balance,
                     fontSize = 28.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.W800,
@@ -167,8 +160,8 @@ fun WalletScreen(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF1E1634))
-                    .border(1.dp, Color(0xFF281C44), RoundedCornerShape(12.dp))
+                    .background(Color(0xFF161922))
+                    .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(12.dp))
                     .clickable { onAllTransactionsClick() }
                     .padding(horizontal = 16.dp, vertical = 10.dp),
                 contentAlignment = Alignment.Center
@@ -189,7 +182,7 @@ fun WalletScreen(
                         fontSize = 16.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF948BA8)
+                        color = Color.White
                     )
                 }
             }
@@ -200,8 +193,8 @@ fun WalletScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFF1E1634))
-                .border(1.dp, Color(0xFF281C44), RoundedCornerShape(20.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
                 .padding(16.dp)
         ) {
             Column(
@@ -223,18 +216,18 @@ fun WalletScreen(
                                 fontSize = 13.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF948BA8)
+                                color = Color(0xFF9E97AA)
                             )
                             Text(
                                 text = "ⓘ",
                                 fontSize = 11.sp,
                                 fontFamily = RubikFont,
-                                color = Color(0xFF948BA8)
+                                color = Color(0xFF8E899B)
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "₹$depositBalance",
+                            text = depositBalance,
                             fontSize = 24.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.W800,
@@ -281,7 +274,7 @@ fun WalletScreen(
                     }
                 }
 
-                HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
+                HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
 
                 // Winnings Row
                 Row(
@@ -299,18 +292,18 @@ fun WalletScreen(
                                 fontSize = 13.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF948BA8)
+                                color = Color(0xFF9E97AA)
                             )
                             Text(
                                 text = "ⓘ",
                                 fontSize = 11.sp,
                                 fontFamily = RubikFont,
-                                color = Color(0xFF948BA8)
+                                color = Color(0xFF8E899B)
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "₹$winningsBalance",
+                            text = winningsBalance,
                             fontSize = 24.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.W800,
@@ -327,8 +320,8 @@ fun WalletScreen(
                             .background(
                                 brush = Brush.verticalGradient(
                                     colors = listOf(
-                                        Color(0xFF7C3AED),
-                                        Color(0xFF6D28D9)
+                                        Color(0xFFFFB800),
+                                        Color(0xFFFF9100)
                                     )
                                 )
                             )
@@ -346,7 +339,7 @@ fun WalletScreen(
                     }
                 }
 
-                HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
+                HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
 
                 // Bonus Row
                 Row(
@@ -364,18 +357,18 @@ fun WalletScreen(
                                 fontSize = 13.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF948BA8)
+                                color = Color(0xFF9E97AA)
                             )
                             Text(
                                 text = "ⓘ",
                                 fontSize = 11.sp,
                                 fontFamily = RubikFont,
-                                color = Color(0xFF948BA8)
+                                color = Color(0xFF8E899B)
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "₹$rewardsBalance",
+                            text = rewardsBalance,
                             fontSize = 24.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.W800,
@@ -389,8 +382,8 @@ fun WalletScreen(
                             .width(155.dp)
                             .height(46.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFF281C44))
-                            .border(1.dp, Color(0xFF3B2A63), RoundedCornerShape(10.dp))
+                            .background(Color(0xFF181B24))
+                            .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(10.dp))
                             .clickable { /* Play to use */ },
                         contentAlignment = Alignment.Center
                     ) {
@@ -429,8 +422,8 @@ fun WalletScreen(
                     .fillMaxWidth()
                     .padding(top = 10.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF1E1634))
-                    .border(1.dp, Color(0xFF281C44), RoundedCornerShape(16.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
                     .padding(horizontal = 18.dp, vertical = 18.dp)
             ) {
                 Row(
@@ -440,7 +433,7 @@ fun WalletScreen(
                 ) {
                     Column {
                         Text(
-                            text = "₹500",
+                            text = "500",
                             fontSize = 26.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.W800,
@@ -448,7 +441,7 @@ fun WalletScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "+ ₹90 Cashback",
+                            text = "+ 90 Cashback",
                             fontSize = 12.5.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.W700,

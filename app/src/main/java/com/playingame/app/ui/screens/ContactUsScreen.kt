@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -14,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,14 +29,7 @@ fun ContactUsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF130924),
-                        Color(0xFF090412)
-                    )
-                )
-            )
+            .background(Color.Black)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -52,16 +43,16 @@ fun ContactUsScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF1E1634))
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFF240E38))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(20.dp),
                     tint = Color.White
                 )
             }
@@ -82,7 +73,7 @@ fun ContactUsScreen(
             text = "We are here to help you 24/7. Reach out via any channel below.",
             fontSize = 13.5.sp,
             fontFamily = RubikFont,
-            color = Color(0xFF948BA8)
+            color = Color(0xFFD1D5DB)
         )
 
         // Contact Option 1: Email Support
@@ -123,9 +114,9 @@ private fun ContactCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF1E1634))
-            .border(1.dp, Color(0xFF281C44), RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(14.dp))
+            .background(Color(0xFF1E0A30))
+            .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(14.dp))
             .clickable { }
             .padding(16.dp)
     ) {
@@ -136,8 +127,8 @@ private fun ContactCard(
             Box(
                 modifier = Modifier
                     .size(44.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF281C44)),
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF2E0F45)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -166,14 +157,14 @@ private fun ContactCard(
                     fontSize = 14.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF00E676)
+                    color = Color(0xFF10B981)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtext,
                     fontSize = 11.5.sp,
                     fontFamily = RubikFont,
-                    color = Color(0xFF948BA8)
+                    color = Color(0xFF9CA3AF)
                 )
             }
         }
