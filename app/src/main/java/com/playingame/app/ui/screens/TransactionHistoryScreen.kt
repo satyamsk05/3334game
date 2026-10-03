@@ -66,7 +66,7 @@ fun TransactionHistoryScreen(
     var expandedTxnId by remember { mutableStateOf<String?>(null) }
 
     val filteredTransactions = remember(selectedFilter, transactionsState) {
-        when (selectedFilter) {
+        val base = when (selectedFilter) {
             TransactionFilterCategory.ALL -> transactionsState
             TransactionFilterCategory.DEPOSITS -> transactionsState.filter { it.type == TransactionType.DEPOSIT }
             TransactionFilterCategory.WITHDRAWALS -> transactionsState.filter { it.type == TransactionType.WITHDRAWAL }
@@ -75,6 +75,42 @@ fun TransactionHistoryScreen(
                 it.type == TransactionType.WIN_PAYOUT || it.type == TransactionType.BET_REFUND 
             }
         }
+
+        val consolidated = mutableListOf<WalletTransaction>()
+        val seenBets = mutableMapOf<String, Int>()
+
+        for (tx in base) {
+            if (tx.type == TransactionType.BET_PLACED) {
+                val roundKey = if (tx.referenceId.startsWith("BET-ROF-")) {
+                    tx.referenceId.split("-").take(3).joinToString("-")
+                } else if (tx.description.contains("Ring of Future", ignoreCase = true) || tx.description.contains("Round", ignoreCase = true)) {
+                    // Group same-minute Ring of Future bets if no explicit round id in ref
+                    val minute = tx.timestamp / 60000L
+                    "ROF-$minute"
+                } else {
+                    null
+                }
+
+                if (roundKey != null) {
+                    if (seenBets.containsKey(roundKey)) {
+                        val idx = seenBets[roundKey]!!
+                        val existing = consolidated[idx]
+                        consolidated[idx] = existing.copy(
+                            amountPaise = existing.amountPaise + tx.amountPaise,
+                            balanceAfterPaise = minOf(existing.balanceAfterPaise, tx.balanceAfterPaise)
+                        )
+                    } else {
+                        seenBets[roundKey] = consolidated.size
+                        consolidated.add(tx)
+                    }
+                } else {
+                    consolidated.add(tx)
+                }
+            } else {
+                consolidated.add(tx)
+            }
+        }
+        consolidated
     }
 
     Box(

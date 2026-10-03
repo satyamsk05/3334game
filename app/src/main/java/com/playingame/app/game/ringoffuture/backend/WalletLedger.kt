@@ -96,12 +96,9 @@ object WalletLedger {
 
     @Synchronized
     fun setTransactions(newTransactions: List<WalletTransaction>) {
-        val existing = _transactions.value
-        val combined = (newTransactions + existing)
-            .distinctBy { it.id.ifEmpty { it.referenceId } }
-            .sortedByDescending { it.timestamp }
-            .take(100)
-        _transactions.value = combined
+        if (newTransactions.isNotEmpty()) {
+            _transactions.value = newTransactions.take(100)
+        }
     }
 
     @Synchronized
