@@ -652,11 +652,97 @@
       60% { transform: scale(1.15); opacity: 1; }
       100% { transform: scale(1); }
     }
+
+    /* Gateway Landing Mode (Photo 1) - Shown when accessed directly without deposit parameters */
+    body.landing-mode {
+      background: radial-gradient(circle at 50% 25%, #180d2e 0%, #0a0414 100%) !important;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+    .landing-card {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 44px 32px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+      margin: auto;
+    }
+    .landing-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 24px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #34D399;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 22px;
+    }
+    .landing-dot {
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10B981;
+    }
+    .landing-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+      color: #FFFFFF;
+    }
+    .landing-desc {
+      color: #94A3B8;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 340px;
+    }
+    .landing-security-note {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 13px 20px;
+      font-size: 12.5px;
+      color: #64748B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
 
-  <div class="screen-container">
+  <!-- Gateway Portal Landing Card (Photo 1) - Shown when accessed directly without active deposit order -->
+  <div class="landing-card" id="gatewayLandingView">
+    <div class="landing-badge">
+      <span class="landing-dot"></span>
+      256-Bit SSL Encrypted
+    </div>
+    <h1 class="landing-title">Bit Arcade Pay</h1>
+    <p class="landing-desc">Authoritative Payment & UTR Processing Gateway for Bit Arcade Game.</p>
+    <div class="landing-security-note">
+      🔒 PCI-DSS Compliant & Protected Connection
+    </div>
+  </div>
+
+  <div class="screen-container" id="paymentActiveView">
     <canvas id="confettiCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99; display: none;"></canvas>
     <!-- Top Header Navigation with 10-Min Countdown Timer -->
     <div class="top-header">
@@ -917,28 +1003,51 @@ function circ(q, n, c, options) {
   </script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    let amount = parseFloat(urlParams.get('amount') || '100');
-    if (isNaN(amount) || amount <= 0) amount = 100;
-
-    let orderId = urlParams.get('orderId') || 'DEP-' + Date.now();
-    let ticket = urlParams.get('ticket') || '';
-    let token = urlParams.get('token') || '';
-    let merchantUpi = urlParams.get('upi') || 'satyamskk@ptyes';
-    let merchantName = urlParams.get('name') || 'satyam';
-    let userId = urlParams.get('userId') || '';
-    let pollInterval = null;
-    let timerInterval = null;
-    let isFinished = false;
+    const orderIdParam = urlParams.get('orderId');
+    const ticketParam = urlParams.get('ticket');
+    const tokenParam = urlParams.get('token');
 
     // Persist session tokens across browser tabs/navigation
+    let token = tokenParam || '';
     if (token) sessionStorage.setItem('dep_auth_token', token);
     else token = sessionStorage.getItem('dep_auth_token') || '';
 
+    let ticket = ticketParam || '';
     if (ticket) sessionStorage.setItem('dep_page_ticket', ticket);
     else ticket = sessionStorage.getItem('dep_page_ticket') || '';
 
+    let userId = urlParams.get('userId') || '';
     if (userId) sessionStorage.setItem('dep_user_id', userId);
     else userId = sessionStorage.getItem('dep_user_id') || '';
+
+    // Only activate payment sheet if there is an active deposit order initiated from the game or token
+    const hasActiveSession = Boolean(orderIdParam || ticket || token);
+
+    if (!hasActiveSession) {
+      document.body.classList.add('landing-mode');
+      const landingEl = document.getElementById('gatewayLandingView');
+      const activeEl = document.getElementById('paymentActiveView');
+      if (landingEl) landingEl.style.display = 'flex';
+      if (activeEl) activeEl.style.display = 'none';
+      document.title = 'Bit Arcade — Secure Payment Gateway';
+    } else {
+      document.body.classList.remove('landing-mode');
+      const landingEl = document.getElementById('gatewayLandingView');
+      const activeEl = document.getElementById('paymentActiveView');
+      if (landingEl) landingEl.style.display = 'none';
+      if (activeEl) activeEl.style.display = 'flex';
+      document.title = 'Deposit — Bit Arcade Pay';
+    }
+
+    let amount = parseFloat(urlParams.get('amount') || '100');
+    if (isNaN(amount) || amount <= 0) amount = 100;
+
+    let orderId = orderIdParam || ('DEP-' + Date.now());
+    let merchantUpi = urlParams.get('upi') || 'satyamskk@ptyes';
+    let merchantName = urlParams.get('name') || 'satyam';
+    let pollInterval = null;
+    let timerInterval = null;
+    let isFinished = false;
 
     // Order Countdown Persistence: lock expiry timestamp across page refreshes
     const expiryKey = 'dep_expiry_' + orderId;
@@ -1258,16 +1367,18 @@ function circ(q, n, c, options) {
       }
     }
 
-    // Initialize systems
-    renderCircularQr();
-    start10MinCountdown();
-    startAdminApprovalPolling();
-    checkUtrInput();
+    // Initialize systems only if there is an active deposit session
+    if (hasActiveSession) {
+      renderCircularQr();
+      start10MinCountdown();
+      startAdminApprovalPolling();
+      checkUtrInput();
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', renderCircularQr);
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderCircularQr);
+      }
+      window.addEventListener('load', renderCircularQr);
     }
-    window.addEventListener('load', renderCircularQr);
   </script>
 </body>
 </html>
