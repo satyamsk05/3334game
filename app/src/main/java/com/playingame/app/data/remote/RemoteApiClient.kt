@@ -70,15 +70,8 @@ object RemoteApiClient {
         }
 
         try {
-            val encodedToken = java.net.URLEncoder.encode(token, "UTF-8")
-            val urlWithToken = if (ClientConfig.WEBSOCKET_URL.contains("?")) {
-                "${ClientConfig.WEBSOCKET_URL}&token=$encodedToken"
-            } else {
-                "${ClientConfig.WEBSOCKET_URL}?token=$encodedToken"
-            }
-
             val request = Request.Builder()
-                .url(urlWithToken)
+                .url(ClientConfig.WEBSOCKET_URL)
                 .header("Authorization", "Bearer $token")
                 .build()
 

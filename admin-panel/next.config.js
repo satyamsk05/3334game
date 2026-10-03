@@ -9,11 +9,11 @@ const wsOrigin = backendOrigin.replace(/^http/, 'ws');
 // frames, and object embeds. Prefer nonces when the panel migrates to a nonce-capable setup.
 const cspHeader = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  "script-src 'self' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob:",
-  `connect-src 'self' ${backendOrigin} ${wsOrigin} https: wss:`,
+  `connect-src 'self' ${backendOrigin} ${wsOrigin}`,
   "frame-src 'none'",
   "object-src 'none'",
   "base-uri 'self'",
