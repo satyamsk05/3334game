@@ -29,7 +29,7 @@ fun ContactUsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF0A0C11))
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -38,14 +38,16 @@ fun ContactUsScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 45.dp, bottom = 8.dp),
+                .statusBarsPadding()
+                .padding(top = 12.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF240E38))
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -73,7 +75,7 @@ fun ContactUsScreen(
             text = "We are here to help you 24/7. Reach out via any channel below.",
             fontSize = 13.5.sp,
             fontFamily = RubikFont,
-            color = Color(0xFFD1D5DB)
+            color = Color(0xFF8E899B)
         )
 
         // Contact Option 1: Email Support
@@ -115,8 +117,8 @@ private fun ContactCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(Color(0xFF1E0A30))
-            .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(14.dp))
+            .background(Color(0xFF0F1015))
+            .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
             .clickable { }
             .padding(16.dp)
     ) {
@@ -128,14 +130,15 @@ private fun ContactCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF2E0F45)),
+                    .background(Color(0xFF161922))
+                    .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(10.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = iconRes),
                     contentDescription = title,
                     modifier = Modifier.size(24.dp),
-                    tint = Color(0xFFA78BFA)
+                    tint = Color(0xFFFFB800)
                 )
             }
 
@@ -157,14 +160,14 @@ private fun ContactCard(
                     fontSize = 14.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF10B981)
+                    color = Color(0xFF00E676)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtext,
                     fontSize = 11.5.sp,
                     fontFamily = RubikFont,
-                    color = Color(0xFF9CA3AF)
+                    color = Color(0xFF8E899B)
                 )
             }
         }

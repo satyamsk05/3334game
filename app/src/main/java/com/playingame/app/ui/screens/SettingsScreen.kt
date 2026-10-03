@@ -74,9 +74,9 @@ fun SettingsScreen(
             Box(
                 modifier = Modifier
                     .size(36.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF161922))
-                    .border(1.dp, Color(0xFF282E3E), CircleShape)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {

@@ -47,7 +47,7 @@ fun WithdrawScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF0A0C11))
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -61,6 +61,9 @@ fun WithdrawScreen(
             Box(
                 modifier = Modifier
                     .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .align(Alignment.CenterStart)
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
@@ -68,7 +71,7 @@ fun WithdrawScreen(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(20.dp),
                     tint = Color.White
                 )
             }
@@ -83,29 +86,36 @@ fun WithdrawScreen(
             )
         }
 
-        // 2. Winnings Balance Header
-        Column(
+        // 2. Winnings Balance Header Card
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                .padding(vertical = 18.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "AVAILABLE WINNINGS BALANCE",
-                fontSize = 12.sp,
-                fontFamily = RubikFont,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF8E899B),
-                letterSpacing = 0.5.sp
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = walletBalance.formattedWinnings,
-                fontSize = 36.sp,
-                fontFamily = RubikFont,
-                fontWeight = FontWeight.W800,
-                color = Color.White
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "AVAILABLE WINNINGS BALANCE",
+                    fontSize = 12.sp,
+                    fontFamily = RubikFont,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF8E899B),
+                    letterSpacing = 0.5.sp
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "₹${walletBalance.formattedWinnings}",
+                    fontSize = 36.sp,
+                    fontFamily = RubikFont,
+                    fontWeight = FontWeight.W800,
+                    color = Color(0xFF00E676)
+                )
+            }
         }
 
         // 3. Input Section
@@ -126,8 +136,8 @@ fun WithdrawScreen(
                     .fillMaxWidth()
                     .height(54.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF2E0E46))
-                    .border(1.dp, Color(0xFF5A2282), RoundedCornerShape(16.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -214,7 +224,12 @@ fun WithdrawScreen(
                     .fillMaxWidth()
                     .height(52.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(if (isAmountValid) Color(0xFF6B42F2) else Color(0xFF38234B))
+                    .background(if (isAmountValid) Color(0xFFFFB800) else Color(0xFF161922))
+                    .border(
+                        1.dp,
+                        if (isAmountValid) Color(0xFFFFB800) else Color(0xFF282E3E),
+                        RoundedCornerShape(14.dp)
+                    )
                     .clickable(enabled = isAmountValid) {
                         onNextClick(amount)
                     },
@@ -225,7 +240,7 @@ fun WithdrawScreen(
                     fontSize = 16.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.W800,
-                    color = if (isAmountValid) Color.White else Color(0xFF7A6490),
+                    color = if (isAmountValid) Color(0xFF0A0C11) else Color(0xFF6B7280),
                     letterSpacing = 0.5.sp
                 )
             }

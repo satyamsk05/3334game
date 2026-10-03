@@ -53,12 +53,12 @@ fun WithdrawDetailsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF0A0C11))
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        // 1. Top Header Row: Back Arrow + "Withdraw"
+        // 1. Top Header Row: Back Arrow + "Withdraw Summary"
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -67,6 +67,9 @@ fun WithdrawDetailsScreen(
             Box(
                 modifier = Modifier
                     .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .align(Alignment.CenterStart)
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
@@ -74,7 +77,7 @@ fun WithdrawDetailsScreen(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(20.dp),
                     tint = Color.White
                 )
             }
@@ -89,29 +92,36 @@ fun WithdrawDetailsScreen(
             )
         }
 
-        // 2. You Are Withdrawing Summary
-        Column(
+        // 2. You Are Withdrawing Summary Card
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                .padding(vertical = 18.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "YOU ARE WITHDRAWING",
-                fontSize = 12.sp,
-                fontFamily = RubikFont,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF8E899B),
-                letterSpacing = 0.5.sp
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "${withdrawAmount.ifEmpty { "500" }}",
-                fontSize = 40.sp,
-                fontFamily = RubikFont,
-                fontWeight = FontWeight.W800,
-                color = Color.White
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "YOU ARE WITHDRAWING",
+                    fontSize = 12.sp,
+                    fontFamily = RubikFont,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF8E899B),
+                    letterSpacing = 0.5.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "₹${withdrawAmount.ifEmpty { "500" }}",
+                    fontSize = 36.sp,
+                    fontFamily = RubikFont,
+                    fontWeight = FontWeight.W800,
+                    color = Color.White
+                )
+            }
         }
 
         // 3. Option Card: Withdraw via UPI
@@ -119,8 +129,8 @@ fun WithdrawDetailsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFF220C38))
-                .border(1.dp, Color(0xFF4C1D95), RoundedCornerShape(20.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
                 .padding(18.dp)
         ) {
             Column(
@@ -143,7 +153,7 @@ fun WithdrawDetailsScreen(
                         fontSize = 13.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFB485FF),
+                        color = Color(0xFFFFB800),
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable { showEditUpiDialog = true }
                     )
@@ -159,14 +169,14 @@ fun WithdrawDetailsScreen(
                         fontSize = 13.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFFD1D5DB)
+                        color = Color(0xFF8E899B)
                     )
                     Text(
-                        text = "- ${String.format("%.2f", upiFee)}",
+                        text = "- ₹${String.format("%.2f", upiFee)}",
                         fontSize = 14.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFD1D5DB)
+                        color = Color.White
                     )
                 }
 
@@ -180,18 +190,18 @@ fun WithdrawDetailsScreen(
                         fontSize = 13.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFFD1D5DB)
+                        color = Color(0xFF8E899B)
                     )
                     Text(
-                        text = "- 0",
+                        text = "- ₹0.00",
                         fontSize = 14.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFD1D5DB)
+                        color = Color.White
                     )
                 }
 
-                HorizontalDivider(color = Color(0xFF38104F), thickness = 1.dp)
+                HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
 
                 // Bottom Action Box for UPI Withdrawal
                 Row(
@@ -205,9 +215,10 @@ fun WithdrawDetailsScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(36.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF1E0935)),
+                                .background(Color(0xFF161922))
+                                .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(8.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -230,20 +241,20 @@ fun WithdrawDetailsScreen(
                                 fontSize = 11.5.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF9E97AA)
+                                color = Color(0xFF8E899B)
                             )
                         }
                     }
 
-                    // Get Action Button
+                    // Get Action Button (Amber Gold matching WalletScreen Withdraw)
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
                             .background(
                                 brush = Brush.verticalGradient(
                                     colors = listOf(
-                                        Color(0xFF7C3AED),
-                                        Color(0xFF6B42F2)
+                                        Color(0xFFFFB800),
+                                        Color(0xFFFF9100)
                                     )
                                 )
                             )
@@ -273,16 +284,16 @@ fun WithdrawDetailsScreen(
                         if (isSubmitting) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(18.dp),
-                                color = Color.White,
+                                color = Color(0xFF0A0C11),
                                 strokeWidth = 2.dp
                             )
                         } else {
                             Text(
-                                text = "Get ${String.format("%.2f", finalNet)}",
+                                text = "Get ₹${String.format("%.2f", finalNet)}",
                                 fontSize = 14.5.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.W800,
-                                color = Color.White
+                                color = Color(0xFF0A0C11)
                             )
                         }
                     }
@@ -298,30 +309,44 @@ fun WithdrawDetailsScreen(
         var tempUpi by remember { mutableStateOf(upiId) }
         AlertDialog(
             onDismissRequest = { showEditUpiDialog = false },
-            title = { Text("Edit UPI ID", fontWeight = FontWeight.Bold) },
+            containerColor = Color(0xFF0F1015),
+            titleContentColor = Color.White,
+            textContentColor = Color(0xFF8E899B),
+            title = { Text("Edit UPI ID", fontWeight = FontWeight.Bold, fontFamily = RubikFont) },
             text = {
                 OutlinedTextField(
                     value = tempUpi,
                     onValueChange = { tempUpi = it },
-                    label = { Text("Enter UPI ID") },
-                    singleLine = true
+                    label = { Text("Enter UPI ID", color = Color(0xFF8E899B)) },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFF161922),
+                        unfocusedContainerColor = Color(0xFF161922),
+                        focusedBorderColor = Color(0xFFFFB800),
+                        unfocusedBorderColor = Color(0xFF282E3E),
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    )
                 )
             },
             confirmButton = {
-                Button(onClick = {
-                    if (tempUpi.contains("@")) {
-                        upiId = tempUpi
-                        showEditUpiDialog = false
-                    } else {
-                        Toast.makeText(context, "Invalid UPI ID format", Toast.LENGTH_SHORT).show()
-                    }
-                }) {
-                    Text("SAVE")
+                Button(
+                    onClick = {
+                        if (tempUpi.contains("@")) {
+                            upiId = tempUpi
+                            showEditUpiDialog = false
+                        } else {
+                            Toast.makeText(context, "Invalid UPI ID format", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFB800))
+                ) {
+                    Text("SAVE", color = Color(0xFF0A0C11), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showEditUpiDialog = false }) {
-                    Text("CANCEL")
+                    Text("CANCEL", color = Color(0xFF8E899B))
                 }
             }
         )

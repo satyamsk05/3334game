@@ -32,7 +32,7 @@ fun AboutUsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF0A0C11))
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -40,14 +40,16 @@ fun AboutUsScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 45.dp, bottom = 16.dp),
+                .statusBarsPadding()
+                .padding(top = 12.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF240E38))
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -101,7 +103,7 @@ fun AboutUsScreen(
                 text = "Version 1.0.0",
                 fontSize = 13.sp,
                 fontFamily = RubikFont,
-                color = Color(0xFFA78BFA)
+                color = Color(0xFFFFB800)
             )
         }
 
@@ -110,8 +112,8 @@ fun AboutUsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFF1E0A30))
-                .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(14.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
                 .padding(16.dp)
         ) {
             Column {
@@ -129,7 +131,7 @@ fun AboutUsScreen(
                     text = "Bit Arcade Game is a premier gaming platform offering classic dice, mines, color prediction, and skill-based arcade games. Designed with 100% security, instant withdrawals, and certified fair play.",
                     fontSize = 13.sp,
                     fontFamily = RubikFont,
-                    color = Color(0xFFD1D5DB),
+                    color = Color(0xFF8E899B),
                     lineHeight = 19.sp
                 )
             }
@@ -142,15 +144,15 @@ fun AboutUsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFF1E0A30))
-                .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(14.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
         ) {
             AboutRowItem(title = "Terms of Service")
-            HorizontalDivider(color = Color(0xFF2D0A4E), thickness = 1.dp)
+            HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
             AboutRowItem(title = "Privacy Policy")
-            HorizontalDivider(color = Color(0xFF2D0A4E), thickness = 1.dp)
+            HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
             AboutRowItem(title = "Responsible Gaming")
-            HorizontalDivider(color = Color(0xFF2D0A4E), thickness = 1.dp)
+            HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
             AboutRowItem(title = "RNG Certification")
         }
 

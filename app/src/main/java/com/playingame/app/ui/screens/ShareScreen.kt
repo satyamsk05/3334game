@@ -68,7 +68,7 @@ fun ShareScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF0A0C11))
     ) {
         Column(
             modifier = Modifier
@@ -98,7 +98,8 @@ fun ShareScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFF6B42F2))
+                        .background(Color(0xFF161922))
+                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
                         .clickable { Toast.makeText(context, "Language: English", Toast.LENGTH_SHORT).show() }
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
@@ -141,8 +142,8 @@ fun ShareScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFF240E38))
-                        .border(1.dp, Color(0xFF4C206D), RoundedCornerShape(12.dp))
+                        .background(Color(0xFF0F1015))
+                        .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
                         .clickable {
                             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                             val clip = android.content.ClipData.newPlainText("Referral Code", "REF334")
@@ -160,12 +161,12 @@ fun ShareScreen(
                             fontSize = 13.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFA78BFA)
+                            color = Color(0xFFFFB800)
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.ic_settings_about),
                             contentDescription = "Copy",
-                            tint = Color(0xFFA78BFA),
+                            tint = Color(0xFFFFB800),
                             modifier = Modifier.size(12.dp)
                         )
                     }
@@ -177,8 +178,8 @@ fun ShareScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(20.dp))
-                    .background(Color(0xFF1E0A30))
-                    .border(1.dp, Color(0xFF3D195B), RoundedCornerShape(20.dp))
+                    .background(Color(0xFF0F1015))
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
                     .padding(16.dp)
             ) {
                 Column(
@@ -198,62 +199,62 @@ fun ShareScreen(
                             text = "No friends referred yet. Share your code below to invite friends and earn 50 bonus cash for each referral!",
                             fontSize = 13.sp,
                             fontFamily = RubikFont,
-                            color = Color(0xFF9CA3AF),
+                            color = Color(0xFF8E899B),
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     } else {
                         referrals.forEachIndexed { i, user ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
                             Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Image(
-                                    painter = painterResource(id = user.avatarRes),
-                                    contentDescription = user.name,
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clip(CircleShape),
-                                    contentScale = ContentScale.Crop
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = user.avatarRes),
+                                        contentDescription = user.name,
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .clip(CircleShape),
+                                        contentScale = ContentScale.Crop
+                                    )
 
-                                Column {
-                                    Text(
-                                        text = user.name,
-                                        fontSize = 14.5.sp,
-                                        fontFamily = RubikFont,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                    Text(
-                                        text = user.date,
-                                        fontSize = 11.5.sp,
-                                        fontFamily = RubikFont,
-                                        color = Color(0xFF8E899B)
-                                    )
+                                    Column {
+                                        Text(
+                                            text = user.name,
+                                            fontSize = 14.5.sp,
+                                            fontFamily = RubikFont,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                        Text(
+                                            text = user.date,
+                                            fontSize = 11.5.sp,
+                                            fontFamily = RubikFont,
+                                            color = Color(0xFF8E899B)
+                                        )
+                                    }
                                 }
+
+                                Text(
+                                    text = user.amount,
+                                    fontSize = 16.sp,
+                                    fontFamily = RubikFont,
+                                    fontWeight = FontWeight.W800,
+                                    color = Color(0xFF00E676)
+                                )
                             }
 
-                            Text(
-                                text = user.amount,
-                                fontSize = 16.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.W800,
-                                color = Color(0xFF10B981)
-                            )
-                        }
-
-                        if (i < referrals.size - 1) {
-                            HorizontalDivider(color = Color(0xFF2B1342), thickness = 1.dp)
+                            if (i < referrals.size - 1) {
+                                HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
+                            }
                         }
                     }
                 }
             }
-        }
         }
 
         // 4. Bottom Action Buttons Bar
@@ -273,14 +274,8 @@ fun ShareScreen(
                         .weight(1f)
                         .height(48.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color(0xFF7C3AED),
-                                    Color(0xFF6B42F2)
-                                )
-                            )
-                        )
+                        .background(Color(0xFF161922))
+                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
                         .clickable { shareAppText(whatsappOnly = false) },
                     contentAlignment = Alignment.Center
                 ) {
@@ -314,7 +309,7 @@ fun ShareScreen(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
                                     Color(0xFF00E676),
-                                    Color(0xFF00B050)
+                                    Color(0xFF00C853)
                                 )
                             )
                         )

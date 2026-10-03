@@ -116,7 +116,7 @@ fun TransactionHistoryScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0F0A1C)) // Dark violet gaming canvas
+            .background(Color(0xFF0A0C11))
     ) {
         Column(
             modifier = Modifier
@@ -137,16 +137,17 @@ fun TransactionHistoryScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF1E1634))
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color(0xFF0F1015))
+                            .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                             .clickable { onBackClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_back),
                             contentDescription = "Back",
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(20.dp),
                             tint = Color.White
                         )
                     }
@@ -163,7 +164,7 @@ fun TransactionHistoryScreen(
                             text = "All wallet passbook records",
                             fontSize = 11.5.sp,
                             fontFamily = RubikFont,
-                            color = Color(0xFF948BA8)
+                            color = Color(0xFF8E899B)
                         )
                     }
                 }
@@ -172,7 +173,8 @@ fun TransactionHistoryScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0xFF1E1634))
+                        .background(Color(0xFF0F1015))
+                        .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
@@ -195,7 +197,12 @@ fun TransactionHistoryScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(if (isSelected) Color(0xFF7C3AED) else Color(0xFF1E1634))
+                            .background(if (isSelected) Color(0xFF161922) else Color(0xFF0F1015))
+                            .border(
+                                1.dp,
+                                if (isSelected) Color(0xFFFFB800) else Color(0xFF1E2028),
+                                RoundedCornerShape(20.dp)
+                            )
                             .clickable { selectedFilter = filter }
                             .padding(horizontal = 14.dp, vertical = 7.dp),
                         contentAlignment = Alignment.Center
@@ -205,7 +212,7 @@ fun TransactionHistoryScreen(
                             fontSize = 12.sp,
                             fontFamily = RubikFont,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = Color.White
+                            color = if (isSelected) Color(0xFFFFB800) else Color(0xFF9CA3AF)
                         )
                     }
                 }
@@ -260,8 +267,8 @@ fun TransactionHistoryScreen(
                             }
                         )
                         HorizontalDivider(
-                            color = Color(0xFF20163B),
-                            thickness = 0.8.dp
+                            color = Color(0xFF1E2028),
+                            thickness = 1.dp
                         )
                     }
                 }
@@ -357,7 +364,7 @@ private fun RushStyleTransactionRow(
                         text = dateStr,
                         fontSize = 12.sp,
                         fontFamily = RubikFont,
-                        color = Color(0xFF948BA8)
+                        color = Color(0xFF8E899B)
                     )
                 }
             }
@@ -379,7 +386,7 @@ private fun RushStyleTransactionRow(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_rush_chevron_down),
                     contentDescription = "Expand details",
-                    tint = Color(0xFF948BA8),
+                    tint = Color(0xFF8E899B),
                     modifier = Modifier
                         .size(16.dp)
                         .rotate(if (isExpanded) 180f else 0f)
@@ -398,7 +405,8 @@ private fun RushStyleTransactionRow(
                     .fillMaxWidth()
                     .padding(top = 12.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF17102C))
+                    .background(Color(0xFF161922))
+                    .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(12.dp))
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -406,7 +414,7 @@ private fun RushStyleTransactionRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "Status", fontSize = 12.sp, fontFamily = RubikFont, color = Color(0xFF948BA8))
+                    Text(text = "Status", fontSize = 12.sp, fontFamily = RubikFont, color = Color(0xFF8E899B))
                     Text(text = txn.status.name, fontSize = 12.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = Color(0xFF00E676))
                 }
 
@@ -415,7 +423,7 @@ private fun RushStyleTransactionRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = "Wallet Balance After", fontSize = 12.sp, fontFamily = RubikFont, color = Color(0xFF948BA8))
+                        Text(text = "Wallet Balance After", fontSize = 12.sp, fontFamily = RubikFont, color = Color(0xFF8E899B))
                         Text(text = String.format(Locale.getDefault(), "%.2f", txn.balanceAfterPaise / 100.0), fontSize = 12.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
@@ -425,7 +433,8 @@ private fun RushStyleTransactionRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF221840))
+                        .background(Color(0xFF0F1015))
+                        .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(8.dp))
                         .clickable {
                             clipboardManager.setText(AnnotatedString(txn.referenceId))
                             isCopied = true
@@ -445,7 +454,7 @@ private fun RushStyleTransactionRow(
                         fontSize = 10.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = if (isCopied) Color(0xFF00E676) else Color(0xFFA78BFA)
+                        color = if (isCopied) Color(0xFF00E676) else Color(0xFFFFB800)
                     )
                 }
             }
