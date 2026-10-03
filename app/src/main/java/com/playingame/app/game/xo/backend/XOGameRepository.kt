@@ -84,16 +84,12 @@ object XOGameRepository {
             totalGameSecondsRemaining = 163 // 02:43
         )
 
-        if (remoteDebited) {
-            // Sync authoritative balance from server (already debited once on server as XO-BET-...)
-            WalletSyncService.syncBalance(userId)
-        } else {
-            // Offline fallback: Deduct locally only if server did not debit
-            val breakdown = WalletLedger.placeBet(Math.round(tier.entryRupees * 100))
-            if (!breakdown.success) {
-                return@withContext Result.failure(Exception("Insufficient balance"))
-            }
+        if (!remoteDebited) {
+            return@withContext Result.failure(Exception("Unable to connect to game server. Please check your internet connection."))
         }
+
+        // Sync authoritative balance from server (already debited once on server as XO-BET-...)
+        WalletSyncService.syncBalance(userId)
 
         Result.success(localRoom)
     }

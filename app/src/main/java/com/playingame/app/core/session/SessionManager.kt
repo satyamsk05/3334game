@@ -26,16 +26,22 @@ object SessionManager {
     }
 
     fun currentUserId(): String? {
-        return when (val state = _sessionState.value) {
+        val memoryUid = when (val state = _sessionState.value) {
             is SessionState.SignedIn -> state.userId
             else -> null
         }
+        if (!memoryUid.isNullOrEmpty()) return memoryUid
+        val repoUid = com.playingame.app.data.repository.AuthRepository.currentSession.value.userId
+        return if (repoUid.isNotEmpty()) repoUid else null
     }
 
     fun authToken(): String? {
-        return when (val state = _sessionState.value) {
+        val memoryToken = when (val state = _sessionState.value) {
             is SessionState.SignedIn -> state.authToken
             else -> null
         }
+        if (!memoryToken.isNullOrEmpty()) return memoryToken
+        val repoToken = com.playingame.app.data.repository.AuthRepository.getAuthToken()
+        return if (repoToken.isNotEmpty()) repoToken else null
     }
 }

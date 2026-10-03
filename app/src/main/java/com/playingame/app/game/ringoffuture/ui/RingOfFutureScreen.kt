@@ -19,6 +19,9 @@ import com.playingame.app.core.config.ClientConfig
 import com.playingame.app.ui.theme.RubikFont
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.remember
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun RingOfFutureScreen(
@@ -122,18 +125,17 @@ fun RingOfFutureScreen(
 
                         @JavascriptInterface
                         fun creditLocalWinnings(amountPaise: Long, multiplierLabel: String) {
-                            com.playingame.app.game.ringoffuture.backend.WalletLedger.creditWin(amountPaise, multiplierLabel)
+                            // Server-authoritative settlement: sync real ledger balance from PostgreSQL
+                            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                com.playingame.app.data.remote.WalletSyncService.syncBalance()
+                            }
                         }
 
                         @JavascriptInterface
                         fun syncWalletBalance(paise: Long) {
-                            if (paise <= 0L) return
-                            post {
-                                com.playingame.app.game.ringoffuture.backend.WalletLedger.syncBalance(
-                                    depositPaise = paise,
-                                    winningPaise = 0L,
-                                    bonusPaise = 0L
-                                )
+                            // Trigger authoritative balance sync from server
+                            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                                com.playingame.app.data.remote.WalletSyncService.syncBalance()
                             }
                         }
 
