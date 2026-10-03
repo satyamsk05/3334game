@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -29,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
 import com.playingame.app.game.ringoffuture.backend.WalletLedger
-import com.playingame.app.ui.theme.AppBackground
 import com.playingame.app.ui.theme.RubikFont
 
 @Composable
@@ -57,7 +57,7 @@ fun SettingsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(AppBackground)
+            .background(Brush.verticalGradient(listOf(Color(0xFF130924), Color(0xFF090412))))
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
             .padding(bottom = 80.dp),
@@ -68,22 +68,21 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .padding(top = 12.dp, bottom = 4.dp),
+                .padding(top = 16.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
+                    .size(38.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF161922))
-                    .border(1.dp, Color(0xFF282E3E), CircleShape)
+                    .background(Color(0xFF1E1634))
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(18.dp),
                     tint = Color.White
                 )
             }
@@ -92,9 +91,9 @@ fun SettingsScreen(
 
             Text(
                 text = "Settings",
-                fontSize = 24.sp,
+                fontSize = 22.sp,
                 fontFamily = RubikFont,
-                fontWeight = FontWeight.Black,
+                fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
@@ -104,8 +103,8 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
+                .background(Color(0xFF1E1634))
+                .border(1.dp, Color(0xFF281C44), RoundedCornerShape(20.dp))
                 .padding(16.dp)
         ) {
             Row(
@@ -146,7 +145,7 @@ fun SettingsScreen(
                             fontSize = 13.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.Medium,
-                            color = Color(0xFF9CA3AF)
+                            color = Color(0xFF948BA8)
                         )
                     }
 
@@ -170,7 +169,7 @@ fun SettingsScreen(
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF6B7280),
+                color = Color(0xFF948BA8),
                 letterSpacing = 0.5.sp,
                 modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
             )
@@ -179,8 +178,8 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                    .background(Color(0xFF1E1634))
+                    .border(1.dp, Color(0xFF281C44), RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
                 Column {
@@ -189,14 +188,14 @@ fun SettingsScreen(
                         iconRes = R.drawable.ic_settings_add_cash,
                         onClick = onAddCashClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
 
                     SettingsRow(
                         title = "Transaction history",
                         iconRes = R.drawable.ic_settings_history,
                         onClick = onTransactionHistoryClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
 
                     SettingsRow(
                         title = "Withdrawals",
@@ -216,7 +215,7 @@ fun SettingsScreen(
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF6B7280),
+                color = Color(0xFF948BA8),
                 letterSpacing = 0.5.sp,
                 modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
             )
@@ -225,8 +224,8 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                    .background(Color(0xFF1E1634))
+                    .border(1.dp, Color(0xFF281C44), RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
                 Column {
@@ -238,35 +237,35 @@ fun SettingsScreen(
                             onCheckUpdatesClick()
                         }
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
 
                     SettingsRow(
                         title = "Help Centre",
                         iconRes = R.drawable.ic_settings_help,
                         onClick = onHelpCentreClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
 
                     SettingsRow(
                         title = "My reported issues",
                         iconRes = R.drawable.ic_settings_issues,
                         onClick = onReportedIssuesClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
 
                     SettingsRow(
                         title = "About us",
                         iconRes = R.drawable.ic_settings_about,
                         onClick = onAboutUsClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
 
                     SettingsRow(
                         title = "Contact us",
                         iconRes = R.drawable.ic_settings_contact,
                         onClick = onContactUsClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
 
                     SettingsRow(
                         title = "InGames Fair Play",
@@ -286,7 +285,7 @@ fun SettingsScreen(
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF6B7280),
+                color = Color(0xFF948BA8),
                 letterSpacing = 0.5.sp,
                 modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
             )
@@ -295,8 +294,8 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                    .background(Color(0xFF1E1634))
+                    .border(1.dp, Color(0xFF281C44), RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
                 SettingsRow(
@@ -337,7 +336,7 @@ fun SettingsRow(
                 painter = painterResource(id = iconRes),
                 contentDescription = title,
                 modifier = Modifier.size(22.dp),
-                tint = Color(0xFFD1D5DB)
+                tint = Color(0xFFA78BFA)
             )
 
             Text(
@@ -354,7 +353,7 @@ fun SettingsRow(
             fontSize = 20.sp,
             fontFamily = RubikFont,
             fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF6B7280)
+            color = Color(0xFF948BA8)
         )
     }
 }

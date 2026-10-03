@@ -112,7 +112,14 @@ fun AddCashScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(com.playingame.app.ui.theme.AppBackground)
+            .background(
+                androidx.compose.ui.graphics.Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF130924),
+                        Color(0xFF090412)
+                    )
+                )
+            )
     ) {
         Column(
             modifier = Modifier
@@ -149,8 +156,8 @@ fun AddCashScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(24.dp))
+                    .background(Color(0xFF1E1634))
+                    .border(1.dp, Color(0xFF281C44), RoundedCornerShape(24.dp))
                     .padding(16.dp)
             ) {
                 Column(
@@ -163,7 +170,7 @@ fun AddCashScreen(
                         fontSize = 15.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFF8E899B),
+                        color = Color(0xFF948BA8),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -210,8 +217,8 @@ private fun ChipPackCard(
     Box(
         modifier = modifier
             .clip(ChipCardShape)
-            .background(Color(0xFF23242C))
-            .border(1.dp, Color(0xFF32343E), ChipCardShape)
+            .background(Color(0xFF281C44))
+            .border(1.dp, Color(0xFF3B2A63), ChipCardShape)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null

@@ -53,12 +53,19 @@ fun WithdrawDetailsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF130924),
+                        Color(0xFF090412)
+                    )
+                )
+            )
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        // 1. Top Header Row: Back Arrow + "Withdraw"
+        // 1. Top Header Row: Back Arrow + "Withdraw Summary"
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -66,15 +73,17 @@ fun WithdrawDetailsScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
-                    .align(Alignment.CenterStart)
-                    .clickable { onBackClick() },
+                    .size(38.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .background(Color(0xFF1E1634))
+                    .clickable { onBackClick() }
+                    .align(Alignment.CenterStart),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(18.dp),
                     tint = Color.White
                 )
             }
@@ -101,12 +110,12 @@ fun WithdrawDetailsScreen(
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF8E899B),
+                color = Color(0xFF948BA8),
                 letterSpacing = 0.5.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "${withdrawAmount.ifEmpty { "500" }}",
+                text = "₹${withdrawAmount.ifEmpty { "500" }}",
                 fontSize = 40.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.W800,
@@ -119,8 +128,8 @@ fun WithdrawDetailsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFF220C38))
-                .border(1.dp, Color(0xFF4C1D95), RoundedCornerShape(20.dp))
+                .background(Color(0xFF1E1634))
+                .border(1.dp, Color(0xFF281C44), RoundedCornerShape(20.dp))
                 .padding(18.dp)
         ) {
             Column(
@@ -143,7 +152,7 @@ fun WithdrawDetailsScreen(
                         fontSize = 13.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFB485FF),
+                        color = Color(0xFFA78BFA),
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable { showEditUpiDialog = true }
                     )
@@ -159,14 +168,14 @@ fun WithdrawDetailsScreen(
                         fontSize = 13.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFFD1D5DB)
+                        color = Color(0xFF948BA8)
                     )
                     Text(
-                        text = "- ${String.format("%.2f", upiFee)}",
+                        text = "- ₹${String.format("%.2f", upiFee)}",
                         fontSize = 14.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFD1D5DB)
+                        color = Color.White
                     )
                 }
 
@@ -180,18 +189,18 @@ fun WithdrawDetailsScreen(
                         fontSize = 13.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFFD1D5DB)
+                        color = Color(0xFF948BA8)
                     )
                     Text(
-                        text = "- 0",
+                        text = "- ₹0.00",
                         fontSize = 14.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFD1D5DB)
+                        color = Color.White
                     )
                 }
 
-                HorizontalDivider(color = Color(0xFF38104F), thickness = 1.dp)
+                HorizontalDivider(color = Color(0xFF281C44), thickness = 1.dp)
 
                 // Bottom Action Box for UPI Withdrawal
                 Row(
@@ -205,9 +214,9 @@ fun WithdrawDetailsScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF1E0935)),
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color(0xFF281C44)),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -230,7 +239,7 @@ fun WithdrawDetailsScreen(
                                 fontSize = 11.5.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF9E97AA)
+                                color = Color(0xFF948BA8)
                             )
                         }
                     }
@@ -243,7 +252,7 @@ fun WithdrawDetailsScreen(
                                 brush = Brush.verticalGradient(
                                     colors = listOf(
                                         Color(0xFF7C3AED),
-                                        Color(0xFF6B42F2)
+                                        Color(0xFF6D28D9)
                                     )
                                 )
                             )
@@ -278,7 +287,7 @@ fun WithdrawDetailsScreen(
                             )
                         } else {
                             Text(
-                                text = "Get ${String.format("%.2f", finalNet)}",
+                                text = "Get ₹${String.format("%.2f", finalNet)}",
                                 fontSize = 14.5.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.W800,

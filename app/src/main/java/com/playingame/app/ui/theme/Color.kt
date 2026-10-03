@@ -26,9 +26,9 @@ val Gold600 = Color(0xFFFFB300)
 val Gold700 = Color(0xFFFFA000)
 
 // App Backgrounds & Surface Palette
-val AppBackground = Color(0xFF0A0C11)
-val DarkNavyPurpleStart = Color(0xFF0A0C11)
-val DarkNavyPurpleEnd = Color(0xFF0A0C11)
+val AppBackground = Color(0xFF130924)
+val DarkNavyPurpleStart = Color(0xFF130924)
+val DarkNavyPurpleEnd = Color(0xFF090412)
 
 // Bottom Navigation Bar (#12161D)
 val NavBarBackground = Color(0xFF12161D)
@@ -59,7 +59,7 @@ val TextDisabled = Color(0xFF64748B)
 
 // Gradients
 val BackgroundGradient = Brush.verticalGradient(
-    colors = listOf(AppBackground, AppBackground)
+    colors = listOf(Color(0xFF130924), Color(0xFF090412))
 )
 
 val BottomNavGradient = Brush.verticalGradient(

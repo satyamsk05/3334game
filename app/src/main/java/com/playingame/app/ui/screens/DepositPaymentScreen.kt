@@ -104,7 +104,11 @@ fun DepositPaymentScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppBackground),
+            .background(
+                androidx.compose.ui.graphics.Brush.verticalGradient(
+                    listOf(Color(0xFF130924), Color(0xFF090412))
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(

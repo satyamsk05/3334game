@@ -47,7 +47,7 @@ fun WithdrawScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xFF130924), Color(0xFF090412))))
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -60,7 +60,9 @@ fun WithdrawScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
+                    .size(38.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .background(Color(0xFF1E1634))
                     .align(Alignment.CenterStart)
                     .clickable { onBackClick() },
                 contentAlignment = Alignment.Center
@@ -68,7 +70,7 @@ fun WithdrawScreen(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(18.dp),
                     tint = Color.White
                 )
             }
@@ -87,7 +89,10 @@ fun WithdrawScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 14.dp),
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color(0xFF1E1634))
+                .border(1.dp, Color(0xFF281C44), RoundedCornerShape(20.dp))
+                .padding(vertical = 18.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -95,7 +100,7 @@ fun WithdrawScreen(
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF8E899B),
+                color = Color(0xFF948BA8),
                 letterSpacing = 0.5.sp
             )
             Spacer(modifier = Modifier.height(6.dp))
@@ -104,7 +109,7 @@ fun WithdrawScreen(
                 fontSize = 36.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.W800,
-                color = Color.White
+                color = Color(0xFF00E676)
             )
         }
 
@@ -126,8 +131,8 @@ fun WithdrawScreen(
                     .fillMaxWidth()
                     .height(54.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF2E0E46))
-                    .border(1.dp, Color(0xFF5A2282), RoundedCornerShape(16.dp))
+                    .background(Color(0xFF1E1634))
+                    .border(1.dp, if (amount.isNotEmpty()) Color(0xFF7C3AED) else Color(0xFF281C44), RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -175,7 +180,7 @@ fun WithdrawScreen(
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF8E899B),
+                color = Color(0xFF948BA8),
                 modifier = Modifier.padding(start = 2.dp, top = 2.dp)
             )
         }
@@ -198,14 +203,14 @@ fun WithdrawScreen(
                     painter = painterResource(id = R.drawable.ic_settings_shield),
                     contentDescription = "Shield",
                     modifier = Modifier.size(15.dp),
-                    tint = Color(0xFF8E899B)
+                    tint = Color(0xFF948BA8)
                 )
                 Text(
                     text = "Instant 24x7 UPI Withdrawals",
                     fontSize = 12.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF8E899B)
+                    color = Color(0xFF948BA8)
                 )
             }
 
@@ -214,7 +219,7 @@ fun WithdrawScreen(
                     .fillMaxWidth()
                     .height(52.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(if (isAmountValid) Color(0xFF6B42F2) else Color(0xFF38234B))
+                    .background(if (isAmountValid) Color(0xFF7C3AED) else Color(0xFF1E1634))
                     .clickable(enabled = isAmountValid) {
                         onNextClick(amount)
                     },
@@ -225,7 +230,7 @@ fun WithdrawScreen(
                     fontSize = 16.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.W800,
-                    color = if (isAmountValid) Color.White else Color(0xFF7A6490),
+                    color = if (isAmountValid) Color.White else Color(0xFF6B7280),
                     letterSpacing = 0.5.sp
                 )
             }
