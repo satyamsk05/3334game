@@ -9,6 +9,7 @@ import (
 	"bitarcade-backend/internal/database"
 	"bitarcade-backend/internal/models"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -238,49 +239,114 @@ func (s *WalletService) SubmitDepositUTR(userID, depositID, utr string) (*models
 }
 
 func (s *WalletService) ApproveDeposit(depositID string) (*models.Deposit, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.bundle.DB != nil {
+		var dep models.Deposit
+		err := s.bundle.DB.Transaction(func(tx *gorm.DB) error {
+			if err := tx.Set("gorm:query_option", "FOR UPDATE").Where("id = ?", depositID).First(&dep).Error; err != nil {
+				return errors.New("deposit not found")
+			}
+
+			// Idempotency: avoid double-crediting
+			if dep.Status == "APPROVED" {
+				return nil
+			}
+			if dep.Status == "REJECTED" {
+				return errors.New("cannot approve an already rejected deposit")
+			}
+
+			dep.Status = "APPROVED"
+			dep.UpdatedAt = time.Now()
+			if err := tx.Save(&dep).Error; err != nil {
+				return err
+			}
+
+			amountPaise := int64(dep.AmountRupees * 100)
+			if amountPaise <= 0 {
+				return errors.New("invalid deposit amount")
+			}
+
+			var w models.Wallet
+			if err := tx.Set("gorm:query_option", "FOR UPDATE").Where("user_id = ?", dep.UserID).First(&w).Error; err != nil {
+				w = models.Wallet{UserID: dep.UserID}
+				if err := tx.Create(&w).Error; err != nil {
+					return err
+				}
+			}
+
+			w.DepositPaise += amountPaise
+			w.UpdatedAt = time.Now()
+			if err := tx.Save(&w).Error; err != nil {
+				return err
+			}
+
+			txnRecord := models.Transaction{
+				ID:                fmt.Sprintf("TX-%s", uuid.New().String()[:12]),
+				UserID:            dep.UserID,
+				Type:              "DEPOSIT",
+				AmountPaise:       amountPaise,
+				BalanceAfterPaise: w.TotalPaise(),
+				Status:            "SUCCESS",
+				ReferenceID:       dep.UTR,
+				Description:       "Cash Deposit Approved",
+				CreatedAt:         time.Now(),
+			}
+			return tx.Create(&txnRecord).Error
+		})
+
+		if err != nil {
+			return nil, err
+		}
+		return &dep, nil
+	}
+
+	return &models.Deposit{ID: depositID, Status: "APPROVED"}, nil
+}
+
+func (s *WalletService) RejectDeposit(depositID string) (*models.Deposit, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if s.bundle.DB != nil {
 		var dep models.Deposit
 		if err := s.bundle.DB.Where("id = ?", depositID).First(&dep).Error; err != nil {
 			return nil, errors.New("deposit not found")
 		}
 		if dep.Status == "APPROVED" {
-			return &dep, nil
-		}
-		dep.Status = "APPROVED"
-		dep.UpdatedAt = time.Now()
-		_ = s.bundle.DB.Save(&dep)
-
-		// Credit deposit paise to wallet
-		amountPaise := int64(dep.AmountRupees * 100)
-		_, _ = s.CreditDeposit(dep.UserID, amountPaise, dep.UTR, "Cash Deposit Approved")
-		return &dep, nil
-	}
-	return &models.Deposit{ID: depositID, Status: "APPROVED"}, nil
-}
-
-func (s *WalletService) RejectDeposit(depositID string) (*models.Deposit, error) {
-	if s.bundle.DB != nil {
-		var dep models.Deposit
-		if err := s.bundle.DB.Where("id = ?", depositID).First(&dep).Error; err != nil {
-			return nil, errors.New("deposit not found")
+			return nil, errors.New("cannot reject an already approved deposit")
 		}
 		dep.Status = "REJECTED"
 		dep.UpdatedAt = time.Now()
-		_ = s.bundle.DB.Save(&dep)
+		if err := s.bundle.DB.Save(&dep).Error; err != nil {
+			return nil, err
+		}
 		return &dep, nil
 	}
 	return &models.Deposit{ID: depositID, Status: "REJECTED"}, nil
 }
 
 func (s *WalletService) ApproveWithdrawal(withdrawalID string) (*models.Withdrawal, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if s.bundle.DB != nil {
 		var wd models.Withdrawal
 		if err := s.bundle.DB.Where("id = ?", withdrawalID).First(&wd).Error; err != nil {
 			return nil, errors.New("withdrawal not found")
 		}
+		if wd.Status == "APPROVED" {
+			return &wd, nil
+		}
+		if wd.Status == "REJECTED" {
+			return nil, errors.New("cannot approve an already rejected withdrawal")
+		}
 		wd.Status = "APPROVED"
 		wd.UpdatedAt = time.Now()
-		_ = s.bundle.DB.Save(&wd)
+		if err := s.bundle.DB.Save(&wd).Error; err != nil {
+			return nil, err
+		}
 		return &wd, nil
 	}
 	return &models.Withdrawal{ID: withdrawalID, Status: "APPROVED"}, nil
@@ -292,23 +358,50 @@ func (s *WalletService) RejectWithdrawal(withdrawalID string) (*models.Withdrawa
 
 	if s.bundle.DB != nil {
 		var wd models.Withdrawal
-		if err := s.bundle.DB.Where("id = ?", withdrawalID).First(&wd).Error; err != nil {
-			return nil, errors.New("withdrawal not found")
-		}
-		if wd.Status == "REJECTED" {
-			return &wd, nil
-		}
-		wd.Status = "REJECTED"
-		wd.UpdatedAt = time.Now()
-		_ = s.bundle.DB.Save(&wd)
+		err := s.bundle.DB.Transaction(func(tx *gorm.DB) error {
+			if err := tx.Set("gorm:query_option", "FOR UPDATE").Where("id = ?", withdrawalID).First(&wd).Error; err != nil {
+				return errors.New("withdrawal not found")
+			}
+			if wd.Status == "REJECTED" {
+				return nil
+			}
+			if wd.Status == "APPROVED" {
+				return errors.New("cannot reject an already approved withdrawal")
+			}
+			wd.Status = "REJECTED"
+			wd.UpdatedAt = time.Now()
+			if err := tx.Save(&wd).Error; err != nil {
+				return err
+			}
 
-		// Refund winnings
-		amountPaise := int64(wd.AmountRupees * 100)
-		var w models.Wallet
-		if err := s.bundle.DB.Where("user_id = ?", wd.UserID).First(&w).Error; err == nil {
-			w.WinningPaise += amountPaise
-			w.UpdatedAt = time.Now()
-			_ = s.bundle.DB.Save(&w)
+			// Atomic refund of winnings
+			amountPaise := int64(wd.AmountRupees * 100)
+			var w models.Wallet
+			if err := tx.Set("gorm:query_option", "FOR UPDATE").Where("user_id = ?", wd.UserID).First(&w).Error; err == nil {
+				w.WinningPaise += amountPaise
+				w.UpdatedAt = time.Now()
+				if err := tx.Save(&w).Error; err != nil {
+					return err
+				}
+
+				txnRecord := models.Transaction{
+					ID:                fmt.Sprintf("TX-%s", uuid.New().String()[:12]),
+					UserID:            wd.UserID,
+					Type:              "REFUND",
+					AmountPaise:       amountPaise,
+					BalanceAfterPaise: w.TotalPaise(),
+					Status:            "SUCCESS",
+					ReferenceID:       wd.ID,
+					Description:       "Withdrawal Rejected - Refunded to Winnings",
+					CreatedAt:         time.Now(),
+				}
+				return tx.Create(&txnRecord).Error
+			}
+			return nil
+		})
+
+		if err != nil {
+			return nil, err
 		}
 		return &wd, nil
 	}
