@@ -1,10 +1,20 @@
-node_modules/
-dist/
+# Binaries
+bitarcade-server
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Environment variables
 .env
-.DS_Store
-*.log
-data/
-*firebase-adminsdk*.json
-serviceAccountKey.json
+.env.local
 
-
+# Dependency directories
+vendor/

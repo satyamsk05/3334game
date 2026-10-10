@@ -260,7 +260,7 @@ export default function OverviewDashboard() {
           </div>
 
           <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-text-secondary">
-            <span>Ring of Future • XO • TTT</span>
+            <span>Bit Arcade Live System</span>
             <span className="text-emerald-600 dark:text-emerald-400 font-medium">100% online</span>
           </div>
         </Card>
@@ -455,22 +455,22 @@ export default function OverviewDashboard() {
                 </Link>
               </div>
 
-              {/* Game Engine Round */}
+              {/* Backend Engine Status */}
               <div className="flex items-center justify-between p-3 rounded-xl bg-surface-strong/60 border border-border-subtle">
                 <div className="flex items-center gap-2.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                   <div>
                     <span className="text-xs font-semibold text-text-primary block">
-                      Ring of Future
+                      Bit Arcade Go Engine
                     </span>
                     <span className="text-xs text-text-tertiary">
-                      Round #{games.totalRoundsPlayed || 1} • {games.engineState?.timeLeft || 15}s left
+                      Port 5050 • WebSocket Active
                     </span>
                   </div>
                 </div>
-                <Link href="/games">
+                <Link href="/system">
                   <Button variant="outline" size="sm" className="rounded-lg h-8 text-xs">
-                    Manage
+                    Health
                   </Button>
                 </Link>
               </div>

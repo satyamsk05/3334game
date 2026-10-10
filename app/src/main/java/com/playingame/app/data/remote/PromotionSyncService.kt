@@ -19,7 +19,7 @@ data class ServerPromotion(
     val subtitle: String,
     val badgeText: String = "HOT",
     val ctaText: String = "PLAY NOW",
-    val targetRoute: String = "/games/xo",
+    val targetRoute: String = "/wallet/deposit",
     val gradientStart: String = "#5B1FA6",
     val gradientEnd: String = "#3B0764",
     val iconType: String = "welcome",
@@ -40,59 +40,8 @@ object PromotionSyncService {
     private const val KEY_CACHED_PROMOTIONS = "cached_promotions_json"
     private var appContext: android.content.Context? = null
 
-    // Default bundled fallback banners in case of cold start / offline
-    private val defaultPromotions = listOf(
-        ServerPromotion(
-            id = "promo_welcome",
-            title = "WELCOME BONUS",
-            subtitle = "Claim 100% instant cash boost on your first deposit!",
-            badgeText = "HOT",
-            ctaText = "ADD CASH",
-            targetRoute = "/wallet/deposit",
-            gradientStart = "#5B1FA6",
-            gradientEnd = "#3B0764",
-            iconType = "welcome",
-            displayOrder = 1
-        ),
-        ServerPromotion(
-            id = "promo_xo_battle",
-            title = "1v1 XO BATTLE",
-            subtitle = "Play Live Tic-Tac-Toe battles with real cash prizes!",
-            badgeText = "LIVE",
-            ctaText = "PLAY NOW",
-            targetRoute = "/games/xo",
-            gradientStart = "#6D28D9",
-            gradientEnd = "#2E1065",
-            iconType = "xo",
-            displayOrder = 2
-        ),
-        ServerPromotion(
-            id = "promo_ring_future",
-            title = "RING OF FUTURE",
-            subtitle = "Spin the 32-segment wheel for up to 30x instant multiplier!",
-            badgeText = "NEW",
-            ctaText = "PLAY NOW",
-            targetRoute = "/games/ring",
-            gradientStart = "#0F766E",
-            gradientEnd = "#042F2E",
-            iconType = "ring",
-            displayOrder = 3
-        ),
-        ServerPromotion(
-            id = "promo_instant_cashout",
-            title = "INSTANT CASHOUT",
-            subtitle = "24/7 lightning fast UPI withdrawals directly to your bank account.",
-            badgeText = "VIP",
-            ctaText = "WITHDRAW",
-            targetRoute = "/wallet/withdraw",
-            gradientStart = "#9D174D",
-            gradientEnd = "#500724",
-            iconType = "wallet",
-            displayOrder = 4
-        )
-    )
-
-    private val _promotions = MutableStateFlow<List<ServerPromotion>>(defaultPromotions)
+    // Dynamic server-driven promotions list (populated live from backend API)
+    private val _promotions = MutableStateFlow<List<ServerPromotion>>(emptyList())
     val promotions: StateFlow<List<ServerPromotion>> = _promotions.asStateFlow()
 
     fun init(context: android.content.Context) {
@@ -128,7 +77,7 @@ object PromotionSyncService {
                     subtitle = obj.optString("subtitle", ""),
                     badgeText = obj.optString("badge_text", "HOT"),
                     ctaText = obj.optString("cta_text", "PLAY NOW"),
-                    targetRoute = obj.optString("target_route", "/games/xo"),
+                    targetRoute = obj.optString("target_route", "/wallet/deposit"),
                     gradientStart = obj.optString("gradient_start", "#5B1FA6"),
                     gradientEnd = obj.optString("gradient_end", "#3B0764"),
                     iconType = obj.optString("icon_type", "welcome"),

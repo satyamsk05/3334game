@@ -35,17 +35,7 @@ const TEMPLATES = [
   {
     name: '🎁 ₹50 Bonus Drop',
     title: '🎁 Surprise ₹50 Bonus Added!',
-    body: 'We just credited ₹50 bonus into your wallet! Play XO 1v1 Battle or Ring of Future now to win real cash.'
-  },
-  {
-    name: '⚔️ XO 1v1 Tournament',
-    title: '⚔️ Live XO Battles Are Live!',
-    body: 'Challenge real players in XO 1v1 Battle starting at just ₹1. Double your cash in 60 seconds!'
-  },
-  {
-    name: '🎡 30x Ring Jackpot',
-    title: '🎡 Ring of Future: 30x Green Multiplier!',
-    body: 'Green 30x multiplier round is active. Place your color chips and grab huge payouts!'
+    body: 'We just credited ₹50 bonus into your wallet! Enjoy instant gaming with real cash payouts.'
   },
   {
     name: '💰 Deposit 100% Match',
@@ -58,9 +48,14 @@ const TEMPLATES = [
     body: 'Your winnings can now be withdrawn instantly to any UPI ID in under 60 seconds.'
   },
   {
+    name: '🛡️ Fair Play & Security',
+    title: '🛡️ Certified Fair Play Platform',
+    body: 'All player wallets and game rounds are encrypted with institutional grade security.'
+  },
+  {
     name: '🛠️ Scheduled Maintenance',
     title: '🛠️ Brief Server Maintenance Tonight',
-    body: 'We will undergo a brief 10-minute server upgrade at 02:00 AM IST to make matchmaking even faster.'
+    body: 'We will undergo a brief 10-minute server upgrade at 02:00 AM IST to optimize performance.'
   }
 ];
 
@@ -72,7 +67,7 @@ export default function PushNotificationsPage() {
 
   // Notification Fields
   const [title, setTitle] = useState('🎁 Surprise ₹50 Bonus Added!');
-  const [body, setBody] = useState('We just credited ₹50 bonus into your wallet! Play XO 1v1 Battle or Ring of Future now to win real cash.');
+  const [body, setBody] = useState('We just credited ₹50 bonus into your wallet! Enjoy instant gaming with real cash payouts.');
 
   // Status & Logs
   const [sending, setSending] = useState(false);

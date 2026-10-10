@@ -146,20 +146,6 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 <IconDashboard size={20} />
               </Link>
 
-              {/* Games */}
-              <Link
-                href="/games"
-                onClick={() => setMobileOpen(false)}
-                title="Games Management"
-                aria-label="Games Management"
-                className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
-                  isLinkActive('/games')
-                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
-                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
-                }`}
-              >
-                <IconGamepad size={20} />
-              </Link>
 
               {/* Deposits */}
               <Link
@@ -423,59 +409,6 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                       <span className={isLinkActive('/') ? 'font-bold' : ''}>Dashboard</span>
                     </Link>
 
-                    {/* Games Management - Tree Node with Sub-items */}
-                    <div>
-                      <div
-                        className={`group flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium cursor-pointer transition-all ${
-                          pathname.startsWith('/games')
-                            ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
-                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
-                        }`}
-                        onClick={() => setGamesTreeOpen(!gamesTreeOpen)}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <IconGamepad size={20} className="shrink-0" />
-                          <span className={pathname.startsWith('/games') ? 'font-bold' : ''}>Games</span>
-                        </div>
-                        <span className="text-text-secondary group-hover:text-text-primary transition-colors">
-                          {gamesTreeOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                        </span>
-                      </div>
-
-                      {/* Nested Tree Children with vertical connector lines */}
-                      {gamesTreeOpen && (
-                        <div className="relative ml-4 pl-3 border-l border-border-default space-y-1 mt-1 py-1">
-                          <Link
-                            href="/games"
-                            onClick={() => setMobileOpen(false)}
-                            className={`group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                              pathname === '/games'
-                                ? 'text-text-primary font-semibold bg-surface-strong'
-                                : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/50'
-                            }`}
-                          >
-                            <span className="h-1.5 w-1.5 rounded-full bg-text-secondary group-hover:bg-text-primary transition-colors shrink-0" />
-                            <span>All Games Overview</span>
-                          </Link>
-                          <Link
-                            href="/games?game=ring_of_future"
-                            onClick={() => setMobileOpen(false)}
-                            className="group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
-                          >
-                            <span className="h-1.5 w-1.5 rounded-full bg-text-secondary group-hover:bg-text-primary transition-colors shrink-0" />
-                            <span>Ring of Future</span>
-                          </Link>
-                          <Link
-                            href="/games?game=tictactoe"
-                            onClick={() => setMobileOpen(false)}
-                            className="group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-strong/50 transition-colors"
-                          >
-                            <span className="h-1.5 w-1.5 rounded-full bg-text-secondary group-hover:bg-text-primary transition-colors shrink-0" />
-                            <span>Tic-Tac-Toe</span>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
 
                     {/* Deposits / Wallet */}
                     <Link

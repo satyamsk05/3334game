@@ -97,8 +97,8 @@ fun ContactUsScreen(
         // Contact Option 3: WhatsApp
         ContactCard(
             title = "WhatsApp Support",
-            detail = "+91 98765 43210",
-            subtext = "Available 9:00 AM - 11:00 PM IST",
+            detail = "+91 99899 07408",
+            subtext = "Official 24/7 WhatsApp Support",
             iconRes = R.drawable.ic_headset
         )
 

@@ -57,8 +57,6 @@ const GRADIENT_PRESETS = [
 ];
 
 const ROUTE_OPTIONS = [
-  { label: '⚔️ 1v1 XO Battle', value: '/games/xo' },
-  { label: '🎡 Ring of Future', value: '/games/ring' },
   { label: '💳 Add Cash / Deposit', value: '/wallet/deposit' },
   { label: '🏧 UPI Cashout / Withdraw', value: '/wallet/withdraw' },
   { label: '🎁 VIP Rewards & Refer', value: '/reward' }
@@ -66,8 +64,6 @@ const ROUTE_OPTIONS = [
 
 const ICON_PRESETS = [
   { id: 'welcome', label: '🎁 Welcome Gift', icon: Gift },
-  { id: 'xo', label: '⚔️ XO Battle', icon: Gamepad2 },
-  { id: 'ring', label: '🎡 Ring Wheel', icon: Zap },
   { id: 'wallet', label: '💰 Cashback Wallet', icon: Wallet },
   { id: 'general', label: '🔥 Hot Bonus', icon: Flame }
 ];

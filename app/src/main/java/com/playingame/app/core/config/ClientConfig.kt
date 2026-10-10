@@ -13,8 +13,8 @@ object ClientConfig {
      * Cleartext is allowlisted only for known hosts in network_security_config.xml.
      * Prefer HTTPS once TLS is terminated on the server.
      */
-    var SERVER_BASE_URL: String = "http://3.7.73.109:4001"
-    var PAYMENT_GATEWAY_URL: String = "https://bitarcade-pay.vercel.app"
+    var SERVER_BASE_URL: String = "https://03ab-2402-3a80-c5-92e2-65dc-aca0-abb1-2fb6.ngrok-free.app"
+    var PAYMENT_GATEWAY_URL: String = SERVER_BASE_URL
 
     val APP_VERSION: String
         get() = try {

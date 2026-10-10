@@ -11,7 +11,7 @@ import com.playingame.app.R
 import com.playingame.app.core.config.ClientConfig
 import com.playingame.app.core.session.SessionManager
 import com.playingame.app.data.remote.DeviceInfoHelper
-import com.playingame.app.game.ringoffuture.backend.WalletLedger
+import com.playingame.app.data.wallet.WalletLedger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

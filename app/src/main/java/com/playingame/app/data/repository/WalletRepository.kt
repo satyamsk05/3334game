@@ -1,7 +1,7 @@
 package com.playingame.app.data.repository
 
-import com.playingame.app.game.ringoffuture.backend.WalletBalance
-import com.playingame.app.game.ringoffuture.backend.WalletLedger
+import com.playingame.app.data.wallet.WalletBalance
+import com.playingame.app.data.wallet.WalletLedger
 import kotlinx.coroutines.flow.StateFlow
 
 /**

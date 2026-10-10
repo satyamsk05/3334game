@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
-import com.playingame.app.game.ringoffuture.backend.WalletLedger
+import com.playingame.app.data.wallet.WalletLedger
 import com.playingame.app.ui.theme.RubikFont
 
 import kotlinx.coroutines.launch

@@ -2,24 +2,28 @@ package com.playingame.app.ui.screens
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.annotation.DrawableRes
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.playingame.app.R
 import com.playingame.app.data.repository.AuthRepository
-import com.playingame.app.game.ringoffuture.backend.WalletLedger
+import com.playingame.app.data.wallet.WalletLedger
 import android.content.Intent
 import android.net.Uri
 import com.playingame.app.core.config.ClientConfig
@@ -35,22 +39,6 @@ import com.playingame.app.ui.components.*
 import com.playingame.app.ui.navigation.NavItem
 import com.playingame.app.ui.theme.*
 
-@Immutable
-data class FeaturedGame(
-    val id: String,
-    val title: String,
-    @DrawableRes val logoRes: Int,
-    val gradientColors: List<Color>
-)
-
-@Immutable
-data class GridGame(
-    val id: String,
-    val title: String,
-    @DrawableRes val logoRes: Int,
-    val gradientColors: List<Color>
-)
-
 sealed interface SubScreen {
     object Settings : SubScreen
     object Withdraw : SubScreen
@@ -62,11 +50,7 @@ sealed interface SubScreen {
     object AboutUs : SubScreen
     object ContactUs : SubScreen
     object FairPlay : SubScreen
-    object RingOfFuture : SubScreen
     data class DepositPayment(val amountRupees: Double = 100.0) : SubScreen
-    object XOLobby : SubScreen
-    data class XOMatchmaking(val tier: com.playingame.app.game.xo.model.XOTier) : SubScreen
-    data class XOBattle(val room: com.playingame.app.game.xo.model.XORoomState) : SubScreen
 }
 
 @Composable
@@ -97,89 +81,11 @@ fun HomeScreen(
             when (activeSubScreen) {
                 SubScreen.WithdrawDetails -> activeSubScreen = SubScreen.Withdraw
                 is SubScreen.DepositPayment -> activeSubScreen = null
-                is SubScreen.XOBattle -> activeSubScreen = SubScreen.XOLobby
-                is SubScreen.XOMatchmaking -> activeSubScreen = SubScreen.XOLobby
                 else -> activeSubScreen = null
             }
         } else if (selectedTab != NavItem.HOME) {
             selectedTab = NavItem.HOME
         }
-    }
-
-    val featuredGames = remember {
-        listOf(
-            FeaturedGame(
-                id = "classic_dice",
-                title = "Classic Dice",
-                logoRes = R.drawable.logo_classic_dice,
-                gradientColors = listOf(Color(0xFF8B5CF6), Color(0xFF6D28D9))
-            ),
-            FeaturedGame(
-                id = "double",
-                title = "Double",
-                logoRes = R.drawable.logo_double,
-                gradientColors = listOf(Color(0xFFEC4899), Color(0xFFBE185D))
-            )
-        )
-    }
-
-    val gridGames = remember {
-        listOf(
-            GridGame(
-                id = "mines",
-                title = "Mines",
-                logoRes = R.drawable.logo_mines,
-                gradientColors = listOf(Color(0xFF10B981), Color(0xFF047857))
-            ),
-            GridGame(
-                id = "color_dice",
-                title = "Color Dice",
-                logoRes = R.drawable.logo_color_dice,
-                gradientColors = listOf(Color(0xFF8B5CF6), Color(0xFF6D28D9))
-            ),
-            GridGame(
-                id = "hilo",
-                title = "Hi-Lo",
-                logoRes = R.drawable.logo_hilo,
-                gradientColors = listOf(Color(0xFF14B8A6), Color(0xFF0F766E))
-            ),
-            GridGame(
-                id = "kino",
-                title = "Keno",
-                logoRes = R.drawable.logo_kino,
-                gradientColors = listOf(Color(0xFF10B981), Color(0xFF047857))
-            ),
-            GridGame(
-                id = "limbo",
-                title = "Limbo",
-                logoRes = R.drawable.logo_limbo,
-                gradientColors = listOf(Color(0xFF8B5CF6), Color(0xFF6D28D9))
-            ),
-            GridGame(
-                id = "coinflip",
-                title = "Coin Flip",
-                logoRes = R.drawable.logo_coinflip,
-                gradientColors = listOf(Color(0xFF14B8A6), Color(0xFF0F766E))
-            ),
-            GridGame(
-                id = "perya_color",
-                title = "Perya Color",
-                logoRes = R.drawable.logo_perya_color,
-                gradientColors = listOf(Color(0xFF10B981), Color(0xFF047857))
-            ),
-            GridGame(
-                id = "rings_of_future",
-                title = "Ring of Future",
-                logoRes = R.drawable.logo_rings_of_future,
-                gradientColors = listOf(Color(0xFF14B8A6), Color(0xFF0F766E))
-            )
-        )
-    }
-
-    val serverPromotions by com.playingame.app.data.remote.PromotionSyncService.promotions.collectAsState()
-
-    LaunchedEffect(Unit) {
-        com.playingame.app.data.remote.PromotionSyncService.fetchActivePromotions()
     }
 
     fun openDepositScreen(amountRupees: Double) {
@@ -239,65 +145,6 @@ fun HomeScreen(
         }
     }
 
-    fun handlePromoRoute(targetRoute: String) {
-        when {
-            targetRoute.contains("xo", ignoreCase = true) -> activeSubScreen = SubScreen.XOLobby
-            targetRoute.contains("ring", ignoreCase = true) -> activeSubScreen = SubScreen.RingOfFuture
-            targetRoute.contains("withdraw", ignoreCase = true) -> activeSubScreen = SubScreen.Withdraw
-            targetRoute.contains("deposit", ignoreCase = true) || targetRoute.contains("wallet", ignoreCase = true) -> openDepositScreen(500.0)
-            else -> selectedTab = NavItem.REWARD
-        }
-    }
-
-    val bannerSlides = remember(serverPromotions) {
-        serverPromotions.map { promo ->
-            val startColor = try {
-                Color(android.graphics.Color.parseColor(promo.gradientStart))
-            } catch (_: Exception) {
-                Color(0xFF5B1FA6)
-            }
-            val endColor = try {
-                Color(android.graphics.Color.parseColor(promo.gradientEnd))
-            } catch (_: Exception) {
-                Color(0xFF3B0764)
-            }
-
-            val iconRes = when (promo.iconType) {
-                "xo" -> R.drawable.logo_classic_dice
-                "ring" -> R.drawable.logo_rings_of_future
-                "wallet" -> R.drawable.cashback_wallet_ic
-                "welcome" -> R.drawable.pramotion_banner
-                else -> {
-                    if (promo.targetRoute.contains("xo", ignoreCase = true)) R.drawable.logo_classic_dice
-                    else if (promo.targetRoute.contains("ring", ignoreCase = true)) R.drawable.logo_rings_of_future
-                    else if (promo.targetRoute.contains("withdraw", ignoreCase = true)) R.drawable.cashback_wallet_ic
-                    else R.drawable.pramotion_banner
-                }
-            }
-
-            BannerSlide(
-                id = promo.id,
-                title = promo.title,
-                subtitle = promo.subtitle,
-                imageRes = iconRes,
-                backgroundGradient = listOf(startColor, endColor),
-                badgeText = promo.badgeText,
-                ctaText = promo.ctaText,
-                onClick = { handlePromoRoute(promo.targetRoute) }
-            )
-        }
-    }
-
-    fun onGameTileClick(gameId: String, title: String) {
-        if (gameId == "rings_of_future") {
-            activeSubScreen = SubScreen.RingOfFuture
-        } else if (gameId == "classic_dice" || gameId == "xo_battle" || title.contains("Dice", ignoreCase = true) || title.contains("XO", ignoreCase = true)) {
-            activeSubScreen = SubScreen.XOLobby
-        } else {
-            Toast.makeText(context, "$title is Coming Soon!", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -311,33 +158,9 @@ fun HomeScreen(
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-                when (val sub = activeSubScreen) {
-                    SubScreen.XOLobby -> {
-                        com.playingame.app.game.xo.ui.XOLobbyScreen(
-                            onBackClick = { activeSubScreen = null },
-                            onPlayClick = { tier -> activeSubScreen = SubScreen.XOMatchmaking(tier) },
-                            onAddCashClick = { selectedTab = NavItem.REWARD }
-                        )
-                    }
-                    is SubScreen.XOMatchmaking -> {
-                        com.playingame.app.game.xo.ui.XOMatchmakingScreen(
-                            tier = sub.tier,
-                            onMatchFound = { room -> activeSubScreen = SubScreen.XOBattle(room) }
-                        )
-                    }
-                    is SubScreen.XOBattle -> {
-                        com.playingame.app.game.xo.ui.XOBattleScreen(
-                            initialRoom = sub.room,
-                            onBackClick = { activeSubScreen = SubScreen.XOLobby }
-                        )
-                    }
-                    SubScreen.RingOfFuture -> {
-                        com.playingame.app.game.ringoffuture.ui.RingOfFutureScreen(
-                            onBackClick = { activeSubScreen = null },
-                            onOpenDepositScreen = { openDepositScreen(200.0) }
-                        )
-                    }
+                when (activeSubScreen) {
                     is SubScreen.DepositPayment -> {
+                        val sub = activeSubScreen as SubScreen.DepositPayment
                         DepositPaymentScreen(
                             amountRupees = sub.amountRupees,
                             onBackClick = { activeSubScreen = null }
@@ -399,7 +222,7 @@ fun HomeScreen(
                         WithdrawDetailsScreen(
                             withdrawAmount = withdrawAmountInput,
                             onBackClick = { activeSubScreen = SubScreen.Withdraw },
-                            onCompleteWithdrawal = { method ->
+                            onCompleteWithdrawal = {
                                 activeSubScreen = null
                                 selectedTab = NavItem.PROFILE
                             }
@@ -436,155 +259,118 @@ fun HomeScreen(
                     null -> {
                         when (selectedTab) {
                             NavItem.HOME -> {
-                                    Column(
-                                        modifier = Modifier.fillMaxSize()
+                                Column(
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    val chipBalance = if (walletBalance.totalPaise % 100 == 0L) {
+                                        "${walletBalance.totalPaise / 100}"
+                                    } else {
+                                        String.format(java.util.Locale.getDefault(), "%.2f", walletBalance.totalRupees)
+                                    }
+
+                                    TopHeader(
+                                        balance = chipBalance,
+                                        avatarRes = userProfile.avatarRes,
+                                        onProfileClick = { activeSubScreen = SubScreen.ProfileDetails },
+                                        onWalletClick = { selectedTab = NavItem.PROFILE },
+                                        onNotificationClick = { showNotificationSheet = true }
+                                    )
+
+                                    LazyColumn(
+                                        state = homeListState,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxWidth(),
+                                        contentPadding = PaddingValues(horizontal = Dimens.screenHorizontalPadding, vertical = 20.dp)
                                     ) {
-                                        // Header Section: Minimal avatar + Coin Chip Wallet Capsule + Notification Icon
-                                        val chipBalance = if (walletBalance.totalPaise % 100 == 0L) {
-                                            "${walletBalance.totalPaise / 100}"
-                                        } else {
-                                            String.format(java.util.Locale.getDefault(), "%.2f", walletBalance.totalRupees)
-                                        }
-
-                                        TopHeader(
-                                            balance = chipBalance,
-                                            avatarRes = userProfile.avatarRes,
-                                            onProfileClick = { activeSubScreen = SubScreen.ProfileDetails },
-                                            onWalletClick = { selectedTab = NavItem.PROFILE },
-                                            onNotificationClick = { showNotificationSheet = true }
-                                        )
-
-                                        val gridGamePairs = remember(gridGames) { gridGames.chunked(2) }
-
-                                        LazyColumn(
-                                            state = homeListState,
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .fillMaxWidth(),
-                                            contentPadding = PaddingValues(top = 20.dp, bottom = Dimens.spacingLg)
-                                        ) {
-                                            // 4. Hero Banner (HorizontalPager carousel with 3 slides & dot indicators)
-                                            item(key = "hero_banner") {
-                                                HeroBannerCarousel(
-                                                    slides = bannerSlides
-                                                )
-                                                Spacer(modifier = Modifier.height(Dimens.sectionSpacing))
-                                            }
-
-                                            // 5. Featured Games Section
-                                            item(key = "featured_games") {
-                                                Column(
-                                                    verticalArrangement = Arrangement.spacedBy(Dimens.spacingSm)
-                                                ) {
-                                                    SectionHeader(
-                                                        title = "Featured Games",
-                                                        icon = painterResource(id = R.drawable.ic_vip_pro_crown)
-                                                    )
-
-                                                    LazyRow(
-                                                        contentPadding = PaddingValues(horizontal = Dimens.screenHorizontalPadding),
-                                                        horizontalArrangement = Arrangement.spacedBy(Dimens.gridGutter)
-                                                    ) {
-                                                        items(featuredGames, key = { it.id }) { game ->
-                                                            GameCard(
-                                                                title = game.title,
-                                                                imageRes = game.logoRes,
-                                                                backgroundGradient = game.gradientColors,
-                                                                isFeatured = true,
-                                                                onPlayClick = { onGameTileClick(game.id, game.title) }
+                                        item(key = "games_placeholder") {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clip(RoundedCornerShape(20.dp))
+                                                    .background(
+                                                        brush = Brush.verticalGradient(
+                                                            colors = listOf(
+                                                                Color(0xFF261245),
+                                                                Color(0xFF16092A)
                                                             )
-                                                        }
-                                                    }
-                                                }
-                                                Spacer(modifier = Modifier.height(Dimens.sectionSpacing))
-                                            }
-
-                                            // 6. All Games Section (2 columns, 160:230 Aspect Ratio, 16dp Gutter)
-                                            item(key = "all_games_header") {
-                                                SectionHeader(
-                                                    title = "All Games",
-                                                    icon = painterResource(id = R.drawable.ic_play_arrow),
-                                                    modifier = Modifier
-                                                        .padding(horizontal = Dimens.screenHorizontalPadding)
-                                                        .padding(bottom = Dimens.spacingSm)
-                                                )
-                                            }
-
-                                            itemsIndexed(
-                                                items = gridGamePairs,
-                                                key = { _, pair -> "grid_row_${pair.first().id}" }
-                                            ) { index, pair ->
-                                                Row(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(horizontal = Dimens.screenHorizontalPadding)
-                                                        .padding(bottom = if (index < gridGamePairs.size - 1) Dimens.gridGutter else 0.dp),
-                                                    horizontalArrangement = Arrangement.spacedBy(Dimens.gridGutter)
-                                                ) {
-                                                    val firstGame = pair[0]
-                                                    GameCard(
-                                                        title = firstGame.title,
-                                                        imageRes = firstGame.logoRes,
-                                                        backgroundGradient = firstGame.gradientColors,
-                                                        modifier = Modifier.weight(1f),
-                                                        isFeatured = false,
-                                                        onPlayClick = { onGameTileClick(firstGame.id, firstGame.title) }
-                                                    )
-                                                    if (pair.size > 1) {
-                                                        val secondGame = pair[1]
-                                                        GameCard(
-                                                            title = secondGame.title,
-                                                            imageRes = secondGame.logoRes,
-                                                            backgroundGradient = secondGame.gradientColors,
-                                                            modifier = Modifier.weight(1f),
-                                                            isFeatured = false,
-                                                            onPlayClick = { onGameTileClick(secondGame.id, secondGame.title) }
                                                         )
-                                                    } else {
-                                                        Spacer(modifier = Modifier.weight(1f))
-                                                    }
+                                                    )
+                                                    .border(
+                                                        width = 1.dp,
+                                                        color = Color(0x33A855F7),
+                                                        shape = RoundedCornerShape(20.dp)
+                                                    )
+                                                    .padding(28.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Column(
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.Center
+                                                ) {
+                                                    Text(
+                                                        text = "🎮",
+                                                        fontSize = 44.sp
+                                                    )
+                                                    Spacer(modifier = Modifier.height(12.dp))
+                                                    Text(
+                                                        text = "Gaming Arena",
+                                                        fontFamily = RubikFont,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 20.sp,
+                                                        color = Color.White
+                                                    )
+                                                    Spacer(modifier = Modifier.height(6.dp))
+                                                    Text(
+                                                        text = "Exciting new games are coming soon!",
+                                                        fontFamily = RubikFont,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontSize = 14.sp,
+                                                        color = Color(0xFFB4A8D6),
+                                                        textAlign = TextAlign.Center
+                                                    )
                                                 }
                                             }
                                         }
                                     }
                                 }
+                            }
 
-                                NavItem.SHARE -> {
-                                    ShareScreen()
-                                }
+                            NavItem.SHARE -> {
+                                ShareScreen()
+                            }
 
-                                NavItem.REWARD -> {
-                                    AddCashScreen(
-                                        onOpenDeposit = { amount ->
-                                            openDepositScreen(amount)
-                                        },
-                                        onAddCashSuccess = { addedAmount ->
-                                            selectedTab = NavItem.PROFILE
-                                        }
-                                    )
-                                }
+                            NavItem.REWARD -> {
+                                AddCashScreen(
+                                    onOpenDeposit = { amount ->
+                                        openDepositScreen(amount)
+                                    },
+                                    onAddCashSuccess = {
+                                        selectedTab = NavItem.PROFILE
+                                    }
+                                )
+                            }
 
-                                NavItem.PROFILE -> {
-                                    WalletScreen(
-                                        balance = walletBalance.formattedTotal,
-                                        depositBalance = walletBalance.formattedDeposit,
-                                        winningsBalance = walletBalance.formattedWinnings,
-                                        rewardsBalance = walletBalance.formattedBonus,
-                                        onAddCashClick = { selectedTab = NavItem.REWARD },
-                                        onWithdrawClick = { activeSubScreen = SubScreen.Withdraw },
-                                        onSettingsClick = { activeSubScreen = SubScreen.Settings },
-                                        onSupportClick = { activeSubScreen = SubScreen.ContactUs },
-                                        onAllTransactionsClick = { activeSubScreen = SubScreen.TransactionHistory }
-                                    )
-                                }
+                            NavItem.PROFILE -> {
+                                WalletScreen(
+                                    balance = walletBalance.formattedTotal,
+                                    depositBalance = walletBalance.formattedDeposit,
+                                    winningsBalance = walletBalance.formattedWinnings,
+                                    rewardsBalance = walletBalance.formattedBonus,
+                                    onAddCashClick = { selectedTab = NavItem.REWARD },
+                                    onWithdrawClick = { activeSubScreen = SubScreen.Withdraw },
+                                    onSettingsClick = { activeSubScreen = SubScreen.Settings },
+                                    onSupportClick = { activeSubScreen = SubScreen.ContactUs },
+                                    onAllTransactionsClick = { activeSubScreen = SubScreen.TransactionHistory }
+                                )
                             }
                         }
                     }
                 }
+            }
 
             // Bottom Navigation Bar
             if (activeSubScreen == null) {
-                // Custom Bottom Navigation Bar
                 CustomBottomNavBar(
                     selectedTab = selectedTab,
                     isScrolling = homeListState.isScrollInProgress && selectedTab == NavItem.HOME,

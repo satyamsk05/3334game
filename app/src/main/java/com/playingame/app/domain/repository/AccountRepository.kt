@@ -1,7 +1,7 @@
 package com.playingame.app.domain.repository
 
 import com.playingame.app.domain.model.WalletState
-import com.playingame.app.game.ringoffuture.backend.WalletTransaction
+import com.playingame.app.data.wallet.WalletTransaction
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {

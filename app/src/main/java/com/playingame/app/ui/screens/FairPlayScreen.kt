@@ -78,14 +78,14 @@ fun FairPlayScreen(
         // Section 1: Unbiased Random Outcome Generation
         FairPlayCard(
             title = "Unbiased Random Outcome Generation",
-            description = "Ring of Future uses cryptographically strong SecureRandom sampling across 32 wheel segments. Outcome probability is purely random with no player manipulation.",
+            description = "All arcade games use cryptographically strong SecureRandom sampling. Outcome probability is purely random with no player or system manipulation.",
             iconRes = R.drawable.ic_settings_shield
         )
 
-        // Section 2: Balanced ~95% RTP Multipliers
+        // Section 2: Certified RTP Multipliers
         FairPlayCard(
             title = "Target ~95% Return-To-Player (RTP)",
-            description = "Multipliers are mathematically calibrated across all colors (Green 30x, Red 5.06x, Purple 3.04x, Grey 2.03x) ensuring a transparent and consistent house edge.",
+            description = "Multipliers and game mechanics are mathematically calibrated ensuring transparent odds and certified fair play across all games.",
             iconRes = R.drawable.ic_settings_issues
         )
 

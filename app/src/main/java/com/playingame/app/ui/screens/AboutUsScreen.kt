@@ -80,7 +80,7 @@ fun AboutUsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo_classic_dice),
+                painter = painterResource(id = R.mipmap.ic_launcher),
                 contentDescription = "App Logo",
                 modifier = Modifier
                     .size(80.dp)
@@ -128,7 +128,7 @@ fun AboutUsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Bit Arcade Game is a premier gaming platform offering classic dice, mines, color prediction, and skill-based arcade games. Designed with 100% security, instant withdrawals, and certified fair play.",
+                    text = "Bit Arcade Game is a premier skill-based gaming platform designed with 100% security, instant UPI withdrawals, and certified fair play.",
                     fontSize = 13.sp,
                     fontFamily = RubikFont,
                     color = Color(0xFF8E899B),
@@ -159,7 +159,7 @@ fun AboutUsScreen(
         Spacer(modifier = Modifier.height(30.dp))
 
         Text(
-            text = "Copyright 2026 InGames. All rights reserved.",
+            text = "Copyright 2026 Bit Arcade Game. All rights reserved.",
             fontSize = 12.sp,
             fontFamily = RubikFont,
             color = Color(0xFF6B7280),

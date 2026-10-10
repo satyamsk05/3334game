@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.playingame.app.R
-import com.playingame.app.game.ringoffuture.backend.WalletLedger
+import com.playingame.app.data.wallet.WalletLedger
 import com.playingame.app.ui.components.WalletChip
 import com.playingame.app.ui.theme.RubikFont
 import kotlinx.coroutines.launch

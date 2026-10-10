@@ -25,10 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
-import com.playingame.app.game.ringoffuture.backend.TransactionStatus
-import com.playingame.app.game.ringoffuture.backend.TransactionType
-import com.playingame.app.game.ringoffuture.backend.WalletLedger
-import com.playingame.app.game.ringoffuture.backend.WalletTransaction
+import com.playingame.app.data.wallet.TransactionStatus
+import com.playingame.app.data.wallet.TransactionType
+import com.playingame.app.data.wallet.WalletLedger
+import com.playingame.app.data.wallet.WalletTransaction
 import com.playingame.app.ui.theme.RubikFont
 import java.text.SimpleDateFormat
 import java.util.*
@@ -81,12 +81,8 @@ fun TransactionHistoryScreen(
 
         for (tx in base) {
             if (tx.type == TransactionType.BET_PLACED) {
-                val roundKey = if (tx.referenceId.startsWith("BET-ROF-")) {
-                    tx.referenceId.split("-").take(3).joinToString("-")
-                } else if (tx.description.contains("Ring of Future", ignoreCase = true) || tx.description.contains("Round", ignoreCase = true)) {
-                    // Group same-minute Ring of Future bets if no explicit round id in ref
-                    val minute = tx.timestamp / 60000L
-                    "ROF-$minute"
+                val roundKey = if (tx.referenceId.isNotBlank()) {
+                    tx.referenceId
                 } else {
                     null
                 }
@@ -306,23 +302,15 @@ private fun RushStyleTransactionRow(
         TransactionType.BET_REFUND -> R.drawable.ic_rush_refund
     }
 
-    // Clean human title (e.g. "Entry Fee : XO Battle", "Refund : XO Battle", "Cash Deposited")
+    // Clean human title
     val titleText = when {
-        txn.type == TransactionType.BET_REFUND -> {
-            if (txn.description.contains("XO", ignoreCase = true)) "Refund : XO Battle"
-            else "Refund : Game Bet"
-        }
-        txn.type == TransactionType.BET_PLACED -> {
-            if (txn.description.contains("XO", ignoreCase = true)) "Entry Fee : XO Battle"
-            else "Entry Fee : Ring of Future"
-        }
-        txn.type == TransactionType.WIN_PAYOUT -> {
-            if (txn.description.contains("XO", ignoreCase = true)) "Won : XO Battle"
-            else "Won : Ring of Future"
-        }
+        txn.description.isNotBlank() -> txn.description
+        txn.type == TransactionType.BET_REFUND -> "Refund : Game Entry"
+        txn.type == TransactionType.BET_PLACED -> "Game Entry Fee"
+        txn.type == TransactionType.WIN_PAYOUT -> "Won : Game Payout"
         txn.type == TransactionType.DEPOSIT -> "Cash Deposited"
         txn.type == TransactionType.WITHDRAWAL -> "Cash Withdrawn"
-        else -> txn.description
+        else -> "Wallet Transaction"
     }
 
     Column(

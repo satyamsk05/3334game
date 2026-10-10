@@ -834,7 +834,7 @@ export default function UserDetailPage() {
                         <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-bold ${
                           isXo ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
                         }`}>
-                          {isXo ? '⚔️ XO 1v1 Battle' : '🎡 Ring of Future'}
+                          {b.game_type || 'Arcade Game'}
                         </span>
                       </td>
                       <td className="px-4 py-3.5 text-text-primary font-mono truncate max-w-[130px]" title={b.id || b.round_id}>

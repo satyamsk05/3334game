@@ -178,14 +178,41 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         .border(1.dp, Color(0xFF262626), RoundedCornerShape(24.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.pramotion_banner),
-                        contentDescription = "Game Showcase",
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .clip(RoundedCornerShape(24.dp)),
-                        contentScale = ContentScale.Crop
-                    )
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color(0xFF3B1578),
+                                        Color(0xFF1B0B3B),
+                                        Color(0xFF0F0721)
+                                    )
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.mipmap.ic_launcher),
+                                contentDescription = "App Logo",
+                                modifier = Modifier
+                                    .size(72.dp)
+                                    .clip(RoundedCornerShape(18.dp))
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = "BIT ARCADE",
+                                fontSize = 20.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.Black,
+                                color = Color.White
+                            )
+                        }
+                    }
 
                     // Floating Cashout Pill (Matching "Delivered in 38 min" in Screenshot 2)
                     Box(

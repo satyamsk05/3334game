@@ -41,6 +41,12 @@ object RemoteApiClient {
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("ngrok-skip-browser-warning", "69420")
+                    .build()
+                chain.proceed(request)
+            }
 
         if (context != null) {
             try {
