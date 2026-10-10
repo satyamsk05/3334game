@@ -299,13 +299,23 @@ type UpdateProfileRequest struct {
 }
 
 func (h *APIHandler) UpdateProfile(c *gin.Context) {
-	userID := c.Param("id")
+	userID := c.GetString("userId")
 	if userID == "" {
-		userID = c.GetString("userId")
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized: valid session token required"})
+		return
+	}
+
+	// Prevent IDOR: if URL param id is present, it must match the authenticated user
+	if paramID := c.Param("id"); paramID != "" && paramID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"success": false, "error": "Forbidden: cannot modify another user's profile"})
+		return
 	}
 
 	var req UpdateProfileRequest
-	_ = c.ShouldBindJSON(&req)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid profile payload"})
+		return
+	}
 
 	user, err := h.authService.UpdateProfile(userID, req.Name, req.AvatarID)
 	if err != nil {
