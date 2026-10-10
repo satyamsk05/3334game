@@ -47,12 +47,18 @@ func main() {
 	// Handlers
 	apiHandler := handlers.NewAPIHandler(cfg, authService, walletService)
 
+	// Rate Limiting Middlewares (Redis-backed with in-memory fallback)
+	generalLimiter := middleware.RateLimitMiddleware(dbBundle.Redis, "gen", 120, time.Minute)
+	authLimiter := middleware.RateLimitMiddleware(dbBundle.Redis, "auth", 15, time.Minute)
+	paymentLimiter := middleware.RateLimitMiddleware(dbBundle.Redis, "pay", 20, time.Minute)
+
 	// Gin Engine
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(middleware.CORSMiddleware(cfg))
 	router.Use(middleware.SecurityHeadersMiddleware())
+	router.Use(generalLimiter)
 
 	// Public Routes
 	router.GET("/api/v1/health", apiHandler.HealthCheck)
@@ -63,6 +69,7 @@ func main() {
 
 	// Auth Group
 	authGroup := router.Group("/api/v1/auth")
+	authGroup.Use(authLimiter)
 	{
 		authGroup.POST("/login-or-register", apiHandler.LoginOrRegister)
 		authGroup.POST("/login", apiHandler.LoginOrRegister)
@@ -74,11 +81,11 @@ func main() {
 	}
 
 	// Direct routes matching legacy client paths
-	router.POST("/auth/login", apiHandler.LoginOrRegister)
-	router.GET("/auth/status", apiHandler.AuthStatus)
+	router.POST("/auth/login", authLimiter, apiHandler.LoginOrRegister)
+	router.GET("/auth/status", authLimiter, apiHandler.AuthStatus)
 	router.PUT("/auth/profile", middleware.JWTAuthMiddleware(cfg), apiHandler.UpdateProfile)
-	router.POST("/auth/whatsapp/initiate", apiHandler.InitiateWhatsApp)
-	router.POST("/auth/whatsapp/verify", apiHandler.VerifyWhatsApp)
+	router.POST("/auth/whatsapp/initiate", authLimiter, apiHandler.InitiateWhatsApp)
+	router.POST("/auth/whatsapp/verify", authLimiter, apiHandler.VerifyWhatsApp)
 
 	// Wallet Group
 	walletGroup := router.Group("/api/v1/wallet")
@@ -97,6 +104,7 @@ func main() {
 
 	// Payments Group
 	paymentGroup := router.Group("/api/v1/payments")
+	paymentGroup.Use(paymentLimiter)
 	{
 		paymentGroup.POST("/deposits/initiate", middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
 		paymentGroup.POST("/deposits/utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
@@ -105,12 +113,12 @@ func main() {
 	}
 
 	// Alternate direct routes matching legacy app paths
-	router.POST("/deposits/initiate", middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
-	router.POST("/api/v1/deposits/initiate", middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
-	router.POST("/deposits/utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
-	router.POST("/api/v1/deposits/utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
-	router.POST("/api/v1/deposits/submit-utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
-	router.POST("/payments/withdraw/request", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
+	router.POST("/deposits/initiate", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
+	router.POST("/api/v1/deposits/initiate", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
+	router.POST("/deposits/utr", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+	router.POST("/api/v1/deposits/utr", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+	router.POST("/api/v1/deposits/submit-utr", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+	router.POST("/payments/withdraw/request", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
 
 	// Users Group & FCM Token
 	userGroup := router.Group("/api/v1/users")
@@ -130,11 +138,12 @@ func main() {
 
 	// Admin Auth Group
 	adminAuth := router.Group("/api/v1/auth/admin")
+	adminAuth.Use(authLimiter)
 	{
 		adminAuth.POST("/login", apiHandler.AdminLogin)
 		adminAuth.POST("/logout", apiHandler.AdminLogout)
 	}
-	router.POST("/auth/admin/login", apiHandler.AdminLogin)
+	router.POST("/auth/admin/login", authLimiter, apiHandler.AdminLogin)
 	router.POST("/auth/admin/logout", apiHandler.AdminLogout)
 
 	// Admin Management Group
