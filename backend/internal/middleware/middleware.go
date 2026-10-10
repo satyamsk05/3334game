@@ -94,7 +94,11 @@ func JWTAuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
-func AdminAuthMiddleware(cfg *config.Config) gin.HandlerFunc {
+type TokenRevocationChecker interface {
+	IsTokenRevoked(token string) bool
+}
+
+func AdminAuthMiddleware(cfg *config.Config, checker TokenRevocationChecker) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
@@ -104,6 +108,12 @@ func AdminAuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		if checker != nil && checker.IsTokenRevoked(tokenStr) {
+			c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Admin session has been revoked. Please log in again."})
+			c.Abort()
+			return
+		}
+
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 			return []byte(cfg.AdminJWTSecret), nil
 		})
@@ -121,7 +131,11 @@ func AdminAuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("adminId", claims["userId"])
+		adminUser, _ := claims["username"].(string)
+		if adminUser == "" {
+			adminUser, _ = claims["sub"].(string)
+		}
+		c.Set("adminUser", adminUser)
 		c.Next()
 	}
 }

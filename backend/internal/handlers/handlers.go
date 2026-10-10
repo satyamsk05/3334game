@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"bitarcade-backend/internal/config"
 	"bitarcade-backend/internal/models"
@@ -476,7 +477,7 @@ func (h *APIHandler) AdminLogin(c *gin.Context) {
 		return
 	}
 
-	token, err := h.authService.GenerateToken("admin-1", "admin")
+	token, err := h.authService.GenerateAdminToken(req.Username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "Failed to generate admin token"})
 		return
@@ -493,6 +494,11 @@ func (h *APIHandler) AdminLogin(c *gin.Context) {
 }
 
 func (h *APIHandler) AdminLogout(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	if strings.HasPrefix(authHeader, "Bearer ") {
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		h.authService.RevokeToken(tokenStr, time.Now().Add(8*time.Hour))
+	}
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Logged out successfully"})
 }
 

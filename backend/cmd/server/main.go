@@ -148,7 +148,7 @@ func main() {
 
 	// Admin Management Group
 	adminGroup := router.Group("/api/v1/admin")
-	adminGroup.Use(middleware.AdminAuthMiddleware(cfg))
+	adminGroup.Use(middleware.AdminAuthMiddleware(cfg, authService))
 	{
 		adminGroup.GET("/me", apiHandler.AdminMe)
 		adminGroup.GET("/dashboard/stats", apiHandler.AdminDashboardStats)
@@ -179,7 +179,7 @@ func main() {
 
 	// Direct aliases for Admin Panel Next.js proxy
 	directAdmin := router.Group("/admin")
-	directAdmin.Use(middleware.AdminAuthMiddleware(cfg))
+	directAdmin.Use(middleware.AdminAuthMiddleware(cfg, authService))
 	{
 		directAdmin.GET("/me", apiHandler.AdminMe)
 		directAdmin.GET("/dashboard/stats", apiHandler.AdminDashboardStats)

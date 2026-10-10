@@ -24,17 +24,19 @@ import (
 )
 
 type AuthService struct {
-	cfg      *config.Config
-	bundle   *database.DBBundle
-	mu       sync.Mutex
-	memUsers map[string]*models.User
+	cfg           *config.Config
+	bundle        *database.DBBundle
+	mu            sync.Mutex
+	memUsers      map[string]*models.User
+	revokedTokens map[string]time.Time
 }
 
 func NewAuthService(cfg *config.Config, bundle *database.DBBundle) *AuthService {
 	return &AuthService{
-		cfg:      cfg,
-		bundle:   bundle,
-		memUsers: make(map[string]*models.User),
+		cfg:           cfg,
+		bundle:        bundle,
+		memUsers:      make(map[string]*models.User),
+		revokedTokens: make(map[string]time.Time),
 	}
 }
 
@@ -120,6 +122,64 @@ func (s *AuthService) GenerateToken(userID, role string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(secret))
+}
+
+// GenerateAdminToken generates a short-lived (8 hours) token specifically for admin users,
+// signed with AdminJWTSecret and tracked with a unique JTI claim.
+func (s *AuthService) GenerateAdminToken(username string) (string, error) {
+	tokenID := uuid.New().String()
+	claims := jwt.MapClaims{
+		"sub":      username,
+		"username": username,
+		"role":     "admin",
+		"jti":      tokenID,
+		"exp":      time.Now().Add(8 * time.Hour).Unix(),
+		"iat":      time.Now().Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(s.cfg.AdminJWTSecret))
+}
+
+// RevokeToken marks an admin token as invalidated until its natural expiration.
+func (s *AuthService) RevokeToken(tokenStr string, expiresAt time.Time) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.bundle.Redis != nil {
+		ttl := time.Until(expiresAt)
+		if ttl > 0 {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			_ = s.bundle.Redis.Set(ctx, "revoked:"+tokenStr, "1", ttl).Err()
+		}
+	}
+	s.revokedTokens[tokenStr] = expiresAt
+}
+
+// IsTokenRevoked checks whether an admin token was explicitly logged out or invalidated.
+func (s *AuthService) IsTokenRevoked(tokenStr string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.bundle.Redis != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		val, err := s.bundle.Redis.Get(ctx, "revoked:"+tokenStr).Result()
+		if err == nil && val == "1" {
+			return true
+		}
+	}
+
+	exp, exists := s.revokedTokens[tokenStr]
+	if !exists {
+		return false
+	}
+	if time.Now().After(exp) {
+		delete(s.revokedTokens, tokenStr)
+		return false
+	}
+	return true
 }
 
 func (s *AuthService) GetUser(userID string) (*models.User, error) {
