@@ -14,13 +14,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true // Allow mobile and webview origins
-	},
-}
 
 type Client struct {
 	UserID string
@@ -126,6 +119,19 @@ func (h *Hub) HandleWebSocket(c *gin.Context) {
 				}
 			}
 		}
+	}
+
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(r *http.Request) bool {
+			origin := r.Header.Get("Origin")
+			if origin == "" {
+				// Allow native mobile app clients (OkHttp / Android WebSocket client)
+				return true
+			}
+			return h.cfg.IsOriginAllowed(origin)
+		},
 	}
 
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)

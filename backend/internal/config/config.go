@@ -103,3 +103,23 @@ func LoadConfig() (*Config, error) {
 		AllowedOrigins: allowedOrigins,
 	}, nil
 }
+
+// IsOriginAllowed returns true if the origin is trusted for CORS and WebSockets.
+// Requests without an Origin header (such as native mobile app clients) are permitted.
+func (c *Config) IsOriginAllowed(origin string) bool {
+	if origin == "" {
+		return true
+	}
+	origin = strings.TrimRight(origin, "/")
+	for _, allowed := range c.AllowedOrigins {
+		if allowed == "*" || strings.TrimRight(allowed, "/") == origin {
+			return true
+		}
+	}
+	// Always allow local development origins
+	if strings.HasPrefix(origin, "http://localhost:") || strings.HasPrefix(origin, "https://localhost:") ||
+		strings.HasPrefix(origin, "http://127.0.0.1:") || strings.HasPrefix(origin, "https://127.0.0.1:") {
+		return true
+	}
+	return false
+}

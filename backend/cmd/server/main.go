@@ -51,7 +51,7 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
-	router.Use(middleware.CORSMiddleware())
+	router.Use(middleware.CORSMiddleware(cfg))
 	router.Use(middleware.SecurityHeadersMiddleware())
 
 	// Public Routes
