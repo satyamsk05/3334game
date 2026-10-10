@@ -82,9 +82,17 @@ func main() {
 
 	// Wallet Group
 	walletGroup := router.Group("/api/v1/wallet")
+	walletGroup.Use(middleware.JWTAuthMiddleware(cfg))
 	{
 		walletGroup.GET("/balance", apiHandler.GetBalance)
 		walletGroup.GET("/transactions", apiHandler.GetTransactions)
+	}
+
+	directWalletGroup := router.Group("/wallet")
+	directWalletGroup.Use(middleware.JWTAuthMiddleware(cfg))
+	{
+		directWalletGroup.GET("/balance", apiHandler.GetBalance)
+		directWalletGroup.GET("/transactions", apiHandler.GetTransactions)
 	}
 
 	// Payments Group

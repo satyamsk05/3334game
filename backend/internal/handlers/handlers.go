@@ -153,12 +153,9 @@ func (h *APIHandler) GetMe(c *gin.Context) {
 // Wallet Handlers
 // ==========================================
 func (h *APIHandler) GetBalance(c *gin.Context) {
-	userID := c.Query("userId")
+	userID := c.GetString("userId")
 	if userID == "" {
-		userID = c.GetString("userId")
-	}
-	if userID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "userId required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized: valid session token required"})
 		return
 	}
 
@@ -182,12 +179,9 @@ func (h *APIHandler) GetBalance(c *gin.Context) {
 }
 
 func (h *APIHandler) GetTransactions(c *gin.Context) {
-	userID := c.Query("userId")
+	userID := c.GetString("userId")
 	if userID == "" {
-		userID = c.GetString("userId")
-	}
-	if userID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "userId required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized: valid session token required"})
 		return
 	}
 
