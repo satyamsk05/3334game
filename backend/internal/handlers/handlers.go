@@ -11,6 +11,7 @@ import (
 	"bitarcade-backend/internal/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type APIHandler struct {
@@ -42,8 +43,9 @@ func (h *APIHandler) HealthCheck(c *gin.Context) {
 // Auth Handlers
 // ==========================================
 type LoginRequest struct {
-	Phone string `json:"phone" binding:"required"`
-	Name  string `json:"name"`
+	Phone             string `json:"phone" binding:"required"`
+	Name              string `json:"name"`
+	VerificationToken string `json:"verificationToken"`
 }
 
 func (h *APIHandler) LoginOrRegister(c *gin.Context) {
@@ -53,13 +55,63 @@ func (h *APIHandler) LoginOrRegister(c *gin.Context) {
 		return
 	}
 
-	user, token, err := h.authService.LoginOrRegister(req.Phone, req.Name)
+	phone := strings.TrimSpace(req.Phone)
+	if len(phone) < 10 {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid phone number"})
+		return
+	}
+
+	// Check if already authenticated with valid JWT session (e.g. app profile/device background sync)
+	authHeader := c.GetHeader("Authorization")
+	authenticated := false
+	if strings.HasPrefix(authHeader, "Bearer ") {
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+			return []byte(h.cfg.JWTSecret), nil
+		})
+		if err == nil && token.Valid {
+			authenticated = true
+		}
+	}
+
+	// If not already authenticated via JWT, require real WhatsApp verification token
+	if !authenticated {
+		if req.VerificationToken == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"error":   "Verification required. Please complete WhatsApp verification to log in.",
+			})
+			return
+		}
+
+		verifiedPhone, err := h.authService.VerifyWhatsAppToken(req.VerificationToken)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"error":   "WhatsApp verification failed: " + err.Error(),
+			})
+			return
+		}
+
+		// Ensure verified phone matches the requested phone number
+		cleanVerified := strings.TrimLeft(verifiedPhone, "+")
+		cleanPhone := strings.TrimLeft(phone, "+")
+		if !strings.HasSuffix(cleanVerified, cleanPhone) && !strings.HasSuffix(cleanPhone, cleanVerified) {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"error":   "Phone number does not match WhatsApp verification",
+			})
+			return
+		}
+		phone = verifiedPhone
+	}
+
+	user, token, err := h.authService.LoginOrRegister(phone, req.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		return
 	}
 
-	// Ensure wallet exists
 	wallet, _ := h.walletService.GetOrCreateWallet(user.ID)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -107,12 +159,13 @@ func (h *APIHandler) VerifyWhatsApp(c *gin.Context) {
 		return
 	}
 
-	phone := req.Phone
-	if phone == "" {
-		phone = "98" + req.Token[max(0, len(req.Token)-8):]
+	verifiedPhone, err := h.authService.VerifyWhatsAppToken(req.Token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "WhatsApp verification failed: " + err.Error()})
+		return
 	}
 
-	user, token, err := h.authService.LoginOrRegister(phone, "WhatsAppPlayer")
+	user, token, err := h.authService.LoginOrRegister(verifiedPhone, "WhatsAppPlayer")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 		return

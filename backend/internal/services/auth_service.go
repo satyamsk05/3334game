@@ -1,10 +1,16 @@
 package services
 
 import (
+	"bufio"
+	"context"
+	cryptoRand "crypto/rand"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"math/rand"
+	"math/big"
+	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -208,15 +214,80 @@ func (s *AuthService) InitiateWhatsAppAuth(appKeyOverride string) (string, strin
 	const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 	randPart := make([]byte, 6)
 	for i := range randPart {
-		randPart[i] = chars[rand.Intn(len(chars))]
+		idx, err := cryptoRand.Int(cryptoRand.Reader, big.NewInt(int64(len(chars))))
+		if err != nil {
+			randPart[i] = chars[i%len(chars)]
+		} else {
+			randPart[i] = chars[idx.Int64()]
+		}
 	}
 	token := fmt.Sprintf("%s-%s", appKey, string(randPart))
 
-	businessPhone := "919989907408"
+	businessPhone := s.cfg.BusinessPhone
+	if businessPhone == "" {
+		businessPhone = "919989907408"
+	}
 	msg := fmt.Sprintf("Please do not edit this message.\nLOGGIN %s", token)
 	waLink := fmt.Sprintf("https://wa.me/%s?text=%s", businessPhone, url.QueryEscape(msg))
 
 	return token, waLink
+}
+
+// VerifyWhatsAppToken validates a WhatsApp login token against Loggin.dev's SSE stream.
+// Returns the authentic, verified phone number registered on Loggin.dev.
+func (s *AuthService) VerifyWhatsAppToken(token string) (string, error) {
+	token = strings.TrimSpace(token)
+	if token == "" {
+		return "", errors.New("empty verification token")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	defer cancel()
+
+	endpoint := fmt.Sprintf("https://loggin.dev/api/subscribe?token=%s", url.QueryEscape(token))
+	req, err := http.NewRequestWithContext(ctx, "GET", endpoint, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Accept", "text/event-stream")
+	req.Header.Set("Cache-Control", "no-cache")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("could not reach verification provider: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("verification provider returned HTTP %d", resp.StatusCode)
+	}
+
+	scanner := bufio.NewScanner(resp.Body)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if strings.HasPrefix(line, "data:") {
+			jsonPayload := strings.TrimSpace(strings.TrimPrefix(line, "data:"))
+			var payload struct {
+				Status string `json:"status"`
+				Phone  string `json:"phone"`
+			}
+			if err := json.Unmarshal([]byte(jsonPayload), &payload); err == nil {
+				if payload.Status == "verified" && payload.Phone != "" {
+					return payload.Phone, nil
+				}
+				if payload.Status == "blocked" {
+					return "", errors.New("verification was blocked by provider")
+				}
+			}
+		}
+	}
+
+	if err := scanner.Err(); err != nil && !errors.Is(err, context.DeadlineExceeded) && !errors.Is(err, context.Canceled) {
+		return "", fmt.Errorf("verification stream read error: %w", err)
+	}
+
+	return "", errors.New("verification not confirmed or token expired")
 }
 
 func (s *AuthService) GetAllUsers(limit int) []models.User {

@@ -78,12 +78,12 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
         }
     }
 
-    fun processPhoneForLogin(phone: String) {
+    fun processPhoneForLogin(phone: String, verificationToken: String = "") {
         val cleanPhone = phone.trim()
         isLoading = true
         statusMessage = "Logging in..."
         scope.launch {
-            val result = AuthRepository.login(phone = cleanPhone, name = "", context = context)
+            val result = AuthRepository.login(phone = cleanPhone, name = "", context = context, verificationToken = verificationToken)
             isLoading = false
             statusMessage = null
             result.onSuccess { session ->
@@ -134,7 +134,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                     statusMessage = "Verified!"
                     isLoading = false
                     statusMessage = null
-                    processPhoneForLogin(verifiedPhone)
+                    processPhoneForLogin(verifiedPhone, session.token)
                 }.onFailure {
                     isLoading = false
                     statusMessage = null
@@ -617,7 +617,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                             .clip(RoundedCornerShape(25.dp))
                             .background(if (phoneInput.length >= 10) Color(0xFF10B981) else Color(0xFF262626))
                             .clickable(enabled = phoneInput.length >= 10 && !isLoading) {
-                                processPhoneForLogin(phoneInput)
+                                showPhoneSheet = false
+                                handleWhatsAppLogin()
                             },
                         contentAlignment = Alignment.Center
                     ) {

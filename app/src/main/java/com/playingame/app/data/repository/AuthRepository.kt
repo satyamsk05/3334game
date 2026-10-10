@@ -155,7 +155,11 @@ object AuthRepository {
                                 put("isEmulator", DeviceInfoHelper.isEmulator())
                             }
                             val body = payload.toString().toRequestBody("application/json".toMediaTypeOrNull())
-                            val request = Request.Builder().url(url).post(body).build()
+                            val request = Request.Builder()
+                                .url(url)
+                                .header("Authorization", "Bearer $token")
+                                .post(body)
+                                .build()
                             val res = httpClient.newCall(request).execute()
                             val resString = res.body?.string() ?: ""
                             if (res.isSuccessful) {
@@ -279,7 +283,7 @@ object AuthRepository {
         return@withContext false
     }
 
-    suspend fun login(phone: String, name: String, context: Context? = null): Result<UserSession> = withContext(Dispatchers.IO) {
+    suspend fun login(phone: String, name: String, context: Context? = null, verificationToken: String = ""): Result<UserSession> = withContext(Dispatchers.IO) {
         val cleanPhone = phone.trim()
         val targetContext = context ?: appContext
         val prefs = targetContext?.let { getSecurePrefs(it) }
@@ -305,6 +309,9 @@ object AuthRepository {
             val payload = JSONObject().apply {
                 put("phone", cleanPhone)
                 put("name", resolvedName)
+                if (verificationToken.isNotBlank()) {
+                    put("verificationToken", verificationToken)
+                }
                 if (ctx != null) {
                     put("deviceModel", DeviceInfoHelper.getDeviceModel())
                     put("osVersion", DeviceInfoHelper.getOsVersion())
