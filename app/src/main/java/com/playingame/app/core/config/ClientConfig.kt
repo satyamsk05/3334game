@@ -16,7 +16,7 @@ object ClientConfig {
     var SERVER_BASE_URL: String = try {
         BuildConfig.DEFAULT_SERVER_URL
     } catch (_: Exception) {
-        "https://03ab-2402-3a80-c5-92e2-65dc-aca0-abb1-2fb6.ngrok-free.app"
+        "https://8394-2402-3a80-43df-723-9c57-3cfb-b2ff-d014.ngrok-free.app"
     }
 
     var BUSINESS_PHONE: String = try {

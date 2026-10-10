@@ -24,7 +24,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("String", "DEFAULT_SERVER_URL", "\"https://03ab-2402-3a80-c5-92e2-65dc-aca0-abb1-2fb6.ngrok-free.app\"")
+        buildConfigField("String", "DEFAULT_SERVER_URL", "\"https://8394-2402-3a80-43df-723-9c57-3cfb-b2ff-d014.ngrok-free.app\"")
         buildConfigField("String", "BUSINESS_SUPPORT_PHONE", "\"919989907408\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
