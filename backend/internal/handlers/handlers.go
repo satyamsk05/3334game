@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"bitarcade-backend/internal/config"
 	"bitarcade-backend/internal/models"
@@ -231,13 +232,25 @@ type SubmitUTRRequest struct {
 }
 
 func (h *APIHandler) SubmitUTR(c *gin.Context) {
+	userID := c.GetString("userId")
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized: valid session token required"})
+		return
+	}
+
 	var req SubmitUTRRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "depositId and utr required"})
 		return
 	}
 
-	dep, err := h.walletService.SubmitDepositUTR(req.DepositID, req.UTR)
+	utrClean := strings.TrimSpace(req.UTR)
+	if len(utrClean) < 6 {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid UTR number format"})
+		return
+	}
+
+	dep, err := h.walletService.SubmitDepositUTR(userID, req.DepositID, utrClean)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return

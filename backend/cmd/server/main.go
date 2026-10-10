@@ -99,7 +99,7 @@ func main() {
 	paymentGroup := router.Group("/api/v1/payments")
 	{
 		paymentGroup.POST("/deposits/initiate", middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
-		paymentGroup.POST("/deposits/utr", apiHandler.SubmitUTR)
+		paymentGroup.POST("/deposits/utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
 		paymentGroup.POST("/withdraw", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
 		paymentGroup.POST("/withdraw/request", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
 	}
@@ -107,6 +107,9 @@ func main() {
 	// Alternate direct routes matching legacy app paths
 	router.POST("/deposits/initiate", middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
 	router.POST("/api/v1/deposits/initiate", middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
+	router.POST("/deposits/utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+	router.POST("/api/v1/deposits/utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+	router.POST("/api/v1/deposits/submit-utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
 	router.POST("/payments/withdraw/request", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
 
 	// Users Group & FCM Token

@@ -218,18 +218,23 @@ func (s *WalletService) CreateDepositRequest(userID string, amountRupees float64
 	return &dep, nil
 }
 
-func (s *WalletService) SubmitDepositUTR(depositID, utr string) (*models.Deposit, error) {
+func (s *WalletService) SubmitDepositUTR(userID, depositID, utr string) (*models.Deposit, error) {
 	if s.bundle.DB != nil {
 		var dep models.Deposit
 		if err := s.bundle.DB.Where("id = ?", depositID).First(&dep).Error; err != nil {
 			return nil, errors.New("deposit not found")
 		}
+		if userID != "" && dep.UserID != userID {
+			return nil, errors.New("unauthorized: deposit does not belong to you")
+		}
 		dep.UTR = utr
 		dep.UpdatedAt = time.Now()
-		_ = s.bundle.DB.Save(&dep)
+		if err := s.bundle.DB.Save(&dep).Error; err != nil {
+			return nil, err
+		}
 		return &dep, nil
 	}
-	return &models.Deposit{ID: depositID, UTR: utr, Status: "PENDING"}, nil
+	return &models.Deposit{ID: depositID, UserID: userID, UTR: utr, Status: "PENDING"}, nil
 }
 
 func (s *WalletService) ApproveDeposit(depositID string) (*models.Deposit, error) {
