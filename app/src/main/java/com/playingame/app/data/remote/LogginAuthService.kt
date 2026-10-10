@@ -25,7 +25,7 @@ object LogginAuthService {
 
     private const val TAG = "LogginAuthService"
     private const val API_BASE = "https://loggin.dev"
-    private const val BUSINESS_PHONE = "919989907408"
+    private val businessPhone get() = ClientConfig.BUSINESS_PHONE
     private const val CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
     private val client get() = RemoteApiClient.client.newBuilder()

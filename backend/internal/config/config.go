@@ -20,6 +20,7 @@ type Config struct {
 	AdminPassword  string
 	ClientOrigin   string
 	LogginAppKey   string
+	BusinessPhone  string
 	// AllowedOrigins is the parsed allowlist from CORS_ORIGIN (comma-separated).
 	// Empty slice means no CORS restriction was configured (lock down in middleware).
 	AllowedOrigins []string
@@ -88,6 +89,11 @@ func LoadConfig() (*Config, error) {
 
 	logginAppKey := os.Getenv("LOGGIN_APP_KEY")
 
+	businessPhone := os.Getenv("BUSINESS_WHATSAPP_PHONE")
+	if businessPhone == "" {
+		businessPhone = "919989907408"
+	}
+
 	return &Config{
 		Port:           port,
 		DatabaseURL:    dbURL,
@@ -100,6 +106,7 @@ func LoadConfig() (*Config, error) {
 		AdminPassword:  adminPass,
 		ClientOrigin:   corsOrigin,
 		LogginAppKey:   logginAppKey,
+		BusinessPhone:  businessPhone,
 		AllowedOrigins: allowedOrigins,
 	}, nil
 }

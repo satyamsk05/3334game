@@ -24,6 +24,9 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "DEFAULT_SERVER_URL", "\"https://api.bitarcade.in\"")
+        buildConfigField("String", "BUSINESS_SUPPORT_PHONE", "\"919989907408\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

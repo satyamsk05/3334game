@@ -13,7 +13,18 @@ object ClientConfig {
      * Cleartext is allowlisted only for known hosts in network_security_config.xml.
      * Prefer HTTPS once TLS is terminated on the server.
      */
-    var SERVER_BASE_URL: String = "https://03ab-2402-3a80-c5-92e2-65dc-aca0-abb1-2fb6.ngrok-free.app"
+    var SERVER_BASE_URL: String = try {
+        BuildConfig.DEFAULT_SERVER_URL
+    } catch (_: Exception) {
+        "https://api.bitarcade.in"
+    }
+
+    var BUSINESS_PHONE: String = try {
+        BuildConfig.BUSINESS_SUPPORT_PHONE
+    } catch (_: Exception) {
+        "919989907408"
+    }
+
     var PAYMENT_GATEWAY_URL: String = SERVER_BASE_URL
 
     val APP_VERSION: String
