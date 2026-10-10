@@ -123,9 +123,10 @@ func (c *Config) IsOriginAllowed(origin string) bool {
 			return true
 		}
 	}
-	// Always allow local development origins
+	// Always allow local development and ngrok tunnel origins for mobile & proxy testing
 	if strings.HasPrefix(origin, "http://localhost:") || strings.HasPrefix(origin, "https://localhost:") ||
-		strings.HasPrefix(origin, "http://127.0.0.1:") || strings.HasPrefix(origin, "https://127.0.0.1:") {
+		strings.HasPrefix(origin, "http://127.0.0.1:") || strings.HasPrefix(origin, "https://127.0.0.1:") ||
+		strings.Contains(origin, ".ngrok-free.app") || strings.Contains(origin, ".ngrok.io") || strings.Contains(origin, ".ngrok.app") {
 		return true
 	}
 	return false
