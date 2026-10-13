@@ -19,11 +19,11 @@ android {
 
     val prodServerUrl = localProperties.getProperty("PROD_SERVER_URL")
         ?: System.getenv("PROD_SERVER_URL")
-        ?: "http://3.7.73.109:5050"
+        ?: "http://15.252.241.88:5050"
     val devServerUrl = localProperties.getProperty("DEV_SERVER_URL")
         ?: System.getenv("DEV_SERVER_URL")
         ?: localProperties.getProperty("SERVER_URL")
-        ?: "http://3.7.73.109:5050"
+        ?: "http://15.252.241.88:5050"
 
     val paymentGatewayUrl = localProperties.getProperty("PAYMENT_GATEWAY_URL")
         ?: System.getenv("PAYMENT_GATEWAY_URL")
