@@ -18,6 +18,14 @@
       "destination": "/index.html"
     },
     {
+      "source": "/addchips",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/addchips/(.*)",
+      "destination": "/index.html"
+    },
+    {
       "source": "/api/v1/deposits/(.*)",
       "destination": "http://15.252.241.88/api/v1/deposits/$1"
     },
