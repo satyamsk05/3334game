@@ -2,7 +2,7 @@
 const backendOrigin =
   process.env.BACKEND_API_URL?.replace(/\/api\/v1\/?$/, '') ||
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/v1\/?$/, '') ||
-  'http://localhost:5050';
+  'http://15.252.241.88';
 const wsOrigin = backendOrigin.replace(/^http/, 'ws');
 
 // Allow 'unsafe-inline' for Next.js hydration scripts/styles. Still blocks external script hosts,
@@ -46,7 +46,7 @@ const nextConfig = {
     const backend =
       process.env.BACKEND_API_URL ||
       process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/v1\/?$/, '') ||
-      'http://localhost:5050';
+      'http://15.252.241.88';
     return [
       {
         source: '/api/v1/:path*',
