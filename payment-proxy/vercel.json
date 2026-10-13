@@ -19,7 +19,7 @@
     },
     {
       "source": "/api/v1/deposits/(.*)",
-      "destination": "http://3.7.73.109:5050/api/v1/deposits/$1"
+      "destination": "http://15.252.241.88:5050/api/v1/deposits/$1"
     }
   ]
 }
