@@ -25,6 +25,10 @@ android {
         ?: localProperties.getProperty("SERVER_URL")
         ?: "http://3.7.73.109:5050"
 
+    val paymentGatewayUrl = localProperties.getProperty("PAYMENT_GATEWAY_URL")
+        ?: System.getenv("PAYMENT_GATEWAY_URL")
+        ?: prodServerUrl
+
     defaultConfig {
         applicationId = "com.playingame.app"
         minSdk = 24
@@ -33,6 +37,7 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "DEFAULT_SERVER_URL", "\"$devServerUrl\"")
+        buildConfigField("String", "PAYMENT_GATEWAY_URL", "\"$paymentGatewayUrl\"")
         buildConfigField("String", "BUSINESS_SUPPORT_PHONE", "\"919989907408\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -41,9 +46,11 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "DEFAULT_SERVER_URL", "\"$devServerUrl\"")
+            buildConfigField("String", "PAYMENT_GATEWAY_URL", "\"$paymentGatewayUrl\"")
         }
         release {
             buildConfigField("String", "DEFAULT_SERVER_URL", "\"$prodServerUrl\"")
+            buildConfigField("String", "PAYMENT_GATEWAY_URL", "\"$paymentGatewayUrl\"")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

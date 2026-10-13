@@ -25,7 +25,11 @@ object ClientConfig {
         "919989907408"
     }
 
-    var PAYMENT_GATEWAY_URL: String = SERVER_BASE_URL
+    var PAYMENT_GATEWAY_URL: String = try {
+        BuildConfig.PAYMENT_GATEWAY_URL.ifBlank { SERVER_BASE_URL }
+    } catch (_: Exception) {
+        SERVER_BASE_URL
+    }
 
     val APP_VERSION: String
         get() = try {
