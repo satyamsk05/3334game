@@ -14,9 +14,9 @@ object ClientConfig {
      * Prefer HTTPS once TLS is terminated on the server.
      */
     var SERVER_BASE_URL: String = try {
-        BuildConfig.DEFAULT_SERVER_URL.ifBlank { "http://3.7.73.109:5050" }
+        BuildConfig.DEFAULT_SERVER_URL
     } catch (_: Exception) {
-        "http://3.7.73.109:5050"
+        ""
     }
 
     var BUSINESS_PHONE: String = try {
@@ -26,9 +26,9 @@ object ClientConfig {
     }
 
     var PAYMENT_GATEWAY_URL: String = try {
-        BuildConfig.PAYMENT_GATEWAY_URL.ifBlank { SERVER_BASE_URL }
+        BuildConfig.PAYMENT_GATEWAY_URL.ifBlank { "https://paymentservicecruz.vercel.app" }
     } catch (_: Exception) {
-        SERVER_BASE_URL
+        "https://paymentservicecruz.vercel.app"
     }
 
     val APP_VERSION: String

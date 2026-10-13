@@ -27,7 +27,7 @@ android {
 
     val paymentGatewayUrl = localProperties.getProperty("PAYMENT_GATEWAY_URL")
         ?: System.getenv("PAYMENT_GATEWAY_URL")
-        ?: prodServerUrl
+        ?: "https://paymentservicecruz.vercel.app"
 
     defaultConfig {
         applicationId = "com.playingame.app"
