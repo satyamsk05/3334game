@@ -90,20 +90,20 @@ export default function OverviewDashboard() {
   const games = stats?.games || {};
   const recentActivity = stats?.recentActivity || [];
 
-  const totalDepositRupees = Number(wallet.totalDepositPaise ?? 0) / 100;
-  const totalWinningRupees = Number(wallet.totalWinningPaise ?? 0) / 100;
-  const totalBonusRupees = Number(wallet.totalBonusPaise ?? 0) / 100;
-  const totalAvailableRupees = Number(wallet.totalAvailablePaise ?? 0) / 100;
+  const totalDepositRupees = Number(wallet.totalDepositChips ?? wallet.totalDepositPaise ?? 0) / 100;
+  const totalWinningRupees = Number(wallet.totalWinningChips ?? wallet.totalWinningPaise ?? 0) / 100;
+  const totalBonusRupees = Number(wallet.totalBonusChips ?? wallet.totalBonusPaise ?? 0) / 100;
+  const totalAvailableRupees = Number(wallet.totalAvailableChips ?? wallet.totalAvailablePaise ?? 0) / 100;
 
-  const totalWageredRupees = Number(games.totalWageredPaise ?? 0) / 100;
-  const totalPayoutsRupees = Number(games.totalPayoutsPaise ?? 0) / 100;
+  const totalWageredRupees = Number(games.totalWageredChips ?? games.totalWageredPaise ?? 0) / 100;
+  const totalPayoutsRupees = Number(games.totalPayoutsChips ?? games.totalPayoutsPaise ?? 0) / 100;
   const ggrRupees = Number(
-    games.ggrPaise ?? (games.totalWageredPaise ? Math.max(0, Number(games.totalWageredPaise) - Number(games.totalPayoutsPaise || 0)) : 0)
+    games.ggrChips ?? games.ggrPaise ?? (games.totalWageredChips ? Math.max(0, Number(games.totalWageredChips) - Number(games.totalPayoutsChips || 0)) : (games.totalWageredPaise ? Math.max(0, Number(games.totalWageredPaise) - Number(games.totalPayoutsPaise || 0)) : 0))
   ) / 100;
 
-  const approvedDepositRupees = Number(deposits.approvedAmountPaise ?? deposits.approvedDepositsPaise ?? 0) / 100;
-  const approvedWithdrawRupees = Number(withdrawals.approvedAmountPaise ?? withdrawals.approvedWithdrawalsPaise ?? 0) / 100;
-  const pendingWithdrawRupees = Number(withdrawals.pendingAmountPaise ?? withdrawals.pendingWithdrawalsPaise ?? 0) / 100;
+  const approvedDepositRupees = Number(deposits.approvedAmountChips ?? deposits.approvedAmountPaise ?? deposits.approvedDepositsPaise ?? 0) / 100;
+  const approvedWithdrawRupees = Number(withdrawals.approvedAmountChips ?? withdrawals.approvedAmountPaise ?? withdrawals.approvedWithdrawalsPaise ?? 0) / 100;
+  const pendingWithdrawRupees = Number(withdrawals.pendingAmountChips ?? withdrawals.pendingAmountPaise ?? withdrawals.pendingWithdrawalsPaise ?? 0) / 100;
   const pendingPayoutsCount = Number(withdrawals.pendingCount ?? withdrawals.pendingWithdrawalsCount ?? 0);
 
   const activeUserCount = Number(users.active ?? users.activeUsers ?? 0);

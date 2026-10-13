@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Bit Arcade Game</string>
+
+    <!-- Onboarding flow strings (English) -->
+    <string name="onboarding_title_1">Play &amp; Win Real Cash</string>
+    <string name="onboarding_desc_1">Compete in high-speed skill battles like Tic-Tac-Toe and cash out instant daily rewards.</string>
+
+    <string name="onboarding_title_2">Instant UPI Withdrawals</string>
+    <string name="onboarding_desc_2">Transfer your winnings directly to your bank account or UPI within seconds with 0% fees.</string>
+
+    <string name="onboarding_title_3">100% Fair &amp; Certified</string>
+    <string name="onboarding_desc_3">Anti-cheat multiplayer engine, genuine player matching, and 24/7 round-the-clock support.</string>
+
+    <!-- Onboarding Buttons -->
+    <string name="onboarding_btn_skip">Skip</string>
+    <string name="onboarding_btn_next">Next</string>
+    <string name="onboarding_btn_get_started">Get Started</string>
+
+    <!-- Accessibility Content Descriptions -->
+    <string name="cd_onboarding_illustration">Onboarding visual illustration</string>
+    <string name="cd_onboarding_next_page">Go to next onboarding page</string>
+    <string name="cd_onboarding_skip">Skip onboarding and proceed to app</string>
+    <string name="cd_onboarding_page_indicator">Page %1$d of %2$d</string>
 </resources>

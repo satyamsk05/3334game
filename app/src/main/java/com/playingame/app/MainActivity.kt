@@ -19,16 +19,46 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.playingame.app.data.remote.WalletSyncService
 import com.playingame.app.data.repository.AuthRepository
+import com.playingame.app.ui.navigation.AppNavHost
+import androidx.navigation.compose.rememberNavController
 import com.playingame.app.ui.screens.HomeScreen
 import com.playingame.app.ui.screens.LoginScreen
 import com.playingame.app.ui.screens.SplashScreen
 import com.playingame.app.ui.theme.BitArcadeTheme
 import kotlinx.coroutines.launch
 
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            try {
+                val stack = throwable.stackTraceToString()
+                android.util.Log.e("CRASH_LOGGER", stack)
+                val f = java.io.File(filesDir, "last_crash.txt")
+                f.writeText(stack)
+
+                val t = Thread {
+                    try {
+                        val client = okhttp3.OkHttpClient()
+                        val body = stack.toRequestBody("text/plain".toMediaTypeOrNull())
+                        val req = okhttp3.Request.Builder()
+                            .url("${com.playingame.app.core.config.ClientConfig.API_BASE_URL}/client-log")
+                            .post(body)
+                            .build()
+                        client.newCall(req).execute()
+                    } catch (_: Throwable) {}
+                }
+                t.start()
+                t.join(1200)
+            } catch (_: Throwable) {}
+            defaultHandler?.uncaughtException(thread, throwable)
+        }
 
         // Unlock High Refresh Rate (90Hz / 120Hz) on supported devices
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -75,6 +105,11 @@ class MainActivity : ComponentActivity() {
                 val session by AuthRepository.currentSession.collectAsState()
                 val bootstrapState by com.playingame.app.data.remote.AppBootstrapService.bootstrapState.collectAsState()
                 val context = androidx.compose.ui.platform.LocalContext.current
+                // In-app legal document viewer overlay (login se bhi accessible)
+                var legalDocType by remember { mutableStateOf<String?>(null) }
+                var isOnboardingCompleted by remember {
+                    mutableStateOf(com.playingame.app.ui.onboarding.OnboardingPreferences.isOnboardingCompleted(context))
+                }
 
                 // Runtime permission launcher for Notification permissions
                 val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
@@ -121,7 +156,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = com.playingame.app.ui.theme.AppBackground
                 ) {
-                    when (bootstrapState) {
+                    if (legalDocType != null) {
+                        com.playingame.app.ui.screens.LegalDocsScreen(
+                            docType = legalDocType!!,
+                            onBackClick = { legalDocType = null }
+                        )
+                    } else when (bootstrapState) {
                         is com.playingame.app.data.remote.BootstrapState.NoInternet -> {
                             com.playingame.app.ui.screens.NoInternetScreen(
                                 isRetrying = isRetryingBootstrap,
@@ -153,12 +193,22 @@ class MainActivity : ComponentActivity() {
                                 com.playingame.app.ui.components.AccountBannedDialog(onDismiss = {})
                             } else if (!isSplashFinished) {
                                 SplashScreen(onSplashFinished = { isSplashFinished = true })
+                            } else if (!isOnboardingCompleted) {
+                                com.playingame.app.ui.onboarding.OnboardingScreen(
+                                    onFinish = {
+                                        isOnboardingCompleted = true
+                                    }
+                                )
                             } else if (!session.isLoggedIn) {
-                                LoginScreen(onLoginSuccess = {
-                                    // Session isLoggedIn state change automatically transitions to HomeScreen
-                                })
+                                LoginScreen(
+                                    onLoginSuccess = {
+                                        // Session isLoggedIn state change automatically transitions to HomeScreen
+                                    },
+                                    onOpenLegalDoc = { docType -> legalDocType = docType }
+                                )
                             } else {
-                                HomeScreen()
+                                val navController = rememberNavController()
+                                AppNavHost(navController = navController)
                             }
                         }
                     }

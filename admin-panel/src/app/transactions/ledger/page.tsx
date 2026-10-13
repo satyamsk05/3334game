@@ -91,10 +91,10 @@ export default function LedgerManagementPage() {
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
-  const totalAvailableRupees = Number(overview?.totalAvailablePaise || 0) / 100;
-  const totalDepositRupees = Number(overview?.totalDepositPaise || 0) / 100;
-  const totalWinningRupees = Number(overview?.totalWinningPaise || 0) / 100;
-  const totalBonusRupees = Number(overview?.totalBonusPaise || 0) / 100;
+  const totalAvailableRupees = Number(overview?.totalAvailableChips || overview?.totalAvailablePaise || 0) / 100;
+  const totalDepositRupees = Number(overview?.totalDepositChips || overview?.totalDepositPaise || 0) / 100;
+  const totalWinningRupees = Number(overview?.totalWinningChips || overview?.totalWinningPaise || 0) / 100;
+  const totalBonusRupees = Number(overview?.totalBonusChips || overview?.totalBonusPaise || 0) / 100;
 
   const getTransactionBadge = (txType: string) => {
     switch (txType) {

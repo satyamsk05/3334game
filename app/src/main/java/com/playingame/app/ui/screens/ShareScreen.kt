@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -100,7 +101,7 @@ fun ShareScreen(
                         .clip(RoundedCornerShape(14.dp))
                         .background(Color(0xFF161922))
                         .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
-                        .clickable { Toast.makeText(context, "Language: English", Toast.LENGTH_SHORT).show() }
+                        .noRippleClickable { Toast.makeText(context, "Language: English", Toast.LENGTH_SHORT).show() }
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -144,7 +145,7 @@ fun ShareScreen(
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color(0xFF0F1015))
                         .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
-                        .clickable {
+                        .noRippleClickable {
                             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                             val clip = android.content.ClipData.newPlainText("Referral Code", "REF334")
                             clipboard.setPrimaryClip(clip)
@@ -164,7 +165,7 @@ fun ShareScreen(
                             color = Color(0xFFFFB800)
                         )
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_settings_about),
+                            painter = painterResource(id = R.drawable.ic_copy),
                             contentDescription = "Copy",
                             tint = Color(0xFFFFB800),
                             modifier = Modifier.size(12.dp)
@@ -276,7 +277,7 @@ fun ShareScreen(
                         .clip(RoundedCornerShape(14.dp))
                         .background(Color(0xFF161922))
                         .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
-                        .clickable { shareAppText(whatsappOnly = false) },
+                        .noRippleClickable { shareAppText(whatsappOnly = false) },
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
@@ -313,7 +314,7 @@ fun ShareScreen(
                                 )
                             )
                         )
-                        .clickable { shareAppText(whatsappOnly = true) },
+                        .noRippleClickable { shareAppText(whatsappOnly = true) },
                     contentAlignment = Alignment.Center
                 ) {
                     Row(

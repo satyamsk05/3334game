@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -65,7 +66,7 @@ fun WithdrawScreen(
                     .background(Color(0xFF0F1015))
                     .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .align(Alignment.CenterStart)
-                    .clickable { onBackClick() },
+                    .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -211,7 +212,7 @@ fun WithdrawScreen(
                     tint = Color(0xFF8E899B)
                 )
                 Text(
-                    text = "Instant 24x7 UPI Withdrawals",
+                    text = "24x7 UPI Withdrawals · Processed within 24 hours",
                     fontSize = 12.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.Medium,
@@ -230,7 +231,7 @@ fun WithdrawScreen(
                         if (isAmountValid) Color(0xFFFFB800) else Color(0xFF282E3E),
                         RoundedCornerShape(14.dp)
                     )
-                    .clickable(enabled = isAmountValid) {
+                    .noRippleClickable(enabled = isAmountValid) {
                         onNextClick(amount)
                     },
                 contentAlignment = Alignment.Center

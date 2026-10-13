@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,7 @@ import com.playingame.app.ui.theme.RubikFont
 @Composable
 fun AboutUsScreen(
     onBackClick: () -> Unit,
+    onOpenLegalDoc: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -46,11 +48,11 @@ fun AboutUsScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
                     .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
-                    .clickable { onBackClick() },
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
+                    .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -128,7 +130,7 @@ fun AboutUsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Bit Arcade Game is a premier skill-based gaming platform designed with 100% security, instant UPI withdrawals, and certified fair play.",
+                    text = "Bit Arcade Game is a skill-based gaming platform with verified UPI payments, transparent ledger accounting, and responsible gaming controls.",
                     fontSize = 13.sp,
                     fontFamily = RubikFont,
                     color = Color(0xFF8E899B),
@@ -147,13 +149,13 @@ fun AboutUsScreen(
                 .background(Color(0xFF0F1015))
                 .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
         ) {
-            AboutRowItem(title = "Terms of Service")
+            AboutRowItem(title = "Terms of Service") { onOpenLegalDoc("TERMS") }
             HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
-            AboutRowItem(title = "Privacy Policy")
+            AboutRowItem(title = "Privacy Policy") { onOpenLegalDoc("PRIVACY") }
             HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
-            AboutRowItem(title = "Responsible Gaming")
+            AboutRowItem(title = "Refund Policy") { onOpenLegalDoc("REFUND") }
             HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
-            AboutRowItem(title = "RNG Certification")
+            AboutRowItem(title = "Responsible Gaming") { onOpenLegalDoc("TERMS") }
         }
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -172,11 +174,11 @@ fun AboutUsScreen(
 }
 
 @Composable
-private fun AboutRowItem(title: String) {
+private fun AboutRowItem(title: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
+            .noRippleClickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

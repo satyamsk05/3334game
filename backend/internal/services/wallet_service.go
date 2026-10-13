@@ -38,9 +38,9 @@ func (s *WalletService) GetOrCreateWallet(userID string) (*models.Wallet, error)
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			wallet = models.Wallet{
 				UserID:       userID,
-				DepositPaise: 0,
-				WinningPaise: 0,
-				BonusPaise:   0,
+				DepositChips: 0,
+				WinningChips: 0,
+				BonusChips:   0,
 				UpdatedAt:    time.Now(),
 			}
 			if err := s.bundle.DB.Create(&wallet).Error; err != nil {
@@ -57,9 +57,9 @@ func (s *WalletService) GetOrCreateWallet(userID string) (*models.Wallet, error)
 	if !exists {
 		w = &models.Wallet{
 			UserID:       userID,
-			DepositPaise: 0,
-			WinningPaise: 0,
-			BonusPaise:   0,
+			DepositChips: 0,
+			WinningChips: 0,
+			BonusChips:   0,
 			UpdatedAt:    time.Now(),
 		}
 		s.memUsers[userID] = w
@@ -67,11 +67,11 @@ func (s *WalletService) GetOrCreateWallet(userID string) (*models.Wallet, error)
 	return w, nil
 }
 
-func (s *WalletService) CreditDeposit(userID string, amountPaise int64, referenceID, description string) (*models.Transaction, error) {
+func (s *WalletService) CreditDeposit(userID string, amountChips int64, referenceID, description string) (*models.Transaction, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if amountPaise <= 0 {
+	if amountChips <= 0 {
 		return nil, errors.New("amount must be positive")
 	}
 
@@ -81,7 +81,7 @@ func (s *WalletService) CreditDeposit(userID string, amountPaise int64, referenc
 			w = &models.Wallet{UserID: userID}
 			_ = s.bundle.DB.Create(w)
 		}
-		w.DepositPaise += amountPaise
+		w.DepositChips += amountChips
 		w.UpdatedAt = time.Now()
 		_ = s.bundle.DB.Save(w)
 	} else {
@@ -90,7 +90,7 @@ func (s *WalletService) CreditDeposit(userID string, amountPaise int64, referenc
 			w = &models.Wallet{UserID: userID}
 			s.memUsers[userID] = w
 		}
-		w.DepositPaise += amountPaise
+		w.DepositChips += amountChips
 		w.UpdatedAt = time.Now()
 	}
 
@@ -98,8 +98,10 @@ func (s *WalletService) CreditDeposit(userID string, amountPaise int64, referenc
 		ID:                fmt.Sprintf("TX-%d", time.Now().UnixNano()),
 		UserID:            userID,
 		Type:              "DEPOSIT",
-		AmountPaise:       amountPaise,
-		BalanceAfterPaise: w.TotalPaise(),
+		AmountChips:       amountChips,
+		BalanceAfterChips: w.TotalChips(),
+		AmountPaise:       amountChips,
+		BalanceAfterPaise: w.TotalChips(),
 		Status:            "SUCCESS",
 		ReferenceID:       referenceID,
 		Description:       description,
@@ -115,14 +117,14 @@ func (s *WalletService) CreditDeposit(userID string, amountPaise int64, referenc
 	return &tx, nil
 }
 
-func (s *WalletService) RequestWithdrawal(userID, upiID string, amountPaise int64) (*models.Withdrawal, error) {
+func (s *WalletService) RequestWithdrawal(userID, upiID string, amountChips int64) (*models.Withdrawal, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	minPaise := int64(2500)   // ₹25
-	maxPaise := int64(500000) // ₹5000
-	if amountPaise < minPaise || amountPaise > maxPaise {
-		return nil, fmt.Errorf("withdrawal must be between ₹%d and ₹%d", minPaise/100, maxPaise/100)
+	minChips := int64(2500)   // 25.00
+	maxChips := int64(500000) // 5000.00
+	if amountChips < minChips || amountChips > maxChips {
+		return nil, fmt.Errorf("withdrawal must be between %d and %d chips", minChips/100, maxChips/100)
 	}
 
 	var w *models.Wallet
@@ -137,11 +139,11 @@ func (s *WalletService) RequestWithdrawal(userID, upiID string, amountPaise int6
 		}
 	}
 
-	if w.WinningPaise < amountPaise {
+	if w.WinningChips < amountChips {
 		return nil, errors.New("insufficient winning balance")
 	}
 
-	w.WinningPaise -= amountPaise
+	w.WinningChips -= amountChips
 	w.UpdatedAt = time.Now()
 	if s.bundle.DB != nil {
 		_ = s.bundle.DB.Save(w)
@@ -151,7 +153,7 @@ func (s *WalletService) RequestWithdrawal(userID, upiID string, amountPaise int6
 	wd := models.Withdrawal{
 		ID:           wdID,
 		UserID:       userID,
-		AmountRupees: float64(amountPaise) / 100.0,
+		AmountRupees: float64(amountChips) / 100.0,
 		UPIID:        upiID,
 		Status:       "PENDING",
 		CreatedAt:    time.Now(),
@@ -162,8 +164,10 @@ func (s *WalletService) RequestWithdrawal(userID, upiID string, amountPaise int6
 		ID:                wdID,
 		UserID:            userID,
 		Type:              "WITHDRAWAL",
-		AmountPaise:       amountPaise,
-		BalanceAfterPaise: w.TotalPaise(),
+		AmountChips:       amountChips,
+		BalanceAfterChips: w.TotalChips(),
+		AmountPaise:       amountChips,
+		BalanceAfterPaise: w.TotalChips(),
 		Status:            "PENDING",
 		ReferenceID:       wdID,
 		Description:       fmt.Sprintf("Withdrawal to UPI: %s", upiID),
@@ -238,6 +242,17 @@ func (s *WalletService) SubmitDepositUTR(userID, depositID, utr string) (*models
 	return &models.Deposit{ID: depositID, UserID: userID, UTR: utr, Status: "PENDING"}, nil
 }
 
+func (s *WalletService) GetDeposit(depositID string) (*models.Deposit, error) {
+	if s.bundle.DB != nil {
+		var dep models.Deposit
+		if err := s.bundle.DB.Where("id = ?", depositID).First(&dep).Error; err != nil {
+			return nil, errors.New("deposit not found")
+		}
+		return &dep, nil
+	}
+	return &models.Deposit{ID: depositID, Status: "PENDING"}, nil
+}
+
 func (s *WalletService) ApproveDeposit(depositID string) (*models.Deposit, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -263,8 +278,8 @@ func (s *WalletService) ApproveDeposit(depositID string) (*models.Deposit, error
 				return err
 			}
 
-			amountPaise := int64(dep.AmountRupees * 100)
-			if amountPaise <= 0 {
+			amountChips := int64(dep.AmountRupees * 100)
+			if amountChips <= 0 {
 				return errors.New("invalid deposit amount")
 			}
 
@@ -276,7 +291,7 @@ func (s *WalletService) ApproveDeposit(depositID string) (*models.Deposit, error
 				}
 			}
 
-			w.DepositPaise += amountPaise
+			w.DepositChips += amountChips
 			w.UpdatedAt = time.Now()
 			if err := tx.Save(&w).Error; err != nil {
 				return err
@@ -286,8 +301,10 @@ func (s *WalletService) ApproveDeposit(depositID string) (*models.Deposit, error
 				ID:                fmt.Sprintf("TX-%s", uuid.New().String()[:12]),
 				UserID:            dep.UserID,
 				Type:              "DEPOSIT",
-				AmountPaise:       amountPaise,
-				BalanceAfterPaise: w.TotalPaise(),
+				AmountChips:       amountChips,
+				BalanceAfterChips: w.TotalChips(),
+				AmountPaise:       amountChips,
+				BalanceAfterPaise: w.TotalChips(),
 				Status:            "SUCCESS",
 				ReferenceID:       dep.UTR,
 				Description:       "Cash Deposit Approved",
@@ -375,10 +392,10 @@ func (s *WalletService) RejectWithdrawal(withdrawalID string) (*models.Withdrawa
 			}
 
 			// Atomic refund of winnings
-			amountPaise := int64(wd.AmountRupees * 100)
+			amountChips := int64(wd.AmountRupees * 100)
 			var w models.Wallet
 			if err := tx.Set("gorm:query_option", "FOR UPDATE").Where("user_id = ?", wd.UserID).First(&w).Error; err == nil {
-				w.WinningPaise += amountPaise
+				w.WinningChips += amountChips
 				w.UpdatedAt = time.Now()
 				if err := tx.Save(&w).Error; err != nil {
 					return err
@@ -388,8 +405,10 @@ func (s *WalletService) RejectWithdrawal(withdrawalID string) (*models.Withdrawa
 					ID:                fmt.Sprintf("TX-%s", uuid.New().String()[:12]),
 					UserID:            wd.UserID,
 					Type:              "REFUND",
-					AmountPaise:       amountPaise,
-					BalanceAfterPaise: w.TotalPaise(),
+					AmountChips:       amountChips,
+					BalanceAfterChips: w.TotalChips(),
+					AmountPaise:       amountChips,
+					BalanceAfterPaise: w.TotalChips(),
 					Status:            "SUCCESS",
 					ReferenceID:       wd.ID,
 					Description:       "Withdrawal Rejected - Refunded to Winnings",
@@ -469,7 +488,7 @@ func (s *WalletService) GetAllTransactions(limit int) []models.Transaction {
 	return all
 }
 
-func (s *WalletService) AdjustWallet(userID, bucket string, isCredit bool, amountPaise int64, reason string) error {
+func (s *WalletService) AdjustWallet(userID, bucket string, isCredit bool, amountChips int64, reason string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -485,29 +504,29 @@ func (s *WalletService) AdjustWallet(userID, bucket string, isCredit bool, amoun
 		}
 	}
 
-	delta := amountPaise
+	delta := amountChips
 	if !isCredit {
-		delta = -amountPaise
+		delta = -amountChips
 	}
 
 	switch bucket {
 	case "deposit":
-		if !isCredit && w.DepositPaise < amountPaise {
+		if !isCredit && w.DepositChips < amountChips {
 			return errors.New("insufficient deposit balance")
 		}
-		w.DepositPaise += delta
+		w.DepositChips += delta
 	case "winnings":
-		if !isCredit && w.WinningPaise < amountPaise {
+		if !isCredit && w.WinningChips < amountChips {
 			return errors.New("insufficient winning balance")
 		}
-		w.WinningPaise += delta
+		w.WinningChips += delta
 	case "bonus":
-		if !isCredit && w.BonusPaise < amountPaise {
+		if !isCredit && w.BonusChips < amountChips {
 			return errors.New("insufficient bonus balance")
 		}
-		w.BonusPaise += delta
+		w.BonusChips += delta
 	default:
-		w.DepositPaise += delta
+		return fmt.Errorf("invalid bucket '%s': must be deposit, winnings, or bonus", bucket)
 	}
 	w.UpdatedAt = time.Now()
 
@@ -520,8 +539,10 @@ func (s *WalletService) AdjustWallet(userID, bucket string, isCredit bool, amoun
 		ID:                fmt.Sprintf("ADJ-%d", time.Now().UnixNano()%1000000000000),
 		UserID:            userID,
 		Type:              txType,
-		AmountPaise:       amountPaise,
-		BalanceAfterPaise: w.TotalPaise(),
+		AmountChips:       amountChips,
+		BalanceAfterChips: w.TotalChips(),
+		AmountPaise:       amountChips,
+		BalanceAfterPaise: w.TotalChips(),
 		Status:            "SUCCESS",
 		ReferenceID:       fmt.Sprintf("ADMIN-%s", bucket),
 		Description:       reason,
@@ -548,49 +569,258 @@ func (s *WalletService) GetFinancialStats() map[string]interface{} {
 	var pendingWdCount int64
 
 	if s.bundle.DB != nil {
-		var wallets []models.Wallet
-		s.bundle.DB.Find(&wallets)
-		for _, w := range wallets {
-			totalDep += w.DepositPaise
-			totalWin += w.WinningPaise
-			totalBon += w.BonusPaise
+		type WalletSums struct {
+			TotalDeposit int64 `gorm:"column:total_deposit"`
+			TotalWinning int64 `gorm:"column:total_winning"`
+			TotalBonus   int64 `gorm:"column:total_bonus"`
 		}
+		var wSums WalletSums
+		s.bundle.DB.Model(&models.Wallet{}).Select(
+			"COALESCE(SUM(deposit_chips), 0) as total_deposit, COALESCE(SUM(winning_chips), 0) as total_winning, COALESCE(SUM(bonus_chips), 0) as total_bonus",
+		).Scan(&wSums)
+		totalDep = wSums.TotalDeposit
+		totalWin = wSums.TotalWinning
+		totalBon = wSums.TotalBonus
 
-		var deps []models.Deposit
-		s.bundle.DB.Where("status = ?", "APPROVED").Find(&deps)
-		for _, d := range deps {
-			approvedDep += int64(d.AmountRupees * 100)
-		}
+		var depSum float64
+		s.bundle.DB.Model(&models.Deposit{}).Where("status = ?", "APPROVED").Select("COALESCE(SUM(amount_rupees), 0)").Row().Scan(&depSum)
+		approvedDep = int64(depSum * 100)
 
-		var wds []models.Withdrawal
-		s.bundle.DB.Find(&wds)
-		for _, wd := range wds {
-			if wd.Status == "APPROVED" {
-				approvedWd += int64(wd.AmountRupees * 100)
-			} else if wd.Status == "PENDING" {
-				pendingWd += int64(wd.AmountRupees * 100)
-				pendingWdCount++
-			}
-		}
+		var wdApprovedSum float64
+		s.bundle.DB.Model(&models.Withdrawal{}).Where("status = ?", "APPROVED").Select("COALESCE(SUM(amount_rupees), 0)").Row().Scan(&wdApprovedSum)
+		approvedWd = int64(wdApprovedSum * 100)
+
+		var wdPendingSum float64
+		s.bundle.DB.Model(&models.Withdrawal{}).Where("status = ?", "PENDING").Select("COALESCE(SUM(amount_rupees), 0)").Row().Scan(&wdPendingSum)
+		pendingWd = int64(wdPendingSum * 100)
+
+		s.bundle.DB.Model(&models.Withdrawal{}).Where("status = ?", "PENDING").Count(&pendingWdCount)
 	} else {
 		s.mu.Lock()
 		for _, w := range s.memUsers {
-			totalDep += w.DepositPaise
-			totalWin += w.WinningPaise
-			totalBon += w.BonusPaise
+			totalDep += w.DepositChips
+			totalWin += w.WinningChips
+			totalBon += w.BonusChips
 		}
 		s.mu.Unlock()
 	}
 
 	return map[string]interface{}{
-		"totalDepositPaise":           totalDep,
-		"totalWinningPaise":           totalWin,
-		"totalBonusPaise":             totalBon,
-		"totalAvailablePaise":         totalDep + totalWin + totalBon,
-		"approvedAmountPaise":         approvedDep,
-		"approvedWithdrawalsPaise":    approvedWd,
-		"pendingWithdrawalsPaise":     pendingWd,
-		"pendingWithdrawalsCount":     pendingWdCount,
+		"totalDepositChips":        totalDep,
+		"totalWinningChips":        totalWin,
+		"totalBonusChips":          totalBon,
+		"totalAvailableChips":      totalDep + totalWin + totalBon,
+		"approvedAmountChips":      approvedDep,
+		"approvedWithdrawalsChips": approvedWd,
+		"pendingWithdrawalsChips":  pendingWd,
+		"pendingWithdrawalsCount":  pendingWdCount,
+		"totalDepositPaise":        totalDep,
+		"totalWinningPaise":        totalWin,
+		"totalBonusPaise":          totalBon,
+		"totalAvailablePaise":      totalDep + totalWin + totalBon,
+		"approvedAmountPaise":      approvedDep,
+		"approvedWithdrawalsPaise": approvedWd,
+		"pendingWithdrawalsPaise":  pendingWd,
 	}
 }
+
+// ==========================================
+// Promotions CRUD
+// ==========================================
+func (s *WalletService) GetAllPromotions() []models.Promotion {
+	if s.bundle.DB != nil {
+		var promos []models.Promotion
+		s.bundle.DB.Order("display_order asc, id asc").Find(&promos)
+		if len(promos) > 0 {
+			return promos
+		}
+	}
+	return []models.Promotion{
+		{
+			ID:            "promo_welcome",
+			Title:         "100% First Deposit Bonus",
+			Subtitle:      "Deposit now & get up to ₹500 extra bonus chips!",
+			GradientStart: "#7C3AED",
+			GradientEnd:   "#1E1B4B",
+			IconType:      "gift",
+			TargetRoute:   "deposit",
+			BadgeText:     "EXTRA CHIPS",
+			CtaText:       "Claim Bonus",
+			Active:        true,
+			DisplayOrder:  1,
+		},
+		{
+			ID:            "promo_cashback",
+			Title:         "Mega Table Cashback",
+			Subtitle:      "Play Dragon vs Tiger with zero table deduction today!",
+			GradientStart: "#BE123C",
+			GradientEnd:   "#4C0519",
+			IconType:      "trophy",
+			TargetRoute:   "deposit",
+			BadgeText:     "HOT DEAL",
+			CtaText:       "Play Now",
+			Active:        true,
+			DisplayOrder:  2,
+		},
+	}
+}
+
+func (s *WalletService) CreatePromotion(p *models.Promotion) error {
+	if s.bundle.DB == nil {
+		return errors.New("database not available")
+	}
+	if p.ID == "" {
+		p.ID = fmt.Sprintf("promo_%s", uuid.New().String()[:8])
+	}
+	return s.bundle.DB.Create(p).Error
+}
+
+func (s *WalletService) UpdatePromotion(id string, updates map[string]interface{}) (*models.Promotion, error) {
+	if s.bundle.DB == nil {
+		return nil, errors.New("database not available")
+	}
+	var p models.Promotion
+	if err := s.bundle.DB.Where("id = ?", id).First(&p).Error; err != nil {
+		return nil, errors.New("promotion not found")
+	}
+	if err := s.bundle.DB.Model(&p).Updates(updates).Error; err != nil {
+		return nil, err
+	}
+	return &p, nil
+}
+
+func (s *WalletService) TogglePromotion(id string, active bool) error {
+	if s.bundle.DB == nil {
+		return errors.New("database not available")
+	}
+	return s.bundle.DB.Model(&models.Promotion{}).Where("id = ?", id).Update("active", active).Error
+}
+
+func (s *WalletService) DeletePromotion(id string) error {
+	if s.bundle.DB == nil {
+		return errors.New("database not available")
+	}
+	return s.bundle.DB.Where("id = ?", id).Delete(&models.Promotion{}).Error
+}
+
+func (s *WalletService) DebitBet(userID string, amountChips int64, gameName, roundID string) (*models.Transaction, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	var w *models.Wallet
+	if s.bundle.DB != nil {
+		if err := s.bundle.DB.Where("user_id = ?", userID).First(&w).Error; err != nil {
+			return nil, errors.New("wallet not found")
+		}
+	} else {
+		w = s.memUsers[userID]
+		if w == nil {
+			return nil, errors.New("wallet not found")
+		}
+	}
+
+	if w.TotalChips() < amountChips {
+		return nil, errors.New("insufficient wallet balance")
+	}
+
+	rem := amountChips
+	// Deduct from deposit first
+	if w.DepositChips >= rem {
+		w.DepositChips -= rem
+		rem = 0
+	} else {
+		rem -= w.DepositChips
+		w.DepositChips = 0
+	}
+
+	// Deduct from winnings
+	if rem > 0 {
+		if w.WinningChips >= rem {
+			w.WinningChips -= rem
+			rem = 0
+		} else {
+			rem -= w.WinningChips
+			w.WinningChips = 0
+		}
+	}
+
+	// Deduct from bonus
+	if rem > 0 {
+		if w.BonusChips >= rem {
+			w.BonusChips -= rem
+			rem = 0
+		} else {
+			return nil, errors.New("insufficient balance")
+		}
+	}
+
+	w.UpdatedAt = time.Now()
+
+	tx := models.Transaction{
+		ID:                fmt.Sprintf("BET-%d", time.Now().UnixNano()%1000000000000),
+		UserID:            userID,
+		Type:              "BET_PLACED",
+		AmountChips:       amountChips,
+		BalanceAfterChips: w.TotalChips(),
+		AmountPaise:       amountChips,
+		BalanceAfterPaise: w.TotalChips(),
+		Status:            "SUCCESS",
+		ReferenceID:       roundID,
+		Description:       fmt.Sprintf("%s Bet", gameName),
+		CreatedAt:         time.Now(),
+	}
+
+	if s.bundle.DB != nil {
+		_ = s.bundle.DB.Save(w)
+		_ = s.bundle.DB.Create(&tx)
+	} else {
+		s.memTxns[userID] = append([]models.Transaction{tx}, s.memTxns[userID]...)
+	}
+
+	return &tx, nil
+}
+
+func (s *WalletService) CreditWinnings(userID string, amountChips int64, gameName, roundID string) (*models.Transaction, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	var w *models.Wallet
+	if s.bundle.DB != nil {
+		if err := s.bundle.DB.Where("user_id = ?", userID).First(&w).Error; err != nil {
+			return nil, errors.New("wallet not found")
+		}
+	} else {
+		w = s.memUsers[userID]
+		if w == nil {
+			return nil, errors.New("wallet not found")
+		}
+	}
+
+	w.WinningChips += amountChips
+	w.UpdatedAt = time.Now()
+
+	tx := models.Transaction{
+		ID:                fmt.Sprintf("WIN-%d", time.Now().UnixNano()%1000000000000),
+		UserID:            userID,
+		Type:              "WIN_PAYOUT",
+		AmountChips:       amountChips,
+		BalanceAfterChips: w.TotalChips(),
+		AmountPaise:       amountChips,
+		BalanceAfterPaise: w.TotalChips(),
+		Status:            "SUCCESS",
+		ReferenceID:       roundID,
+		Description:       fmt.Sprintf("%s Win Payout", gameName),
+		CreatedAt:         time.Now(),
+	}
+
+	if s.bundle.DB != nil {
+		_ = s.bundle.DB.Save(w)
+		_ = s.bundle.DB.Create(&tx)
+	} else {
+		s.memTxns[userID] = append([]models.Transaction{tx}, s.memTxns[userID]...)
+	}
+
+	return &tx, nil
+}
+
 

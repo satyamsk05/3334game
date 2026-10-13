@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +47,7 @@ fun SettingsScreen(
     onContactUsClick: () -> Unit = {},
     onFairPlayClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onDeleteAccountClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     BackHandler {
@@ -53,6 +56,7 @@ fun SettingsScreen(
 
     val context = LocalContext.current
     val userProfile by WalletLedger.userProfile.collectAsState()
+    var showDeleteDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -77,7 +81,7 @@ fun SettingsScreen(
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color(0xFF0F1015))
                     .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
-                    .clickable { onBackClick() },
+                    .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -299,18 +303,64 @@ fun SettingsScreen(
                     .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
-                SettingsRow(
-                    title = "Logout Account",
-                    iconRes = R.drawable.ic_settings_logout,
-                    onClick = {
-                        Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
-                        onLogoutClick()
-                    }
-                )
+                Column {
+                    SettingsRow(
+                        title = "Logout Account",
+                        iconRes = R.drawable.ic_settings_logout,
+                        onClick = {
+                            Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
+                            onLogoutClick()
+                        }
+                    )
+                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+
+                    SettingsRow(
+                        title = "Delete Account",
+                        iconRes = R.drawable.ic_settings_issues,
+                        onClick = { showDeleteDialog = true }
+                    )
+                }
             }
         }
-        
+
         Spacer(modifier = Modifier.height(20.dp))
+    }
+
+    if (showDeleteDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = {
+                Text(
+                    text = "Delete Account?",
+                    fontFamily = RubikFont,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0A0C11)
+                )
+            },
+            text = {
+                Text(
+                    text = "This permanently deletes your account and personal data as per our " +
+                        "Privacy Policy (DPDP Act, 2023). Any wallet balance will be forfeited — " +
+                        "withdraw it first. This action cannot be undone.",
+                    fontFamily = RubikFont,
+                    color = Color(0xFF374151)
+                )
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    showDeleteDialog = false
+                    onDeleteAccountClick()
+                }) {
+                    Text("Delete", color = Color(0xFFDC2626), fontFamily = RubikFont, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel", color = Color(0xFF374151), fontFamily = RubikFont)
+                }
+            },
+            containerColor = Color.White
+        )
     }
 }
 
@@ -324,7 +374,7 @@ fun SettingsRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .noRippleClickable { onClick() }
             .padding(vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

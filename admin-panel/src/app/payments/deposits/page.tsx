@@ -98,7 +98,7 @@ export default function DepositsQueuePage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-5">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-text-primary">Deposit Verification Queue</h1>
-          <p className="text-sm text-text-secondary mt-1">Live UTR ledger verification linked to player integer paise balances</p>
+          <p className="text-sm text-text-secondary mt-1">Live UTR ledger verification linked to player integer chips balances</p>
         </div>
 
         {/* Filter Segmented Control */}

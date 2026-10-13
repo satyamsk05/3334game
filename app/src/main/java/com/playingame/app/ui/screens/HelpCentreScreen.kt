@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,11 +42,11 @@ fun HelpCentreScreen(
 
     val faqs = remember {
         listOf(
-            FaqItem(1, "How do I add money to my wallet?", "Go to the Add Cash tab from Home or Settings, select the amount, choose your payment method (UPI/Card/NetBanking), and complete the payment."),
-            FaqItem(2, "How long does a withdrawal take?", "Instant UPI withdrawals usually take 1-5 minutes. Bank account transfers may take up to 24 hours depending on processing banks."),
-            FaqItem(3, "Is my money safe on this platform?", "Yes, 100% safe. We use enterprise-grade SSL encryption and secure banking gateways for all financial transactions."),
-            FaqItem(4, "What should I do if a transaction fails?", "If money was deducted from your account, it will be automatically refunded within 24-48 hours. You can also contact support with your TXN ID."),
-            FaqItem(5, "How does the Fair Play policy work?", "Our platform uses certified Random Number Generator (RNG) systems ensuring 100% fair and unbiased game outcomes.")
+            FaqItem(1, "How do I add money to my wallet?", "Go to the Add Cash tab from Home or Settings, select the amount, choose your payment method, and complete the UPI transfer."),
+            FaqItem(2, "How long does a withdrawal take?", "Withdrawal requests are reviewed and processed to your verified UPI ID, usually within 24 hours after verification."),
+            FaqItem(3, "Is my money safe on this platform?", "Yes. All communication is protected via encrypted TLS/HTTPS connections and all transactions are recorded in a transparent ledger."),
+            FaqItem(4, "What should I do if a transaction fails?", "If money was debited but not credited, please report it via Support with your 12-digit UTR number. Verified failed deposits are refunded within 5-7 working days per our Refund Policy."),
+            FaqItem(5, "How does the Fair Play policy work?", "All games are games of skill with transparent ledger accounting, strict anti-collusion policies, and responsible gaming controls.")
         )
     }
 
@@ -66,11 +67,11 @@ fun HelpCentreScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
                     .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
-                    .clickable { onBackClick() },
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
+                    .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -120,7 +121,7 @@ fun HelpCentreScreen(
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF0F1015))
                 .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
-                .clickable { onContactSupportClick() }
+                .noRippleClickable { onContactSupportClick() }
                 .padding(16.dp)
         ) {
             Row(
@@ -184,7 +185,7 @@ fun HelpCentreScreen(
                     .clip(RoundedCornerShape(14.dp))
                     .background(Color(0xFF0F1015))
                     .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
-                    .clickable {
+                    .noRippleClickable {
                         expandedFaqId = if (isExpanded) null else faq.id
                     }
                     .padding(14.dp)

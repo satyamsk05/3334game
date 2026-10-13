@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -111,7 +112,7 @@ fun ProfileScreen(
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color(0xFF0F1015))
                     .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
-                    .clickable { onBackClick() },
+                    .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -170,7 +171,7 @@ fun ProfileScreen(
                                 .clip(CircleShape)
                                 .background(Color(0xFF161922))
                                 .border(1.dp, Color(0xFF282E3E), CircleShape)
-                                .clickable {
+                                .noRippleClickable {
                                     editedName = username
                                     showEditNameDialog = true
                                 },
@@ -194,7 +195,7 @@ fun ProfileScreen(
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(Color(0xFF161922))
                                 .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(8.dp))
-                                .clickable {
+                                .noRippleClickable {
                                     clipboardManager.setText(AnnotatedString(userId))
                                     Toast.makeText(context, "User ID copied: $userId", Toast.LENGTH_SHORT).show()
                                 }
@@ -208,7 +209,7 @@ fun ProfileScreen(
                                 color = Color(0xFFFFB800)
                             )
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_settings_about),
+                                painter = painterResource(id = R.drawable.ic_copy),
                                 contentDescription = "Copy",
                                 tint = Color(0xFFFFB800),
                                 modifier = Modifier.size(12.dp)
@@ -245,7 +246,7 @@ fun ProfileScreen(
                 Box(
                     modifier = Modifier
                         .size(80.dp)
-                        .clickable { showAvatarPicker = true }
+                        .noRippleClickable { showAvatarPicker = true }
                 ) {
                     Box(
                         modifier = Modifier
@@ -302,7 +303,7 @@ fun ProfileScreen(
                     )
                 )
                 .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(22.dp))
-                .clickable { onWalletClick() }
+                .noRippleClickable { onWalletClick() }
                 .padding(horizontal = 18.dp)
         ) {
             Row(
@@ -382,7 +383,7 @@ fun ProfileScreen(
                     )
                 )
                 .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(18.dp))
-                .clickable { onSupportClick() }
+                .noRippleClickable { onSupportClick() }
                 .padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
             Row(
@@ -460,7 +461,7 @@ fun ProfileScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onTransactionClick() }
+                        .noRippleClickable { onTransactionClick() }
                         .padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -509,7 +510,7 @@ fun ProfileScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onSettingsClick() }
+                        .noRippleClickable { onSettingsClick() }
                         .padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -701,7 +702,7 @@ fun ProfileScreen(
                                         color = if (isSelected) Color(0xFFFFB800) else Color(0xFF282E3E),
                                         shape = CircleShape
                                     )
-                                    .clickable {
+                                    .noRippleClickable {
                                         coroutineScope.launch {
                                             AuthRepository.updateProfile(
                                                 name = username,

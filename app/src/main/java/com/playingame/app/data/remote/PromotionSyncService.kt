@@ -23,6 +23,7 @@ data class ServerPromotion(
     val gradientStart: String = "#5B1FA6",
     val gradientEnd: String = "#3B0764",
     val iconType: String = "welcome",
+    val imageUrl: String = "",
     val displayOrder: Int = 1
 )
 
@@ -70,18 +71,28 @@ object PromotionSyncService {
         val fetchedList = mutableListOf<ServerPromotion>()
         for (i in 0 until dataArray.length()) {
             val obj = dataArray.getJSONObject(i)
+            val badge = obj.optString("badgeText").ifEmpty { obj.optString("badge_text", "HOT") }
+            val cta = obj.optString("ctaText").ifEmpty { obj.optString("cta_text", "PLAY NOW") }
+            val route = obj.optString("targetRoute").ifEmpty { obj.optString("target_route", "/wallet/deposit") }
+            val gStart = obj.optString("gradientStart").ifEmpty { obj.optString("gradient_start", "#5B1FA6") }
+            val gEnd = obj.optString("gradientEnd").ifEmpty { obj.optString("gradient_end", "#3B0764") }
+            val icon = obj.optString("iconType").ifEmpty { obj.optString("icon_type", "welcome") }
+            val imgUrl = obj.optString("imageUrl").ifEmpty { obj.optString("image_url", "") }
+            val order = if (obj.has("displayOrder")) obj.optInt("displayOrder", i + 1) else obj.optInt("display_order", i + 1)
+
             fetchedList.add(
                 ServerPromotion(
                     id = obj.optString("id", "promo_$i"),
                     title = obj.optString("title", ""),
                     subtitle = obj.optString("subtitle", ""),
-                    badgeText = obj.optString("badge_text", "HOT"),
-                    ctaText = obj.optString("cta_text", "PLAY NOW"),
-                    targetRoute = obj.optString("target_route", "/wallet/deposit"),
-                    gradientStart = obj.optString("gradient_start", "#5B1FA6"),
-                    gradientEnd = obj.optString("gradient_end", "#3B0764"),
-                    iconType = obj.optString("icon_type", "welcome"),
-                    displayOrder = obj.optInt("display_order", i + 1)
+                    badgeText = badge,
+                    ctaText = cta,
+                    targetRoute = route,
+                    gradientStart = gStart,
+                    gradientEnd = gEnd,
+                    iconType = icon,
+                    imageUrl = imgUrl,
+                    displayOrder = order
                 )
             )
         }

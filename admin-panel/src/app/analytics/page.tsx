@@ -43,13 +43,13 @@ export default function AnalyticsPage() {
   const withdrawals = stats?.withdrawals || {};
   const games = stats?.games || {};
 
-  const totalWagered = Number(games.totalWageredPaise || 0) / 100;
-  const totalWon = Number(games.totalWonPaise || 0) / 100;
-  const ggr = Number(games.ggrPaise || 0) / 100;
+  const totalWagered = Number(games.totalWageredChips || games.totalWageredPaise || 0) / 100;
+  const totalWon = Number(games.totalWonChips || games.totalWonPaise || 0) / 100;
+  const ggr = Number(games.ggrChips || games.ggrPaise || 0) / 100;
   const rtpActual = totalWagered > 0 ? (totalWon / totalWagered) * 100 : 95.0;
 
-  const totalDeposited = Number(deposits.approvedAmountPaise || 0) / 100;
-  const totalWithdrawn = Number(withdrawals.approvedAmountPaise || 0) / 100;
+  const totalDeposited = Number(deposits.approvedAmountChips || deposits.approvedAmountPaise || 0) / 100;
+  const totalWithdrawn = Number(withdrawals.approvedAmountChips || withdrawals.approvedAmountPaise || 0) / 100;
   const netFinancial = totalDeposited - totalWithdrawn;
 
   return (

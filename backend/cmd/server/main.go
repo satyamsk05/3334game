@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 
 	"bitarcade-backend/internal/config"
 	"bitarcade-backend/internal/database"
+	"bitarcade-backend/internal/game"
 	"bitarcade-backend/internal/handlers"
 	"bitarcade-backend/internal/middleware"
 	"bitarcade-backend/internal/services"
@@ -67,6 +69,94 @@ func main() {
 	// WebSockets
 	router.GET("/ws", hub.HandleWebSocket)
 
+	// Dragon vs Tiger Game Engine
+	dtEngine := game.NewDragonTigerEngine(hub, walletService, dbBundle)
+	dtEngine.Start()
+
+	// Dragon vs Tiger Game Routes
+	router.GET("/api/v1/games/dragontiger/state", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"data":    dtEngine.GetSnapshot(),
+		})
+	})
+	router.GET("/games/dragontiger/state", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"data":    dtEngine.GetSnapshot(),
+		})
+	})
+
+	router.GET("/api/v1/games/dragontiger/history", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"data":    dtEngine.GetHistory(20),
+		})
+	})
+
+	router.POST("/api/v1/client-log", func(c *gin.Context) {
+		body, _ := io.ReadAll(c.Request.Body)
+		log.Printf("\n🚨 [CLIENT_CRASH] 🚨\n%s\n", string(body))
+		c.JSON(http.StatusOK, gin.H{"status": "logged"})
+	})
+
+	// Place Bet Handler
+	handleBet := func(c *gin.Context) {
+		userID := c.GetString("userId")
+		if userID == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"success": false, "message": "Unauthorized: valid session token required"})
+			return
+		}
+
+		var req struct {
+			Target      string `json:"target" binding:"required"`
+			AmountChips int64  `json:"amountChips" binding:"required"`
+		}
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Invalid bet payload"})
+			return
+		}
+
+		bet, newBal, err := dtEngine.PlaceBet(userID, req.Target, req.AmountChips)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"message": "Bet placed successfully",
+			"data": gin.H{
+				"betId":        bet.ID,
+				"target":       bet.Target,
+				"amount":       bet.Amount,
+				"newBalance":   newBal / 100,
+				"balanceChips": newBal,
+			},
+		})
+	}
+
+	router.POST("/api/v1/games/dragontiger/bet", middleware.JWTAuthMiddleware(cfg), handleBet)
+	router.POST("/games/dragontiger/bet", middleware.JWTAuthMiddleware(cfg), handleBet)
+
+	// Payment Gateway UI handler (serves payment-proxy/index.html)
+	servePaymentPage := func(c *gin.Context) {
+		candidates := []string{
+			"payment-proxy/index.html",
+			"../payment-proxy/index.html",
+			"/Users/satyamkumar/3334game/payment-proxy/index.html",
+		}
+		for _, path := range candidates {
+			if _, err := os.Stat(path); err == nil {
+				c.File(path)
+				return
+			}
+		}
+		c.String(http.StatusNotFound, "Payment gateway interface not found")
+	}
+	router.GET("/pay", servePaymentPage)
+	router.GET("/api/v1/pay", servePaymentPage)
+
 	// Auth Group
 	authGroup := router.Group("/api/v1/auth")
 	authGroup.Use(authLimiter)
@@ -108,16 +198,19 @@ func main() {
 	{
 		paymentGroup.POST("/deposits/initiate", middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
 		paymentGroup.POST("/deposits/utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+		paymentGroup.GET("/deposits/status", apiHandler.GetDepositStatus)
 		paymentGroup.POST("/withdraw", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
 		paymentGroup.POST("/withdraw/request", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
 	}
 
-	// Alternate direct routes matching legacy app paths
+	// Alternate direct routes matching legacy app & payment proxy paths
 	router.POST("/deposits/initiate", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
 	router.POST("/api/v1/deposits/initiate", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
 	router.POST("/deposits/utr", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
 	router.POST("/api/v1/deposits/utr", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
 	router.POST("/api/v1/deposits/submit-utr", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+	router.GET("/api/v1/deposits/status", apiHandler.GetDepositStatus)
+	router.GET("/deposits/status", apiHandler.GetDepositStatus)
 	router.POST("/payments/withdraw/request", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
 
 	// Users Group & FCM Token
@@ -126,9 +219,12 @@ func main() {
 		userGroup.PUT("/:id", middleware.JWTAuthMiddleware(cfg), apiHandler.UpdateProfile)
 		userGroup.PUT("/profile", middleware.JWTAuthMiddleware(cfg), apiHandler.UpdateProfile)
 		userGroup.POST("/fcm-token", apiHandler.UpdateFCMToken)
+		userGroup.DELETE("/me", middleware.JWTAuthMiddleware(cfg), apiHandler.DeleteAccount)
 	}
 	router.Group("/users").PUT("/:id", middleware.JWTAuthMiddleware(cfg), apiHandler.UpdateProfile)
 	router.POST("/users/fcm-token", apiHandler.UpdateFCMToken)
+	// Account deletion (DPDP Act 2023 right to erasure)
+	router.DELETE("/users/me", middleware.JWTAuthMiddleware(cfg), apiHandler.DeleteAccount)
 
 	// Promotions Group
 	router.GET("/api/v1/promotions", apiHandler.GetPromotions)
@@ -157,8 +253,10 @@ func main() {
 		// Users
 		adminGroup.GET("/users", apiHandler.AdminGetUsers)
 		adminGroup.GET("/users/:id", apiHandler.AdminGetUserDetails)
+		adminGroup.PATCH("/users/:id", apiHandler.AdminUpdateUser)
 		adminGroup.POST("/users/:id/ban", apiHandler.AdminToggleBan)
 		adminGroup.POST("/users/:id/adjust-wallet", apiHandler.AdminAdjustWallet)
+		adminGroup.POST("/users/:id/notes", apiHandler.AdminAddUserNote)
 
 		// Deposits & Withdrawals
 		adminGroup.GET("/deposits", apiHandler.AdminGetDeposits)
@@ -173,8 +271,34 @@ func main() {
 		// Ledger & System
 		adminGroup.GET("/ledger/overview", apiHandler.AdminDashboardStats)
 		adminGroup.GET("/ledger/transactions", apiHandler.AdminGetLedger)
-		adminGroup.GET("/promotions", apiHandler.GetPromotions)
 		adminGroup.GET("/system/health", apiHandler.AdminSystemHealth)
+
+		// Promotions
+		adminGroup.GET("/promotions", apiHandler.GetPromotions)
+		adminGroup.POST("/promotions", apiHandler.AdminCreatePromotion)
+		adminGroup.PUT("/promotions/:id", apiHandler.AdminUpdatePromotion)
+		adminGroup.PATCH("/promotions/:id/status", apiHandler.AdminTogglePromotionStatus)
+		adminGroup.DELETE("/promotions/:id", apiHandler.AdminDeletePromotion)
+
+		// Games
+		adminGroup.GET("/games", apiHandler.AdminGetGames)
+		adminGroup.GET("/games/:id", apiHandler.AdminGetGameDetails)
+		adminGroup.PATCH("/games/:id/status", apiHandler.AdminUpdateGameStatus)
+		adminGroup.PATCH("/games/:id/config", apiHandler.AdminUpdateGameConfig)
+
+		// System Settings & Announcements
+		adminGroup.GET("/system/settings", apiHandler.AdminGetSystemSettings)
+		adminGroup.PATCH("/system/settings/:key", apiHandler.AdminUpdateSystemSetting)
+		adminGroup.GET("/system/announcements", apiHandler.AdminGetAnnouncements)
+		adminGroup.POST("/system/announcements", apiHandler.AdminCreateAnnouncement)
+		adminGroup.PATCH("/system/announcements/:id/status", apiHandler.AdminToggleAnnouncementStatus)
+		adminGroup.POST("/system/notifications/push", apiHandler.AdminSendPushNotification)
+
+		// Staff & Audit Logs
+		adminGroup.GET("/admins", apiHandler.AdminListAdmins)
+		adminGroup.POST("/admins", apiHandler.AdminCreateAdmin)
+		adminGroup.PATCH("/admins/:id/status", apiHandler.AdminToggleAdminActive)
+		adminGroup.GET("/audit-logs", apiHandler.AdminGetAuditLogs)
 	}
 
 	// Direct aliases for Admin Panel Next.js proxy
@@ -186,8 +310,10 @@ func main() {
 		directAdmin.GET("/dashboard/pending-counts", apiHandler.AdminPendingCounts)
 		directAdmin.GET("/users", apiHandler.AdminGetUsers)
 		directAdmin.GET("/users/:id", apiHandler.AdminGetUserDetails)
+		directAdmin.PATCH("/users/:id", apiHandler.AdminUpdateUser)
 		directAdmin.POST("/users/:id/ban", apiHandler.AdminToggleBan)
 		directAdmin.POST("/users/:id/adjust-wallet", apiHandler.AdminAdjustWallet)
+		directAdmin.POST("/users/:id/notes", apiHandler.AdminAddUserNote)
 		directAdmin.GET("/deposits", apiHandler.AdminGetDeposits)
 		directAdmin.POST("/deposits/approve", apiHandler.AdminApproveDeposit)
 		directAdmin.POST("/deposits/reject", apiHandler.AdminRejectDeposit)
@@ -197,8 +323,34 @@ func main() {
 		directAdmin.POST("/withdrawals/process", apiHandler.AdminApproveWithdrawal)
 		directAdmin.GET("/ledger/overview", apiHandler.AdminDashboardStats)
 		directAdmin.GET("/ledger/transactions", apiHandler.AdminGetLedger)
-		directAdmin.GET("/promotions", apiHandler.GetPromotions)
 		directAdmin.GET("/system/health", apiHandler.AdminSystemHealth)
+
+		// Promotions
+		directAdmin.GET("/promotions", apiHandler.GetPromotions)
+		directAdmin.POST("/promotions", apiHandler.AdminCreatePromotion)
+		directAdmin.PUT("/promotions/:id", apiHandler.AdminUpdatePromotion)
+		directAdmin.PATCH("/promotions/:id/status", apiHandler.AdminTogglePromotionStatus)
+		directAdmin.DELETE("/promotions/:id", apiHandler.AdminDeletePromotion)
+
+		// Games
+		directAdmin.GET("/games", apiHandler.AdminGetGames)
+		directAdmin.GET("/games/:id", apiHandler.AdminGetGameDetails)
+		directAdmin.PATCH("/games/:id/status", apiHandler.AdminUpdateGameStatus)
+		directAdmin.PATCH("/games/:id/config", apiHandler.AdminUpdateGameConfig)
+
+		// System Settings & Announcements
+		directAdmin.GET("/system/settings", apiHandler.AdminGetSystemSettings)
+		directAdmin.PATCH("/system/settings/:key", apiHandler.AdminUpdateSystemSetting)
+		directAdmin.GET("/system/announcements", apiHandler.AdminGetAnnouncements)
+		directAdmin.POST("/system/announcements", apiHandler.AdminCreateAnnouncement)
+		directAdmin.PATCH("/system/announcements/:id/status", apiHandler.AdminToggleAnnouncementStatus)
+		directAdmin.POST("/system/notifications/push", apiHandler.AdminSendPushNotification)
+
+		// Staff & Audit Logs
+		directAdmin.GET("/admins", apiHandler.AdminListAdmins)
+		directAdmin.POST("/admins", apiHandler.AdminCreateAdmin)
+		directAdmin.PATCH("/admins/:id/status", apiHandler.AdminToggleAdminActive)
+		directAdmin.GET("/audit-logs", apiHandler.AdminGetAuditLogs)
 	}
 
 

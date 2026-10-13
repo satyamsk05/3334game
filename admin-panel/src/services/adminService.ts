@@ -42,9 +42,12 @@ export interface UserDetailsResponse {
   };
   metrics: {
     totalBets: number;
-    totalWageredPaise: string;
-    totalWonPaise: string;
-    ggrPaise: string;
+    totalWageredChips?: string;
+    totalWonChips?: string;
+    ggrChips?: string;
+    totalWageredPaise?: string;
+    totalWonPaise?: string;
+    ggrPaise?: string;
   };
   recentTransactions: Array<{
     id: string;

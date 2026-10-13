@@ -14,9 +14,9 @@ object ClientConfig {
      * Prefer HTTPS once TLS is terminated on the server.
      */
     var SERVER_BASE_URL: String = try {
-        BuildConfig.DEFAULT_SERVER_URL
+        BuildConfig.DEFAULT_SERVER_URL.ifBlank { "http://3.7.73.109:5050" }
     } catch (_: Exception) {
-        "https://8394-2402-3a80-43df-723-9c57-3cfb-b2ff-d014.ngrok-free.app"
+        "http://3.7.73.109:5050"
     }
 
     var BUSINESS_PHONE: String = try {

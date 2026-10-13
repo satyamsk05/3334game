@@ -21,6 +21,9 @@ type Client struct {
 	Send   chan []byte
 }
 
+type MessageHandler func(client *Client, message []byte)
+type ConnectHandler func(client *Client)
+
 type Hub struct {
 	cfg        *config.Config
 	clients    map[string]map[*Client]bool // userID -> set of clients
@@ -28,6 +31,8 @@ type Hub struct {
 	register   chan *Client
 	unregister chan *Client
 	mu         sync.RWMutex
+	onMessage  MessageHandler
+	onConnect  ConnectHandler
 }
 
 func NewHub(cfg *config.Config) *Hub {
@@ -49,8 +54,12 @@ func (h *Hub) Run() {
 				h.clients[client.UserID] = make(map[*Client]bool)
 			}
 			h.clients[client.UserID][client] = true
+			connHandler := h.onConnect
 			h.mu.Unlock()
 			log.Printf("[WS] Client connected: user=%s", client.UserID)
+			if connHandler != nil {
+				connHandler(client)
+			}
 
 		case client := <-h.unregister:
 			h.mu.Lock()
@@ -96,6 +105,25 @@ func (h *Hub) EmitToUser(userID string, payload []byte) {
 
 func (h *Hub) Broadcast(payload []byte) {
 	h.broadcast <- payload
+}
+
+func (h *Hub) SetMessageHandler(handler MessageHandler) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.onMessage = handler
+}
+
+func (h *Hub) SetConnectHandler(handler ConnectHandler) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.onConnect = handler
+}
+
+func (h *Hub) SendToClient(client *Client, payload []byte) {
+	select {
+	case client.Send <- payload:
+	default:
+	}
 }
 
 func (h *Hub) HandleWebSocket(c *gin.Context) {
@@ -166,9 +194,15 @@ func (c *Client) readPump(h *Hub) {
 	})
 
 	for {
-		_, _, err := c.Conn.ReadMessage()
+		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			break
+		}
+		h.mu.RLock()
+		msgHandler := h.onMessage
+		h.mu.RUnlock()
+		if msgHandler != nil {
+			msgHandler(c, message)
 		}
 	}
 }

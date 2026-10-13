@@ -2,16 +2,24 @@
   "version": 2,
   "rewrites": [
     {
+      "source": "/deposit",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/deposit/(.*)",
+      "destination": "/index.html"
+    },
+    {
       "source": "/pay",
-      "destination": "http://3.7.73.109:4001/pay"
+      "destination": "/index.html"
     },
     {
       "source": "/pay/(.*)",
-      "destination": "http://3.7.73.109:4001/pay/$1"
+      "destination": "/index.html"
     },
     {
       "source": "/api/v1/deposits/(.*)",
-      "destination": "http://3.7.73.109:4001/api/v1/deposits/$1"
+      "destination": "http://3.7.73.109:5050/api/v1/deposits/$1"
     }
   ]
 }

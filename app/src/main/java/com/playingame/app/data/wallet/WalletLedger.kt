@@ -6,17 +6,31 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.Locale
 
-// Integer Paise Invariants (Rule 1 & 2): 100 paise = 1 unit
+// Integer Chips Invariants: 100 chips = 1 unit (formerly paise)
 data class WalletBalance(
-    val depositPaise: Long = 0L,   // 0.00
-    val winningPaise: Long = 0L,  // 0.00
-    val bonusPaise: Long = 0L      // 0.00
+    val depositChips: Long = 0L,   // 0.00
+    val winningChips: Long = 0L,  // 0.00
+    val bonusChips: Long = 0L      // 0.00
 ) {
-    val totalPaise: Long get() = depositPaise + winningPaise + bonusPaise
-    val totalRupees: Double get() = totalPaise / 100.0
-    val depositRupees: Double get() = depositPaise / 100.0
-    val winningRupees: Double get() = winningPaise / 100.0
-    val bonusRupees: Double get() = bonusPaise / 100.0
+    // Backward-compatible constructor supporting legacy calls
+    constructor(
+        depositPaise: Long = 0L,
+        winningPaise: Long = 0L,
+        bonusPaise: Long = 0L,
+        @Suppress("UNUSED_PARAMETER") legacy: Boolean = true
+    ) : this(depositChips = depositPaise, winningChips = winningPaise, bonusChips = bonusPaise)
+
+    val totalChips: Long get() = depositChips + winningChips + bonusChips
+    val totalRupees: Double get() = totalChips / 100.0
+    val depositRupees: Double get() = depositChips / 100.0
+    val winningRupees: Double get() = winningChips / 100.0
+    val bonusRupees: Double get() = bonusChips / 100.0
+
+    // Backward compatibility aliases
+    val totalPaise: Long get() = totalChips
+    val depositPaise: Long get() = depositChips
+    val winningPaise: Long get() = winningChips
+    val bonusPaise: Long get() = bonusChips
 
     val formattedTotal: String get() = String.format(Locale.getDefault(), "%.2f", totalRupees)
     val formattedDeposit: String get() = String.format(Locale.getDefault(), "%.2f", depositRupees)
@@ -43,14 +57,18 @@ data class WalletTransaction(
     val id: String = "TX-${System.currentTimeMillis()}-${(100..999).random()}",
     val userId: String,
     val type: TransactionType,
-    val amountPaise: Long,
-    val balanceAfterPaise: Long,
+    val amountChips: Long,
+    val balanceAfterChips: Long,
     val status: TransactionStatus,
     val referenceId: String,
     val description: String,
     val timestamp: Long = System.currentTimeMillis()
 ) {
-    val amountRupees: Double get() = amountPaise / 100.0
+    // Backward compatibility properties
+    val amountPaise: Long get() = amountChips
+    val balanceAfterPaise: Long get() = balanceAfterChips
+
+    val amountRupees: Double get() = amountChips / 100.0
     val amountRupeesFormatted: String get() = String.format(Locale.getDefault(), "%.2f", amountRupees)
 }
 
@@ -81,16 +99,20 @@ object WalletLedger {
     val transactions: StateFlow<List<WalletTransaction>> = _transactions.asStateFlow()
 
     private var _pendingRoundId: String? = null
-    private var _pendingRoundBetPaise: Long = 0L
+    private var _pendingRoundBetChips: Long = 0L
     private var _pendingRoundBetCount: Int = 0
-    private var _pendingRoundBalanceBeforePaise: Long = 0L
+    private var _pendingRoundBalanceBeforeChips: Long = 0L
 
     init {
         _transactions.value = emptyList()
     }
 
-    fun rupeesToPaise(rupees: Double): Long = Math.round(rupees * 100)
-    fun formatPaiseToRupees(paise: Long): String = String.format(Locale.getDefault(), "%.2f", paise / 100.0)
+    fun rupeesToChips(rupees: Double): Long = Math.round(rupees * 100)
+    fun formatChipsToRupees(chips: Long): String = String.format(Locale.getDefault(), "%.2f", chips / 100.0)
+
+    // Backward compatibility functions
+    fun rupeesToPaise(rupees: Double): Long = rupeesToChips(rupees)
+    fun formatPaiseToRupees(paise: Long): String = formatChipsToRupees(paise)
 
     @Synchronized
     fun setTransactions(newTransactions: List<WalletTransaction>) {
@@ -105,16 +127,16 @@ object WalletLedger {
     }
 
     @Synchronized
-    fun placeBet(amountPaise: Long, roundId: String = ""): BetDebitBreakdown {
+    fun placeBet(amountChips: Long, roundId: String = ""): BetDebitBreakdown {
         val current = _walletBalance.value
-        if (amountPaise <= 0L || current.totalPaise < amountPaise) {
+        if (amountChips <= 0L || current.totalChips < amountChips) {
             return BetDebitBreakdown(success = false)
         }
 
-        var remaining = amountPaise
-        var dep = current.depositPaise
-        var win = current.winningPaise
-        var bon = current.bonusPaise
+        var remaining = amountChips
+        var dep = current.depositChips
+        var win = current.winningChips
+        var bon = current.bonusChips
 
         var depDebited = 0L
         var winDebited = 0L
@@ -149,7 +171,7 @@ object WalletLedger {
             }
         }
 
-        val newBalance = WalletBalance(depositPaise = dep, winningPaise = win, bonusPaise = bon)
+        val newBalance = WalletBalance(depositChips = dep, winningChips = win, bonusChips = bon)
         _walletBalance.value = newBalance
 
         if (roundId.isNotEmpty()) {
@@ -158,16 +180,16 @@ object WalletLedger {
             }
             if (_pendingRoundId == null) {
                 _pendingRoundId = roundId
-                _pendingRoundBalanceBeforePaise = current.totalPaise
+                _pendingRoundBalanceBeforeChips = current.totalChips
             }
-            _pendingRoundBetPaise += amountPaise
+            _pendingRoundBetChips += amountChips
             _pendingRoundBetCount += 1
         } else {
             val tx = WalletTransaction(
                 userId = _userProfile.value.userId,
                 type = TransactionType.BET_PLACED,
-                amountPaise = amountPaise,
-                balanceAfterPaise = newBalance.totalPaise,
+                amountChips = amountChips,
+                balanceAfterChips = newBalance.totalChips,
                 status = TransactionStatus.SUCCESS,
                 referenceId = "BET-${System.currentTimeMillis().toString().takeLast(6)}",
                 description = "Game Bet Placed"
@@ -179,7 +201,7 @@ object WalletLedger {
             depositDebited = depDebited,
             winningDebited = winDebited,
             bonusDebited = bonDebited,
-            totalDebited = amountPaise,
+            totalDebited = amountChips,
             success = true
         )
     }
@@ -191,30 +213,30 @@ object WalletLedger {
 
     private fun flushPendingRoundBets() {
         val rid = _pendingRoundId ?: return
-        val total = _pendingRoundBetPaise
+        val total = _pendingRoundBetChips
         val count = _pendingRoundBetCount
         if (total <= 0L) {
             _pendingRoundId = null
-            _pendingRoundBetPaise = 0L
+            _pendingRoundBetChips = 0L
             _pendingRoundBetCount = 0
             return
         }
-        val balanceAfter = _walletBalance.value.totalPaise
+        val balanceAfter = _walletBalance.value.totalChips
         val shortId = rid.takeLast(6)
         val desc = if (count > 1) "Game Bet · $count bets · Round #$shortId"
                    else "Game Bet · Round #$shortId"
         val tx = WalletTransaction(
             userId = _userProfile.value.userId,
             type = TransactionType.BET_PLACED,
-            amountPaise = total,
-            balanceAfterPaise = balanceAfter,
+            amountChips = total,
+            balanceAfterChips = balanceAfter,
             status = TransactionStatus.SUCCESS,
             referenceId = "RND-$shortId",
             description = desc
         )
         _transactions.update { listOf(tx) + it }
         _pendingRoundId = null
-        _pendingRoundBetPaise = 0L
+        _pendingRoundBetChips = 0L
         _pendingRoundBetCount = 0
     }
 
@@ -223,9 +245,9 @@ object WalletLedger {
         flushPendingRoundBets()
         val current = _walletBalance.value
         val newBalance = WalletBalance(
-            depositPaise = current.depositPaise + depositRefund,
-            winningPaise = current.winningPaise + winningRefund,
-            bonusPaise = current.bonusPaise + bonusRefund
+            depositChips = current.depositChips + depositRefund,
+            winningChips = current.winningChips + winningRefund,
+            bonusChips = current.bonusChips + bonusRefund
         )
         _walletBalance.value = newBalance
 
@@ -234,8 +256,8 @@ object WalletLedger {
             val tx = WalletTransaction(
                 userId = _userProfile.value.userId,
                 type = TransactionType.BET_REFUND,
-                amountPaise = totalRefund,
-                balanceAfterPaise = newBalance.totalPaise,
+                amountChips = totalRefund,
+                balanceAfterChips = newBalance.totalChips,
                 status = TransactionStatus.SUCCESS,
                 referenceId = "REF-${System.currentTimeMillis().toString().takeLast(6)}",
                 description = "Bet Refunded"
@@ -245,18 +267,18 @@ object WalletLedger {
     }
 
     @Synchronized
-    fun creditWin(winPayoutPaise: Long, multiplierLabel: String) {
+    fun creditWin(winPayoutChips: Long, multiplierLabel: String) {
         flushPendingRoundBets()
 
         val current = _walletBalance.value
-        val newBalance = current.copy(winningPaise = current.winningPaise + winPayoutPaise)
+        val newBalance = current.copy(winningChips = current.winningChips + winPayoutChips)
         _walletBalance.value = newBalance
 
         val tx = WalletTransaction(
             userId = _userProfile.value.userId,
             type = TransactionType.WIN_PAYOUT,
-            amountPaise = winPayoutPaise,
-            balanceAfterPaise = newBalance.totalPaise,
+            amountChips = winPayoutChips,
+            balanceAfterChips = newBalance.totalChips,
             status = TransactionStatus.SUCCESS,
             referenceId = "WIN-${System.currentTimeMillis().toString().takeLast(6)}",
             description = "Win Payout ($multiplierLabel)"
@@ -268,17 +290,17 @@ object WalletLedger {
     fun generateWithdrawalId(): String = "T" + (100000000000L..999999999999L).random()
 
     @Synchronized
-    fun addDepositCash(amountPaise: Long, utr: String = ""): WalletTransaction {
+    fun addDepositCash(amountChips: Long, utr: String = ""): WalletTransaction {
         val current = _walletBalance.value
-        val newBalance = current.copy(depositPaise = current.depositPaise + amountPaise)
+        val newBalance = current.copy(depositChips = current.depositChips + amountChips)
         _walletBalance.value = newBalance
 
         val tx = WalletTransaction(
             id = generateDepositId(),
             userId = _userProfile.value.userId,
             type = TransactionType.DEPOSIT,
-            amountPaise = amountPaise,
-            balanceAfterPaise = newBalance.totalPaise,
+            amountChips = amountChips,
+            balanceAfterChips = newBalance.totalChips,
             status = TransactionStatus.SUCCESS,
             referenceId = utr.ifEmpty { generateDepositId() },
             description = "Cash Deposit"
@@ -288,15 +310,15 @@ object WalletLedger {
     }
 
     @Synchronized
-    fun recordPendingDeposit(amountPaise: Long): WalletTransaction {
+    fun recordPendingDeposit(amountChips: Long): WalletTransaction {
         val current = _walletBalance.value
         val depId = generateDepositId()
         val tx = WalletTransaction(
             id = depId,
             userId = _userProfile.value.userId,
             type = TransactionType.DEPOSIT,
-            amountPaise = amountPaise,
-            balanceAfterPaise = current.totalPaise,
+            amountChips = amountChips,
+            balanceAfterChips = current.totalChips,
             status = TransactionStatus.PENDING,
             referenceId = depId,
             description = "Deposit Request (Awaiting Payment / UTR Approval)"
@@ -306,27 +328,27 @@ object WalletLedger {
     }
 
     @Synchronized
-    fun syncBalance(depositPaise: Long, winningPaise: Long, bonusPaise: Long) {
-        _walletBalance.value = WalletBalance(depositPaise, winningPaise, bonusPaise)
+    fun syncBalance(depositChips: Long, winningChips: Long, bonusChips: Long) {
+        _walletBalance.value = WalletBalance(depositChips, winningChips, bonusChips)
     }
 
     @Synchronized
-    fun requestWithdrawal(amountPaise: Long, upiId: String, referenceId: String? = null): Pair<Boolean, String> {
+    fun requestWithdrawal(amountChips: Long, upiId: String, referenceId: String? = null): Pair<Boolean, String> {
         val current = _walletBalance.value
-        val minPaise = 2500L
-        val maxPaise = 500000L
+        val minChips = 2500L
+        val maxChips = 500000L
 
-        if (amountPaise < minPaise) {
-            return Pair(false, "Minimum withdrawal amount is 25")
+        if (amountChips < minChips) {
+            return Pair(false, "Minimum withdrawal amount is 25 chips")
         }
-        if (amountPaise > maxPaise) {
-            return Pair(false, "Maximum withdrawal amount is 5,000 per request")
+        if (amountChips > maxChips) {
+            return Pair(false, "Maximum withdrawal amount is 5,000 chips per request")
         }
-        if (amountPaise > current.winningPaise) {
+        if (amountChips > current.winningChips) {
             return Pair(false, "Insufficient Winnings Balance (Available: ${current.formattedWinnings})")
         }
 
-        val newBalance = current.copy(winningPaise = current.winningPaise - amountPaise)
+        val newBalance = current.copy(winningChips = current.winningChips - amountChips)
         _walletBalance.value = newBalance
 
         val txId = referenceId ?: generateWithdrawalId()
@@ -334,14 +356,14 @@ object WalletLedger {
             id = txId,
             userId = _userProfile.value.userId,
             type = TransactionType.WITHDRAWAL,
-            amountPaise = amountPaise,
-            balanceAfterPaise = newBalance.totalPaise,
+            amountChips = amountChips,
+            balanceAfterChips = newBalance.totalChips,
             status = TransactionStatus.PENDING,
             referenceId = txId,
             description = "Withdrawal to UPI: $upiId"
         )
         _transactions.update { listOf(tx) + it }
-        return Pair(true, "Withdrawal request of ${formatPaiseToRupees(amountPaise)} submitted. Awaiting approval.")
+        return Pair(true, "Withdrawal request of ${formatChipsToRupees(amountChips)} submitted. Awaiting approval.")
     }
 
     @Synchronized
@@ -358,15 +380,15 @@ object WalletLedger {
     }
 
     @Synchronized
-    fun refundWithdrawal(referenceId: String, amountPaise: Long) {
+    fun refundWithdrawal(referenceId: String, amountChips: Long) {
         val current = _walletBalance.value
-        val newBalance = current.copy(winningPaise = current.winningPaise + amountPaise)
+        val newBalance = current.copy(winningChips = current.winningChips + amountChips)
         _walletBalance.value = newBalance
 
         _transactions.update { txns ->
             txns.map { tx ->
                 if (tx.referenceId == referenceId || tx.id == referenceId) {
-                    tx.copy(status = TransactionStatus.REJECTED, balanceAfterPaise = newBalance.totalPaise)
+                    tx.copy(status = TransactionStatus.REJECTED, balanceAfterChips = newBalance.totalChips)
                 } else {
                     tx
                 }
@@ -387,11 +409,11 @@ object WalletLedger {
     }
 
     @androidx.annotation.VisibleForTesting
-    fun setTestBalance(depositPaise: Long, winningPaise: Long, bonusPaise: Long) {
+    fun setTestBalance(depositChips: Long, winningChips: Long, bonusChips: Long) {
         _walletBalance.value = WalletBalance(
-            depositPaise = depositPaise,
-            winningPaise = winningPaise,
-            bonusPaise = bonusPaise
+            depositChips = depositChips,
+            winningChips = winningChips,
+            bonusChips = bonusChips
         )
     }
 }

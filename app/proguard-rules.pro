@@ -19,13 +19,32 @@
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt
 
-# ---- Data / Model classes (keep for StateFlow) ----
--keep class com.playingame.app.game.ringoffuture.model.** { *; }
--keep class com.playingame.app.game.ringoffuture.backend.WalletBalance { *; }
--keep class com.playingame.app.game.ringoffuture.backend.WalletTransaction { *; }
--keep class com.playingame.app.game.ringoffuture.backend.UserProfile { *; }
-
 # ---- Android standard ----
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
+
+# ---- Rive Animation Runtime (Native JNI & Reflection) ----
+-keep class app.rive.runtime.kotlin.** { *; }
+-keep interface app.rive.runtime.kotlin.** { *; }
+-dontwarn app.rive.runtime.kotlin.**
+
+# ---- OkHttp & Okio ----
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepclassmembers class okhttp3.internal.publicsuffix.PublicSuffixDatabase {
+    java.util.concurrent.atomic.AtomicBoolean INITIALIZED;
+}
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+
+# ---- Firebase Messaging & Google Services ----
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
+
+# ---- BitArcade App Models & Session ----
+-keep class com.playingame.app.data.** { *; }
+-keep class com.playingame.app.core.session.** { *; }
+-keep class com.playingame.app.data.repository.** { *; }

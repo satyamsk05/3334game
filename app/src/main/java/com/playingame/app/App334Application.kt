@@ -49,5 +49,3 @@ open class BitArcadeApplication : Application(), ImageLoaderFactory {
     }
 }
 
-class App334Application : BitArcadeApplication()
-

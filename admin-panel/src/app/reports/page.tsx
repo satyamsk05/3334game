@@ -80,9 +80,9 @@ export default function SystemicReportsPage() {
   };
 
   const netReserves = Math.max(0, totalDeposits - totalWithdrawals);
-  const depositPaise = Math.round(totalDeposits * 100);
-  const withdrawalPaise = Math.round(totalWithdrawals * 100);
-  const reservePaise = Math.round(netReserves * 100);
+  const depositChips = Math.round(totalDeposits * 100);
+  const withdrawalChips = Math.round(totalWithdrawals * 100);
+  const reserveChips = Math.round(netReserves * 100);
 
   return (
     <div className="space-y-6">
@@ -91,7 +91,7 @@ export default function SystemicReportsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border-default pb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-text-primary">Financial Ledger Reports</h1>
-          <p className="text-sm text-text-secondary mt-1">Authoritative integer paise wallet audits and payout summaries</p>
+          <p className="text-sm text-text-secondary mt-1">Authoritative integer chips wallet audits and payout summaries</p>
         </div>
 
         <Button
@@ -129,19 +129,19 @@ export default function SystemicReportsPage() {
           <Card className="rounded-xl p-5 space-y-2">
             <div className="text-xs font-mono uppercase tracking-wider text-text-tertiary">Approved System Deposits</div>
             <div className="text-2xl sm:text-3xl font-bold font-mono text-text-primary tabular-nums">₹{totalDeposits.toFixed(2)}</div>
-            <div className="text-xs text-text-tertiary font-mono">{depositPaise.toLocaleString()} paise credited</div>
+            <div className="text-xs text-text-tertiary font-mono">{depositChips.toLocaleString()} chips credited</div>
           </Card>
 
           <Card className="rounded-xl p-5 space-y-2">
             <div className="text-xs font-mono uppercase tracking-wider text-text-tertiary">Approved Paid Withdrawals</div>
             <div className="text-2xl sm:text-3xl font-bold font-mono text-text-primary tabular-nums">₹{totalWithdrawals.toFixed(2)}</div>
-            <div className="text-xs text-text-tertiary font-mono">{withdrawalPaise.toLocaleString()} paise debited</div>
+            <div className="text-xs text-text-tertiary font-mono">{withdrawalChips.toLocaleString()} chips debited</div>
           </Card>
 
           <Card className="rounded-xl p-5 space-y-2">
             <div className="text-xs font-mono uppercase tracking-wider text-text-tertiary">Retained System Reserves</div>
             <div className="text-2xl sm:text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">₹{netReserves.toFixed(2)}</div>
-            <div className="text-xs text-emerald-600/80 dark:text-emerald-400/80 font-mono">{reservePaise.toLocaleString()} paise liquid reserve</div>
+            <div className="text-xs text-emerald-600/80 dark:text-emerald-400/80 font-mono">{reserveChips.toLocaleString()} chips liquid reserve</div>
           </Card>
 
         </div>
@@ -154,7 +154,7 @@ export default function SystemicReportsPage() {
           <span>Double-Entry Wallet Bucket Accounting Audit</span>
         </div>
         <p className="text-sm text-text-secondary leading-relaxed max-w-2xl">
-          All balances are strictly tracked as integer paise (<code className="text-text-primary font-mono text-xs bg-surface-strong px-1.5 py-0.5 rounded">totalBalance = depositBalance + winningBalance + bonusBalance</code>).
+          All balances are strictly tracked as integer chips (<code className="text-text-primary font-mono text-xs bg-surface-strong px-1.5 py-0.5 rounded">totalBalance = depositBalance + winningBalance + bonusBalance</code>).
           Bucket debit order (<code className="text-text-primary font-mono text-xs bg-surface-strong px-1.5 py-0.5 rounded">deposit → winnings → bonus</code>) and refund equity are maintained 100% server-side.
         </p>
         <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-mono pt-1">

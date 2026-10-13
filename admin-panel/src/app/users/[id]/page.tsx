@@ -312,16 +312,16 @@ export default function UserDetailPage() {
   const notes = data.notes || (data as any).adminNotes || [];
   const auditTrail = data.auditTrail || (data as any).audits || (data as any).auditHistory || [];
 
-  const depositRupees = Number(wallet.deposit_balance ?? (wallet as any).depositPaise ?? 0) / 100;
-  const winningsRupees = Number(wallet.winnings_balance ?? (wallet as any).winningPaise ?? 0) / 100;
-  const bonusRupees = Number(wallet.rewards_balance ?? (wallet as any).bonusPaise ?? 0) / 100;
-  const availableRupees = Number(wallet.available_balance ?? (wallet as any).totalPaise ?? 0) / 100;
-  const totalDepositedRupees = Number(wallet.total_deposited ?? (data as any).financialSummary?.totalDepositsPaise ?? 0) / 100;
-  const totalWithdrawnRupees = Number(wallet.total_withdrawn ?? (data as any).financialSummary?.totalWithdrawalsPaise ?? 0) / 100;
+  const depositRupees = Number(wallet.deposit_balance ?? (wallet as any).depositChips ?? (wallet as any).depositPaise ?? 0) / 100;
+  const winningsRupees = Number(wallet.winnings_balance ?? (wallet as any).winningChips ?? (wallet as any).winningPaise ?? 0) / 100;
+  const bonusRupees = Number(wallet.rewards_balance ?? (wallet as any).bonusChips ?? (wallet as any).bonusPaise ?? 0) / 100;
+  const availableRupees = Number(wallet.available_balance ?? (wallet as any).totalChips ?? (wallet as any).totalPaise ?? 0) / 100;
+  const totalDepositedRupees = Number(wallet.total_deposited ?? (data as any).financialSummary?.totalDepositsChips ?? (data as any).financialSummary?.totalDepositsPaise ?? 0) / 100;
+  const totalWithdrawnRupees = Number(wallet.total_withdrawn ?? (data as any).financialSummary?.totalWithdrawalsChips ?? (data as any).financialSummary?.totalWithdrawalsPaise ?? 0) / 100;
 
-  const totalWageredRupees = Number(metrics.totalWageredPaise ?? 0) / 100;
-  const totalWonRupees = Number(metrics.totalWonPaise ?? 0) / 100;
-  const ggrRupees = Number(metrics.ggrPaise ?? 0) / 100;
+  const totalWageredRupees = Number(metrics.totalWageredChips ?? metrics.totalWageredPaise ?? 0) / 100;
+  const totalWonRupees = Number(metrics.totalWonChips ?? metrics.totalWonPaise ?? 0) / 100;
+  const ggrRupees = Number(metrics.ggrChips ?? metrics.ggrPaise ?? 0) / 100;
 
   const tabs: Array<{ key: TabKey; label: string; icon: any; count?: number }> = [
     { key: 'overview', label: 'Overview', icon: User },

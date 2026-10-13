@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">बिट आर्केड गेम</string>
+
+    <!-- Onboarding flow strings (Hindi) -->
+    <string name="onboarding_title_1">खेलो और जीतो असली कैश</string>
+    <string name="onboarding_desc_1">टिक-टैक-टो जैसे रोमांचक कौशल खेलों में मुकाबला करें और रोजाना असली नकद पुरस्कार जीतें।</string>
+
+    <string name="onboarding_title_2">तुरंत यूपीआई निकासी</string>
+    <string name="onboarding_desc_2">बिना किसी शुल्क के अपनी जीत सीधे बैंक खाते या यूपीआई में चंद सेकंड में ट्रांसफर करें।</string>
+
+    <string name="onboarding_title_3">100% निष्पक्ष और सुरक्षित</string>
+    <string name="onboarding_desc_3">प्रमाणित एंटी-चीट मल्टीप्लेयर तकनीक, असली खिलाड़ियों से मुकाबला और 24/7 लाइव सपोर्ट।</string>
+
+    <!-- Onboarding Buttons (Hindi) -->
+    <string name="onboarding_btn_skip">छोड़ें</string>
+    <string name="onboarding_btn_next">आगे</string>
+    <string name="onboarding_btn_get_started">शुरू करें</string>
+
+    <!-- Accessibility Content Descriptions (Hindi) -->
+    <string name="cd_onboarding_illustration">ऑनबोर्डिंग चित्रण</string>
+    <string name="cd_onboarding_next_page">अगले ऑनबोर्डिंग पृष्ठ पर जाएं</string>
+    <string name="cd_onboarding_skip">ऑनबोर्डिंग छोड़कर आगे बढ़ें</string>
+    <string name="cd_onboarding_page_indicator">पृष्ठ %1$d में से %2$d</string>
+</resources>

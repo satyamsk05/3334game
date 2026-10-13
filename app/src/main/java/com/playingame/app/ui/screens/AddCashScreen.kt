@@ -38,9 +38,11 @@ data class ChipPackItem(
     val id: String,
     val chips: String,
     val price: String,
-    val amountPaise: Long,
+    val amountChips: Long,
     @DrawableRes val imageRes: Int
-)
+) {
+    val amountPaise: Long get() = amountChips
+}
 
 @Composable
 fun AddCashScreen(
@@ -62,49 +64,49 @@ fun AddCashScreen(
                 id = "pack_100",
                 chips = "100",
                 price = "₹99.00",
-                amountPaise = 10000L,
+                amountChips = 10000L,
                 imageRes = R.drawable.chip_pack_1
             ),
             ChipPackItem(
                 id = "pack_300",
                 chips = "300",
                 price = "₹299.00",
-                amountPaise = 30000L,
+                amountChips = 30000L,
                 imageRes = R.drawable.chip_pack_2
             ),
             ChipPackItem(
                 id = "pack_510",
                 chips = "510",
                 price = "₹499.00",
-                amountPaise = 51000L,
+                amountChips = 51000L,
                 imageRes = R.drawable.chip_pack_3
             ),
             ChipPackItem(
                 id = "pack_1020",
                 chips = "1020",
                 price = "₹999.00",
-                amountPaise = 102000L,
+                amountChips = 102000L,
                 imageRes = R.drawable.chip_pack_4
             ),
             ChipPackItem(
                 id = "pack_2040",
                 chips = "2040",
                 price = "₹1,999.00",
-                amountPaise = 204000L,
+                amountChips = 204000L,
                 imageRes = R.drawable.chip_pack_5
             ),
             ChipPackItem(
                 id = "pack_5150",
                 chips = "5150",
                 price = "₹4,999.00",
-                amountPaise = 515000L,
+                amountChips = 515000L,
                 imageRes = R.drawable.chip_pack_6
             )
         )
     }
 
-    val chipBalance = if (walletBalance.totalPaise % 100 == 0L) {
-        "${walletBalance.totalPaise / 100}"
+    val chipBalance = if (walletBalance.totalChips % 100 == 0L) {
+        "${walletBalance.totalChips / 100}"
     } else {
         String.format(Locale.getDefault(), "%.2f", walletBalance.totalRupees)
     }

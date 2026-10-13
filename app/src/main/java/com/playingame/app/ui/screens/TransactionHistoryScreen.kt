@@ -5,6 +5,7 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -92,8 +93,8 @@ fun TransactionHistoryScreen(
                         val idx = seenBets[roundKey]!!
                         val existing = consolidated[idx]
                         consolidated[idx] = existing.copy(
-                            amountPaise = existing.amountPaise + tx.amountPaise,
-                            balanceAfterPaise = minOf(existing.balanceAfterPaise, tx.balanceAfterPaise)
+                            amountChips = existing.amountChips + tx.amountChips,
+                            balanceAfterChips = minOf(existing.balanceAfterChips, tx.balanceAfterChips)
                         )
                     } else {
                         seenBets[roundKey] = consolidated.size
@@ -137,7 +138,7 @@ fun TransactionHistoryScreen(
                             .clip(RoundedCornerShape(10.dp))
                             .background(Color(0xFF0F1015))
                             .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
-                            .clickable { onBackClick() },
+                            .noRippleClickable { onBackClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -199,7 +200,7 @@ fun TransactionHistoryScreen(
                                 if (isSelected) Color(0xFFFFB800) else Color(0xFF1E2028),
                                 RoundedCornerShape(20.dp)
                             )
-                            .clickable { selectedFilter = filter }
+                            .noRippleClickable { selectedFilter = filter }
                             .padding(horizontal = 14.dp, vertical = 7.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -316,7 +317,7 @@ private fun RushStyleTransactionRow(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onToggle() }
+            .noRippleClickable { onToggle() }
             .padding(vertical = 14.dp, horizontal = 4.dp)
     ) {
         Row(
@@ -406,13 +407,13 @@ private fun RushStyleTransactionRow(
                     Text(text = txn.status.name, fontSize = 12.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = Color(0xFF00E676))
                 }
 
-                if (txn.balanceAfterPaise > 0) {
+                if (txn.balanceAfterChips > 0) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(text = "Wallet Balance After", fontSize = 12.sp, fontFamily = RubikFont, color = Color(0xFF8E899B))
-                        Text(text = String.format(Locale.getDefault(), "%.2f", txn.balanceAfterPaise / 100.0), fontSize = 12.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(text = String.format(Locale.getDefault(), "%.2f", txn.balanceAfterChips / 100.0), fontSize = 12.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
 
@@ -423,7 +424,7 @@ private fun RushStyleTransactionRow(
                         .clip(RoundedCornerShape(8.dp))
                         .background(Color(0xFF0F1015))
                         .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(8.dp))
-                        .clickable {
+                        .noRippleClickable {
                             clipboardManager.setText(AnnotatedString(txn.referenceId))
                             isCopied = true
                         }

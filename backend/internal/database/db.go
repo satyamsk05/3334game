@@ -45,6 +45,8 @@ func InitDB(cfg *config.Config) (*DBBundle, error) {
 			&models.Deposit{},
 			&models.Withdrawal{},
 			&models.Promotion{},
+			&models.DtRound{},
+			&models.DtBet{},
 		)
 		log.Println("[DB] PostgreSQL connected & tables migrated successfully")
 	}

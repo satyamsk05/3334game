@@ -125,14 +125,13 @@ export default function GameDetailsPage() {
     );
   }
 
-  const isRingOfFuture = game?.slug === 'ring-of-future' || game?.id === 'ring_of_future';
-  const isXoBattle = game?.slug === 'xo-battle' || game?.id === 'xo_battle' || game?.id === 'tic_tac_toe';
+  const isDragonTiger = game?.slug === 'dragon-tiger' || game?.id === 'dragon_tiger';
   const runtime = game?.runtimeStatus || game?.runtime || {};
   const stats = game?.stats || {};
 
   const totalBets = Number(stats.totalBets || 0);
-  const totalWageredPaise = Number(stats.totalWageredPaise || 0);
-  const totalPayoutsPaise = Number(stats.totalPayoutsPaise || 0);
+  const totalWageredPaise = Number(stats.totalWageredChips || stats.totalWageredPaise || 0);
+  const totalPayoutsPaise = Number(stats.totalPayoutsChips || stats.totalPayoutsPaise || 0);
   const ggrPaise = totalWageredPaise - totalPayoutsPaise;
 
   return (
@@ -210,70 +209,35 @@ export default function GameDetailsPage() {
         </Card>
       </div>
 
-      {/* Runtime Telemetry Card (If Ring of Future is live) */}
-      {isRingOfFuture && (
+      {/* Runtime Telemetry Card (If Dragon vs Tiger is live) */}
+      {isDragonTiger && (
         <Card className="space-y-4">
           <div className="flex items-center justify-between border-b border-border-subtle pb-3">
             <div className="flex items-center gap-2">
               <Activity className="h-4 w-4 text-accent-primary" />
-              <h2 className="text-sm font-semibold text-text-primary">Ring of Future Engine Telemetry</h2>
+              <h2 className="text-sm font-semibold text-text-primary">Dragon vs Tiger Engine Telemetry</h2>
             </div>
             <span className="flex items-center gap-1.5 rounded-full bg-status-positive/10 px-2.5 py-0.5 text-xs font-mono text-status-positive border border-status-positive/20">
               <span className="h-1.5 w-1.5 rounded-full bg-status-positive animate-pulse" />
-              Engine Running
+              Engine Online
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
             <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
               <span className="text-text-tertiary block text-xs uppercase font-sans">Engine State</span>
-              <span className="text-status-positive text-base font-bold uppercase">{runtime.phase || runtime.engineState?.state || 'ACTIVE'}</span>
+              <span className="text-status-positive text-base font-bold uppercase">{runtime.phase || runtime.engineState?.state || 'WAITING_FOR_BETS'}</span>
             </div>
             <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
               <span className="text-text-tertiary block text-xs uppercase font-sans">Current Round</span>
-              <span className="text-text-primary text-base font-bold">#{runtime.currentRound || runtime.roundCount || 0}</span>
+              <span className="text-text-primary text-base font-bold">#{runtime.currentRound || runtime.roundCount || 1}</span>
             </div>
             <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
               <span className="text-text-tertiary block text-xs uppercase font-sans">Phase Time Left</span>
-              <span className="text-accent-primary text-base font-bold">{runtime.secondsRemaining ?? runtime.engineState?.timeLeft ?? 0}s</span>
+              <span className="text-accent-primary text-base font-bold">{runtime.secondsRemaining ?? runtime.engineState?.timeLeft ?? 15}s</span>
             </div>
             <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
               <span className="text-text-tertiary block text-xs uppercase font-sans">Active Sockets</span>
-              <span className="text-text-primary text-base font-bold">{runtime.connectedPlayers || 0}</span>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* Runtime Telemetry Card (If XO Battle is active) */}
-      {isXoBattle && (
-        <Card className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border-subtle pb-3">
-            <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-accent-primary" />
-              <h2 className="text-sm font-semibold text-text-primary">XO 1v1 Battle Engine Telemetry</h2>
-            </div>
-            <span className="flex items-center gap-1.5 rounded-full bg-status-positive/10 px-2.5 py-0.5 text-xs font-mono text-status-positive border border-status-positive/20">
-              <span className="h-1.5 w-1.5 rounded-full bg-status-positive animate-pulse" />
-              Multiplayer Matchmaker Online
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
-            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
-              <span className="text-text-tertiary block text-xs uppercase font-sans">Engine Status</span>
-              <span className="text-status-positive text-base font-bold uppercase">{runtime.isRunning ? 'RUNNING' : 'ONLINE'}</span>
-            </div>
-            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
-              <span className="text-text-tertiary block text-xs uppercase font-sans">Active Battle Rooms</span>
-              <span className="text-text-primary text-base font-bold">{runtime.activeRooms || 0}</span>
-            </div>
-            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
-              <span className="text-text-tertiary block text-xs uppercase font-sans">Active Stake Tiers</span>
-              <span className="text-accent-primary text-base font-bold">{runtime.availableTiers || 5} Tiers (₹1-₹100)</span>
-            </div>
-            <div className="p-3 rounded-lg bg-surface-base border border-border-subtle">
-              <span className="text-text-tertiary block text-xs uppercase font-sans">Connected Players</span>
               <span className="text-text-primary text-base font-bold">{runtime.connectedPlayers || 0}</span>
             </div>
           </div>

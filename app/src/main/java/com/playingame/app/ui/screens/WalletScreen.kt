@@ -3,6 +3,7 @@ package com.playingame.app.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -74,7 +75,7 @@ fun WalletScreen(
                         .clip(RoundedCornerShape(14.dp))
                         .background(Color(0xFF161922))
                         .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
-                        .clickable { onSupportClick() },
+                        .noRippleClickable { onSupportClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -106,7 +107,7 @@ fun WalletScreen(
                         .clip(RoundedCornerShape(14.dp))
                         .background(Color(0xFF161922))
                         .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
-                        .clickable { onSettingsClick() },
+                        .noRippleClickable { onSettingsClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -162,7 +163,7 @@ fun WalletScreen(
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color(0xFF161922))
                     .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(12.dp))
-                    .clickable { onAllTransactionsClick() }
+                    .noRippleClickable { onAllTransactionsClick() }
                     .padding(horizontal = 16.dp, vertical = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -249,7 +250,7 @@ fun WalletScreen(
                                     )
                                 )
                             )
-                            .clickable { onAddCashClick() },
+                            .noRippleClickable { onAddCashClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Row(
@@ -325,7 +326,7 @@ fun WalletScreen(
                                     )
                                 )
                             )
-                            .clickable { onWithdrawClick() },
+                            .noRippleClickable { onWithdrawClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -384,7 +385,7 @@ fun WalletScreen(
                             .clip(RoundedCornerShape(10.dp))
                             .background(Color(0xFF181B24))
                             .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(10.dp))
-                            .clickable { /* Play to use */ },
+                            .noRippleClickable { /* Play to use */ },
                         contentAlignment = Alignment.Center
                     ) {
                         Row(
@@ -463,7 +464,7 @@ fun WalletScreen(
                                     )
                                 )
                             )
-                            .clickable { onAddCashClick() },
+                            .noRippleClickable { onAddCashClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

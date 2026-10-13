@@ -467,6 +467,36 @@ object AuthRepository {
         return@withContext Result.success(updatedSession)
     }
 
+    /**
+     * Permanently deletes the signed-in user's account and personal data via
+     * DELETE /users/me (DPDP Act 2023 right to erasure). Call [logout] after success.
+     */
+    suspend fun deleteAccount(context: Context? = null): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val token = getAuthToken()
+            require(token.isNotBlank()) { "You are not signed in." }
+
+            val url = "${ClientConfig.API_BASE_URL}/users/me"
+            val request = Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer $token")
+                .delete()
+                .build()
+
+            httpClient.newCall(request).execute().use { response ->
+                val bodyStr = response.body?.string() ?: ""
+                if (!response.isSuccessful) {
+                    val serverMsg = runCatching {
+                        JSONObject(bodyStr).optString("error").takeIf { it.isNotBlank() }
+                    }.getOrNull()
+                    throw Exception(
+                        serverMsg ?: "Could not delete account right now. Contact support if the problem persists."
+                    )
+                }
+            }
+        }
+    }
+
     fun logout(context: Context? = null) {
         _currentSession.value = UserSession(isLoggedIn = false)
         val targetContext = context ?: appContext

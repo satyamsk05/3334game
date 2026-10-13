@@ -2,6 +2,7 @@ package com.playingame.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -31,7 +32,7 @@ fun PlayButton(
         modifier = modifier
             .clip(PlayButtonShape)
             .background(Color.White)
-            .clickable { onClick() }
+            .noRippleClickable { onClick() }
             .padding(horizontal = 14.dp, vertical = 7.dp),
         contentAlignment = Alignment.Center
     ) {

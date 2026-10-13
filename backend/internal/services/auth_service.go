@@ -40,6 +40,56 @@ func NewAuthService(cfg *config.Config, bundle *database.DBBundle) *AuthService 
 	}
 }
 
+// DeleteUserData implements the DPDP Act 2023 right to erasure: personal
+// identifiers are anonymised and balances zeroed in a single transaction.
+// The rows themselves are retained (de-identified) so financial audit trails
+// and anti-fraud records stay intact.
+func (s *AuthService) DeleteUserData(userID string) error {
+	if userID == "" {
+		return errors.New("user id is required")
+	}
+
+	if s.bundle.DB == nil {
+		// In-memory fallback (dev mode without DB)
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		if u, ok := s.memUsers[userID]; ok {
+			u.Phone = fmt.Sprintf("deleted-%s", uuid.New().String()[:8])
+			u.Name = "Deleted User"
+			u.AvatarID = "avatar_1"
+			u.IsBanned = true
+			return nil
+		}
+		return errors.New("account not found")
+	}
+
+	return s.bundle.DB.Transaction(func(tx *gorm.DB) error {
+		res := tx.Model(&models.User{}).
+			Where("id = ?", userID).
+			Updates(map[string]interface{}{
+				"phone":     fmt.Sprintf("deleted-%s", uuid.New().String()[:8]),
+				"name":      "Deleted User",
+				"avatar_id": "avatar_1",
+				"is_banned": true,
+			})
+		if res.Error != nil {
+			return res.Error
+		}
+		if res.RowsAffected == 0 {
+			return errors.New("account not found")
+		}
+
+		// Zero out balances; keep the anonymised wallet row for audit.
+		return tx.Model(&models.Wallet{}).
+			Where("user_id = ?", userID).
+			Updates(map[string]interface{}{
+				"deposit_chips": 0,
+				"winning_chips": 0,
+				"bonus_chips":   0,
+			}).Error
+	})
+}
+
 func (s *AuthService) LoginOrRegister(phone, name string) (*models.User, string, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

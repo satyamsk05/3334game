@@ -1,6 +1,7 @@
 package com.playingame.app.ui.components
 
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -57,7 +58,7 @@ fun SectionHeader(
 
         if (onSeeAllClick != null) {
             Row(
-                modifier = Modifier.clickable { onSeeAllClick() },
+                modifier = Modifier.noRippleClickable { onSeeAllClick() },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {

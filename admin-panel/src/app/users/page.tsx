@@ -218,10 +218,10 @@ export default function UsersManagementPage() {
                 </tr>
               ) : (
                 users.map((u) => {
-                  const depositRupees = Number(u.deposit_balance ?? (u as any).balance?.depositPaise ?? 0) / 100;
-                  const winningsRupees = Number(u.winnings_balance ?? (u as any).balance?.winningPaise ?? 0) / 100;
-                  const bonusRupees = Number(u.rewards_balance ?? (u as any).balance?.bonusPaise ?? 0) / 100;
-                  const totalRupees = Number(u.available_balance ?? (u as any).balance?.totalPaise ?? 0) / 100;
+                  const depositRupees = Number(u.deposit_balance ?? (u as any).balance?.depositChips ?? (u as any).balance?.depositPaise ?? 0) / 100;
+                  const winningsRupees = Number(u.winnings_balance ?? (u as any).balance?.winningChips ?? (u as any).balance?.winningPaise ?? 0) / 100;
+                  const bonusRupees = Number(u.rewards_balance ?? (u as any).balance?.bonusChips ?? (u as any).balance?.bonusPaise ?? 0) / 100;
+                  const totalRupees = Number(u.available_balance ?? (u as any).balance?.totalChips ?? (u as any).balance?.totalPaise ?? 0) / 100;
                   const isBlocked = Boolean(u.is_blocked ?? (u as any).isBanned);
                   const createdDate = u.created_at || (u as any).createdAt;
                   const isProcessing = processingId === u.id;

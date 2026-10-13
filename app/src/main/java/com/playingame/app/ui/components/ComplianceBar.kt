@@ -41,7 +41,7 @@ fun ComplianceBar(
 
             Text(
                 text = "18+ | Play Responsibly | T&C Apply",
-                fontSize = 11.sp,
+                fontSize = 12.5.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.Medium,
                 color = TextMuted,

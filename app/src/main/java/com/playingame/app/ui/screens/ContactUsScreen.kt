@@ -3,6 +3,7 @@ package com.playingame.app.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,11 +45,11 @@ fun ContactUsScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
                     .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
-                    .clickable { onBackClick() },
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
+                    .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -102,6 +103,37 @@ fun ContactUsScreen(
             iconRes = R.drawable.ic_headset
         )
 
+        // Grievance Redressal & Legal Details (IT Rules 2021 & DPDP Act 2023)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
+                .background(Color(0xFF0F1015))
+                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Grievance Officer & Legal Details",
+                fontSize = 15.sp,
+                fontFamily = RubikFont,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Per IT Rules 2021 & DPDP Act 2023:\n\n" +
+                    "• Operating Entity: Bit Arcade Interactive Gaming\n" +
+                    "• Grievance Officer: Satyam Kumar\n" +
+                    "• Grievance Email: grievance@bitarcadegame.com\n" +
+                    "• Redressal Timeline: Acknowledged in 72h, resolved within 30 days\n" +
+                    "• Nature: Skill-based real-money gaming in permitted states",
+                fontSize = 12.5.sp,
+                fontFamily = RubikFont,
+                color = Color(0xFF8E899B),
+                lineHeight = 18.sp
+            )
+        }
+
         Spacer(modifier = Modifier.height(30.dp))
     }
 }
@@ -119,7 +151,7 @@ private fun ContactCard(
             .clip(RoundedCornerShape(14.dp))
             .background(Color(0xFF0F1015))
             .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
-            .clickable { }
+            .noRippleClickable { }
             .padding(16.dp)
     ) {
         Row(

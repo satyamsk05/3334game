@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,11 +50,11 @@ fun FairPlayScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
                     .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
-                    .clickable { onBackClick() },
+                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
+                    .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -82,17 +83,17 @@ fun FairPlayScreen(
             iconRes = R.drawable.ic_settings_shield
         )
 
-        // Section 2: Certified RTP Multipliers
+        // Section 2: Transparent RTP Multipliers
         FairPlayCard(
             title = "Target ~95% Return-To-Player (RTP)",
-            description = "Multipliers and game mechanics are mathematically calibrated ensuring transparent odds and certified fair play across all games.",
+            description = "Multipliers and game mechanics are mathematically calibrated ensuring transparent odds and fair play across all games.",
             iconRes = R.drawable.ic_settings_issues
         )
 
         // Section 3: Transparent Ledger & Wallet Accounting
         FairPlayCard(
             title = "Transparent Ledger Accounting",
-            description = "All bet debits, refunds, wins, and withdrawals are recorded synchronously in the application ledger in integer paise to eliminate rounding discrepancies.",
+            description = "All bet debits, refunds, wins, and withdrawals are recorded synchronously in the application ledger in integer chips to eliminate rounding discrepancies.",
             iconRes = R.drawable.ic_settings_add_cash
         )
 

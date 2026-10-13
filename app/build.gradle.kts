@@ -17,6 +17,14 @@ android {
     namespace = "com.playingame.app"
     compileSdk = 34
 
+    val prodServerUrl = localProperties.getProperty("PROD_SERVER_URL")
+        ?: System.getenv("PROD_SERVER_URL")
+        ?: "http://3.7.73.109:5050"
+    val devServerUrl = localProperties.getProperty("DEV_SERVER_URL")
+        ?: System.getenv("DEV_SERVER_URL")
+        ?: localProperties.getProperty("SERVER_URL")
+        ?: "http://3.7.73.109:5050"
+
     defaultConfig {
         applicationId = "com.playingame.app"
         minSdk = 24
@@ -24,14 +32,18 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("String", "DEFAULT_SERVER_URL", "\"https://8394-2402-3a80-43df-723-9c57-3cfb-b2ff-d014.ngrok-free.app\"")
+        buildConfigField("String", "DEFAULT_SERVER_URL", "\"$devServerUrl\"")
         buildConfigField("String", "BUSINESS_SUPPORT_PHONE", "\"919989907408\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "DEFAULT_SERVER_URL", "\"$devServerUrl\"")
+        }
         release {
+            buildConfigField("String", "DEFAULT_SERVER_URL", "\"$prodServerUrl\"")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -62,6 +74,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.coil.compose)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)

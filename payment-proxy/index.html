@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Deposit — Bit Arcade Pay</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -733,12 +733,12 @@
   <div class="landing-card" id="gatewayLandingView">
     <div class="landing-badge">
       <span class="landing-dot"></span>
-      256-Bit SSL Encrypted
+      Secure Connection
     </div>
     <h1 class="landing-title">Bit Arcade Pay</h1>
-    <p class="landing-desc">Authoritative Payment & UTR Processing Gateway for Bit Arcade Game.</p>
+    <p class="landing-desc">Payment & UTR Processing Gateway for Bit Arcade Game.</p>
     <div class="landing-security-note">
-      🔒 PCI-DSS Compliant & Protected Connection
+      🔒 Deposits are verified before crediting your wallet
     </div>
   </div>
 
@@ -775,26 +775,25 @@
       <div class="qr-container" id="qrBox"></div>
 
       <div class="apps-row">
-        <div class="app-item" onclick="openUpiApp('phonepe')">
-          <div class="app-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgBAMAAAB54XoeAAAAAXNSR0IArs4c6QAAACFQTFRFR3BMXyWfXySfXiOfXiSfXyWf////eUmvxK7cpIPI5dvwZL2jYAAAAAV0Uk5TAM9qJJimOUzHAAAEEUlEQVRo3t1bTVMaQRBFV+8ocl9NuG9MecdUeXfYHRfyAzbEO5hwdyvhDjHes378yiyluARmul8PY0ilb1rW8w39OT2PWo2146PTvabWau/g6E1tbXv/tsSqTH2I1oLbPtUrduBOMzjURtt3ZHnc1BZTTiQPNWH78uO2NGkHwmMHZ5qxRIQYNLX2igjgiRDPtPaKeKhBA339TsPWgNJNCyz04+CFnOE/xpYWGfsx7mihtX0eGDj0iRZbw5uHEU+3XAA7nglSFE05/LXI7gdMTgtCJh1npfUdQ2flE0xvsie7c6K4SnD4jMdSDEEX53PA7NrB0QYXT7N1KBqSpPcCmE1owBjM4oriJ3FGb5n+boEiE4t1sDFVFKWRY8m69AXwUugWW2eaopETg609RSNHoXVmhEZOCFbqtJgDfpacmWglIzByFFpZK4p3+JnJ6WMERk4dHbcqir/Q2A7ofz0CIyeCx4UCi5w23N4/YpET4xNrDlFU4EdY2hcsciJ84sqh4G7jE1IXipxYMPTnSHB3BLeSHlQWJSNSjkROaG9PdooTNp3BqXUKNNTYMoKk3ww2nlN8+nFi90rTPiQRdjmw5UpAtTrC7my5su0I2Le5ecsRMLO5+cQV0PQhnpuvEu6AHXMmuwMm5kx2B5zFjeHXFxDgxFweAnrOFDIsA3GbLNBUqljqjbH+p+PHx8fCivVzZj8sXWCLLS+DlVmRLGC7fgHPiWo4XfYmAhgTd24nhh0AcOIbUMjwzC9gQjRlpyMrAHCwYUDt+8jaL0Ptm6HeBMP/7sgbCOx/P/WEDAXlS0Ply3PFTjbRAq4lR+4AbfRa1kbtjX64cl+EGr19FLlYvulgo8gOuxjoSxi2iatjd3kQRBiGxH6gt3LFAQCjGlG/XkbLydJ/oG/MTX5dczkbLq9uMx5QkQuChctAOdAyd6jqWtHi9z/Ipay6+OzyXsEBY3pDUIgB6/QOYygGDOlFVVcMGDFrm0IIqLinspEQsMOtWdJCBhizi6CuDLDOr6puRYDPm2dyoTReuH9ygAp6wJw/xWUPVxxggi0k05vysnv/fcAX2Fj6SM0BtuGlLtgCIpHwggdMxO/eDGBMP8HJGS484vphGEnVJgzDhHt2lDJsiB/nGYahWLFDM1RywQTNMHYQJJCAoVylRDJULiIRCrDhIsLICcDQRUk1tAMm2JO6Zdixtqc/Hv3xMxt2myYZD+KWNLe8AsTO2pi0NMQlzuqdxRFkbUEVQxDW4CExsybFtlcNFCExcqUY/j2Zln8hmUTMSCXJK4rxvMsFBYpQ3iOvJLn0Lgr1L1v1L6wFpM5cDrshSuTOCKIS4PkXeJeIp0xAy5X3nkXyryDj9/9FgxlJ01chwto6Fvj9sobD10l+A1ELni9dtAl8AAAAAElFTkSuQmCC" alt="PhonePe"></div>
+        <!-- Neutral text-initial icons: brand logos removed (trademark licensing) -->
+        <div class="app-item" onclick="openUpiApp('phonepe')" role="button" aria-label="Pay with PhonePe">
+          <div class="app-icon" style="background: #5F259F; color: #FFFFFF; font-weight: 800; font-size: 15px;">Pe</div>
           <span class="app-name">PhonePe</span>
         </div>
-        <div class="app-item" onclick="openUpiApp('gpay')">
-          <div class="app-icon"><img src="data:image/png;base64,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" alt="Google Pay"></div>
-          <span class="app-name">Google Pay</span>
+        <div class="app-item" onclick="openUpiApp('gpay')" role="button" aria-label="Pay with Google Pay">
+          <div class="app-icon" style="background: #FFFFFF; color: #1A73E8; font-weight: 800; font-size: 15px; border: 1px solid #E2E8F0;">G</div>
+          <span class="app-name">GPay</span>
         </div>
-        <div class="app-item" onclick="openUpiApp('paytm')">
-          <div class="app-icon"><img src="data:image/png;base64,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" alt="Paytm"></div>
+        <div class="app-item" onclick="openUpiApp('paytm')" role="button" aria-label="Pay with Paytm">
+          <div class="app-icon" style="background: #00BAF2; color: #FFFFFF; font-weight: 800; font-size: 15px;">P</div>
           <span class="app-name">Paytm</span>
         </div>
-        <div class="app-item" onclick="openUpiApp('whatsapp')">
-          <div class="app-icon" style="background: #25D366;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.01L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.8 13.47 3.8 11.91C3.8 7.37 7.5 3.67 12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15ZM16.57 14.36C16.32 14.23 15.1 13.63 14.88 13.55C14.65 13.47 14.48 13.43 14.32 13.68C14.15 13.93 13.67 14.49 13.52 14.66C13.38 14.83 13.23 14.85 12.98 14.73C12.73 14.6 11.93 14.34 10.98 13.49C10.24 12.83 9.74 12.02 9.6 11.77C9.45 11.52 9.58 11.38 9.71 11.26C9.82 11.15 9.96 10.97 10.08 10.82C10.21 10.67 10.25 10.57 10.33 10.4C10.42 10.23 10.37 10.09 10.31 9.96C10.25 9.84 9.75 8.61 9.54 8.11C9.34 7.62 9.14 7.69 8.98 7.68C8.84 7.67 8.67 7.67 8.5 7.67C8.33 7.67 8.06 7.73 7.83 7.98C7.6 8.23 6.96 8.83 6.96 10.04C6.96 11.25 7.85 12.42 7.97 12.59C8.1 12.76 9.71 15.24 12.18 16.3C12.77 16.55 13.23 16.71 13.58 16.82C14.18 17.01 14.72 16.98 15.15 16.92C15.63 16.85 16.63 16.31 16.84 15.73C17.05 15.15 17.05 14.66 16.98 14.53C16.92 14.41 16.82 14.48 16.57 14.36Z" fill="white"/></svg>
-          </div>
+        <div class="app-item" onclick="openUpiApp('whatsapp')" role="button" aria-label="Pay with WhatsApp">
+          <div class="app-icon" style="background: #25D366; color: #FFFFFF; font-weight: 800; font-size: 15px;">Wa</div>
           <span class="app-name">WhatsApp</span>
         </div>
-        <div class="app-item" onclick="openUpiApp('any')">
-          <div class="app-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAABKVBMVEXm5ubn5+fk5OTn5+fm5ubk5OTn5+fm5ubl5eXm5ubm5ubn5+fl5eXm5ubo6Ojn5+fm5ubl5eXm5ubf39/m5uYAAAD73sj97+To6Ojyi0HS6t3S6tyAlFIclFObgTL73smagTL7+/tYsYE6omv19fW3fy7zk06FxqPu7u7Ffiz5+fn4xJ9FiD+pgDD85tX09PTyikBwhDnFfSz1rHcrm1/73cn+9/Eqm1/0m1yz28Znt4zs7OwblFPxgjN+hDZYsIHz8/PC49Hr6+sMjUjh8ej5za3ieyf8/PxJqXb6+vqj1Lr61rvv7+/Kp3D97uP85tbyi0DweiX1o2kai0ak1Lrw+PT39/fx8fHn5+cpi0T29vYajEb2tIR2v5jp6en9/f3m5ub////y8vIQFjv7AAAAFnRSTlOgIGCfr5BgcIDvUEDPv29/j5/fEM8AfMCZ1gAAA/FJREFUWMO9mVt700YQhleOT7ItYmltCNDS0rpJMAWFQ9wQJYWgpCIlTREljhtAms3//xHswSSWY+2s7MDc6EZ6n29ndmdnRqSrN9qouY7nATe75bj1JkU+IFpYW5Ky5rkNOhewWbb556Pg9GwYRYxbetj3T4ORgLqNokC6LGiB32dX7NAPhM6SVQAoccmrlOVYdJZw5LIxsMo9F/SZ1oaBUGkEtBwcJ6zPVZYtHHjDhpHPjIwv3C4hQNoGWE+ZoUVHAG0t0GoZy1Pmj6Bl5QMtD5KIFbIoAc/KA3Le64I8TnydJZIsL2WFLc0SyaK8aeIlsDUnTxJb9AqwXTgemci0p4FVGM3N48QR1LJAywafLWA+2FYGWIYjtpCtgzMJrC7gwHFgRlCaAHpwZvLViXbRHr0ALkOiBR2vysf+G91LAdS/AvmW1ue/g/hAPD6Ee7r8CDYdA6sQ6Jf6Pn4nHi9DA4lEenCoB+7GUuJOiElUwAbiQbYZx0LiXhjqJSbQlMAlLMSfOJBL3OZArcRzKAsgBUD24JYAvhv8ESISUxEWwleMhGQQS/snDDGJATQ4cAk7xW8V8K//QkyiDxUO9OC+HvhMAeMnqMQ+eF1CYQU5cBtj4NMQlTgCSpqYCx/HX+13VCJ3IqnDqR748AL4GyrxFGqEYDHZis0l9sAlDpIY2CUPlzgEh3SQIG9OAFGJEXjEhhQ/d1MSf9UBAfQrXo1nSPyQ9zYABjzO8OJHCvjL/MCDLPBnBfw8P/B9hvfgf+XDfQ3Q0yevjUxMPkre9okmgSHAx5O8e2q92/mvH0KHb+yh0bm74K1prxWHH72e2bn7E+fxhOiSmi45DIrxeHKoE+0N8LYYj6evpj7BPpvi/Y3kYpFgu7o6ZKMY71BcAd1KfkI8zvB+fIGXna7+Gh2fux8U7y5a7qlrlOYnMHXuDnYMeRGAuOh5OXyeXyTFuz/dEbzn+3g9yi8AWds084olkax3/2UvDHm8WGqocs7OiTM/d7dvMbZmyBvyGCtgPScsW5LH3pjxeEhKYyCdLXGgeGzHjNdXHZ8s2mdL3FwdiMeeGY978KJo71Jv1ua+KXns7okRryc9eNn4rMzZiU70j5ONT9eB9cWAR6Ic/pbNY7cGK4u1t6XpBryyWANeudLR085CI4LvMcS49jHL9Q+Crn9UxYkdWLnOYZrcPXBkLDJdB6hQZCBZtSHpGcuzawYj0zJAYjIyDQAcy3yoO8RxhkNdmXE5Munl+jI9TwDsOi0wGLeESgj8GT1MXw7Gc3C60X2DgBrd+/378gBF0fBMje7tcnPOnwtk1s+Fypw/F8bQZt11OrYkeY5ba2C/P74A6SVY81U6htQAAAAASUVORK5CYII=" alt="Any UPI"></div>
+        <div class="app-item" onclick="openUpiApp('any')" role="button" aria-label="Pay with any UPI app">
+          <div class="app-icon" style="background: #097939; color: #FFFFFF; font-weight: 800; font-size: 13px;">UPI</div>
           <span class="app-name">Any UPI</span>
         </div>
       </div>
@@ -815,7 +814,7 @@
         </button>
       </div>
 
-      <p class="verify-note">Payment will be credited automatically after verification</p>
+      <p class="verify-note">Payments are credited after verification, usually within a few minutes. Refunds for failed deposits follow our Refund Policy.</p>
 
       <!-- Tips & Instructions Section -->
       <div class="instructions-section">
@@ -887,7 +886,7 @@
             <div style="margin-top: 6px;"><span class="receipt-badge">✓ Verified & Approved</span></div>
           </div>
           <div class="receipt-row"><span>Order ID</span><span class="receipt-val" id="successOrderIdText">DEP-000</span></div>
-          <div class="receipt-row"><span>Payment Mode</span><span class="receipt-val">UPI Instant Deposit</span></div>
+          <div class="receipt-row"><span>Payment Mode</span><span class="receipt-val">UPI Deposit</span></div>
           <div class="receipt-row"><span>Status</span><span class="receipt-val" style="color: #059669;">COMPLETED</span></div>
           <div class="receipt-row"><span>Updated At</span><span class="receipt-val" id="successTimeText">Just now</span></div>
         </div>
@@ -1003,7 +1002,7 @@ function circ(q, n, c, options) {
   </script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const orderIdParam = urlParams.get('orderId');
+    const orderIdParam = urlParams.get('orderId') || urlParams.get('id') || urlParams.get('depositId');
     const ticketParam = urlParams.get('ticket');
     const tokenParam = urlParams.get('token');
 
@@ -1272,8 +1271,8 @@ function circ(q, n, c, options) {
       // Synchronize in-app wallet balance if running inside WebView
       if (window.AndroidBridge && window.AndroidBridge.syncWalletBalance) {
         try {
-          const paise = Math.round((orderData?.amountRupees || amount) * 100);
-          window.AndroidBridge.syncWalletBalance(paise);
+          const chips = Math.round((orderData?.amountRupees || amount) * 100);
+          window.AndroidBridge.syncWalletBalance(chips);
         } catch (_) {}
       }
     }
@@ -1355,12 +1354,13 @@ function circ(q, n, c, options) {
 
         const data = await res.json();
         if (data && data.success) {
-          showAlert('UTR Submitted! Verifying approval with Admin...', false);
+          showAlert('UTR Submitted! Your deposit will be credited after verification.', false);
         } else {
           showAlert(data.message || 'Payment submission failed. Please try again.', true);
         }
       } catch (err) {
-        showAlert('Payment submitted! Verifying approval with Admin...', false);
+        // Network failure must NOT be reported as success — the UTR was never received.
+        showAlert('Could not reach the server. Check your connection and tap SUBMIT again — do not pay twice for the same order.', true);
       } finally {
         checkUtrInput();
         btn.innerHTML = '<span>SUBMIT</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';

@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -92,7 +93,7 @@ fun AccountBannedDialog(
                         .height(48.dp)
                         .clip(RoundedCornerShape(24.dp))
                         .background(Color(0xFF25D366))
-                        .clickable {
+                        .noRippleClickable {
                             val msg = "Hello Admin, my Bit Arcade Game account has been suspended. Please check."
                             val waIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/919989907408?text=${Uri.encode(msg)}"))
                             context.startActivity(waIntent)
@@ -126,7 +127,7 @@ fun AccountBannedDialog(
                         .height(44.dp)
                         .clip(RoundedCornerShape(22.dp))
                         .background(Color(0xFF222222))
-                        .clickable {
+                        .noRippleClickable {
                             onDismiss()
                         },
                     contentAlignment = Alignment.Center

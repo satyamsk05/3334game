@@ -20,6 +20,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.playingame.app.R
 import com.playingame.app.ui.theme.*
+import com.playingame.app.util.noRippleClickable
 
 @Composable
 fun TopHeader(
@@ -56,7 +57,7 @@ fun TopHeader(
                     .clip(CircleShape)
                     .background(CardNavyBackground)
                     .border(2.dp, Color(0xFFFFB800), CircleShape)
-                    .clickable { onProfileClick() },
+                    .noRippleClickable { onProfileClick() },
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -96,7 +97,7 @@ fun TopHeader(
                 modifier = Modifier
                     .size(38.dp)
                     .clip(CircleShape)
-                    .clickable { onNotificationClick() },
+                    .noRippleClickable { onNotificationClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

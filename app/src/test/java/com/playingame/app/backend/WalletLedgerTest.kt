@@ -1,6 +1,6 @@
 package com.playingame.app.backend
 
-import com.playingame.app.game.ringoffuture.backend.WalletLedger
+import com.playingame.app.data.wallet.WalletLedger
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -15,15 +15,21 @@ class WalletLedgerTest {
     @Test
     fun testInitialBalanceBucketsSum() {
         val balance = WalletLedger.walletBalance.value
-        assertEquals(50000L, balance.depositPaise)  // ₹500
-        assertEquals(125000L, balance.winningPaise) // ₹1250
-        assertEquals(10000L, balance.bonusPaise)    // ₹100
-        assertEquals(185000L, balance.totalPaise)   // ₹1850
+        assertEquals(50000L, balance.depositChips)
+        assertEquals(125000L, balance.winningChips)
+        assertEquals(10000L, balance.bonusChips)
+        assertEquals(185000L, balance.totalChips)
+
+        // Backward compatibility properties
+        assertEquals(50000L, balance.depositPaise)
+        assertEquals(125000L, balance.winningPaise)
+        assertEquals(10000L, balance.bonusPaise)
+        assertEquals(185000L, balance.totalPaise)
     }
 
     @Test
     fun testBetDebitOrderDepositFirst() {
-        // Bet 20000 paise (₹200) -> should draw entirely from deposit (50000 -> 30000)
+        // Bet 20000 chips -> should draw entirely from deposit (50000 -> 30000)
         val debit = WalletLedger.placeBet(20000L)
         assertTrue(debit.success)
         assertEquals(20000L, debit.depositDebited)
@@ -31,9 +37,9 @@ class WalletLedgerTest {
         assertEquals(0L, debit.bonusDebited)
 
         val newBalance = WalletLedger.walletBalance.value
-        assertEquals(30000L, newBalance.depositPaise)
-        assertEquals(125000L, newBalance.winningPaise)
-        assertEquals(10000L, newBalance.bonusPaise)
+        assertEquals(30000L, newBalance.depositChips)
+        assertEquals(125000L, newBalance.winningChips)
+        assertEquals(10000L, newBalance.bonusChips)
     }
 
     @Test
@@ -45,29 +51,29 @@ class WalletLedgerTest {
         WalletLedger.refundBet(debit.depositDebited, debit.winningDebited, debit.bonusDebited)
 
         val restoredBalance = WalletLedger.walletBalance.value
-        assertEquals(50000L, restoredBalance.depositPaise)
-        assertEquals(125000L, restoredBalance.winningPaise)
-        assertEquals(10000L, restoredBalance.bonusPaise)
+        assertEquals(50000L, restoredBalance.depositChips)
+        assertEquals(125000L, restoredBalance.winningChips)
+        assertEquals(10000L, restoredBalance.bonusChips)
     }
 
     @Test
     fun testWinsCreditWinningsOnly() {
-        WalletLedger.creditWin(5000L, "30x") // ₹50
+        WalletLedger.creditWin(5000L, "30x")
         val balance = WalletLedger.walletBalance.value
-        assertEquals(50000L, balance.depositPaise)
-        assertEquals(130000L, balance.winningPaise) // 125000 + 5000 = 130000 (₹1300)
-        assertEquals(10000L, balance.bonusPaise)
+        assertEquals(50000L, balance.depositChips)
+        assertEquals(130000L, balance.winningChips) // 125000 + 5000 = 130000
+        assertEquals(10000L, balance.bonusChips)
     }
 
     @Test
     fun testWithdrawalValidatesMinRuleAndWinnings() {
-        // Attempt withdrawal below min ₹25 (2500 paise)
+        // Attempt withdrawal below min 2500 chips
         val lowRes = WalletLedger.requestWithdrawal(1000L, "user@upi")
         assertFalse(lowRes.first)
 
-        // Valid withdrawal ₹500 (50000 paise)
+        // Valid withdrawal 50000 chips
         val validRes = WalletLedger.requestWithdrawal(50000L, "user@upi")
         assertTrue(validRes.first)
-        assertEquals(75000L, WalletLedger.walletBalance.value.winningPaise) // 125000 - 50000 = 75000
+        assertEquals(75000L, WalletLedger.walletBalance.value.winningChips) // 125000 - 50000 = 75000
     }
 }

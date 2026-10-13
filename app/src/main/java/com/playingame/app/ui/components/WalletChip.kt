@@ -26,6 +26,7 @@ import com.playingame.app.R
 import com.playingame.app.ui.theme.CardBorderColor
 import com.playingame.app.ui.theme.CardNavyBackground
 import com.playingame.app.ui.theme.RubikFont
+import com.playingame.app.util.noRippleClickable
 
 private val ChipPillShape = RoundedCornerShape(percent = 50)
 
@@ -46,7 +47,9 @@ fun WalletChip(
             .wrapContentWidth()
             .height(maxOf(chipHeight, coinSize))
             .then(
-                if (onClick != null) Modifier.clickable { onClick() } else Modifier
+                if (onClick != null) {
+                    Modifier.noRippleClickable { onClick() }
+                } else Modifier
             ),
         contentAlignment = Alignment.CenterStart
     ) {

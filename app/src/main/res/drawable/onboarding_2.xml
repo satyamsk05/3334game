@@ -1,0 +1,87 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="280dp"
+    android:height="280dp"
+    android:viewportWidth="280"
+    android:viewportHeight="280">
+
+    <!-- Soft Ambient Aura Behind Illustration -->
+    <path
+        android:fillColor="#3300C853"
+        android:pathData="M140,40 C200,40 240,80 240,140 C240,200 190,240 140,240 C80,240 40,190 40,140 C40,80 80,40 140,40 Z"/>
+
+    <!-- Floating Cloud 1 -->
+    <path
+        android:fillColor="#E6FFFFFF"
+        android:pathData="M45,85 C45,78 51,72 58,72 C60,72 62,73 63,74 C66,69 71,65 78,65 C86,65 93,72 94,80 C97,80 99,83 99,86 C99,90 96,93 92,93 L52,93 C48,93 45,90 45,85 Z"/>
+
+    <!-- Sparkle Stars -->
+    <path
+        android:fillColor="#00E676"
+        android:pathData="M210,65 L213,73 L221,76 L213,79 L210,87 L207,79 L199,76 L207,73 Z"/>
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M65,160 L67,165 L72,167 L67,169 L65,174 L63,169 L58,167 L63,165 Z"/>
+
+    <!-- Smartphone Body (Tilted/Straight 3D Look) -->
+    <path
+        android:fillColor="#1E232E"
+        android:pathData="M95,55 C95,47 101,40 109,40 L171,40 C179,40 185,47 185,55 L185,215 C185,223 179,230 171,230 L109,230 C101,230 95,223 95,215 Z"/>
+
+    <!-- Phone Screen -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M101,58 C101,53 105,48 111,48 L169,48 C175,48 179,53 179,58 L179,208 C179,213 175,218 169,218 L111,218 C105,218 101,213 101,208 Z"/>
+
+    <!-- Screen Gradient / Accent Box -->
+    <path
+        android:fillColor="#059669"
+        android:pathData="M106,68 L174,68 L174,130 L106,130 Z"/>
+
+    <!-- Speaker / Notch -->
+    <path
+        android:fillColor="#1E232E"
+        android:pathData="M128,45 L152,45 C153,45 154,46 154,47 C154,48 153,49 152,49 L128,49 C127,49 126,48 126,47 C126,46 127,45 128,45 Z"/>
+
+    <!-- UPI Checkmark in Screen -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M125,95 L135,105 L155,83 L159,87 L135,113 L121,99 Z"/>
+
+    <!-- Fast Transfer Curved Arrow (Floating Left to Right) -->
+    <path
+        android:fillColor="#34D399"
+        android:pathData="M70,120 C70,95 90,80 115,80 L115,72 L132,86 L115,100 L115,92 C98,92 84,103 84,120 Z"/>
+
+    <!-- Golden Rupee Coin (Foreground 3D) -->
+    <path
+        android:fillColor="#FFA000"
+        android:pathData="M140,135 A45,45 0 1,1 140,225 A45,45 0 1,1 140,135 Z"/>
+    <path
+        android:fillColor="#FFC107"
+        android:pathData="M140,140 A40,40 0 1,1 140,220 A40,40 0 1,1 140,140 Z"/>
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M140,145 A35,35 0 1,1 140,215 A35,35 0 1,1 140,145 Z"/>
+
+    <!-- Rupee Symbol (₹) on Coin -->
+    <path
+        android:fillColor="#B45309"
+        android:pathData="M130,165 L152,165 M130,172 L148,172 M130,162 L130,185 C138,185 145,180 145,173 C145,166 138,162 130,162 Z M136,183 L152,201"
+        android:strokeColor="#78350F"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"/>
+
+    <!-- Security Shield Badge (Top Right of Coin) -->
+    <path
+        android:fillColor="#3B82F6"
+        android:pathData="M185,115 C197,115 208,108 208,108 C208,108 208,135 185,150 C162,135 162,108 162,108 C162,108 173,115 185,115 Z"/>
+    <path
+        android:fillColor="#60A5FA"
+        android:pathData="M185,118 C194,118 202,112 202,112 C202,112 202,133 185,144 L185,118 Z"/>
+
+    <!-- Shield Check Icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M178,127 L183,132 L193,121 L196,124 L183,137 L175,130 Z"/>
+
+</vector>

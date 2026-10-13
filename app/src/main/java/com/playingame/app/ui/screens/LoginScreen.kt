@@ -8,11 +8,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -40,7 +43,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit) {
+fun LoginScreen(
+    onLoginSuccess: () -> Unit,
+    onOpenLegalDoc: ((String) -> Unit)? = null
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -51,6 +57,10 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var firstNameInput by remember { mutableStateOf("") }
     var lastNameInput by remember { mutableStateOf("") }
     var verifiedPhoneHolder by remember { mutableStateOf("") }
+    var verifiedTokenHolder by remember { mutableStateOf("") }
+
+    // 18+ age & consent gate — required for real-money gaming (Google Play RMG policy)
+    var ageConfirmed by remember { mutableStateOf(false) }
 
     var isLoading by remember { mutableStateOf(false) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
@@ -61,9 +71,23 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
         scope.launch {
             val result = if (name.isNotBlank()) {
                 val updateRes = AuthRepository.updateProfile(name = name, context = context)
-                if (updateRes.isSuccess) updateRes else AuthRepository.login(phone = phone, name = name, context = context)
+                if (updateRes.isSuccess) {
+                    updateRes
+                } else {
+                    AuthRepository.login(
+                        phone = phone,
+                        name = name,
+                        context = context,
+                        verificationToken = verifiedTokenHolder
+                    )
+                }
             } else {
-                AuthRepository.login(phone = phone, name = "", context = context)
+                AuthRepository.login(
+                    phone = phone,
+                    name = "",
+                    context = context,
+                    verificationToken = verifiedTokenHolder
+                )
             }
             isLoading = false
             result.onSuccess {
@@ -93,6 +117,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 } else {
                     // New user or name not yet set -> ask for name on Screen 3
                     verifiedPhoneHolder = cleanPhone
+                    verifiedTokenHolder = verificationToken
                     showPhoneSheet = false
                     showNameSetup = true
                 }
@@ -238,13 +263,13 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                                 Text(text = "✓", color = Color(0xFF34D399), fontSize = 14.sp, fontWeight = FontWeight.Bold)
                             }
                             Column {
-                                Text(
-                                    text = "Instant Cashout in 30s",
-                                    fontSize = 12.sp,
-                                    fontFamily = RubikFont,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
+                            Text(
+                                text = "Fast UPI Withdrawals",
+                                fontSize = 12.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
                                 Text(
                                     text = "Direct UPI & Bank Transfer",
                                     fontSize = 10.sp,
@@ -271,7 +296,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                     )
 
                     Text(
-                        text = "Play exciting games in seconds and withdraw your real cash winnings instantly.",
+                        text = "Play exciting games in seconds and withdraw your real cash winnings.",
                         fontSize = 14.sp,
                         fontFamily = RubikFont,
                         color = Color(0xFF9CA3AF),
@@ -303,14 +328,23 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                             .height(54.dp)
                             .clip(RoundedCornerShape(27.dp))
                             .background(
-                                Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color(0xFF25D366),
-                                        Color(0xFF128C7E)
+                                if (ageConfirmed) {
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            Color(0xFF25D366),
+                                            Color(0xFF128C7E)
+                                        )
                                     )
-                                )
+                                } else {
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            Color(0xFF25D366).copy(alpha = 0.35f),
+                                            Color(0xFF128C7E).copy(alpha = 0.35f)
+                                        )
+                                    )
+                                }
                             )
-                            .clickable(enabled = !isLoading) {
+                            .noRippleClickable(enabled = ageConfirmed && !isLoading) {
                                 handleWhatsAppLogin()
                             },
                         contentAlignment = Alignment.Center
@@ -329,7 +363,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_whatsapp),
                                     contentDescription = "WhatsApp",
-                                    tint = Color.White,
+                                    tint = if (ageConfirmed) Color.White else Color(0xFF9CA3AF),
                                     modifier = Modifier.size(22.dp)
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -338,7 +372,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                                     fontSize = 16.sp,
                                     fontFamily = RubikFont,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = if (ageConfirmed) Color.White else Color(0xFF9CA3AF)
                                 )
                             }
                         }
@@ -350,9 +384,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                             .fillMaxWidth()
                             .height(54.dp)
                             .clip(RoundedCornerShape(27.dp))
-                            .background(Color(0xFF1C1C1C))
-                            .border(1.dp, Color(0xFF2E2E2E), RoundedCornerShape(27.dp))
-                            .clickable(enabled = !isLoading) {
+                            .background(if (ageConfirmed) Color(0xFF1C1C1C) else Color(0xFF141414))
+                            .border(1.dp, if (ageConfirmed) Color(0xFF2E2E2E) else Color(0xFF1F1F1F), RoundedCornerShape(27.dp))
+                            .noRippleClickable(enabled = ageConfirmed && !isLoading) {
                                 showPhoneSheet = true
                             },
                         contentAlignment = Alignment.Center
@@ -364,7 +398,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_settings_contact),
                                 contentDescription = null,
-                                tint = Color.White,
+                                tint = if (ageConfirmed) Color.White else Color(0xFF6B7280),
                                 modifier = Modifier.size(18.dp)
                             )
                             Text(
@@ -372,20 +406,84 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                                 fontSize = 15.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color.White
+                                color = if (ageConfirmed) Color.White else Color(0xFF6B7280)
                             )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(6.dp))
 
-                    // Terms Footer
-                    Text(
-                        text = "By continuing, you agree to our Terms and Privacy Policy",
-                        fontSize = 11.5.sp,
-                        fontFamily = RubikFont,
-                        color = Color(0xFF6B7280)
-                    )
+                    // 18+ Age & Consent Gate (mandatory for real-money gaming)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .noRippleClickable { ageConfirmed = !ageConfirmed }
+                            .padding(horizontal = 4.dp)
+                    ) {
+                        Checkbox(
+                            checked = ageConfirmed,
+                            onCheckedChange = { ageConfirmed = it },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Color(0xFF10B981),
+                                checkmarkColor = Color.White,
+                                uncheckedColor = Color(0xFF4B5563)
+                            ),
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            text = "I confirm I am 18+ years old and accept the Terms, " +
+                                "Privacy & Refund policies. Real-money gaming involves financial risk.",
+                            fontSize = 11.5.sp,
+                            fontFamily = RubikFont,
+                            color = Color(0xFF9CA3AF),
+                            lineHeight = 15.sp,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+
+                    // Legal Links Footer
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Terms of Service",
+                            fontSize = 11.5.sp,
+                            fontFamily = RubikFont,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF10B981),
+                            modifier = Modifier.noRippleClickable { onOpenLegalDoc?.invoke("TERMS") }
+                        )
+                        Text(
+                            text = "  ·  ",
+                            fontSize = 11.5.sp,
+                            fontFamily = RubikFont,
+                            color = Color(0xFF6B7280)
+                        )
+                        Text(
+                            text = "Privacy Policy",
+                            fontSize = 11.5.sp,
+                            fontFamily = RubikFont,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF10B981),
+                            modifier = Modifier.noRippleClickable { onOpenLegalDoc?.invoke("PRIVACY") }
+                        )
+                        Text(
+                            text = "  ·  ",
+                            fontSize = 11.5.sp,
+                            fontFamily = RubikFont,
+                            color = Color(0xFF6B7280)
+                        )
+                        Text(
+                            text = "Refund Policy",
+                            fontSize = 11.5.sp,
+                            fontFamily = RubikFont,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF10B981),
+                            modifier = Modifier.noRippleClickable { onOpenLegalDoc?.invoke("REFUND") }
+                        )
+                    }
                 }
             }
         } else {
@@ -404,7 +502,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                             .size(42.dp)
                             .clip(CircleShape)
                             .background(Color(0xFF1C1C1C))
-                            .clickable { showNameSetup = false },
+                            .noRippleClickable { showNameSetup = false },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -527,7 +625,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         .background(
                             if (firstNameInput.isNotBlank()) Color(0xFF10B981) else Color(0xFF262626)
                         )
-                        .clickable(enabled = firstNameInput.isNotBlank() && !isLoading) {
+                        .noRippleClickable(enabled = firstNameInput.isNotBlank() && !isLoading) {
                             val fullName = if (lastNameInput.isNotBlank()) "$firstNameInput $lastNameInput" else firstNameInput
                             completeLogin(verifiedPhoneHolder.ifBlank { "9876543210" }, fullName)
                         },
@@ -558,7 +656,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.75f))
-                    .clickable { showPhoneSheet = false },
+                    .noRippleClickable { showPhoneSheet = false },
                 contentAlignment = Alignment.BottomCenter
             ) {
                 Column(
@@ -567,7 +665,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                         .background(Color(0xFF141414))
                         .border(1.dp, Color(0xFF262626), RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                        .clickable(enabled = false) {}
+                        .noRippleClickable(enabled = false) {}
                         .padding(24.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -616,7 +714,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                             .height(50.dp)
                             .clip(RoundedCornerShape(25.dp))
                             .background(if (phoneInput.length >= 10) Color(0xFF10B981) else Color(0xFF262626))
-                            .clickable(enabled = phoneInput.length >= 10 && !isLoading) {
+                            .noRippleClickable(enabled = phoneInput.length >= 10 && !isLoading) {
                                 showPhoneSheet = false
                                 handleWhatsAppLogin()
                             },

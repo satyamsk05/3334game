@@ -1,0 +1,102 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="280dp"
+    android:height="280dp"
+    android:viewportWidth="280"
+    android:viewportHeight="280">
+
+    <!-- Soft Ambient Aura Behind Illustration -->
+    <path
+        android:fillColor="#33FFA000"
+        android:pathData="M140,40 C200,40 240,80 240,140 C240,200 190,240 140,240 C80,240 40,190 40,140 C40,80 80,40 140,40 Z"/>
+
+    <!-- Floating Cloud 1 (Left) -->
+    <path
+        android:fillColor="#E6FFFFFF"
+        android:pathData="M50,110 C50,102 56,96 64,96 C66,96 68,97 70,98 C73,92 79,88 86,88 C95,88 103,95 104,104 C107,104 110,107 110,110 C110,114 107,118 102,118 L58,118 C53,118 50,114 50,110 Z"/>
+
+    <!-- Floating Cloud 2 (Right) -->
+    <path
+        android:fillColor="#E6FFFFFF"
+        android:pathData="M190,70 C190,64 195,60 201,60 C203,60 205,61 206,62 C209,57 214,54 220,54 C228,54 234,60 235,67 C237,67 240,70 240,73 C240,76 237,79 233,79 L197,79 C193,79 190,76 190,70 Z"/>
+
+    <!-- Sparkle Stars -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M75,60 L78,68 L86,71 L78,74 L75,82 L72,74 L64,71 L72,68 Z"/>
+    <path
+        android:fillColor="#FFB300"
+        android:pathData="M225,120 L227,125 L232,127 L227,129 L225,134 L223,129 L218,127 L223,125 Z"/>
+    <path
+        android:fillColor="#FFA000"
+        android:pathData="M195,190 L197,194 L201,196 L197,198 L195,202 L193,198 L189,196 L193,194 Z"/>
+
+    <!-- Golden Trophy Pedestal -->
+    <path
+        android:fillColor="#FF8F00"
+        android:pathData="M100,215 L180,215 L170,200 L110,200 Z"/>
+    <path
+        android:fillColor="#FFA000"
+        android:pathData="M90,225 L190,225 L185,215 L95,215 Z"/>
+    <path
+        android:fillColor="#FFB300"
+        android:pathData="M125,175 L155,175 L150,200 L130,200 Z"/>
+
+    <!-- Trophy Cup Base & Body -->
+    <path
+        android:fillColor="#FFC107"
+        android:pathData="M85,95 C85,150 110,175 140,175 C170,175 195,150 195,95 Z"/>
+
+    <!-- Trophy Cup Highlight / Rim -->
+    <path
+        android:fillColor="#FFE082"
+        android:pathData="M80,92 C80,88 95,84 140,84 C185,84 200,88 200,92 C200,96 185,100 140,100 C95,100 80,96 80,92 Z"/>
+
+    <!-- Trophy Left Handle -->
+    <path
+        android:fillColor="#FFA000"
+        android:pathData="M85,105 C65,105 60,135 85,145 L85,135 C72,130 73,115 85,115 Z"/>
+
+    <!-- Trophy Right Handle -->
+    <path
+        android:fillColor="#FF8F00"
+        android:pathData="M195,105 C215,105 220,135 195,145 L195,135 C208,130 207,115 195,115 Z"/>
+
+    <!-- Game Controller in Front of Trophy -->
+    <!-- Controller Body -->
+    <path
+        android:fillColor="#2A2D3A"
+        android:pathData="M95,140 C80,140 70,165 78,195 C82,208 98,206 108,190 L122,170 C134,168 146,168 158,170 L172,190 C182,206 198,208 202,195 C210,165 200,140 185,140 C165,140 155,145 140,145 C125,145 115,140 95,140 Z"/>
+
+    <!-- Controller Accents / Grip Lines -->
+    <path
+        android:fillColor="#3B4254"
+        android:pathData="M100,148 C115,148 126,153 140,153 C154,153 165,148 180,148 C192,148 198,165 194,185 C190,172 178,162 165,162 L115,162 C102,162 90,172 86,185 C82,165 88,148 100,148 Z"/>
+
+    <!-- D-Pad (Left) -->
+    <path
+        android:fillColor="#00E676"
+        android:pathData="M100,165 L106,165 L106,159 L112,159 L112,165 L118,165 L118,171 L112,171 L112,177 L106,177 L106,171 L100,171 Z"/>
+
+    <!-- Action Buttons (Right) -->
+    <path
+        android:fillColor="#FF5252"
+        android:pathData="M168,162 A4,4 0 1,1 168,170 A4,4 0 1,1 168,162 Z"/>
+    <path
+        android:fillColor="#448AFF"
+        android:pathData="M176,154 A4,4 0 1,1 176,162 A4,4 0 1,1 176,154 Z"/>
+    <path
+        android:fillColor="#FFD740"
+        android:pathData="M160,154 A4,4 0 1,1 160,162 A4,4 0 1,1 160,154 Z"/>
+    <path
+        android:fillColor="#E040FB"
+        android:pathData="M168,146 A4,4 0 1,1 168,154 A4,4 0 1,1 168,146 Z"/>
+
+    <!-- Center Gem / BitArcade Emblem -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M140,110 L152,122 L140,142 L128,122 Z"/>
+    <path
+        android:fillColor="#FFF9C4"
+        android:pathData="M140,110 L146,122 L140,142 Z"/>
+
+</vector>

@@ -62,9 +62,9 @@ object WalletSyncService {
             if (!json.optBoolean("success", false)) return@withContext false
 
             val data = json.optJSONObject("data") ?: return@withContext false
-            val dep = data.optLong("depositPaise", 0L)
-            val win = data.optLong("winningPaise", 0L)
-            val bon = data.optLong("bonusPaise", 0L)
+            val dep = if (data.has("depositChips")) data.optLong("depositChips", 0L) else data.optLong("depositPaise", 0L)
+            val win = if (data.has("winningChips")) data.optLong("winningChips", 0L) else data.optLong("winningPaise", 0L)
+            val bon = if (data.has("bonusChips")) data.optLong("bonusChips", 0L) else data.optLong("bonusPaise", 0L)
 
             withContext(Dispatchers.Main) {
                 WalletLedger.syncBalance(dep, win, bon)
@@ -157,12 +157,17 @@ object WalletSyncService {
                     else -> TransactionStatus.REJECTED
                 }
 
+                val amount = if (item.has("amountChips")) item.optLong("amountChips", 0L)
+                             else item.optLong("amountPaise", item.optLong("amount", 0L))
+                val balanceAfter = if (item.has("balanceAfterChips")) item.optLong("balanceAfterChips", 0L)
+                                   else item.optLong("balanceAfterPaise", item.optLong("balance_after", 0L))
+
                 val tx = WalletTransaction(
                     id = item.optString("id", "TX-$i"),
                     userId = item.optString("userId", targetUserId),
                     type = type,
-                    amountPaise = item.optLong("amountPaise", item.optLong("amount", 0L)),
-                    balanceAfterPaise = item.optLong("balanceAfterPaise", item.optLong("balance_after", 0L)),
+                    amountChips = amount,
+                    balanceAfterChips = balanceAfter,
                     status = status,
                     referenceId = item.optString("referenceId", item.optString("reference_id", item.optString("id", ""))),
                     description = normalizedDesc,

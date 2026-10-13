@@ -1,0 +1,93 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="280dp"
+    android:height="280dp"
+    android:viewportWidth="280"
+    android:viewportHeight="280">
+
+    <!-- Soft Ambient Aura Behind Illustration -->
+    <path
+        android:fillColor="#336366F1"
+        android:pathData="M140,40 C200,40 240,80 240,140 C240,200 190,240 140,240 C80,240 40,190 40,140 C40,80 80,40 140,40 Z"/>
+
+    <!-- Floating Cloud 1 (Left) -->
+    <path
+        android:fillColor="#E6FFFFFF"
+        android:pathData="M40,140 C40,132 46,126 54,126 C56,126 58,127 60,128 C63,122 69,118 76,118 C85,118 93,125 94,134 C97,134 100,137 100,140 C100,144 97,148 92,148 L48,148 C43,148 40,144 40,140 Z"/>
+
+    <!-- Floating Cloud 2 (Right) -->
+    <path
+        android:fillColor="#E6FFFFFF"
+        android:pathData="M200,170 C200,163 205,158 212,158 C214,158 216,159 217,160 C220,154 226,150 233,150 C242,150 249,157 250,165 C253,165 256,168 256,171 C256,175 253,178 248,178 L208,178 C203,178 200,175 200,170 Z"/>
+
+    <!-- Sparkle Stars -->
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M80,60 L83,68 L91,71 L83,74 L80,82 L77,74 L69,71 L77,68 Z"/>
+    <path
+        android:fillColor="#818CF8"
+        android:pathData="M225,80 L227,85 L232,87 L227,89 L225,94 L223,89 L218,87 L223,85 Z"/>
+    <path
+        android:fillColor="#34D399"
+        android:pathData="M60,190 L62,194 L66,196 L62,198 L60,202 L58,198 L54,196 L58,194 Z"/>
+
+    <!-- Rocket Exhaust Smoke Clouds -->
+    <path
+        android:fillColor="#CCFFFFFF"
+        android:pathData="M95,205 A15,15 0 1,1 95,235 A15,15 0 1,1 95,205 Z"/>
+    <path
+        android:fillColor="#CCFFFFFF"
+        android:pathData="M115,215 A20,20 0 1,1 115,255 A20,20 0 1,1 115,215 Z"/>
+    <path
+        android:fillColor="#CCFFFFFF"
+        android:pathData="M135,220 A16,16 0 1,1 135,252 A16,16 0 1,1 135,220 Z"/>
+
+    <!-- Rocket Flame -->
+    <path
+        android:fillColor="#FF5722"
+        android:pathData="M125,185 L145,225 L105,205 Z"/>
+    <path
+        android:fillColor="#FFC107"
+        android:pathData="M123,188 L137,215 L112,202 Z"/>
+
+    <!-- Rocket Fins (Wings) -->
+    <!-- Left Fin -->
+    <path
+        android:fillColor="#DC2626"
+        android:pathData="M102,150 L80,180 C85,190 98,188 108,182 Z"/>
+    <!-- Right Fin -->
+    <path
+        android:fillColor="#991B1B"
+        android:pathData="M148,150 L170,180 C165,190 152,188 142,182 Z"/>
+
+    <!-- Rocket Fuselage / Main Body -->
+    <path
+        android:fillColor="#F8FAFC"
+        android:pathData="M175,65 C150,55 125,75 110,110 C100,132 102,160 105,178 L145,178 C158,160 178,132 185,110 C190,95 188,78 175,65 Z"/>
+
+    <!-- Rocket Nose Cone (Red) -->
+    <path
+        android:fillColor="#EF4444"
+        android:pathData="M175,65 C165,58 155,62 145,72 C158,82 170,95 178,110 C182,100 183,82 175,65 Z"/>
+
+    <!-- Rocket Porthole Window -->
+    <path
+        android:fillColor="#0284C7"
+        android:pathData="M145,108 A14,14 0 1,1 145,136 A14,14 0 1,1 145,108 Z"/>
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M145,111 A11,11 0 1,1 145,133 A11,11 0 1,1 145,111 Z"/>
+    <path
+        android:fillColor="#E0F2FE"
+        android:pathData="M142,114 A4,4 0 1,1 142,122 A4,4 0 1,1 142,114 Z"/>
+
+    <!-- Security Verified Badge (Floating Lower-Right) -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M190,135 L196,140 L204,140 L207,147 L214,151 L213,159 L217,166 L213,173 L214,181 L207,185 L204,192 L196,192 L190,197 L184,192 L176,192 L173,185 L166,181 L167,173 L163,166 L167,159 L166,151 L173,147 L176,140 L184,140 Z"/>
+
+    <!-- Gold Star on Badge -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M190,154 L193,163 L202,163 L195,168 L197,177 L190,172 L183,177 L185,168 L178,163 L187,163 Z"/>
+
+</vector>

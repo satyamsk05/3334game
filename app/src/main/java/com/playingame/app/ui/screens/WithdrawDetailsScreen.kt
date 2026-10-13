@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.playingame.app.util.noRippleClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -71,7 +72,7 @@ fun WithdrawDetailsScreen(
                     .background(Color(0xFF0F1015))
                     .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
                     .align(Alignment.CenterStart)
-                    .clickable { onBackClick() },
+                    .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -155,7 +156,7 @@ fun WithdrawDetailsScreen(
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFFFB800),
                         textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable { showEditUpiDialog = true }
+                        modifier = Modifier.noRippleClickable { showEditUpiDialog = true }
                     )
                 }
 
@@ -258,23 +259,23 @@ fun WithdrawDetailsScreen(
                                     )
                                 )
                             )
-                            .clickable(enabled = !isSubmitting) {
+                            .noRippleClickable(enabled = !isSubmitting) {
                                 if (upiId.isBlank() || !upiId.contains("@")) {
                                     Toast.makeText(context, "Please enter a valid UPI ID", Toast.LENGTH_SHORT).show()
-                                    return@clickable
-                                }
-                                isSubmitting = true
-                                coroutineScope.launch {
-                                    try {
-                                        val result = WalletSyncService.requestWithdrawal(amountNum, upiId)
-                                        Toast.makeText(context, result.second, Toast.LENGTH_SHORT).show()
-                                        if (result.first) {
-                                            onCompleteWithdrawal("UPI")
+                                } else {
+                                    isSubmitting = true
+                                    coroutineScope.launch {
+                                        try {
+                                            val result = WalletSyncService.requestWithdrawal(amountNum, upiId)
+                                            Toast.makeText(context, result.second, Toast.LENGTH_SHORT).show()
+                                            if (result.first) {
+                                                onCompleteWithdrawal("UPI")
+                                            }
+                                        } catch (e: Exception) {
+                                            Toast.makeText(context, "Withdrawal failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        } finally {
+                                            isSubmitting = false
                                         }
-                                    } catch (e: Exception) {
-                                        Toast.makeText(context, "Withdrawal failed: ${e.message}", Toast.LENGTH_SHORT).show()
-                                    } finally {
-                                        isSubmitting = false
                                     }
                                 }
                             }
