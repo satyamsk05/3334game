@@ -2,6 +2,8 @@ package config
 
 import (
 	"errors"
+	"fmt"
+	"net/url"
 	"os"
 	"strings"
 
@@ -39,6 +41,41 @@ func LoadConfig() (*Config, error) {
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
 		dbURL = os.Getenv("SUPABASE_DB_URL")
+	}
+
+	// If no full URL is provided, construct from individual DB_* / SUPABASE_DB_* fields
+	if dbURL == "" {
+		host := os.Getenv("DB_HOST")
+		if host == "" {
+			host = os.Getenv("SUPABASE_DB_HOST")
+		}
+		user := os.Getenv("DB_USER")
+		if user == "" {
+			user = os.Getenv("SUPABASE_DB_USER")
+		}
+		pass := os.Getenv("DB_PASSWORD")
+		if pass == "" {
+			pass = os.Getenv("SUPABASE_DB_PASS")
+		}
+		dbPort := os.Getenv("DB_PORT")
+		if dbPort == "" {
+			dbPort = os.Getenv("SUPABASE_DB_PORT")
+		}
+		if dbPort == "" {
+			dbPort = "5432"
+		}
+		name := os.Getenv("DB_NAME")
+		if name == "" {
+			name = os.Getenv("SUPABASE_DB_NAME")
+		}
+		if name == "" {
+			name = "postgres"
+		}
+
+		if host != "" && user != "" && pass != "" {
+			dbURL = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=require",
+				url.QueryEscape(user), url.QueryEscape(pass), host, dbPort, name)
+		}
 	}
 
 	// ── JWT secrets ──────────────────────────────────────────────────────────
