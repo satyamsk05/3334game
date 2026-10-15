@@ -52,6 +52,7 @@ type Transaction struct {
 
 type Deposit struct {
 	ID           string    `gorm:"primaryKey;type:varchar(64)" json:"id"`
+	DepositID    string    `gorm:"-" json:"depositId,omitempty"`
 	UserID       string    `gorm:"index;type:varchar(64)" json:"userId"`
 	AmountRupees float64   `json:"amountRupees"`
 	Status       string    `gorm:"type:varchar(32);default:'PENDING'" json:"status"` // PENDING, APPROVED, REJECTED
@@ -62,6 +63,7 @@ type Deposit struct {
 
 type Withdrawal struct {
 	ID           string    `gorm:"primaryKey;type:varchar(64)" json:"id"`
+	WithdrawalID string    `gorm:"-" json:"withdrawalId,omitempty"`
 	UserID       string    `gorm:"index;type:varchar(64)" json:"userId"`
 	AmountRupees float64   `json:"amountRupees"`
 	UPIID        string    `gorm:"type:varchar(64)" json:"upiId"`

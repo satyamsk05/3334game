@@ -898,12 +898,11 @@
     </div>
   </div>
 
-  <!-- QR Code Engine Library -->
+  <!-- QR Code Engine Library with CDN fallback -->
   <script src="/assets/qrcode.min.js"></script>
   <script>
-    // In case assets/qrcode.min.js fails or is missing, fall back to embedded qrcode
-    if (typeof qrcode === 'undefined') {
-      console.warn('Loading fallback QR engine');
+    if (typeof QRCode === 'undefined' && typeof qrcode === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>');
     }
   </script>
 

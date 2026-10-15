@@ -199,6 +199,19 @@ func main() {
 	}
 	router.GET("/pay", servePaymentPage)
 	router.GET("/api/v1/pay", servePaymentPage)
+	router.GET("/deposit", servePaymentPage)
+	router.GET("/api/v1/deposit", servePaymentPage)
+	router.GET("/addchips", servePaymentPage)
+
+	// Static assets for payment-proxy UI (logos, scripts, qrcode)
+	assetsDir := "payment-proxy"
+	if exePath, err := os.Executable(); err == nil {
+		candidate := filepath.Join(filepath.Dir(exePath), "payment-proxy")
+		if _, err := os.Stat(candidate); err == nil {
+			assetsDir = candidate
+		}
+	}
+	router.Static("/assets", assetsDir)
 
 	// Auth Group
 	authGroup := router.Group("/api/v1/auth")
@@ -240,7 +253,7 @@ func main() {
 	paymentGroup.Use(paymentLimiter)
 	{
 		paymentGroup.POST("/deposits/initiate", middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
-		paymentGroup.POST("/deposits/utr", middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+		paymentGroup.POST("/deposits/utr", middleware.OptionalJWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
 		paymentGroup.GET("/deposits/status", apiHandler.GetDepositStatus)
 		paymentGroup.POST("/withdraw", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
 		paymentGroup.POST("/withdraw/request", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
@@ -254,9 +267,9 @@ func main() {
 	// Alternate direct routes matching legacy app & payment proxy paths
 	router.POST("/deposits/initiate", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
 	router.POST("/api/v1/deposits/initiate", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
-	router.POST("/deposits/utr", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
-	router.POST("/api/v1/deposits/utr", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
-	router.POST("/api/v1/deposits/submit-utr", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+	router.POST("/deposits/utr", paymentLimiter, middleware.OptionalJWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+	router.POST("/api/v1/deposits/utr", paymentLimiter, middleware.OptionalJWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
+	router.POST("/api/v1/deposits/submit-utr", paymentLimiter, middleware.OptionalJWTAuthMiddleware(cfg), apiHandler.SubmitUTR)
 	router.GET("/api/v1/deposits/status", apiHandler.GetDepositStatus)
 	router.GET("/deposits/status", apiHandler.GetDepositStatus)
 	router.POST("/payments/withdraw/request", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)

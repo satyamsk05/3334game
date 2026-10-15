@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -270,13 +271,36 @@ func (s *WalletService) CreateDepositRequest(userID string, amountRupees float64
 }
 
 // Fix (Issue 9.3): Prevent duplicate UTR submission across deposits to block fraud
-func (s *WalletService) SubmitDepositUTR(userID, depositID, utr string) (*models.Deposit, error) {
+func (s *WalletService) SubmitDepositUTR(userID, depositID, utr string, amountRupees float64, fallbackUserID string) (*models.Deposit, error) {
 	if s.bundle.DB != nil {
 		var dep models.Deposit
-		if err := s.bundle.DB.Where("id = ?", depositID).First(&dep).Error; err != nil {
-			return nil, errors.New("deposit not found")
+		err := s.bundle.DB.Where("id = ?", depositID).First(&dep).Error
+		if err != nil {
+			// Deposit was not pre-initiated, create it directly from payment submission
+			if amountRupees <= 0 {
+				amountRupees = 100.0
+			}
+			assignedUser := userID
+			if assignedUser == "" {
+				assignedUser = fallbackUserID
+			}
+			if assignedUser == "" {
+				assignedUser = "user_" + uuid.New().String()[:8]
+			}
+			dep = models.Deposit{
+				ID:           depositID,
+				UserID:       assignedUser,
+				AmountRupees: amountRupees,
+				Status:       "PENDING",
+				CreatedAt:    time.Now(),
+				UpdatedAt:    time.Now(),
+			}
+			if err := s.bundle.DB.Create(&dep).Error; err != nil {
+				return nil, err
+			}
 		}
-		if userID != "" && dep.UserID != userID {
+
+		if userID != "" && dep.UserID != "" && dep.UserID != userID && !strings.HasPrefix(dep.UserID, "user_") {
 			return nil, errors.New("unauthorized: deposit does not belong to you")
 		}
 		if dep.Status == "APPROVED" {
@@ -295,13 +319,15 @@ func (s *WalletService) SubmitDepositUTR(userID, depositID, utr string) (*models
 		}
 
 		dep.UTR = utr
+		dep.Status = "PENDING"
 		dep.UpdatedAt = time.Now()
 		if err := s.bundle.DB.Save(&dep).Error; err != nil {
 			return nil, err
 		}
+		dep.DepositID = dep.ID
 		return &dep, nil
 	}
-	return &models.Deposit{ID: depositID, UserID: userID, UTR: utr, Status: "PENDING"}, nil
+	return &models.Deposit{ID: depositID, DepositID: depositID, UserID: userID, UTR: utr, Status: "PENDING"}, nil
 }
 
 func (s *WalletService) GetDeposit(depositID string) (*models.Deposit, error) {
@@ -511,6 +537,9 @@ func (s *WalletService) GetAllDeposits(limit int) []models.Deposit {
 	if s.bundle.DB != nil {
 		var deps []models.Deposit
 		s.bundle.DB.Order("created_at desc").Limit(limit).Find(&deps)
+		for i := range deps {
+			deps[i].DepositID = deps[i].ID
+		}
 		return deps
 	}
 	return []models.Deposit{}
@@ -523,6 +552,9 @@ func (s *WalletService) GetAllWithdrawals(limit int) []models.Withdrawal {
 	if s.bundle.DB != nil {
 		var wds []models.Withdrawal
 		s.bundle.DB.Order("created_at desc").Limit(limit).Find(&wds)
+		for i := range wds {
+			wds[i].WithdrawalID = wds[i].ID
+		}
 		return wds
 	}
 	return []models.Withdrawal{}

@@ -300,7 +300,8 @@ func (h *APIHandler) AdminGetDeposits(c *gin.Context) {
 }
 
 type DepositActionRequest struct {
-	DepositID string `json:"depositId" binding:"required"`
+	DepositID string `json:"depositId"`
+	ID        string `json:"id"`
 }
 
 func (h *APIHandler) AdminApproveDeposit(c *gin.Context) {
@@ -309,8 +310,16 @@ func (h *APIHandler) AdminApproveDeposit(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "depositId required"})
 		return
 	}
+	depID := req.DepositID
+	if depID == "" {
+		depID = req.ID
+	}
+	if depID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "depositId or id required"})
+		return
+	}
 
-	dep, err := h.walletService.ApproveDeposit(req.DepositID)
+	dep, err := h.walletService.ApproveDeposit(depID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
 		return
@@ -325,8 +334,16 @@ func (h *APIHandler) AdminRejectDeposit(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "depositId required"})
 		return
 	}
+	depID := req.DepositID
+	if depID == "" {
+		depID = req.ID
+	}
+	if depID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "depositId or id required"})
+		return
+	}
 
-	dep, err := h.walletService.RejectDeposit(req.DepositID)
+	dep, err := h.walletService.RejectDeposit(depID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
 		return
@@ -341,7 +358,8 @@ func (h *APIHandler) AdminGetWithdrawals(c *gin.Context) {
 }
 
 type WithdrawalActionRequest struct {
-	WithdrawalID string `json:"withdrawalId" binding:"required"`
+	WithdrawalID string `json:"withdrawalId"`
+	ID           string `json:"id"`
 }
 
 func (h *APIHandler) AdminApproveWithdrawal(c *gin.Context) {
@@ -350,8 +368,16 @@ func (h *APIHandler) AdminApproveWithdrawal(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "withdrawalId required"})
 		return
 	}
+	wdID := req.WithdrawalID
+	if wdID == "" {
+		wdID = req.ID
+	}
+	if wdID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "withdrawalId or id required"})
+		return
+	}
 
-	wd, err := h.walletService.ApproveWithdrawal(req.WithdrawalID)
+	wd, err := h.walletService.ApproveWithdrawal(wdID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
 		return
@@ -366,8 +392,16 @@ func (h *APIHandler) AdminRejectWithdrawal(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "withdrawalId required"})
 		return
 	}
+	wdID := req.WithdrawalID
+	if wdID == "" {
+		wdID = req.ID
+	}
+	if wdID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "withdrawalId or id required"})
+		return
+	}
 
-	wd, err := h.walletService.RejectWithdrawal(req.WithdrawalID)
+	wd, err := h.walletService.RejectWithdrawal(wdID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
 		return

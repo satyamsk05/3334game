@@ -98,8 +98,8 @@ func (h *APIHandler) InitiateDeposit(c *gin.Context) {
 			"depositId":    dep.ID,
 			"orderId":      dep.ID,
 			"amountRupees": dep.AmountRupees,
-			"paymentUrl":   "/pay?orderId=" + dep.ID + "&amount=" + fmt.Sprintf("%.2f", dep.AmountRupees),
-			"payUrl":       "/pay?orderId=" + dep.ID + "&amount=" + fmt.Sprintf("%.2f", dep.AmountRupees),
+			"paymentUrl":   "/pay?orderId=" + dep.ID + "&amount=" + fmt.Sprintf("%.2f", dep.AmountRupees) + "&userId=" + dep.UserID,
+			"payUrl":       "/pay?orderId=" + dep.ID + "&amount=" + fmt.Sprintf("%.2f", dep.AmountRupees) + "&userId=" + dep.UserID,
 		},
 	})
 }
@@ -135,20 +135,28 @@ func (h *APIHandler) GetDepositStatus(c *gin.Context) {
 }
 
 type SubmitUTRRequest struct {
-	DepositID string `json:"depositId" binding:"required"`
-	UTR       string `json:"utr" binding:"required"`
+	DepositID    string  `json:"depositId"`
+	OrderID      string  `json:"orderId"`
+	UTR          string  `json:"utr" binding:"required"`
+	AmountRupees float64 `json:"amountRupees"`
+	UserID       string  `json:"userId"`
 }
 
 func (h *APIHandler) SubmitUTR(c *gin.Context) {
 	userID := c.GetString("userId")
-	if userID == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized: valid session token required"})
-		return
-	}
 
 	var req SubmitUTRRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "depositId and utr required"})
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "utr is required"})
+		return
+	}
+
+	depID := req.DepositID
+	if depID == "" {
+		depID = req.OrderID
+	}
+	if depID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "depositId or orderId is required"})
 		return
 	}
 
@@ -158,7 +166,7 @@ func (h *APIHandler) SubmitUTR(c *gin.Context) {
 		return
 	}
 
-	dep, err := h.walletService.SubmitDepositUTR(userID, req.DepositID, utrClean)
+	dep, err := h.walletService.SubmitDepositUTR(userID, depID, utrClean, req.AmountRupees, req.UserID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
 		return
@@ -235,7 +243,7 @@ func (h *APIHandler) PaymentWebhook(c *gin.Context) {
 	status := strings.ToUpper(payload.Status)
 	if status == "SUCCESS" || status == "APPROVED" || status == "PAID" {
 		if payload.UTR != "" {
-			_, _ = h.walletService.SubmitDepositUTR("", depID, payload.UTR)
+			_, _ = h.walletService.SubmitDepositUTR("", depID, payload.UTR, payload.Amount, "")
 		}
 		dep, err := h.walletService.ApproveDeposit(depID)
 		if err != nil {

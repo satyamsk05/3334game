@@ -8,11 +8,12 @@ import { Card } from '@/components/ui/Card';
 
 interface DepositOrder {
   depositId: string;
+  id?: string;
   userId: string;
   amountRupees: number;
   utr?: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  createdAt: number;
+  createdAt: any;
 }
 
 export default function DepositsQueuePage() {
@@ -29,7 +30,13 @@ export default function DepositsQueuePage() {
       setError(null);
       const res = await adminService.getDeposits();
       if (res.success && Array.isArray(res.data)) {
-        setDeposits(res.data);
+        const normalized = res.data.map((d: any) => ({
+          ...d,
+          depositId: d.depositId || d.id || '',
+          id: d.id || d.depositId || '',
+          amountRupees: Number(d.amountRupees || 0),
+        }));
+        setDeposits(normalized);
       } else {
         setDeposits([]);
       }

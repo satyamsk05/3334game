@@ -49,7 +49,7 @@ object RemoteApiClient {
             }
 
         // Fix (Audit 12.2): Configure Certificate Pinner for production to guard against MITM attacks
-        if (!com.playingame.app.BuildConfig.DEBUG && ClientConfig.DEFAULT_SERVER_URL.contains("bitarcade.in")) {
+        if (!com.playingame.app.BuildConfig.DEBUG && ClientConfig.SERVER_BASE_URL.contains("bitarcade.in")) {
             val pinner = CertificatePinner.Builder()
                 .add("api.bitarcade.in", "sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=")
                 .add("*.bitarcade.in", "sha256/kIdp6NNEd8wsugYyyIYFsi1ylMCED3hZbSR8ZFsa/A4=")

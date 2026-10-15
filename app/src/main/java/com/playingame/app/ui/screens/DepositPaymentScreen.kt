@@ -67,11 +67,18 @@ fun DepositPaymentScreen(
                     ?: dataObj?.optString("payUrl")?.takeIf { it.isNotBlank() }
 
                 if (!candidateUrl.isNullOrBlank()) {
-                    if (candidateUrl.startsWith("http://") || candidateUrl.startsWith("https://")) {
+                    val fullUrl = if (candidateUrl.startsWith("http://") || candidateUrl.startsWith("https://")) {
                         candidateUrl
                     } else {
                         val path = if (candidateUrl.startsWith("/")) candidateUrl else "/$candidateUrl"
                         "${ClientConfig.PAYMENT_GATEWAY_URL}$path"
+                    }
+                    val encodedToken = URLEncoder.encode(sessionToken, "UTF-8")
+                    if (!fullUrl.contains("token=")) {
+                        val sep = if (fullUrl.contains("?")) "&" else "?"
+                        "$fullUrl${sep}token=$encodedToken"
+                    } else {
+                        fullUrl
                     }
                 } else {
                     null

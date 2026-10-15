@@ -8,11 +8,12 @@ import { Card } from '@/components/ui/Card';
 
 interface WithdrawalRecord {
   withdrawalId: string;
+  id?: string;
   userId: string;
   amountRupees: number;
   upiId: string;
   status: 'PENDING' | 'PROCESSING' | 'APPROVED' | 'REJECTED';
-  createdAt: number;
+  createdAt: any;
 }
 
 export default function WithdrawalsQueuePage() {
@@ -29,7 +30,13 @@ export default function WithdrawalsQueuePage() {
       setError(null);
       const res = await adminService.getWithdrawals();
       if (res.success && Array.isArray(res.data)) {
-        setWithdrawals(res.data);
+        const normalized = res.data.map((w: any) => ({
+          ...w,
+          withdrawalId: w.withdrawalId || w.id || '',
+          id: w.id || w.withdrawalId || '',
+          amountRupees: Number(w.amountRupees || 0),
+        }));
+        setWithdrawals(normalized);
       } else {
         setWithdrawals([]);
       }

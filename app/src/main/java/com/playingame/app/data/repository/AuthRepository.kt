@@ -351,6 +351,7 @@ object AuthRepository {
                     authToken = token
                 } else {
                     return@withContext Result.failure(Exception("AUTH_FAILED: Server did not return a valid authentication token"))
+                }
                 // Fix (Issue 4.2): Do not leak user identifiers or names into production logs
                 if (com.playingame.app.BuildConfig.DEBUG) {
                     Log.d("AuthRepository", "Synced login with backend server: $resolvedUserId ($resolvedName), isNewUser: $isNewUserServer")

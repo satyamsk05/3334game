@@ -99,6 +99,40 @@ func JWTAuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
+func OptionalJWTAuthMiddleware(cfg *config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			authHeader = c.Query("token")
+			if authHeader != "" {
+				authHeader = "Bearer " + authHeader
+			}
+		}
+
+		if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
+			tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+			token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+				}
+				return []byte(cfg.JWTSecret), nil
+			})
+			if err == nil && token.Valid {
+				if claims, ok := token.Claims.(jwt.MapClaims); ok {
+					userID, _ := claims["userId"].(string)
+					if userID == "" {
+						userID, _ = claims["sub"].(string)
+					}
+					if userID != "" {
+						c.Set("userId", userID)
+					}
+				}
+			}
+		}
+		c.Next()
+	}
+}
+
 type TokenRevocationChecker interface {
 	IsTokenRevoked(token string) bool
 }
