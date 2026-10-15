@@ -9,6 +9,7 @@ type User struct {
 	Phone     string    `gorm:"uniqueIndex;type:varchar(32)" json:"phone"`
 	Name      string    `gorm:"type:varchar(64)" json:"name"`
 	AvatarID  string    `gorm:"type:varchar(32);default:'avatar_1'" json:"avatarId"`
+	FCMToken  string    `gorm:"type:varchar(512)" json:"fcmToken,omitempty"`
 	IsBlocked bool      `gorm:"default:false" json:"isBlocked"`
 	IsBanned  bool      `gorm:"default:false" json:"isBanned"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -54,7 +55,7 @@ type Deposit struct {
 	UserID       string    `gorm:"index;type:varchar(64)" json:"userId"`
 	AmountRupees float64   `json:"amountRupees"`
 	Status       string    `gorm:"type:varchar(32);default:'PENDING'" json:"status"` // PENDING, APPROVED, REJECTED
-	UTR          string    `gorm:"type:varchar(64)" json:"utr"`
+	UTR          string    `gorm:"index;type:varchar(64)" json:"utr"`
 	CreatedAt    time.Time `json:"createdAt"`
 	UpdatedAt    time.Time `json:"updatedAt"`
 }
@@ -104,6 +105,17 @@ type DtBet struct {
 	Amount    int64     `json:"amount"`
 	Payout    int64     `gorm:"default:0" json:"payout"`
 	Status    string    `gorm:"type:varchar(32);default:'ACCEPTED'" json:"status"` // ACCEPTED, SETTLED, REFUNDED
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+// Fix (Issue 9.4): AuditLog tracks administrative actions for accountability and anti-fraud
+type AuditLog struct {
+	ID        string    `gorm:"primaryKey;type:varchar(64)" json:"id"`
+	AdminUser string    `gorm:"index;type:varchar(64)" json:"adminUser"`
+	Action    string    `gorm:"type:varchar(64)" json:"action"`
+	TargetID  string    `gorm:"index;type:varchar(64)" json:"targetId"`
+	Details   string    `gorm:"type:text" json:"details"`
+	IPAddress string    `gorm:"type:varchar(64)" json:"ipAddress"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 

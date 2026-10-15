@@ -39,6 +39,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.playingame.app.R
 import com.playingame.app.data.repository.AuthRepository
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 import kotlinx.coroutines.launch
 
@@ -93,7 +94,7 @@ fun ProfileScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(18.dp)
@@ -110,8 +111,8 @@ fun ProfileScreen(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(10.dp))
                     .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -139,8 +140,8 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
+                .background(CardNavyBackground)
+                .border(1.dp, CardBorderColor, RoundedCornerShape(20.dp))
                 .padding(16.dp)
         ) {
             Row(
@@ -169,8 +170,8 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF161922))
-                                .border(1.dp, Color(0xFF282E3E), CircleShape)
+                                .background(Color(0xFF383C45))
+                                .border(1.dp, CardBorderColor, CircleShape)
                                 .noRippleClickable {
                                     editedName = username
                                     showEditNameDialog = true
@@ -193,8 +194,8 @@ fun ProfileScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF161922))
-                                .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(8.dp))
+                                .background(Color(0xFF383C45))
+                                .border(1.dp, CardBorderColor, RoundedCornerShape(8.dp))
                                 .noRippleClickable {
                                     clipboardManager.setText(AnnotatedString(userId))
                                     Toast.makeText(context, "User ID copied: $userId", Toast.LENGTH_SHORT).show()
@@ -273,14 +274,14 @@ fun ProfileScreen(
                             .size(26.dp)
                             .align(Alignment.BottomEnd)
                             .clip(CircleShape)
-                            .background(Color(0xFF00E676))
-                            .border(1.5.dp, Color(0xFF0A0C11), CircleShape),
+                            .background(BrandCasinoGreen)
+                            .border(1.5.dp, AppBackground, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_profile_person),
                             contentDescription = "Change Avatar",
-                            tint = Color(0xFF0A0C11),
+                            tint = AppBackground,
                             modifier = Modifier.size(14.dp)
                         )
                     }
@@ -297,12 +298,12 @@ fun ProfileScreen(
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFF161922),
-                            Color(0xFF1A2232)
+                            Color(0xFF383C45),
+                            Color(0xFF2E323A)
                         )
                     )
                 )
-                .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(22.dp))
+                .border(1.dp, CardBorderColor, RoundedCornerShape(22.dp))
                 .noRippleClickable { onWalletClick() }
                 .padding(horizontal = 18.dp)
         ) {
@@ -343,13 +344,13 @@ fun ProfileScreen(
                             fontSize = 28.sp,
                             fontFamily = RubikFont,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF00E676)
+                            color = BrandCasinoGreen
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.ic_play_arrow),
                             contentDescription = "Arrow",
                             modifier = Modifier.size(16.dp),
-                            tint = Color(0xFF00E676)
+                            tint = BrandCasinoGreen
                         )
                     }
                 }
@@ -377,12 +378,12 @@ fun ProfileScreen(
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFF161922),
-                            Color(0xFF1E222D)
+                            Color(0xFF383C45),
+                            Color(0xFF2E323A)
                         )
                     )
                 )
-                .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(18.dp))
+                .border(1.dp, CardBorderColor, RoundedCornerShape(18.dp))
                 .noRippleClickable { onSupportClick() }
                 .padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
@@ -450,8 +451,8 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(18.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(18.dp))
+                .background(CardNavyBackground)
+                .border(1.dp, CardBorderColor, RoundedCornerShape(18.dp))
                 .padding(16.dp)
         ) {
             Column(
@@ -474,8 +475,8 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF161922))
-                                .border(1.dp, Color(0xFF282E3E), CircleShape),
+                                .background(Color(0xFF383C45))
+                                .border(1.dp, CardBorderColor, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -504,7 +505,7 @@ fun ProfileScreen(
                     )
                 }
 
-                HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
+                HorizontalDivider(color = CardBorderColor, thickness = 1.dp)
 
                 // Settings Row
                 Row(
@@ -523,8 +524,8 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF161922))
-                                .border(1.dp, Color(0xFF282E3E), CircleShape),
+                                .background(Color(0xFF383C45))
+                                .border(1.dp, CardBorderColor, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -565,8 +566,8 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(24.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(24.dp))
                     .padding(20.dp)
             ) {
                 Column(
@@ -594,11 +595,11 @@ fun ProfileScreen(
                             fontWeight = FontWeight.Medium
                         ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF00E676),
-                            unfocusedBorderColor = Color(0xFF282E3E),
-                            focusedContainerColor = Color(0xFF161922),
-                            unfocusedContainerColor = Color(0xFF161922),
-                            cursorColor = Color(0xFF00E676)
+                            focusedBorderColor = BrandCasinoGreen,
+                            unfocusedBorderColor = CardBorderColor,
+                            focusedContainerColor = Color(0xFF383C45),
+                            unfocusedContainerColor = Color(0xFF383C45),
+                            cursorColor = BrandCasinoGreen
                         ),
                         shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -624,8 +625,8 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(48.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161922)),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF282E3E)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF383C45)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, CardBorderColor),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("Cancel", color = Color.White, fontFamily = RubikFont, fontWeight = FontWeight.SemiBold)
@@ -646,10 +647,10 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(48.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00E676)),
+                            colors = ButtonDefaults.buttonColors(containerColor = BrandCasinoGreen),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Save", color = Color(0xFF0A0C11), fontFamily = RubikFont, fontWeight = FontWeight.Bold)
+                            Text("Save", color = AppBackground, fontFamily = RubikFont, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -666,8 +667,8 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(24.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(24.dp))
                     .padding(20.dp)
             ) {
                 Column(
@@ -696,10 +697,10 @@ fun ProfileScreen(
                                 modifier = Modifier
                                     .size(64.dp)
                                     .clip(CircleShape)
-                                    .background(Color(0xFF161922))
+                                    .background(Color(0xFF383C45))
                                     .border(
                                         width = if (isSelected) 3.dp else 1.dp,
-                                        color = if (isSelected) Color(0xFFFFB800) else Color(0xFF282E3E),
+                                        color = if (isSelected) Color(0xFFFFB800) else CardBorderColor,
                                         shape = CircleShape
                                     )
                                     .noRippleClickable {
@@ -738,8 +739,8 @@ fun ProfileScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(46.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161922)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF282E3E)),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF383C45)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, CardBorderColor),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Close", color = Color.White, fontFamily = RubikFont, fontWeight = FontWeight.SemiBold)

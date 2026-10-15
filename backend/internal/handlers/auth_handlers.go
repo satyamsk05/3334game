@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -33,16 +34,31 @@ func (h *APIHandler) LoginOrRegister(c *gin.Context) {
 		return
 	}
 
-	// Check if already authenticated with valid JWT session (e.g. app profile/device background sync)
+	// Fix (Issues 8.3 & 8.1): If claiming existing JWT session, verify the token is valid, uses HMAC, and belongs to the requested phone
 	authHeader := c.GetHeader("Authorization")
 	authenticated := false
 	if strings.HasPrefix(authHeader, "Bearer ") {
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method")
+			}
 			return []byte(h.cfg.JWTSecret), nil
 		})
 		if err == nil && token.Valid {
-			authenticated = true
+			if claims, ok := token.Claims.(jwt.MapClaims); ok {
+				uid, _ := claims["userId"].(string)
+				if uid == "" {
+					uid, _ = claims["sub"].(string)
+				}
+				if existingUser, err := h.authService.GetUser(uid); err == nil && existingUser != nil {
+					cleanExisting := strings.TrimLeft(existingUser.Phone, "+")
+					cleanReq := strings.TrimLeft(phone, "+")
+					if cleanExisting == cleanReq || strings.HasSuffix(cleanExisting, cleanReq) || strings.HasSuffix(cleanReq, cleanExisting) {
+						authenticated = true
+					}
+				}
+			}
 		}
 	}
 
@@ -239,25 +255,95 @@ func (h *APIHandler) AuthStatus(c *gin.Context) {
 		return
 	}
 
+	// Fix (Issue 2.9): Mask phone number on public status endpoint unless authenticated as that user
+	displayPhone := ""
+	if len(user.Phone) > 4 {
+		displayPhone = strings.Repeat("*", len(user.Phone)-4) + user.Phone[len(user.Phone)-4:]
+	} else {
+		displayPhone = "****"
+	}
+
+	// Check if requester has a valid session token for this user
+	authHeader := c.GetHeader("Authorization")
+	if strings.HasPrefix(authHeader, "Bearer ") {
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method")
+			}
+			return []byte(h.cfg.JWTSecret), nil
+		})
+		if err == nil && token.Valid {
+			if claims, ok := token.Claims.(jwt.MapClaims); ok {
+				uid, _ := claims["userId"].(string)
+				if uid == user.ID {
+					displayPhone = user.Phone
+				}
+			}
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data": gin.H{
 			"exists":   true,
 			"userId":   user.ID,
 			"name":     user.Name,
-			"phone":    user.Phone,
+			"phone":    displayPhone,
 			"isBanned": user.IsBanned,
 		},
 	})
 }
 
 type FCMTokenRequest struct {
-	FCMToken string `json:"fcmToken"`
+	UserID   string `json:"userId"`
+	FCMToken string `json:"fcmToken" binding:"required"`
 }
 
+// Fix (Issue 2.7): Save FCM token to ensure push notifications work
 func (h *APIHandler) UpdateFCMToken(c *gin.Context) {
 	var req FCMTokenRequest
-	_ = c.ShouldBindJSON(&req)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid payload: fcmToken is required"})
+		return
+	}
+
+	userID := c.GetString("userId")
+	if userID == "" && req.UserID != "" {
+		userID = req.UserID
+	}
+	if userID == "" {
+		authHeader := c.GetHeader("Authorization")
+		if strings.HasPrefix(authHeader, "Bearer ") {
+			tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+			token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+				}
+				return []byte(h.cfg.JWTSecret), nil
+			})
+			if err == nil && token.Valid {
+				if claims, ok := token.Claims.(jwt.MapClaims); ok {
+					if uid, ok := claims["userId"].(string); ok {
+						userID = uid
+					} else if sub, ok := claims["sub"].(string); ok {
+						userID = sub
+					}
+				}
+			}
+		}
+	}
+
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Unauthorized: valid user authentication required"})
+		return
+	}
+
+	if err := h.authService.UpdateFCMToken(userID, req.FCMToken); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "Failed to update FCM token"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "FCM token updated successfully",

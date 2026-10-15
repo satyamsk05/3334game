@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
 import com.playingame.app.data.wallet.WalletLedger
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 
 @Composable
@@ -48,7 +49,7 @@ fun WithdrawScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -63,8 +64,8 @@ fun WithdrawScreen(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(10.dp))
                     .align(Alignment.CenterStart)
                     .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
@@ -92,8 +93,8 @@ fun WithdrawScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                .background(CardNavyBackground)
+                .border(1.dp, CardBorderColor, RoundedCornerShape(16.dp))
                 .padding(vertical = 18.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -114,7 +115,7 @@ fun WithdrawScreen(
                     fontSize = 36.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.W800,
-                    color = Color(0xFF00E676)
+                    color = BrandCasinoGreen
                 )
             }
         }
@@ -137,8 +138,8 @@ fun WithdrawScreen(
                     .fillMaxWidth()
                     .height(54.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -225,10 +226,10 @@ fun WithdrawScreen(
                     .fillMaxWidth()
                     .height(52.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(if (isAmountValid) Color(0xFFFFB800) else Color(0xFF161922))
+                    .background(if (isAmountValid) Color(0xFFFFB800) else Color(0xFF383C45))
                     .border(
                         1.dp,
-                        if (isAmountValid) Color(0xFFFFB800) else Color(0xFF282E3E),
+                        if (isAmountValid) Color(0xFFFFB800) else CardBorderColor,
                         RoundedCornerShape(14.dp)
                     )
                     .noRippleClickable(enabled = isAmountValid) {
@@ -241,7 +242,7 @@ fun WithdrawScreen(
                     fontSize = 16.sp,
                     fontFamily = RubikFont,
                     fontWeight = FontWeight.W800,
-                    color = if (isAmountValid) Color(0xFF0A0C11) else Color(0xFF6B7280),
+                    color = if (isAmountValid) AppBackground else Color(0xFF6B7280),
                     letterSpacing = 0.5.sp
                 )
             }

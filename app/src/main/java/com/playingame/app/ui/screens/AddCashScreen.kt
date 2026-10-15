@@ -29,6 +29,7 @@ import coil.request.ImageRequest
 import com.playingame.app.R
 import com.playingame.app.data.wallet.WalletLedger
 import com.playingame.app.ui.components.WalletChip
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -151,8 +152,8 @@ fun AddCashScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(24.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(24.dp))
                     .padding(16.dp)
             ) {
                 Column(
@@ -165,7 +166,7 @@ fun AddCashScreen(
                         fontSize = 15.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFF8E899B),
+                        color = Color(0xFF9CA3AF),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -212,8 +213,8 @@ private fun ChipPackCard(
     Box(
         modifier = modifier
             .clip(ChipCardShape)
-            .background(Color(0xFF23242C))
-            .border(1.dp, Color(0xFF32343E), ChipCardShape)
+            .background(Color(0xFF383C45))
+            .border(1.dp, Color(0xFF454B55), ChipCardShape)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null

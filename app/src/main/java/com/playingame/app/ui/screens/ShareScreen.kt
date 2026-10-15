@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 
 data class ReferralUser(
@@ -69,7 +70,7 @@ fun ShareScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
     ) {
         Column(
             modifier = Modifier
@@ -99,8 +100,8 @@ fun ShareScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFF161922))
-                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
+                        .background(Color(0xFF383C45))
+                        .border(1.dp, CardBorderColor, RoundedCornerShape(14.dp))
                         .noRippleClickable { Toast.makeText(context, "Language: English", Toast.LENGTH_SHORT).show() }
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
@@ -143,8 +144,8 @@ fun ShareScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFF0F1015))
-                        .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
+                        .background(CardNavyBackground)
+                        .border(1.dp, CardBorderColor, RoundedCornerShape(12.dp))
                         .noRippleClickable {
                             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                             val clip = android.content.ClipData.newPlainText("Referral Code", "REF334")
@@ -179,8 +180,8 @@ fun ShareScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(20.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(20.dp))
                     .padding(16.dp)
             ) {
                 Column(
@@ -245,12 +246,12 @@ fun ShareScreen(
                                     fontSize = 16.sp,
                                     fontFamily = RubikFont,
                                     fontWeight = FontWeight.W800,
-                                    color = Color(0xFF00E676)
+                                    color = BrandCasinoGreen
                                 )
                             }
 
                             if (i < referrals.size - 1) {
-                                HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
+                                HorizontalDivider(color = CardBorderColor, thickness = 1.dp)
                             }
                         }
                     }
@@ -275,8 +276,8 @@ fun ShareScreen(
                         .weight(1f)
                         .height(48.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFF161922))
-                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(14.dp))
+                        .background(Color(0xFF383C45))
+                        .border(1.dp, CardBorderColor, RoundedCornerShape(14.dp))
                         .noRippleClickable { shareAppText(whatsappOnly = false) },
                     contentAlignment = Alignment.Center
                 ) {
@@ -309,7 +310,7 @@ fun ShareScreen(
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    Color(0xFF00E676),
+                                    BrandCasinoGreen,
                                     Color(0xFF00C853)
                                 )
                             )

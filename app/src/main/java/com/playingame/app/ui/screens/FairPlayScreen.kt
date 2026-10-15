@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 
 @Composable
@@ -35,7 +36,7 @@ fun FairPlayScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -52,8 +53,8 @@ fun FairPlayScreen(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(12.dp))
                     .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -111,8 +112,8 @@ private fun FairPlayCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(Color(0xFF0F1015))
-            .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
+            .background(CardNavyBackground)
+            .border(1.dp, CardBorderColor, RoundedCornerShape(14.dp))
             .padding(16.dp)
     ) {
         Column {
@@ -123,15 +124,15 @@ private fun FairPlayCard(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFF161922))
-                        .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(10.dp)),
+                        .background(Color(0xFF383C45))
+                        .border(1.dp, CardBorderColor, RoundedCornerShape(10.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(id = iconRes),
                         contentDescription = title,
                         modifier = Modifier.size(20.dp),
-                        tint = Color(0xFF00E676)
+                        tint = BrandCasinoGreen
                     )
                 }
 

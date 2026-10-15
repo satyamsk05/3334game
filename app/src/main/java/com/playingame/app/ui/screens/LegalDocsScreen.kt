@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 import com.playingame.app.util.noRippleClickable
 
@@ -47,7 +48,7 @@ fun LegalDocsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -64,8 +65,8 @@ fun LegalDocsScreen(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(12.dp))
                     .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -232,8 +233,8 @@ private fun LegalSection(title: String, body: String) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(Color(0xFF0F1015))
-            .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
+            .background(CardNavyBackground)
+            .border(1.dp, CardBorderColor, RoundedCornerShape(14.dp))
             .padding(16.dp)
     ) {
         Text(

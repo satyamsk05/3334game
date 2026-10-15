@@ -26,8 +26,7 @@ import com.playingame.app.data.remote.ServerPromotion
 import com.playingame.app.data.wallet.WalletLedger
 import com.playingame.app.ui.components.NotificationBottomSheet
 import com.playingame.app.ui.components.TopHeader
-import com.playingame.app.ui.theme.Dimens
-import com.playingame.app.ui.theme.RubikFont
+import com.playingame.app.ui.theme.*
 import com.playingame.app.util.noRippleClickable
 
 @Composable
@@ -42,7 +41,6 @@ fun HomeScreen(
     val userProfile by WalletLedger.userProfile.collectAsState()
     val serverPromotions by PromotionSyncService.promotions.collectAsState()
 
-    var selectedGameForRoom by remember { mutableStateOf<String?>(null) }
     var showNotificationSheet by remember { mutableStateOf(false) }
     val homeListState = rememberLazyListState()
 
@@ -95,7 +93,7 @@ fun HomeScreen(
                         imageRes = R.drawable.game_colordice,
                         modifier = Modifier.fillMaxWidth(0.5f),
                         onPlayClick = {
-                            selectedGameForRoom = "Dragon vs Tiger"
+                            onPlayDragonTiger()
                         }
                     )
                 }
@@ -107,22 +105,6 @@ fun HomeScreen(
     if (showNotificationSheet) {
         NotificationBottomSheet(
             onDismissRequest = { showNotificationSheet = false }
-        )
-    }
-
-    if (selectedGameForRoom != null) {
-        GameRoomDialog(
-            gameName = selectedGameForRoom!!,
-            userChips = walletBalance.totalChips,
-            onDismiss = { selectedGameForRoom = null },
-            onAddCashClick = {
-                selectedGameForRoom = null
-                onAddCashClick()
-            },
-            onEnterRoom = { _ ->
-                selectedGameForRoom = null
-                onPlayDragonTiger()
-            }
         )
     }
 }
@@ -285,8 +267,8 @@ private fun SquareGameCard(
         modifier = modifier
             .aspectRatio(1f / 1.10f)
             .clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFF161D2B))
-            .border(1.dp, Color(0xFF263248), RoundedCornerShape(20.dp))
+            .background(CardNavyBackground)
+            .border(1.dp, CardBorderColor, RoundedCornerShape(20.dp))
             .noRippleClickable { onPlayClick() }
             .padding(10.dp)
     ) {
@@ -300,7 +282,7 @@ private fun SquareGameCard(
                     .fillMaxWidth()
                     .weight(1f)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFF0F1420)),
+                    .background(AppBackground),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -358,109 +340,7 @@ private fun SquareGameCard(
     }
 }
 
-@Composable
-private fun GameRoomDialog(
-    gameName: String,
-    userChips: Long,
-    onDismiss: () -> Unit,
-    onAddCashClick: () -> Unit,
-    onEnterRoom: (Int) -> Unit
-) {
-    val rooms = listOf(10, 50, 100, 500)
-    androidx.compose.material3.AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Column {
-                Text(
-                    text = gameName,
-                    fontSize = 20.sp,
-                    fontFamily = RubikFont,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Text(
-                    text = "Select a table to start playing",
-                    fontSize = 12.sp,
-                    fontFamily = RubikFont,
-                    color = Color(0xFF94A3B8)
-                )
-            }
-        },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFF1E222D))
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Your Balance", color = Color(0xFF94A3B8), fontSize = 12.sp, fontFamily = RubikFont)
-                    Text("$userChips Chips", color = Color(0xFFFFB800), fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = RubikFont)
-                }
 
-                rooms.forEach { chips ->
-                    val canAfford = userChips >= chips
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFF151821))
-                            .border(1.dp, Color(0xFF262C3D), RoundedCornerShape(12.dp))
-                            .noRippleClickable(enabled = canAfford) { onEnterRoom(chips) }
-                            .padding(horizontal = 14.dp, vertical = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                text = "Table ₹$chips",
-                                fontSize = 14.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.Bold,
-                                color = if (canAfford) Color.White else Color(0xFF6B7280)
-                            )
-                            Text(
-                                text = "Min bet: $chips chips",
-                                fontSize = 11.sp,
-                                fontFamily = RubikFont,
-                                color = Color(0xFF64748B)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(if (canAfford) Color(0xFF10B981) else Color(0xFF2E3342))
-                                .padding(horizontal = 12.dp, vertical = 6.dp)
-                        ) {
-                            Text(
-                                text = if (canAfford) "JOIN" else "LOW CHIPS",
-                                fontSize = 11.sp,
-                                fontFamily = RubikFont,
-                                fontWeight = FontWeight.Bold,
-                                color = if (canAfford) Color.White else Color(0xFF94A3B8)
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            androidx.compose.material3.TextButton(onClick = onAddCashClick) {
-                Text("+ Add Cash", color = Color(0xFFFFB800), fontWeight = FontWeight.Bold, fontFamily = RubikFont)
-            }
-        },
-        dismissButton = {
-            androidx.compose.material3.TextButton(onClick = onDismiss) {
-                Text("Close", color = Color(0xFF94A3B8), fontFamily = RubikFont)
-            }
-        },
-        containerColor = Color(0xFF0F1219),
-        shape = RoundedCornerShape(18.dp)
-    )
-}
 
 private fun safeHexColor(hex: String, fallback: Color): Color {
     return try {

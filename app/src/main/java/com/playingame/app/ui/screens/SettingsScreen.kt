@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
 import com.playingame.app.data.wallet.WalletLedger
-import com.playingame.app.ui.theme.AppBackground
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 
 @Composable
@@ -79,8 +79,8 @@ fun SettingsScreen(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(10.dp))
                     .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -108,8 +108,8 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
+                .background(CardNavyBackground)
+                .border(1.dp, CardBorderColor, RoundedCornerShape(20.dp))
                 .padding(16.dp)
         ) {
             Row(
@@ -174,7 +174,7 @@ fun SettingsScreen(
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF6B7280),
+                color = Color(0xFF9CA3AF),
                 letterSpacing = 0.5.sp,
                 modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
             )
@@ -183,8 +183,8 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
                 Column {
@@ -193,14 +193,14 @@ fun SettingsScreen(
                         iconRes = R.drawable.ic_settings_add_cash,
                         onClick = onAddCashClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0x1AFFFFFF), thickness = 1.dp)
 
                     SettingsRow(
                         title = "Transaction history",
                         iconRes = R.drawable.ic_settings_history,
                         onClick = onTransactionHistoryClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0x1AFFFFFF), thickness = 1.dp)
 
                     SettingsRow(
                         title = "Withdrawals",
@@ -220,7 +220,7 @@ fun SettingsScreen(
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF6B7280),
+                color = Color(0xFF9CA3AF),
                 letterSpacing = 0.5.sp,
                 modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
             )
@@ -229,8 +229,8 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
                 Column {
@@ -242,35 +242,35 @@ fun SettingsScreen(
                             onCheckUpdatesClick()
                         }
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0x1AFFFFFF), thickness = 1.dp)
 
                     SettingsRow(
                         title = "Help Centre",
                         iconRes = R.drawable.ic_settings_help,
                         onClick = onHelpCentreClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0x1AFFFFFF), thickness = 1.dp)
 
                     SettingsRow(
                         title = "My reported issues",
                         iconRes = R.drawable.ic_settings_issues,
                         onClick = onReportedIssuesClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0x1AFFFFFF), thickness = 1.dp)
 
                     SettingsRow(
                         title = "About us",
                         iconRes = R.drawable.ic_settings_about,
                         onClick = onAboutUsClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0x1AFFFFFF), thickness = 1.dp)
 
                     SettingsRow(
                         title = "Contact us",
                         iconRes = R.drawable.ic_settings_contact,
                         onClick = onContactUsClick
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0x1AFFFFFF), thickness = 1.dp)
 
                     SettingsRow(
                         title = "InGames Fair Play",
@@ -290,7 +290,7 @@ fun SettingsScreen(
                 fontSize = 12.sp,
                 fontFamily = RubikFont,
                 fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF6B7280),
+                color = Color(0xFF9CA3AF),
                 letterSpacing = 0.5.sp,
                 modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
             )
@@ -299,8 +299,8 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(16.dp))
                     .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
                 Column {
@@ -312,7 +312,7 @@ fun SettingsScreen(
                             onLogoutClick()
                         }
                     )
-                    HorizontalDivider(color = Color(0xFF1E222D), thickness = 1.dp)
+                    HorizontalDivider(color = Color(0x1AFFFFFF), thickness = 1.dp)
 
                     SettingsRow(
                         title = "Delete Account",
@@ -404,7 +404,7 @@ fun SettingsRow(
             fontSize = 20.sp,
             fontFamily = RubikFont,
             fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF6B7280)
+            color = Color(0xFF9CA3AF)
         )
     }
 }

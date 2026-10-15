@@ -25,41 +25,45 @@ val Gold500 = Color(0xFFFFC107)
 val Gold600 = Color(0xFFFFB300)
 val Gold700 = Color(0xFFFFA000)
 
-// App Backgrounds & Surface Palette
-val AppBackground = Color(0xFF0A0C11)
-val DarkNavyPurpleStart = Color(0xFF0A0C11)
-val DarkNavyPurpleEnd = Color(0xFF0A0C11)
+// App Backgrounds & Surface Palette (New Matte Charcoal Theme)
+val AppBackground = Color(0xFF212327)
+val DarkNavyPurpleStart = Color(0xFF212327)
+val DarkNavyPurpleEnd = Color(0xFF1B1D21)
 
-// Bottom Navigation Bar (#12161D)
-val NavBarBackground = Color(0xFF12161D)
-val NavBarBorder = Color(0xFF1F2530)
+// Bottom Navigation Bar (#1B1D21)
+val NavBarBackground = Color(0xFF1B1D21)
+val NavBarBorder = Color(0xFF2C2F36)
 val TabActiveGold = Color(0xFFFFB800)
-val TabInactiveTint = Color(0xFF64748B)
+val TabInactiveTint = Color(0xFF8E95A2)
 
-// Card Palette (#2F394C)
-val CardBorderColor = Color(0xFF2F394C)
-val CardNavyBackground = Color(0xFF1B2230)
-val CardSurfaceVariant = Color(0xFF202A3B)
-val CardHeaderBg = Color(0xFF141923)
+// Card Palette (#2A2D33 range)
+val CardBorderColor = Color(0xFF353941)
+val CardNavyBackground = Color(0xFF2A2D33)
+val CardSurfaceVariant = Color(0xFF2E323A)
+val CardHeaderBg = Color(0xFF25282E)
+
+// Casino Brand Accent Green & Action Buttons (Image 1)
+val BrandCasinoGreen = Color(0xFF00D26A)
+val BtnWithdrawBackground = Color(0xFF373B43)
 
 // Play Button Purple
 val PlayButtonPurple = Color(0xFF6C47FF)
 val PlayButtonPurpleLight = Color(0xFF8B5CF6)
 
 // Status & Indicators
-val OnlineGreen = Color(0xFF00E676)
+val OnlineGreen = Color(0xFF00D26A)
 val LiveRed = Color(0xFFEF4444)
 val HotBadgeOrange = Color(0xFFFF5722)
 
 // Text & Surfaces
 val TextPrimary = Color(0xFFFFFFFF)
-val TextSecondary = Color(0xFFCBD5E1)
-val TextMuted = Color(0xFF94A3B8)
-val TextDisabled = Color(0xFF64748B)
+val TextSecondary = Color(0xFF9CA3AF)
+val TextMuted = Color(0xFF6B7280)
+val TextDisabled = Color(0xFF4B5563)
 
 // Gradients
 val BackgroundGradient = Brush.verticalGradient(
-    colors = listOf(AppBackground, AppBackground)
+    colors = listOf(AppBackground, Color(0xFF1B1D21))
 )
 
 val BottomNavGradient = Brush.verticalGradient(

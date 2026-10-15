@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
 import com.playingame.app.data.wallet.WalletLedger
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 
 import kotlinx.coroutines.launch
@@ -54,7 +55,7 @@ fun WithdrawDetailsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(18.dp)
@@ -69,8 +70,8 @@ fun WithdrawDetailsScreen(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(10.dp))
                     .align(Alignment.CenterStart)
                     .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
@@ -98,8 +99,8 @@ fun WithdrawDetailsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                .background(CardNavyBackground)
+                .border(1.dp, CardBorderColor, RoundedCornerShape(16.dp))
                 .padding(vertical = 18.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -130,8 +131,8 @@ fun WithdrawDetailsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
+                .background(CardNavyBackground)
+                .border(1.dp, CardBorderColor, RoundedCornerShape(20.dp))
                 .padding(18.dp)
         ) {
             Column(
@@ -202,7 +203,7 @@ fun WithdrawDetailsScreen(
                     )
                 }
 
-                HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
+                HorizontalDivider(color = CardBorderColor, thickness = 1.dp)
 
                 // Bottom Action Box for UPI Withdrawal
                 Row(
@@ -218,14 +219,14 @@ fun WithdrawDetailsScreen(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF161922))
-                                .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(8.dp)),
+                                .background(Color(0xFF383C45))
+                                .border(1.dp, CardBorderColor, RoundedCornerShape(8.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "▲",
                                 fontSize = 14.sp,
-                                color = Color(0xFF00E676)
+                                color = BrandCasinoGreen
                             )
                         }
 
@@ -285,7 +286,7 @@ fun WithdrawDetailsScreen(
                         if (isSubmitting) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(18.dp),
-                                color = Color(0xFF0A0C11),
+                                color = AppBackground,
                                 strokeWidth = 2.dp
                             )
                         } else {
@@ -294,7 +295,7 @@ fun WithdrawDetailsScreen(
                                 fontSize = 14.5.sp,
                                 fontFamily = RubikFont,
                                 fontWeight = FontWeight.W800,
-                                color = Color(0xFF0A0C11)
+                                color = AppBackground
                             )
                         }
                     }
@@ -310,7 +311,7 @@ fun WithdrawDetailsScreen(
         var tempUpi by remember { mutableStateOf(upiId) }
         AlertDialog(
             onDismissRequest = { showEditUpiDialog = false },
-            containerColor = Color(0xFF0F1015),
+            containerColor = CardNavyBackground,
             titleContentColor = Color.White,
             textContentColor = Color(0xFF8E899B),
             title = { Text("Edit UPI ID", fontWeight = FontWeight.Bold, fontFamily = RubikFont) },
@@ -321,10 +322,10 @@ fun WithdrawDetailsScreen(
                     label = { Text("Enter UPI ID", color = Color(0xFF8E899B)) },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFF161922),
-                        unfocusedContainerColor = Color(0xFF161922),
+                        focusedContainerColor = Color(0xFF383C45),
+                        unfocusedContainerColor = Color(0xFF383C45),
                         focusedBorderColor = Color(0xFFFFB800),
-                        unfocusedBorderColor = Color(0xFF282E3E),
+                        unfocusedBorderColor = CardBorderColor,
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White
                     )
@@ -342,7 +343,7 @@ fun WithdrawDetailsScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFB800))
                 ) {
-                    Text("SAVE", color = Color(0xFF0A0C11), fontWeight = FontWeight.Bold)
+                    Text("SAVE", color = AppBackground, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {

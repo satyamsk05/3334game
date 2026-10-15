@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -126,6 +127,9 @@ func (h *Hub) SendToClient(client *Client, payload []byte) {
 	}
 }
 
+// Fix (Issue 11.2): Maximum inbound WebSocket message size (32 KB) to prevent memory exhaustion attacks
+const maxWebSocketMessageSize = 32 * 1024
+
 func (h *Hub) HandleWebSocket(c *gin.Context) {
 	tokenStr := c.Query("token")
 	if tokenStr == "" {
@@ -137,14 +141,22 @@ func (h *Hub) HandleWebSocket(c *gin.Context) {
 
 	userID := "guest"
 	if tokenStr != "" {
+		// Fix (Issues 8.1 & 11.1): Validate HMAC signing method to prevent alg:none vulnerability on WebSocket
 		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+			}
 			return []byte(h.cfg.JWTSecret), nil
 		})
-		if err == nil && token.Valid {
-			if claims, ok := token.Claims.(jwt.MapClaims); ok {
-				if uid, ok := claims["userId"].(string); ok && uid != "" {
-					userID = uid
-				}
+		if err != nil || !token.Valid {
+			c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Invalid or expired token for WebSocket connection"})
+			return
+		}
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			if uid, ok := claims["userId"].(string); ok && uid != "" {
+				userID = uid
+			} else if sub, ok := claims["sub"].(string); ok && sub != "" {
+				userID = sub
 			}
 		}
 	}
@@ -186,7 +198,8 @@ func (c *Client) readPump(h *Hub) {
 		c.Conn.Close()
 	}()
 
-	c.Conn.SetReadLimit(64 * 1024)
+	// Fix (Issue 11.2): Enforce strict read limit to prevent memory exhaustion attacks
+	c.Conn.SetReadLimit(maxWebSocketMessageSize)
 	c.Conn.SetReadDeadline(time.Now().Add(60 * time.Second))
 	c.Conn.SetPongHandler(func(string) error {
 		c.Conn.SetReadDeadline(time.Now().Add(60 * time.Second))

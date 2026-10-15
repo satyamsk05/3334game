@@ -60,13 +60,18 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.i(TAG, "New FCM Registration Token generated: $token")
+        // Fix (Issue 4.2): Avoid printing sensitive FCM registration tokens in production logs
+        if (com.playingame.app.BuildConfig.DEBUG) {
+            Log.d(TAG, "New FCM Registration Token generated: $token")
+        }
         syncTokenWithBackend(token)
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        Log.d(TAG, "Message received from: ${remoteMessage.from}")
+        if (com.playingame.app.BuildConfig.DEBUG) {
+            Log.d(TAG, "Message received from: ${remoteMessage.from}")
+        }
 
         // 1. Extract notification payload or data payload
         val title = remoteMessage.notification?.title

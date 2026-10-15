@@ -1,6 +1,7 @@
 module bitarcade-backend
 
-go 1.25.5
+// Fix Audit 13.3: Use stable standard Go language version declaration
+go 1.23
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect

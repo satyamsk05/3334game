@@ -69,7 +69,10 @@ object WalletSyncService {
             withContext(Dispatchers.Main) {
                 WalletLedger.syncBalance(dep, win, bon)
             }
-            Log.d(TAG, "Wallet synced live from server: dep=${dep/100.0}, win=${win/100.0}, bon=${bon/100.0}")
+            // Fix (Issue 4.2): Avoid printing exact user balance details in production logcat
+            if (com.playingame.app.BuildConfig.DEBUG) {
+                Log.d(TAG, "Wallet synced live from server: dep=${dep/100.0}, win=${win/100.0}, bon=${bon/100.0}")
+            }
             
             // Also fetch transactions
             fetchTransactions(targetUserId)

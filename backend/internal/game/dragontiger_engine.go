@@ -14,6 +14,8 @@ import (
 	"bitarcade-backend/internal/models"
 	"bitarcade-backend/internal/services"
 	"bitarcade-backend/internal/ws"
+
+	"github.com/google/uuid"
 )
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -113,11 +115,17 @@ type WsErrorMsg struct {
 }
 
 type IncomingWsAction struct {
-	Action  string `json:"action"` // "dt_place_bet" | "dt_get_state" | "dt_get_history"
-	RoundID string `json:"roundId,omitempty"`
-	Target  string `json:"target,omitempty"`
-	Amount  int64  `json:"amount,omitempty"`
-	Limit   int    `json:"limit,omitempty"`
+	Action         string `json:"action"` // "dt_place_bet" | "dt_get_state" | "dt_get_history"
+	RoundID        string `json:"roundId,omitempty"`
+	Target         string `json:"target,omitempty"`
+	Amount         int64  `json:"amount,omitempty"`
+	Limit          int    `json:"limit,omitempty"`
+	IdempotencyKey string `json:"idempotencyKey,omitempty"`
+}
+
+type cachedBetResult struct {
+	bet     *Bet
+	balance int64
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -139,6 +147,7 @@ type DragonTigerEngine struct {
 	startedAt       time.Time
 	bets            map[string]*Bet // betID -> Bet
 	userBetsInRound map[string][]*Bet
+	idempotentBets  map[string]cachedBetResult // Fix (Issue 10.1): Deduplicate bet submissions
 	totalDragon     int64
 	totalTiger      int64
 	totalTie        int64
@@ -169,6 +178,7 @@ func NewDragonTigerEngine(hub *ws.Hub, walletService *services.WalletService, db
 		maxBetChips:     10000000, // ₹100,000.00
 		bets:            make(map[string]*Bet),
 		userBetsInRound: make(map[string][]*Bet),
+		idempotentBets:  make(map[string]cachedBetResult),
 		history:         make([]RoundHistoryItem, 0),
 	}
 
@@ -223,6 +233,7 @@ func (e *DragonTigerEngine) runLoop() {
 		e.startedAt = now
 		e.bets = make(map[string]*Bet)
 		e.userBetsInRound = make(map[string][]*Bet)
+		e.idempotentBets = make(map[string]cachedBetResult)
 		e.totalDragon = 0
 		e.totalTiger = 0
 		e.totalTie = 0
@@ -443,6 +454,11 @@ func (e *DragonTigerEngine) settleAllBets(
 // ─────────────────────────────────────────────────────────────────────────────
 
 func (e *DragonTigerEngine) PlaceBet(userID string, target string, amountChips int64) (*Bet, int64, error) {
+	return e.PlaceBetWithIdempotency(userID, target, amountChips, "")
+}
+
+// Fix (Issues 2.6 & 10.1): UUID bet ID generation and Idempotency key checking to prevent duplicate bets
+func (e *DragonTigerEngine) PlaceBetWithIdempotency(userID string, target string, amountChips int64, idempotencyKey string) (*Bet, int64, error) {
 	// 1. Check betting phase lock
 	if e.bettingLocked.Load() {
 		return nil, 0, fmt.Errorf("LATE_BET: Betting is locked for this round")
@@ -452,6 +468,14 @@ func (e *DragonTigerEngine) PlaceBet(userID string, target string, amountChips i
 	if e.phase != PhaseBetting || e.timerSeconds < 1 {
 		e.mu.Unlock()
 		return nil, 0, fmt.Errorf("LATE_BET: Round is not in betting phase")
+	}
+
+	// Check idempotency cache if key was provided
+	if idempotencyKey != "" {
+		if cached, exists := e.idempotentBets[idempotencyKey]; exists {
+			e.mu.Unlock()
+			return cached.bet, cached.balance, nil
+		}
 	}
 
 	// 2. Target validation
@@ -475,8 +499,8 @@ func (e *DragonTigerEngine) PlaceBet(userID string, target string, amountChips i
 		return nil, 0, fmt.Errorf("INSUFFICIENT_BALANCE: %v", err)
 	}
 
-	// 5. Record Bet in Memory & DB
-	betID := fmt.Sprintf("BET-%d", time.Now().UnixNano()%1000000000000)
+	// 5. Record Bet in Memory & DB with collision-safe UUID
+	betID := fmt.Sprintf("BET-%s-%d", uuid.New().String()[:8], time.Now().UnixNano())
 	bet := &Bet{
 		ID:        betID,
 		UserID:    userID,
@@ -489,6 +513,9 @@ func (e *DragonTigerEngine) PlaceBet(userID string, target string, amountChips i
 	e.mu.Lock()
 	e.bets[betID] = bet
 	e.userBetsInRound[userID] = append(e.userBetsInRound[userID], bet)
+	if idempotencyKey != "" {
+		e.idempotentBets[idempotencyKey] = cachedBetResult{bet: bet, balance: tx.BalanceAfterChips}
+	}
 	switch target {
 	case "DRAGON":
 		e.totalDragon += amountChips
@@ -532,7 +559,7 @@ func (e *DragonTigerEngine) handleClientMessage(client *ws.Client, msgBytes []by
 			return
 		}
 
-		bet, newBal, err := e.PlaceBet(client.UserID, action.Target, action.Amount)
+		bet, newBal, err := e.PlaceBetWithIdempotency(client.UserID, action.Target, action.Amount, action.IdempotencyKey)
 		if err != nil {
 			code := "BET_FAILED"
 			msg := err.Error()
@@ -603,6 +630,13 @@ func (e *DragonTigerEngine) GetSnapshot() WsRoundStateMsg {
 	defer e.mu.RUnlock()
 	return e.buildRoundStateMsgLocked()
 }
+
+// Fix Audit 6.6 & 10.3: Satisfy the unified GameEngine interface
+func (e *DragonTigerEngine) GetSnapshotState() interface{} {
+	return e.GetSnapshot()
+}
+
+var _ GameEngine = (*DragonTigerEngine)(nil)
 
 func (e *DragonTigerEngine) GetHistory(limit int) []RoundHistoryItem {
 	e.mu.RLock()

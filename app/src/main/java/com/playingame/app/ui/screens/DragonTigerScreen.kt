@@ -34,6 +34,7 @@ import com.playingame.app.core.session.SessionManager
 import com.playingame.app.data.remote.RemoteApiClient
 import com.playingame.app.data.wallet.WalletLedger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -120,13 +121,21 @@ fun DragonTigerScreen(
     // Cards dealt
     var dragonCard by remember { mutableStateOf(SampleCards[0]) } // 2 of Hearts
     var tigerCard by remember { mutableStateOf(SampleCards[1]) }  // 5 of Spades
-    var cardsRevealed by remember { mutableStateOf(false) }
+    var dragonCardRevealed by remember { mutableStateOf(false) }
+    var tigerCardRevealed by remember { mutableStateOf(false) }
+    var cardRevealJob by remember { mutableStateOf<Job?>(null) }
 
-    // Card 3D Flip Animation
-    val flipProgress by animateFloatAsState(
-        targetValue = if (cardsRevealed) 180f else 0f,
+    // Card 3D Flip Animations (Sequential smooth reveal)
+    val dragonFlipProgress by animateFloatAsState(
+        targetValue = if (dragonCardRevealed) 180f else 0f,
         animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing),
-        label = "cardFlip"
+        label = "dragonCardFlip"
+    )
+
+    val tigerFlipProgress by animateFloatAsState(
+        targetValue = if (tigerCardRevealed) 180f else 0f,
+        animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing),
+        label = "tigerCardFlip"
     )
 
     // Server-synchronized Game Loop
@@ -181,11 +190,16 @@ fun DragonTigerScreen(
 
                         when (serverPhase) {
                             "BETTING" -> {
+                                cardRevealJob?.cancel()
                                 roundWinner = null
-                                cardsRevealed = false
+                                dragonCardRevealed = false
+                                tigerCardRevealed = false
                             }
                             "DEALING" -> {
-                                cardsRevealed = false
+                                cardRevealJob?.cancel()
+                                roundWinner = null
+                                dragonCardRevealed = false
+                                tigerCardRevealed = false
                             }
                             "RESULT" -> {
                                 val winnerStr = data.optString("winner", "")
@@ -195,7 +209,6 @@ fun DragonTigerScreen(
                                     "TIE" -> DtBetTarget.TIE
                                     else -> null
                                 }
-                                roundWinner = currentWinner
 
                                 val cardsObj = data.optJSONObject("cards")
                                 val dObj = cardsObj?.optJSONObject("dragon") ?: data.optJSONObject("dragonCard")
@@ -226,26 +239,35 @@ fun DragonTigerScreen(
                                     tigerCard = DtPlayingCard(r, v, mapSuitToRes(s), red)
                                 }
 
-                                cardsRevealed = true
-
-                                // Settle user payout once per round
+                                // Sequential reveal animation: Dragon first, then Tiger 1 second later
                                 if (currentRound.isNotBlank() && currentRound != lastProcessedResultRound) {
                                     lastProcessedResultRound = currentRound
-                                    val userWinAmount = when (currentWinner) {
-                                        DtBetTarget.DRAGON -> dragonBet * 2
-                                        DtBetTarget.TIGER -> tigerBet * 2
-                                        DtBetTarget.TIE -> tieBet * 9
-                                        else -> 0L
-                                    }
-                                    if (userWinAmount > 0) {
-                                        Toast.makeText(context, "🎉 You won ₹$userWinAmount!", Toast.LENGTH_SHORT).show()
-                                        WalletLedger.creditWin(userWinAmount * 100L, "Dragon vs Tiger")
-                                        scope.launch {
-                                            com.playingame.app.data.remote.WalletSyncService.syncBalance()
+                                    cardRevealJob?.cancel()
+                                    // 1. Open Dragon Card immediately
+                                    dragonCardRevealed = true
+                                    tigerCardRevealed = false
+                                    roundWinner = null
+
+                                    // 2. Open Tiger Card after 1 second with smooth animation
+                                    cardRevealJob = scope.launch {
+                                        delay(1000)
+                                        tigerCardRevealed = true
+                                        // Wait for tiger flip animation to finish before declaring winner
+                                        delay(550)
+                                        roundWinner = currentWinner
+
+                                        // Settle user payout
+                                        val userWinAmount = when (currentWinner) {
+                                            DtBetTarget.DRAGON -> dragonBet * 2
+                                            DtBetTarget.TIGER -> tigerBet * 2
+                                            DtBetTarget.TIE -> tieBet * 9
+                                            else -> 0L
                                         }
-                                    } else {
-                                        // Synchronize balance with backend for non-winning / tie rounds as well
-                                        scope.launch {
+                                        if (userWinAmount > 0) {
+                                            Toast.makeText(context, "🎉 You won ₹$userWinAmount!", Toast.LENGTH_SHORT).show()
+                                            WalletLedger.creditWin(userWinAmount * 100L, "Dragon vs Tiger")
+                                            com.playingame.app.data.remote.WalletSyncService.syncBalance()
+                                        } else {
                                             com.playingame.app.data.remote.WalletSyncService.syncBalance()
                                         }
                                     }
@@ -302,23 +324,16 @@ fun DragonTigerScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFFF1F5F9),
-                        Color(0xFFE8EEF5),
-                        Color(0xFFF0F4F8)
-                    )
-                )
-            )
-            .statusBarsPadding()
-            .navigationBarsPadding()
+        modifier = Modifier.fillMaxSize()
     ) {
+        // Pure Jetpack Compose VIP Casino Felt Table Background (No Image Files)
+        CasinoTableBackground()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
@@ -340,7 +355,8 @@ fun DragonTigerScreen(
             CardsArenaSection(
                 dragonCard = dragonCard,
                 tigerCard = tigerCard,
-                flipProgress = flipProgress,
+                dragonFlipProgress = dragonFlipProgress,
+                tigerFlipProgress = tigerFlipProgress,
                 gamePhase = gamePhase,
                 timerSeconds = timerSeconds,
                 roundWinner = roundWinner
@@ -429,19 +445,20 @@ private fun TopBarSection(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Back Button
+        // Back Button with Dark Green & Gold Casino Style
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(Color.White)
-                .shadow(2.dp, CircleShape)
+                .background(Color(0xE6051A11))
+                .shadow(4.dp, CircleShape)
+                .border(1.2.dp, Color(0x66FBBF24), CircleShape)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_back),
                 contentDescription = "Back",
-                tint = Color(0xFF1E293B),
+                tint = Color(0xFFFDE68A),
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -468,7 +485,8 @@ private fun TopBarSection(
 private fun CardsArenaSection(
     dragonCard: DtPlayingCard,
     tigerCard: DtPlayingCard,
-    flipProgress: Float,
+    dragonFlipProgress: Float,
+    tigerFlipProgress: Float,
     gamePhase: String,
     timerSeconds: Int,
     roundWinner: DtBetTarget?
@@ -485,20 +503,52 @@ private fun CardsArenaSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Dragon Card (Left)
-            SinglePlayingCard(
-                card = dragonCard,
-                rotationY = flipProgress,
-                isWinner = roundWinner == DtBetTarget.DRAGON,
-                cardBackRes = R.drawable.card_back_purple
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color(0x99881337),
+                    border = BorderStroke(1.dp, Color(0x88FBBF24)),
+                    modifier = Modifier.padding(bottom = 6.dp)
+                ) {
+                    Text(
+                        text = "DRAGON",
+                        color = Color(0xFFFDE68A),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                }
+                SinglePlayingCard(
+                    card = dragonCard,
+                    rotationY = dragonFlipProgress,
+                    isWinner = roundWinner == DtBetTarget.DRAGON,
+                    cardBackRes = R.drawable.card_back_purple
+                )
+            }
 
             // Tiger Card (Right)
-            SinglePlayingCard(
-                card = tigerCard,
-                rotationY = flipProgress,
-                isWinner = roundWinner == DtBetTarget.TIGER,
-                cardBackRes = R.drawable.card_back_purple
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color(0x991E3A8A),
+                    border = BorderStroke(1.dp, Color(0x88FBBF24)),
+                    modifier = Modifier.padding(bottom = 6.dp)
+                ) {
+                    Text(
+                        text = "TIGER",
+                        color = Color(0xFFBFDBFE),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                }
+                SinglePlayingCard(
+                    card = tigerCard,
+                    rotationY = tigerFlipProgress,
+                    isWinner = roundWinner == DtBetTarget.TIGER,
+                    cardBackRes = R.drawable.card_back_purple
+                )
+            }
         }
 
         // Floating Center "VS" Badge with Timer Overlay
@@ -508,9 +558,9 @@ private fun CardsArenaSection(
         ) {
             Surface(
                 shape = CircleShape,
-                color = Color.White,
-                shadowElevation = 6.dp,
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                color = Color(0xFF0F172A),
+                shadowElevation = 8.dp,
+                border = BorderStroke(1.5.dp, Color(0xFFFBBF24)),
                 modifier = Modifier.size(42.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -518,7 +568,7 @@ private fun CardsArenaSection(
                         text = "VS",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF1E293B)
+                        color = Color(0xFFFBBF24)
                     )
                 }
             }
@@ -528,6 +578,7 @@ private fun CardsArenaSection(
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     color = if (timerSeconds <= 5) Color(0xFFEF4444) else Color(0xFF0F172A),
+                    border = BorderStroke(1.dp, if (timerSeconds <= 5) Color(0xFFFCA5A5) else Color(0x33FFFFFF)),
                     modifier = Modifier.padding(top = 2.dp)
                 ) {
                     Text(
@@ -541,7 +592,8 @@ private fun CardsArenaSection(
             } else if (gamePhase == "DEALING") {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF2563EB)
+                    color = Color(0xFF2563EB),
+                    border = BorderStroke(1.dp, Color(0x66FFFFFF))
                 ) {
                     Text(
                         text = "DEALING",
@@ -572,7 +624,7 @@ private fun SinglePlayingCard(
     val cardBorder = if (isWinner) {
         BorderStroke(3.dp, Color(0xFF10B981))
     } else {
-        null
+        BorderStroke(1.dp, Color(0x33FFFFFF))
     }
 
     Surface(
@@ -581,12 +633,12 @@ private fun SinglePlayingCard(
             .height(188.dp)
             .graphicsLayer {
                 this.rotationY = rotationY
-                cameraDistance = 12 * density
+                cameraDistance = 16 * density
             }
             .shadow(
-                elevation = if (isWinner) 12.dp else 6.dp,
+                elevation = if (isWinner) 14.dp else 8.dp,
                 shape = RoundedCornerShape(18.dp),
-                spotColor = if (isWinner) Color(0xFF10B981) else Color(0x33000000)
+                spotColor = if (isWinner) Color(0xFF10B981) else Color(0x88000000)
             ),
         shape = RoundedCornerShape(18.dp),
         color = Color.White,
@@ -710,11 +762,11 @@ private fun RoadmapRow(history: List<String>) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
-        shape = RoundedCornerShape(24.dp),
-        color = Color(0xFFF8FAFC),
-        border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
-        shadowElevation = 2.dp
+            .height(44.dp),
+        shape = RoundedCornerShape(22.dp),
+        color = Color(0xE6051A11),
+        border = BorderStroke(1.2.dp, Color(0x44FBBF24)),
+        shadowElevation = 6.dp
     ) {
         Row(
             modifier = Modifier
@@ -732,7 +784,7 @@ private fun RoadmapRow(history: List<String>) {
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
-                        .size(28.dp)
+                        .size(26.dp)
                         .clip(CircleShape)
                         .background(bgColor)
                         .shadow(1.dp, CircleShape),
@@ -741,7 +793,7 @@ private fun RoadmapRow(history: List<String>) {
                     Text(
                         text = label,
                         color = Color.White,
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -751,7 +803,7 @@ private fun RoadmapRow(history: List<String>) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. Betting Areas (Tie, Dragon, Tiger)
+// 4. Betting Areas (Tie, Dragon, Tiger) - Pure Jetpack Compose Luxury Casino Felt
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
@@ -762,59 +814,111 @@ private fun TieBetCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
+    val goldBorder = Brush.linearGradient(
+        listOf(
+            Color(0xFFFBBF24),
+            Color(0xFFFDE68A),
+            Color(0xFFD97706),
+            Color(0xFFFBBF24)
+        )
+    )
+
     Surface(
         onClick = onClick,
         interactionSource = interactionSource,
         shape = RoundedCornerShape(20.dp),
-        color = Color(0xFFEDE9FE),
         border = BorderStroke(
-            width = if (isWinner) 2.5.dp else 1.dp,
-            color = if (isWinner) Color(0xFF10B981) else Color(0xFFDDD6FE)
+            width = if (isWinner) 3.5.dp else 1.8.dp,
+            brush = if (isWinner) Brush.linearGradient(listOf(Color(0xFF34D399), Color(0xFF10B981))) else goldBorder
         ),
-        shadowElevation = if (isWinner) 6.dp else 2.dp,
+        shadowElevation = if (isWinner) 14.dp else 6.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .height(86.dp)
+            .height(76.dp)
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color(0xFF047857), // Deep Emerald Velvet Felt
+                            Color(0xFF065F46),
+                            Color(0xFF022C22)
+                        )
+                    )
+                ),
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Tie",
-                    fontSize = 42.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFF4C1D95),
-                    letterSpacing = 0.5.sp
-                )
-                Text(
-                    text = "1:8 Payout",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6D28D9)
-                )
-            }
-
-            // User Bet Badge
-            if (userBet > 0) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF4C1D95),
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(10.dp)
-                ) {
-                    Text(
-                        text = "₹$userBet",
-                        color = Color.White,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            // Inner gold stitched border
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp)
+                    .border(
+                        BorderStroke(0.8.dp, Color(0x33FBBF24)),
+                        RoundedCornerShape(16.dp)
                     )
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "TIE",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color(0xFFFFFBEB),
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.width(14.dp))
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(0x66000000),
+                        border = BorderStroke(0.8.dp, Color(0x66FBBF24))
+                    ) {
+                        Text(
+                            text = "PAYS 8:1",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFFFDE68A),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+
+                // Golden Chip Betting Circle Target
+                Surface(
+                    shape = CircleShape,
+                    color = if (userBet > 0) Color(0xFF0F172A) else Color(0x33000000),
+                    border = BorderStroke(
+                        width = 1.5.dp,
+                        brush = Brush.linearGradient(listOf(Color(0xFFFBBF24), Color(0xFFD97706)))
+                    ),
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        if (userBet > 0) {
+                            Text(
+                                text = "₹$userBet",
+                                color = Color(0xFFFDE047),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Black
+                            )
+                        } else {
+                            Text(
+                                text = "BET",
+                                color = Color(0x66FDE68A),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -829,18 +933,27 @@ private fun DragonBetCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
+    val goldBorder = Brush.linearGradient(
+        listOf(
+            Color(0xFFFBBF24),
+            Color(0xFFFDE68A),
+            Color(0xFFD97706),
+            Color(0xFFFBBF24)
+        )
+    )
+
     Surface(
         onClick = onClick,
         interactionSource = interactionSource,
         shape = RoundedCornerShape(22.dp),
         border = BorderStroke(
-            width = if (isWinner) 3.dp else 0.dp,
-            color = if (isWinner) Color(0xFFFBBF24) else Color.Transparent
+            width = if (isWinner) 3.5.dp else 1.8.dp,
+            brush = if (isWinner) Brush.linearGradient(listOf(Color(0xFFFDE047), Color(0xFFF59E0B))) else goldBorder
         ),
-        shadowElevation = 8.dp,
+        shadowElevation = if (isWinner) 14.dp else 6.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .height(154.dp)
+            .height(152.dp)
     ) {
         Box(
             modifier = Modifier
@@ -848,62 +961,107 @@ private fun DragonBetCard(
                 .background(
                     Brush.verticalGradient(
                         listOf(
-                            Color(0xFFFF3B30),
-                            Color(0xFFE02424)
+                            Color(0xFF881337), // Luxury Crimson Velvet Felt
+                            Color(0xFF5F0C23),
+                            Color(0xFF380614)
                         )
                     )
                 )
         ) {
-            // Watermark Dragon Mascot Art in background (Bottom-Left)
+            // Inner gold stitched outline
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp)
+                    .border(
+                        BorderStroke(1.dp, Color(0x33FBBF24)),
+                        RoundedCornerShape(17.dp)
+                    )
+            )
+
+            // High-res Dragon Mascot blended in background
             Image(
-                painter = painterResource(id = R.drawable.img_dragon_watermark),
-                contentDescription = "Dragon Watermark",
+                painter = painterResource(id = R.drawable.mascot_dragon),
+                contentDescription = "Dragon Mascot",
                 contentScale = ContentScale.Fit,
-                alpha = 0.45f,
+                alpha = 0.28f,
                 modifier = Modifier
                     .size(130.dp)
                     .align(Alignment.BottomStart)
-                    .offset(x = (-8).dp, y = 14.dp)
+                    .offset(x = (-10).dp, y = 14.dp)
             )
 
-            // Top Center Letter "D"
+            // Traditional Chinese Calligraphy Watermark "龍"
+            Text(
+                text = "龍",
+                fontSize = 58.sp,
+                fontWeight = FontWeight.Black,
+                color = Color(0x18FBBF24),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(end = 12.dp, top = 6.dp)
+            )
+
+            // Center Content: DRAGON title + Payout + Chip Target
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(vertical = 12.dp, horizontal = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "D",
-                    fontSize = 58.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White
-                )
-                Text(
-                    text = "1:1 Payout",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFFFCDD2)
-                )
-            }
-
-            // Placed Bet Chip Badge
-            if (userBet > 0) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color.White,
-                    shadowElevation = 4.dp,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 10.dp)
-                ) {
+                // Title and Payout
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "₹$userBet",
-                        color = Color(0xFFDC2626),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        text = "DRAGON",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color(0xFFFFFBEB),
+                        letterSpacing = 1.2.sp
                     )
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = Color(0x66000000),
+                        border = BorderStroke(0.8.dp, Color(0x66FBBF24)),
+                        modifier = Modifier.padding(top = 2.dp)
+                    ) {
+                        Text(
+                            text = "1:1 PAYOUT",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFFFDE68A),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+
+                // Authentic Golden Chip Placement Target Circle
+                Surface(
+                    shape = CircleShape,
+                    color = if (userBet > 0) Color(0xFF0F172A) else Color(0x33000000),
+                    border = BorderStroke(
+                        width = 1.5.dp,
+                        brush = Brush.linearGradient(listOf(Color(0xFFFBBF24), Color(0xFFD97706)))
+                    ),
+                    modifier = Modifier.size(54.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        if (userBet > 0) {
+                            Text(
+                                text = "₹$userBet",
+                                color = Color(0xFFFDE047),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Black
+                            )
+                        } else {
+                            Text(
+                                text = "BET",
+                                color = Color(0x66FDE68A),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -918,18 +1076,27 @@ private fun TigerBetCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
+    val goldBorder = Brush.linearGradient(
+        listOf(
+            Color(0xFFFBBF24),
+            Color(0xFFFDE68A),
+            Color(0xFFD97706),
+            Color(0xFFFBBF24)
+        )
+    )
+
     Surface(
         onClick = onClick,
         interactionSource = interactionSource,
         shape = RoundedCornerShape(22.dp),
         border = BorderStroke(
-            width = if (isWinner) 3.dp else 0.dp,
-            color = if (isWinner) Color(0xFFFBBF24) else Color.Transparent
+            width = if (isWinner) 3.5.dp else 1.8.dp,
+            brush = if (isWinner) Brush.linearGradient(listOf(Color(0xFFFDE047), Color(0xFFF59E0B))) else goldBorder
         ),
-        shadowElevation = 8.dp,
+        shadowElevation = if (isWinner) 14.dp else 6.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .height(154.dp)
+            .height(152.dp)
     ) {
         Box(
             modifier = Modifier
@@ -937,65 +1104,201 @@ private fun TigerBetCard(
                 .background(
                     Brush.verticalGradient(
                         listOf(
-                            Color(0xFF3B82F6),
-                            Color(0xFF1D4ED8)
+                            Color(0xFF1E3A8A), // Royal Sapphire Velvet Felt
+                            Color(0xFF172554),
+                            Color(0xFF0B132B)
                         )
                     )
                 )
         ) {
-            // Watermark Tiger Mascot Art in background (Bottom-Right)
+            // Inner gold stitched outline
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp)
+                    .border(
+                        BorderStroke(1.dp, Color(0x33FBBF24)),
+                        RoundedCornerShape(17.dp)
+                    )
+            )
+
+            // High-res Tiger mascot blended in background
             Image(
-                painter = painterResource(id = R.drawable.img_tiger_watermark),
-                contentDescription = "Tiger Watermark",
+                painter = painterResource(id = R.drawable.mascot_tiger),
+                contentDescription = "Tiger Mascot",
                 contentScale = ContentScale.Fit,
-                alpha = 0.45f,
+                alpha = 0.28f,
                 modifier = Modifier
                     .size(130.dp)
                     .align(Alignment.BottomEnd)
-                    .offset(x = 8.dp, y = 14.dp)
+                    .offset(x = 10.dp, y = 14.dp)
             )
 
-            // Top Center Letter "T"
+            // Traditional Chinese Calligraphy Watermark "虎"
+            Text(
+                text = "虎",
+                fontSize = 58.sp,
+                fontWeight = FontWeight.Black,
+                color = Color(0x18FBBF24),
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 12.dp, top = 6.dp)
+            )
+
+            // Center Content: TIGER title + Payout + Chip Target
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(vertical = 12.dp, horizontal = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "T",
-                    fontSize = 58.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White
-                )
-                Text(
-                    text = "1:1 Payout",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFBFDBFE)
-                )
-            }
-
-            // Placed Bet Chip Badge
-            if (userBet > 0) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color.White,
-                    shadowElevation = 4.dp,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 10.dp)
-                ) {
+                // Title and Payout
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "₹$userBet",
-                        color = Color(0xFF1D4ED8),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        text = "TIGER",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color(0xFFFFFBEB),
+                        letterSpacing = 1.2.sp
                     )
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = Color(0x66000000),
+                        border = BorderStroke(0.8.dp, Color(0x66FBBF24)),
+                        modifier = Modifier.padding(top = 2.dp)
+                    ) {
+                        Text(
+                            text = "1:1 PAYOUT",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFFBFDBFE),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+
+                // Authentic Golden Chip Placement Target Circle
+                Surface(
+                    shape = CircleShape,
+                    color = if (userBet > 0) Color(0xFF0F172A) else Color(0x33000000),
+                    border = BorderStroke(
+                        width = 1.5.dp,
+                        brush = Brush.linearGradient(listOf(Color(0xFFFBBF24), Color(0xFFD97706)))
+                    ),
+                    modifier = Modifier.size(54.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        if (userBet > 0) {
+                            Text(
+                                text = "₹$userBet",
+                                color = Color(0xFFFDE047),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Black
+                            )
+                        } else {
+                            Text(
+                                text = "BET",
+                                color = Color(0x66BFDBFE),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Pure Jetpack Compose VIP Casino Table Background (No Image Files)
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun CasinoTableBackground(modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier.fillMaxSize()) {
+        val width = size.width
+        val height = size.height
+
+        // 1. Deep VIP Casino Felt (Emerald Velvet vignette with radial highlight)
+        drawRect(
+            brush = Brush.radialGradient(
+                colors = listOf(
+                    Color(0xFF0F3E28), // Center vibrant casino green felt
+                    Color(0xFF09291A), // Mid dark green
+                    Color(0xFF04140D), // Outer rich dark vignette
+                    Color(0xFF020906)
+                ),
+                center = androidx.compose.ui.geometry.Offset(width / 2f, height * 0.44f),
+                radius = maxOf(width, height) * 0.82f
+            )
+        )
+
+        // 2. Concentric Golden Casino Arc Guidelines on the felt
+        val tableArcCenter = androidx.compose.ui.geometry.Offset(width / 2f, -height * 0.12f)
+
+        // Outer Table Trim Arc
+        drawCircle(
+            color = Color(0x28FBBF24),
+            radius = height * 0.65f,
+            center = tableArcCenter,
+            style = androidx.compose.ui.graphics.drawscope.Stroke(
+                width = 2.dp.toPx(),
+                pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
+            )
+        )
+
+        // Mid Decorative Golden Arc
+        drawCircle(
+            color = Color(0x1CFBBF24),
+            radius = height * 0.55f,
+            center = tableArcCenter,
+            style = androidx.compose.ui.graphics.drawscope.Stroke(
+                width = 1.5.dp.toPx()
+            )
+        )
+
+        // Inner Card Table Line
+        drawCircle(
+            color = Color(0x14FFFFFF),
+            radius = height * 0.45f,
+            center = tableArcCenter,
+            style = androidx.compose.ui.graphics.drawscope.Stroke(
+                width = 1.dp.toPx()
+            )
+        )
+
+        // 3. Top Casino Rim / Armrest Wood Rail
+        drawRect(
+            brush = Brush.verticalGradient(
+                listOf(
+                    Color(0xFF1E0E03), // Dark Mahogany Wood
+                    Color(0xFF381B08),
+                    Color(0xFF1E0E03),
+                    Color.Transparent
+                ),
+                startY = 0f,
+                endY = 48.dp.toPx()
+            ),
+            size = androidx.compose.ui.geometry.Size(width, 48.dp.toPx())
+        )
+
+        // Gold pinstripe below top rail
+        drawLine(
+            brush = Brush.horizontalGradient(
+                listOf(
+                    Color.Transparent,
+                    Color(0xFFFBBF24),
+                    Color(0xFFFDE68A),
+                    Color(0xFFFBBF24),
+                    Color.Transparent
+                )
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 46.dp.toPx()),
+            end = androidx.compose.ui.geometry.Offset(width, 46.dp.toPx()),
+            strokeWidth = 2.dp.toPx()
+        )
     }
 }
 
@@ -1012,9 +1315,9 @@ private fun CasinoChipsSelectionBar(
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(34.dp),
-        color = Color.White,
-        shadowElevation = 6.dp,
-        border = BorderStroke(1.dp, Color(0xFFE2E8F0))
+        color = Color(0xE6051A11),
+        shadowElevation = 10.dp,
+        border = BorderStroke(1.2.dp, Color(0x66FBBF24))
     ) {
         Row(
             modifier = Modifier

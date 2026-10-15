@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BitArcade" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#131024</item>
+        <item name="android:statusBarColor">#131024</item>
+        <item name="android:navigationBarColor">#131024</item>
+        <item name="android:windowSplashScreenBackground">#131024</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+    </style>
+    <style name="Theme.App334" parent="Theme.BitArcade" />
+</resources>

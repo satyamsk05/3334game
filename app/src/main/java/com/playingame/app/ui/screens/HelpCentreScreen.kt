@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 
 data class FaqItem(
@@ -53,7 +54,7 @@ fun HelpCentreScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -69,8 +70,8 @@ fun HelpCentreScreen(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(12.dp))
                     .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -103,13 +104,13 @@ fun HelpCentreScreen(
                 .padding(bottom = 16.dp),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFF0F1015),
-                unfocusedContainerColor = Color(0xFF0F1015),
-                focusedBorderColor = Color(0xFF00E676),
-                unfocusedBorderColor = Color(0xFF1E2028),
+                focusedContainerColor = CardNavyBackground,
+                unfocusedContainerColor = CardNavyBackground,
+                focusedBorderColor = BrandCasinoGreen,
+                unfocusedBorderColor = CardBorderColor,
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
-                cursorColor = Color(0xFF00E676)
+                cursorColor = BrandCasinoGreen
             ),
             singleLine = true
         )
@@ -119,8 +120,8 @@ fun HelpCentreScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                .background(CardNavyBackground)
+                .border(1.dp, CardBorderColor, RoundedCornerShape(16.dp))
                 .noRippleClickable { onContactSupportClick() }
                 .padding(16.dp)
         ) {
@@ -149,7 +150,7 @@ fun HelpCentreScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFF00E676))
+                        .background(BrandCasinoGreen)
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text(
@@ -157,7 +158,7 @@ fun HelpCentreScreen(
                         fontSize = 12.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0A0C11)
+                        color = AppBackground
                     )
                 }
             }
@@ -183,8 +184,8 @@ fun HelpCentreScreen(
                     .fillMaxWidth()
                     .padding(bottom = 10.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(14.dp))
                     .noRippleClickable {
                         expandedFaqId = if (isExpanded) null else faq.id
                     }

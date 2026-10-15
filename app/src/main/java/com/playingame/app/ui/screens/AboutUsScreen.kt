@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 
 @Composable
@@ -34,7 +35,7 @@ fun AboutUsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -50,8 +51,8 @@ fun AboutUsScreen(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(12.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(12.dp))
                     .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -114,8 +115,8 @@ fun AboutUsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
+                .background(CardNavyBackground)
+                .border(1.dp, CardBorderColor, RoundedCornerShape(14.dp))
                 .padding(16.dp)
         ) {
             Column {
@@ -146,15 +147,15 @@ fun AboutUsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFF0F1015))
-                .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(14.dp))
+                .background(CardNavyBackground)
+                .border(1.dp, CardBorderColor, RoundedCornerShape(14.dp))
         ) {
             AboutRowItem(title = "Terms of Service") { onOpenLegalDoc("TERMS") }
-            HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
+            HorizontalDivider(color = CardBorderColor, thickness = 1.dp)
             AboutRowItem(title = "Privacy Policy") { onOpenLegalDoc("PRIVACY") }
-            HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
+            HorizontalDivider(color = CardBorderColor, thickness = 1.dp)
             AboutRowItem(title = "Refund Policy") { onOpenLegalDoc("REFUND") }
-            HorizontalDivider(color = Color(0xFF1E2028), thickness = 1.dp)
+            HorizontalDivider(color = CardBorderColor, thickness = 1.dp)
             AboutRowItem(title = "Responsible Gaming") { onOpenLegalDoc("TERMS") }
         }
 

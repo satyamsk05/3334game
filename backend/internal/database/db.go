@@ -46,7 +46,8 @@ func InitDB(cfg *config.Config) (*DBBundle, error) {
 		db, err = gorm.Open(postgres.Open(rawURL), gormConfig)
 		if err != nil {
 			log.Printf("[DATABASE ERROR] Failed to connect to PostgreSQL / Supabase: %v", err)
-			log.Println("[DATABASE] ⚠️  Falling back to in-memory state. Verify your DATABASE_URL in .env.")
+			// Fix Audit 7.2: Prominent alerting on in-memory fallback to avoid silent data loss
+			log.Println("[CRITICAL ALERT - DATA LOSS RISK] Running in in-memory fallback mode without persistent database! All wallet balances, bets, and transactions will be lost on server restart. Configure DATABASE_URL in .env immediately.")
 			db = nil
 		} else {
 			sqlDB, err := db.DB()
@@ -69,6 +70,7 @@ func InitDB(cfg *config.Config) (*DBBundle, error) {
 				&models.Promotion{},
 				&models.DtRound{},
 				&models.DtBet{},
+				&models.AuditLog{},
 			)
 			if err != nil {
 				log.Printf("[DATABASE WARNING] AutoMigrate warning: %v", err)
@@ -112,4 +114,28 @@ func InitDB(cfg *config.Config) (*DBBundle, error) {
 		DB:    db,
 		Redis: rdb,
 	}, nil
+}
+
+// Fix (Issue 2.1): CheckHealth performs real pings against Postgres/Supabase and Redis
+func (b *DBBundle) CheckHealth() (dbStatus, redisStatus string) {
+	dbStatus = "OFFLINE"
+	if b != nil && b.DB != nil {
+		if sqlDB, err := b.DB.DB(); err == nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+			defer cancel()
+			if err := sqlDB.PingContext(ctx); err == nil {
+				dbStatus = "ONLINE"
+			}
+		}
+	}
+
+	redisStatus = "OFFLINE"
+	if b != nil && b.Redis != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		if err := b.Redis.Ping(ctx).Err(); err == nil {
+			redisStatus = "ONLINE"
+		}
+	}
+	return dbStatus, redisStatus
 }

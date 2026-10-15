@@ -48,6 +48,15 @@ object RemoteApiClient {
                 chain.proceed(request)
             }
 
+        // Fix (Audit 12.2): Configure Certificate Pinner for production to guard against MITM attacks
+        if (!com.playingame.app.BuildConfig.DEBUG && ClientConfig.DEFAULT_SERVER_URL.contains("bitarcade.in")) {
+            val pinner = CertificatePinner.Builder()
+                .add("api.bitarcade.in", "sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=")
+                .add("*.bitarcade.in", "sha256/kIdp6NNEd8wsugYyyIYFsi1ylMCED3hZbSR8ZFsa/A4=")
+                .build()
+            builder.certificatePinner(pinner)
+        }
+
         if (context != null) {
             try {
                 val cacheDir = context.cacheDir.resolve("http_cache")
@@ -83,7 +92,10 @@ object RemoteApiClient {
 
             webSocket = client.newWebSocket(request, object : WebSocketListener() {
                 override fun onOpen(webSocket: WebSocket, response: Response) {
-                    Log.d(TAG, "Connected to Remote Backend WebSocket: ${ClientConfig.WEBSOCKET_URL}")
+                    // Fix (Issue 4.2): Avoid leaking WebSocket URL and session details in production logs
+                    if (com.playingame.app.BuildConfig.DEBUG) {
+                        Log.d(TAG, "Connected to Remote Backend WebSocket: ${ClientConfig.WEBSOCKET_URL}")
+                    }
                     _isConnected.value = true
                 }
 
@@ -91,7 +103,9 @@ object RemoteApiClient {
                     try {
                         val json = org.json.JSONObject(text)
                         val event = json.optString("event")
-                        Log.d(TAG, "WebSocket event received: $event")
+                        if (com.playingame.app.BuildConfig.DEBUG) {
+                            Log.d(TAG, "WebSocket event received: $event")
+                        }
                         val data = json.optJSONObject("data")
                         if (event == "SYSTEM_ANNOUNCEMENT" && data != null) {
                             val title = data.optString("title", "Game In Play Alert")

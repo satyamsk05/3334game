@@ -27,11 +27,11 @@
     },
     {
       "source": "/api/v1/deposits/(.*)",
-      "destination": "http://15.252.241.88/api/v1/deposits/$1"
+      "destination": "https://bitarcade.duckdns.org/api/v1/deposits/$1"
     },
     {
       "source": "/api/(.*)",
-      "destination": "http://15.252.241.88/api/$1"
+      "destination": "https://bitarcade.duckdns.org/api/$1"
     }
   ]
 }

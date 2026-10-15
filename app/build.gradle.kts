@@ -17,28 +17,40 @@ android {
     namespace = "com.playingame.app"
     compileSdk = 34
 
+    // Live HTTPS domain with valid Let's Encrypt SSL
     val prodServerUrl = localProperties.getProperty("PROD_SERVER_URL")
         ?: System.getenv("PROD_SERVER_URL")
-        ?: "http://15.252.241.88"
+        ?: "https://bitarcade.duckdns.org"
     val devServerUrl = localProperties.getProperty("DEV_SERVER_URL")
         ?: System.getenv("DEV_SERVER_URL")
         ?: localProperties.getProperty("SERVER_URL")
-        ?: "http://15.252.241.88"
+        ?: "https://bitarcade.duckdns.org"
 
     val paymentGatewayUrl = localProperties.getProperty("PAYMENT_GATEWAY_URL")
         ?: System.getenv("PAYMENT_GATEWAY_URL")
-        ?: "https://paymentservicecruz.vercel.app"
+        ?: "https://bitarcade.duckdns.org"
+
+    // Fix Audit 1.4: Make business support phone configurable via properties or environment
+    val businessSupportPhone = localProperties.getProperty("BUSINESS_SUPPORT_PHONE")
+        ?: System.getenv("BUSINESS_SUPPORT_PHONE")
+        ?: "919989907408"
+
+    // Fix Audit 4.1: Compute dynamic versionCode so release updates can monotonically increment
+    val computedVersionCode = localProperties.getProperty("VERSION_CODE")?.toIntOrNull()
+        ?: System.getenv("BUILD_NUMBER")?.toIntOrNull()
+        ?: (System.currentTimeMillis() / 86400000).toInt()
 
     defaultConfig {
         applicationId = "com.playingame.app"
-        minSdk = 24
+        // Fix Audit 4.5: minSdk 26 for modern secure APIs and encryption support
+        minSdk = 26
         targetSdk = 34
-        versionCode = 1
+        versionCode = computedVersionCode
         versionName = "1.0"
 
         buildConfigField("String", "DEFAULT_SERVER_URL", "\"$devServerUrl\"")
         buildConfigField("String", "PAYMENT_GATEWAY_URL", "\"$paymentGatewayUrl\"")
-        buildConfigField("String", "BUSINESS_SUPPORT_PHONE", "\"919989907408\"")
+        buildConfigField("String", "BUSINESS_SUPPORT_PHONE", "\"$businessSupportPhone\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -83,11 +95,13 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
     implementation("app.rive:rive-android:8.1.3")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    // Fix Audit 4.3: Use stable security-crypto release instead of alpha
+    implementation("androidx.security:security-crypto:1.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

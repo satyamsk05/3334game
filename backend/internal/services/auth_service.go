@@ -419,6 +419,44 @@ func (s *AuthService) GetAllUsers(limit int) []models.User {
 	return list
 }
 
+// Fix (Issue 2.8): Support paginated retrieval of users with total count
+func (s *AuthService) GetUsersPaginated(page, limit int) ([]models.User, int64) {
+	if limit <= 0 {
+		limit = 50
+	}
+	if limit > 200 {
+		limit = 200
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
+	if s.bundle.DB != nil {
+		var total int64
+		s.bundle.DB.Model(&models.User{}).Count(&total)
+		var users []models.User
+		s.bundle.DB.Order("created_at desc").Offset(offset).Limit(limit).Find(&users)
+		return users, total
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var list []models.User
+	for _, u := range s.memUsers {
+		list = append(list, *u)
+	}
+	total := int64(len(list))
+	if offset >= len(list) {
+		return []models.User{}, total
+	}
+	end := offset + limit
+	if end > len(list) {
+		end = len(list)
+	}
+	return list[offset:end], total
+}
+
 func (s *AuthService) ToggleBan(userID string, isBlocked bool, reason string) error {
 	if s.bundle.DB != nil {
 		var user models.User
@@ -469,5 +507,24 @@ func (s *AuthService) GetUserStats() (int, int, int) {
 		s.mu.Unlock()
 	}
 	return total, active, banned
+}
+
+// Fix (Issue 2.7): Save and persist FCM token for user to enable push notifications
+func (s *AuthService) UpdateFCMToken(userID, fcmToken string) error {
+	if userID == "" {
+		return errors.New("user ID required")
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.bundle.DB != nil {
+		if err := s.bundle.DB.Model(&models.User{}).Where("id = ?", userID).Update("fcm_token", fcmToken).Error; err != nil {
+			return err
+		}
+	}
+	if u, exists := s.memUsers[userID]; exists {
+		u.FCMToken = fcmToken
+	}
+	return nil
 }
 

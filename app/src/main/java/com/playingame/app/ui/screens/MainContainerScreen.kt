@@ -171,6 +171,9 @@ fun MainContainerScreen(
                             },
                             onAllTransactionsClick = {
                                 navController.navigate(Screen.TransactionHistory.route)
+                            },
+                            onProfileClick = {
+                                navController.navigate(Screen.ProfileDetails.route)
                             }
                         )
                     }

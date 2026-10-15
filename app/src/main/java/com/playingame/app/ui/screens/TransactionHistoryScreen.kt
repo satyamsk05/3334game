@@ -30,6 +30,7 @@ import com.playingame.app.data.wallet.TransactionStatus
 import com.playingame.app.data.wallet.TransactionType
 import com.playingame.app.data.wallet.WalletLedger
 import com.playingame.app.data.wallet.WalletTransaction
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 import java.text.SimpleDateFormat
 import java.util.*
@@ -113,7 +114,7 @@ fun TransactionHistoryScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
     ) {
         Column(
             modifier = Modifier
@@ -136,8 +137,8 @@ fun TransactionHistoryScreen(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFF0F1015))
-                            .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
+                            .background(CardNavyBackground)
+                            .border(1.dp, CardBorderColor, RoundedCornerShape(10.dp))
                             .noRippleClickable { onBackClick() },
                         contentAlignment = Alignment.Center
                     ) {
@@ -170,8 +171,8 @@ fun TransactionHistoryScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0xFF0F1015))
-                        .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(20.dp))
+                        .background(CardNavyBackground)
+                        .border(1.dp, CardBorderColor, RoundedCornerShape(20.dp))
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
@@ -179,7 +180,7 @@ fun TransactionHistoryScreen(
                         fontSize = 13.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF00E676)
+                        color = BrandCasinoGreen
                     )
                 }
             }
@@ -194,10 +195,10 @@ fun TransactionHistoryScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(if (isSelected) Color(0xFF161922) else Color(0xFF0F1015))
+                            .background(if (isSelected) Color(0xFF383C45) else CardNavyBackground)
                             .border(
                                 1.dp,
-                                if (isSelected) Color(0xFFFFB800) else Color(0xFF1E2028),
+                                if (isSelected) Color(0xFFFFB800) else CardBorderColor,
                                 RoundedCornerShape(20.dp)
                             )
                             .noRippleClickable { selectedFilter = filter }
@@ -264,7 +265,7 @@ fun TransactionHistoryScreen(
                             }
                         )
                         HorizontalDivider(
-                            color = Color(0xFF1E2028),
+                            color = CardBorderColor,
                             thickness = 1.dp
                         )
                     }
@@ -292,7 +293,7 @@ private fun RushStyleTransactionRow(
                      txn.type == TransactionType.BET_REFUND
 
     val amountPrefix = if (isPositive) "+ " else "- "
-    val amountColor = if (isPositive) Color(0xFF00E676) else Color.White
+    val amountColor = if (isPositive) BrandCasinoGreen else Color.White
 
     // Clean Line-Art Vector Icon (NO colored box, NO background square, NO tint block)
     val iconRes = when (txn.type) {
@@ -394,8 +395,8 @@ private fun RushStyleTransactionRow(
                     .fillMaxWidth()
                     .padding(top = 12.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF161922))
-                    .border(1.dp, Color(0xFF282E3E), RoundedCornerShape(12.dp))
+                    .background(Color(0xFF383C45))
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(12.dp))
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -404,7 +405,7 @@ private fun RushStyleTransactionRow(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(text = "Status", fontSize = 12.sp, fontFamily = RubikFont, color = Color(0xFF8E899B))
-                    Text(text = txn.status.name, fontSize = 12.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = Color(0xFF00E676))
+                    Text(text = txn.status.name, fontSize = 12.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = BrandCasinoGreen)
                 }
 
                 if (txn.balanceAfterChips > 0) {
@@ -422,8 +423,8 @@ private fun RushStyleTransactionRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF0F1015))
-                        .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(8.dp))
+                        .background(CardNavyBackground)
+                        .border(1.dp, CardBorderColor, RoundedCornerShape(8.dp))
                         .noRippleClickable {
                             clipboardManager.setText(AnnotatedString(txn.referenceId))
                             isCopied = true
@@ -443,7 +444,7 @@ private fun RushStyleTransactionRow(
                         fontSize = 10.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = if (isCopied) Color(0xFF00E676) else Color(0xFFFFB800)
+                        color = if (isCopied) BrandCasinoGreen else Color(0xFFFFB800)
                     )
                 }
             }

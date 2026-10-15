@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"bitarcade-backend/internal/config"
+	"bitarcade-backend/internal/database"
 	"bitarcade-backend/internal/services"
 
 	"github.com/gin-gonic/gin"
@@ -17,13 +18,15 @@ type APIHandler struct {
 	cfg           *config.Config
 	authService   *services.AuthService
 	walletService *services.WalletService
+	dbBundle      *database.DBBundle
 }
 
-func NewAPIHandler(cfg *config.Config, authService *services.AuthService, walletService *services.WalletService) *APIHandler {
+func NewAPIHandler(cfg *config.Config, authService *services.AuthService, walletService *services.WalletService, dbBundle *database.DBBundle) *APIHandler {
 	return &APIHandler{
 		cfg:           cfg,
 		authService:   authService,
 		walletService: walletService,
+		dbBundle:      dbBundle,
 	}
 }
 

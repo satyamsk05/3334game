@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/v1/:path*",
-      "destination": "http://15.252.241.88/api/v1/:path*"
+      "destination": "https://bitarcade.duckdns.org/api/v1/:path*"
     }
   ]
 }

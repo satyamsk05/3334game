@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"crypto/subtle"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -27,7 +29,11 @@ func (h *APIHandler) AdminLogin(c *gin.Context) {
 		return
 	}
 
-	if req.Username != h.cfg.AdminUsername || req.Password != h.cfg.AdminPassword {
+	// Fix (Issue 8.4): Use crypto/subtle.ConstantTimeCompare to eliminate timing attack vulnerabilities
+	userMatch := subtle.ConstantTimeCompare([]byte(req.Username), []byte(h.cfg.AdminUsername)) == 1
+	passMatch := subtle.ConstantTimeCompare([]byte(req.Password), []byte(h.cfg.AdminPassword)) == 1
+
+	if !userMatch || !passMatch {
 		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "message": "Invalid admin credentials"})
 		return
 	}
@@ -57,12 +63,25 @@ func (h *APIHandler) AdminLogout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Logged out successfully"})
 }
 
+// Fix (Issue 3.3): Return structured RBAC role and permissions
 func (h *APIHandler) AdminMe(c *gin.Context) {
+	adminUser := c.GetString("adminUser")
+	if adminUser == "" {
+		adminUser = h.cfg.AdminUsername
+	}
+	role := "SUPER_ADMIN"
+	permissions := []string{
+		"users.read", "users.manage", "wallet.read", "wallet.adjust",
+		"payments.read", "payments.approve", "games.read", "games.manage",
+		"reports.read", "system.manage", "admins.manage", "audit.read",
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data": gin.H{
-			"username": h.cfg.AdminUsername,
-			"role":     "superadmin",
+			"username":    adminUser,
+			"role":        role,
+			"permissions": permissions,
 		},
 	})
 }
@@ -92,13 +111,8 @@ func (h *APIHandler) AdminDashboardStats(c *gin.Context) {
 				"pendingAmountPaise":  finStats["pendingWithdrawalsPaise"],
 				"pendingCount":        pendingWd,
 			},
-			"games": gin.H{
-				"totalRounds":       0,
-				"totalRoundsPlayed": 0,
-				"totalWageredPaise": 0,
-				"totalPayoutsPaise": 0,
-				"ggrPaise":          0,
-			},
+			// Fix (Issue 2.2): Connect real database game stats instead of hardcoded zeros
+			"games":          h.walletService.GetGameStats(),
 			"recentActivity": recentTxns,
 		},
 	})
@@ -115,8 +129,18 @@ func (h *APIHandler) AdminPendingCounts(c *gin.Context) {
 	})
 }
 
+// Fix (Issue 2.8): Support pagination query parameters (page, limit) and total count
 func (h *APIHandler) AdminGetUsers(c *gin.Context) {
-	users := h.authService.GetAllUsers(100)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "50"))
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 200 {
+		limit = 50
+	}
+
+	users, totalCount := h.authService.GetUsersPaginated(page, limit)
 	var enriched []gin.H
 	for _, u := range users {
 		w, _ := h.walletService.GetOrCreateWallet(u.ID)
@@ -133,9 +157,20 @@ func (h *APIHandler) AdminGetUsers(c *gin.Context) {
 		})
 	}
 
+	totalPages := int((totalCount + int64(limit) - 1) / int64(limit))
+	if totalPages == 0 {
+		totalPages = 1
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data":    enriched,
+		"pagination": gin.H{
+			"page":       page,
+			"limit":      limit,
+			"total":      totalCount,
+			"totalPages": totalPages,
+		},
 	})
 }
 
@@ -150,6 +185,13 @@ func (h *APIHandler) AdminGetUserDetails(c *gin.Context) {
 	wallet, _ := h.walletService.GetOrCreateWallet(userID)
 	txns := h.walletService.GetTransactions(userID, 50)
 
+	// Fix (Issue 2.3): Populate user detail metrics, bets, deposits, withdrawals, and audit logs from real DB data
+	userMetrics := h.walletService.GetUserGameMetrics(userID)
+	userBets := h.walletService.GetUserBets(userID, 20)
+	userDeps := h.walletService.GetUserDeposits(userID, 20)
+	userWds := h.walletService.GetUserWithdrawals(userID, 20)
+	userAudits := h.walletService.GetUserAuditLogs(userID, 20)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data": gin.H{
@@ -160,21 +202,13 @@ func (h *APIHandler) AdminGetUserDetails(c *gin.Context) {
 				"rewards_balance":   fmt.Sprintf("%.2f", float64(wallet.BonusChips)/100.0),
 				"available_balance": fmt.Sprintf("%.2f", wallet.TotalRupees()),
 			},
-			"metrics": gin.H{
-				"totalBets":         0,
-				"totalWageredChips": 0,
-				"totalWonChips":     0,
-				"ggrChips":          0,
-				"totalWageredPaise": 0,
-				"totalWonPaise":     0,
-				"ggrPaise":          0,
-			},
+			"metrics":            userMetrics,
 			"recentTransactions": txns,
-			"recentBets":         []gin.H{},
-			"deposits":           []gin.H{},
-			"withdrawals":        []gin.H{},
+			"recentBets":         userBets,
+			"deposits":           userDeps,
+			"withdrawals":        userWds,
 			"notes":              []gin.H{},
-			"auditTrail":         []gin.H{},
+			"auditTrail":         userAudits,
 		},
 	})
 }
@@ -184,10 +218,22 @@ type ToggleBanRequest struct {
 	Reason    string `json:"reason"`
 }
 
+// Fix (Issue 2.10): Properly validate and handle JSON bind errors for AdminToggleBan to prevent unintended unbanning
 func (h *APIHandler) AdminToggleBan(c *gin.Context) {
 	userID := c.Param("id")
+	if userID == "" {
+		userID = c.Query("userId")
+	}
+	if userID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "User ID parameter is required"})
+		return
+	}
+
 	var req ToggleBanRequest
-	_ = c.ShouldBindJSON(&req)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Invalid request body: " + err.Error()})
+		return
+	}
 
 	if err := h.authService.ToggleBan(userID, req.IsBlocked, req.Reason); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
@@ -204,12 +250,31 @@ type AdjustWalletRequest struct {
 	Reason       string  `json:"reason"`
 }
 
+// Fix (Issue 9.4): AdminAdjustWallet writes audit log to prevent unmonitored balance manipulation
 func (h *APIHandler) AdminAdjustWallet(c *gin.Context) {
 	userID := c.Param("id")
+	if userID == "" {
+		userID = c.Query("userId")
+	}
+	if userID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "User ID is required"})
+		return
+	}
+
 	var req AdjustWalletRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Invalid request: " + err.Error()})
 		return
+	}
+
+	if req.AmountRupees <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Amount must be greater than zero"})
+		return
+	}
+
+	adminUser := c.GetString("adminUser")
+	if adminUser == "" {
+		adminUser = "admin"
 	}
 
 	amountChips := int64(req.AmountRupees * 100)
@@ -218,6 +283,13 @@ func (h *APIHandler) AdminAdjustWallet(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
 		return
 	}
+
+	actionType := "WALLET_DEBIT"
+	if isCredit {
+		actionType = "WALLET_CREDIT"
+	}
+	details := fmt.Sprintf("Adjusted %s by ₹%.2f (%d chips). Reason: %s", req.Bucket, req.AmountRupees, amountChips, req.Reason)
+	_ = h.walletService.RecordAuditLog(adminUser, actionType, userID, details, c.ClientIP())
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Wallet adjusted successfully"})
 }
@@ -309,13 +381,37 @@ func (h *APIHandler) AdminGetLedger(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": txns})
 }
 
-func (h *APIHandler) AdminSystemHealth(c *gin.Context) {
+// Fix (Issue 6.4): Distinct ledger overview handler for ledger-specific analytics
+func (h *APIHandler) AdminGetLedgerOverview(c *gin.Context) {
+	finStats := h.walletService.GetFinancialStats()
+	recentTxns := h.walletService.GetAllTransactions(20)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data": gin.H{
-			"status":   "ONLINE",
-			"database": "ONLINE",
-			"redis":    "ONLINE",
+			"financials":         finStats,
+			"recentTransactions": recentTxns,
+		},
+	})
+}
+
+// Fix (Issue 2.1): Ping real database and Redis instances instead of returning hardcoded fake ONLINE
+func (h *APIHandler) AdminSystemHealth(c *gin.Context) {
+	dbStatus, redisStatus := "OFFLINE", "OFFLINE"
+	if h.dbBundle != nil {
+		dbStatus, redisStatus = h.dbBundle.CheckHealth()
+	}
+
+	overallStatus := "ONLINE"
+	if dbStatus != "ONLINE" {
+		overallStatus = "DEGRADED"
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data": gin.H{
+			"status":   overallStatus,
+			"database": dbStatus,
+			"redis":    redisStatus,
 			"version":  "1.0.0",
 		},
 	})

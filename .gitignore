@@ -19,6 +19,9 @@ node_modules/
 backend/node_modules/
 backend/dist/
 backend/.env
+backend/bitarcade-server
+bitarcade-server
+*.bin
 admin-panel/node_modules/
 admin-panel/.next/
 admin-panel/.env*.local

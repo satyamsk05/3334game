@@ -94,8 +94,9 @@ func (s *WalletService) CreditDeposit(userID string, amountChips int64, referenc
 		w.UpdatedAt = time.Now()
 	}
 
+	// Fix (Issue 2.6): Collision-safe UUID-based transaction ID
 	tx := models.Transaction{
-		ID:                fmt.Sprintf("TX-%d", time.Now().UnixNano()),
+		ID:                fmt.Sprintf("TX-%s-%d", uuid.New().String()[:8], time.Now().Unix()),
 		UserID:            userID,
 		Type:              "DEPOSIT",
 		AmountChips:       amountChips,
@@ -127,29 +128,8 @@ func (s *WalletService) RequestWithdrawal(userID, upiID string, amountChips int6
 		return nil, fmt.Errorf("withdrawal must be between %d and %d chips", minChips/100, maxChips/100)
 	}
 
-	var w *models.Wallet
-	if s.bundle.DB != nil {
-		if err := s.bundle.DB.Where("user_id = ?", userID).First(&w).Error; err != nil {
-			return nil, errors.New("wallet not found")
-		}
-	} else {
-		w = s.memUsers[userID]
-		if w == nil {
-			return nil, errors.New("wallet not found")
-		}
-	}
-
-	if w.WinningChips < amountChips {
-		return nil, errors.New("insufficient winning balance")
-	}
-
-	w.WinningChips -= amountChips
-	w.UpdatedAt = time.Now()
-	if s.bundle.DB != nil {
-		_ = s.bundle.DB.Save(w)
-	}
-
-	wdID := fmt.Sprintf("W%d", time.Now().UnixNano()%1000000000000)
+	// Fix (Issue 2.6): Generate UUID-based collision-safe ID
+	wdID := fmt.Sprintf("W-%s-%d", uuid.New().String()[:8], time.Now().Unix())
 	wd := models.Withdrawal{
 		ID:           wdID,
 		UserID:       userID,
@@ -159,6 +139,72 @@ func (s *WalletService) RequestWithdrawal(userID, upiID string, amountChips int6
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
+
+	if s.bundle.DB != nil {
+		// Fix Audit 9.1 & RMG AML Compliance:
+		// In accordance with Real Money Gaming regulatory and Anti-Money Laundering guidelines,
+		// user withdrawals are restricted to WinningChips to prevent peer remittance/hawala.
+		// Unused deposit refunds must be routed via customer support and AdminAdjustWallet.
+		// Fix (Issue 2.4 & 13.1): Atomic SQL balance check & debit inside a transaction to prevent race conditions and double-spending
+		var updatedWallet models.Wallet
+		err := s.bundle.DB.Transaction(func(tx *gorm.DB) error {
+			res := tx.Model(&models.Wallet{}).
+				Where("user_id = ? AND winning_chips >= ?", userID, amountChips).
+				Updates(map[string]interface{}{
+					"winning_chips": gorm.Expr("winning_chips - ?", amountChips),
+					"updated_at":    time.Now(),
+				})
+			if res.Error != nil {
+				return res.Error
+			}
+			if res.RowsAffected == 0 {
+				return errors.New("insufficient winning balance or wallet not found")
+			}
+
+			if err := tx.Where("user_id = ?", userID).First(&updatedWallet).Error; err != nil {
+				return err
+			}
+
+			if err := tx.Create(&wd).Error; err != nil {
+				return err
+			}
+
+			txRecord := models.Transaction{
+				ID:                wdID,
+				UserID:            userID,
+				Type:              "WITHDRAWAL",
+				AmountChips:       amountChips,
+				BalanceAfterChips: updatedWallet.TotalChips(),
+				AmountPaise:       amountChips,
+				BalanceAfterPaise: updatedWallet.TotalChips(),
+				Status:            "PENDING",
+				ReferenceID:       wdID,
+				Description:       fmt.Sprintf("Withdrawal to UPI: %s", upiID),
+				CreatedAt:         time.Now(),
+			}
+
+			return tx.Create(&txRecord).Error
+		})
+		if err != nil {
+			return nil, err
+		}
+		return &wd, nil
+	}
+
+	// In-memory fallback protected by mutex
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	w := s.memUsers[userID]
+	if w == nil {
+		return nil, errors.New("wallet not found")
+	}
+
+	if w.WinningChips < amountChips {
+		return nil, errors.New("insufficient winning balance")
+	}
+
+	w.WinningChips -= amountChips
+	w.UpdatedAt = time.Now()
 
 	tx := models.Transaction{
 		ID:                wdID,
@@ -174,12 +220,7 @@ func (s *WalletService) RequestWithdrawal(userID, upiID string, amountChips int6
 		CreatedAt:         time.Now(),
 	}
 
-	if s.bundle.DB != nil {
-		_ = s.bundle.DB.Create(&wd)
-		_ = s.bundle.DB.Create(&tx)
-	} else {
-		s.memTxns[userID] = append([]models.Transaction{tx}, s.memTxns[userID]...)
-	}
+	s.memTxns[userID] = append([]models.Transaction{tx}, s.memTxns[userID]...)
 
 	return &wd, nil
 }
@@ -205,7 +246,12 @@ func (s *WalletService) GetTransactions(userID string, limit int) []models.Trans
 }
 
 func (s *WalletService) CreateDepositRequest(userID string, amountRupees float64) (*models.Deposit, error) {
-	depID := fmt.Sprintf("D%d", time.Now().UnixNano()%1000000000000)
+	// Fix (Issue 9.2): Enforce deposit bounds at service layer as well
+	if amountRupees < 10.0 || amountRupees > 50000.0 {
+		return nil, errors.New("deposit amount must be between ₹10 and ₹50,000")
+	}
+	// Fix (Issue 2.6): Collision-safe UUID-based deposit ID
+	depID := fmt.Sprintf("D-%s-%d", uuid.New().String()[:8], time.Now().Unix())
 	dep := models.Deposit{
 		ID:           depID,
 		UserID:       userID,
@@ -223,6 +269,7 @@ func (s *WalletService) CreateDepositRequest(userID string, amountRupees float64
 	return &dep, nil
 }
 
+// Fix (Issue 9.3): Prevent duplicate UTR submission across deposits to block fraud
 func (s *WalletService) SubmitDepositUTR(userID, depositID, utr string) (*models.Deposit, error) {
 	if s.bundle.DB != nil {
 		var dep models.Deposit
@@ -232,6 +279,21 @@ func (s *WalletService) SubmitDepositUTR(userID, depositID, utr string) (*models
 		if userID != "" && dep.UserID != userID {
 			return nil, errors.New("unauthorized: deposit does not belong to you")
 		}
+		if dep.Status == "APPROVED" {
+			return nil, errors.New("deposit has already been approved")
+		}
+
+		// Check if this UTR has already been submitted for another non-rejected deposit
+		var duplicateCount int64
+		if err := s.bundle.DB.Model(&models.Deposit{}).
+			Where("utr = ? AND id != ? AND status != 'REJECTED'", utr, depositID).
+			Count(&duplicateCount).Error; err != nil {
+			return nil, err
+		}
+		if duplicateCount > 0 {
+			return nil, errors.New("this UTR has already been submitted for another deposit")
+		}
+
 		dep.UTR = utr
 		dep.UpdatedAt = time.Now()
 		if err := s.bundle.DB.Save(&dep).Error; err != nil {
@@ -535,8 +597,9 @@ func (s *WalletService) AdjustWallet(userID, bucket string, isCredit bool, amoun
 		txType = "ADMIN_DEBIT"
 	}
 
+	// Fix (Issue 2.6): Collision-safe UUID-based ID
 	tx := models.Transaction{
-		ID:                fmt.Sprintf("ADJ-%d", time.Now().UnixNano()%1000000000000),
+		ID:                fmt.Sprintf("ADJ-%s-%d", uuid.New().String()[:8], time.Now().Unix()),
 		UserID:            userID,
 		Type:              txType,
 		AmountChips:       amountChips,
@@ -550,8 +613,13 @@ func (s *WalletService) AdjustWallet(userID, bucket string, isCredit bool, amoun
 	}
 
 	if s.bundle.DB != nil {
-		_ = s.bundle.DB.Save(w)
-		_ = s.bundle.DB.Create(&tx)
+		// Fix (Issue 13.1): Handle DB errors instead of silently ignoring
+		if err := s.bundle.DB.Save(w).Error; err != nil {
+			return err
+		}
+		if err := s.bundle.DB.Create(&tx).Error; err != nil {
+			return err
+		}
 	} else {
 		s.memTxns[userID] = append([]models.Transaction{tx}, s.memTxns[userID]...)
 	}
@@ -756,8 +824,9 @@ func (s *WalletService) DebitBet(userID string, amountChips int64, gameName, rou
 
 	w.UpdatedAt = time.Now()
 
+	// Fix (Issue 2.6): Collision-safe UUID ID for bet transaction
 	tx := models.Transaction{
-		ID:                fmt.Sprintf("BET-%d", time.Now().UnixNano()%1000000000000),
+		ID:                fmt.Sprintf("BET-%s-%d", uuid.New().String()[:8], time.Now().Unix()),
 		UserID:            userID,
 		Type:              "BET_PLACED",
 		AmountChips:       amountChips,
@@ -771,8 +840,13 @@ func (s *WalletService) DebitBet(userID string, amountChips int64, gameName, rou
 	}
 
 	if s.bundle.DB != nil {
-		_ = s.bundle.DB.Save(w)
-		_ = s.bundle.DB.Create(&tx)
+		// Fix (Issue 13.1): Check and return GORM errors
+		if err := s.bundle.DB.Save(w).Error; err != nil {
+			return nil, err
+		}
+		if err := s.bundle.DB.Create(&tx).Error; err != nil {
+			return nil, err
+		}
 	} else {
 		s.memTxns[userID] = append([]models.Transaction{tx}, s.memTxns[userID]...)
 	}
@@ -799,8 +873,9 @@ func (s *WalletService) CreditWinnings(userID string, amountChips int64, gameNam
 	w.WinningChips += amountChips
 	w.UpdatedAt = time.Now()
 
+	// Fix (Issue 2.6): Collision-safe UUID ID for win transaction
 	tx := models.Transaction{
-		ID:                fmt.Sprintf("WIN-%d", time.Now().UnixNano()%1000000000000),
+		ID:                fmt.Sprintf("WIN-%s-%d", uuid.New().String()[:8], time.Now().Unix()),
 		UserID:            userID,
 		Type:              "WIN_PAYOUT",
 		AmountChips:       amountChips,
@@ -814,13 +889,152 @@ func (s *WalletService) CreditWinnings(userID string, amountChips int64, gameNam
 	}
 
 	if s.bundle.DB != nil {
-		_ = s.bundle.DB.Save(w)
-		_ = s.bundle.DB.Create(&tx)
+		// Fix (Issue 13.1): Check and return GORM errors
+		if err := s.bundle.DB.Save(w).Error; err != nil {
+			return nil, err
+		}
+		if err := s.bundle.DB.Create(&tx).Error; err != nil {
+			return nil, err
+		}
 	} else {
 		s.memTxns[userID] = append([]models.Transaction{tx}, s.memTxns[userID]...)
 	}
 
 	return &tx, nil
+}
+
+// Fix (Issue 9.4): RecordAuditLog saves administrative actions for compliance and fraud detection
+func (s *WalletService) RecordAuditLog(adminUser, action, targetID, details, ip string) error {
+	logEntry := models.AuditLog{
+		ID:        fmt.Sprintf("AUD-%s-%d", uuid.New().String()[:8], time.Now().Unix()),
+		AdminUser: adminUser,
+		Action:    action,
+		TargetID:  targetID,
+		Details:   details,
+		IPAddress: ip,
+		CreatedAt: time.Now(),
+	}
+	if s.bundle != nil && s.bundle.DB != nil {
+		return s.bundle.DB.Create(&logEntry).Error
+	}
+	return nil
+}
+
+func (s *WalletService) GetAuditLogs(limit int) []models.AuditLog {
+	if limit <= 0 {
+		limit = 100
+	}
+	if s.bundle != nil && s.bundle.DB != nil {
+		var logs []models.AuditLog
+		s.bundle.DB.Order("created_at desc").Limit(limit).Find(&logs)
+		return logs
+	}
+	return []models.AuditLog{}
+}
+
+// Fix (Issue 2.2): Real database game statistics for Admin Dashboard
+func (s *WalletService) GetGameStats() map[string]interface{} {
+	stats := map[string]interface{}{
+		"totalRounds":       int64(0),
+		"totalRoundsPlayed": int64(0),
+		"totalWageredPaise": int64(0),
+		"totalPayoutsPaise": int64(0),
+		"ggrPaise":          int64(0),
+	}
+	if s.bundle != nil && s.bundle.DB != nil {
+		var totalRounds int64
+		s.bundle.DB.Model(&models.DtRound{}).Count(&totalRounds)
+
+		var totalWagered int64
+		var totalPayout int64
+		s.bundle.DB.Model(&models.DtBet{}).Select("COALESCE(SUM(amount), 0)").Scan(&totalWagered)
+		s.bundle.DB.Model(&models.DtBet{}).Select("COALESCE(SUM(payout), 0)").Scan(&totalPayout)
+
+		stats["totalRounds"] = totalRounds
+		stats["totalRoundsPlayed"] = totalRounds
+		stats["totalWageredPaise"] = totalWagered
+		stats["totalPayoutsPaise"] = totalPayout
+		stats["ggrPaise"] = totalWagered - totalPayout
+	}
+	return stats
+}
+
+// Fix (Issue 2.3): Real database user betting metrics
+func (s *WalletService) GetUserGameMetrics(userID string) map[string]interface{} {
+	metrics := map[string]interface{}{
+		"totalBets":         int64(0),
+		"totalWageredChips": int64(0),
+		"totalWonChips":     int64(0),
+		"ggrChips":          int64(0),
+		"totalWageredPaise": int64(0),
+		"totalWonPaise":     int64(0),
+		"ggrPaise":          int64(0),
+	}
+	if s.bundle != nil && s.bundle.DB != nil {
+		var count int64
+		var wagered int64
+		var won int64
+		s.bundle.DB.Model(&models.DtBet{}).Where("user_id = ?", userID).Count(&count)
+		s.bundle.DB.Model(&models.DtBet{}).Where("user_id = ?", userID).Select("COALESCE(SUM(amount), 0)").Scan(&wagered)
+		s.bundle.DB.Model(&models.DtBet{}).Where("user_id = ?", userID).Select("COALESCE(SUM(payout), 0)").Scan(&won)
+
+		metrics["totalBets"] = count
+		metrics["totalWageredChips"] = wagered
+		metrics["totalWonChips"] = won
+		metrics["ggrChips"] = wagered - won
+		metrics["totalWageredPaise"] = wagered
+		metrics["totalWonPaise"] = won
+		metrics["ggrPaise"] = wagered - won
+	}
+	return metrics
+}
+
+func (s *WalletService) GetUserDeposits(userID string, limit int) []models.Deposit {
+	if limit <= 0 {
+		limit = 20
+	}
+	if s.bundle != nil && s.bundle.DB != nil {
+		var deps []models.Deposit
+		s.bundle.DB.Where("user_id = ?", userID).Order("created_at desc").Limit(limit).Find(&deps)
+		return deps
+	}
+	return []models.Deposit{}
+}
+
+func (s *WalletService) GetUserWithdrawals(userID string, limit int) []models.Withdrawal {
+	if limit <= 0 {
+		limit = 20
+	}
+	if s.bundle != nil && s.bundle.DB != nil {
+		var wds []models.Withdrawal
+		s.bundle.DB.Where("user_id = ?", userID).Order("created_at desc").Limit(limit).Find(&wds)
+		return wds
+	}
+	return []models.Withdrawal{}
+}
+
+func (s *WalletService) GetUserBets(userID string, limit int) []models.DtBet {
+	if limit <= 0 {
+		limit = 20
+	}
+	if s.bundle != nil && s.bundle.DB != nil {
+		var bets []models.DtBet
+		s.bundle.DB.Where("user_id = ?", userID).Order("created_at desc").Limit(limit).Find(&bets)
+		return bets
+	}
+	return []models.DtBet{}
+}
+
+func (s *WalletService) GetUserAuditLogs(userID string, limit int) []models.AuditLog {
+	if limit <= 0 {
+		limit = 20
+	}
+	if s.bundle != nil && s.bundle.DB != nil {
+		var logs []models.AuditLog
+		s.bundle.DB.Where("target_id = ?", userID).Order("created_at desc").Limit(limit).Find(&logs)
+		return logs
+	}
+	return []models.AuditLog{}
 }
 
 

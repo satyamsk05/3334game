@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -67,7 +68,11 @@ func JWTAuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 		}
 
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		// Fix: Validate JWT signing method to prevent alg:none and key-confusion attacks
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
 			return []byte(cfg.JWTSecret), nil
 		})
 
@@ -114,7 +119,11 @@ func AdminAuthMiddleware(cfg *config.Config, checker TokenRevocationChecker) gin
 			return
 		}
 
+		// Fix: Validate Admin JWT signing method to prevent alg:none and signature bypass
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
 			return []byte(cfg.AdminJWTSecret), nil
 		})
 

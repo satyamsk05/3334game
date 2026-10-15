@@ -1,15 +1,20 @@
 /** @type {import('next').NextConfig} */
+// Fix (Issues 1.2 & 1.3): Support environment variable API origin and HTTPS domain
 const backendOrigin =
   process.env.BACKEND_API_URL?.replace(/\/api\/v1\/?$/, '') ||
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/v1\/?$/, '') ||
-  'http://15.252.241.88';
-const wsOrigin = backendOrigin.replace(/^http/, 'ws');
+  'https://api.bitarcade.in';
+const wsOrigin = backendOrigin.replace(/^https?/, backendOrigin.startsWith('https') ? 'wss' : 'ws');
 
-// Allow 'unsafe-inline' for Next.js hydration scripts/styles. Still blocks external script hosts,
-// frames, and object embeds. Prefer nonces when the panel migrates to a nonce-capable setup.
+// Fix (Issue 3.2): Remove 'unsafe-eval' from production CSP to eliminate XSS evaluation risk
+const isDev = process.env.NODE_ENV !== 'production';
+const scriptSrc = isDev
+  ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
+  : "script-src 'self' 'unsafe-inline'";
+
 const cspHeader = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-eval'",
+  scriptSrc,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob:",
@@ -46,7 +51,7 @@ const nextConfig = {
     const backend =
       process.env.BACKEND_API_URL ||
       process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/v1\/?$/, '') ||
-      'http://15.252.241.88';
+      'https://bitarcade.duckdns.org';
     return [
       {
         source: '/api/v1/:path*',

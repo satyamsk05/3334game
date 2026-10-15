@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.playingame.app.R
+import com.playingame.app.ui.theme.*
 import com.playingame.app.ui.theme.RubikFont
 
 data class IssueTicket(
@@ -45,7 +46,7 @@ fun ReportedIssuesScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0C11))
+            .background(AppBackground)
             .padding(horizontal = 16.dp)
     ) {
         // Top Header
@@ -60,8 +61,8 @@ fun ReportedIssuesScreen(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF0F1015))
-                    .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(10.dp))
+                    .background(CardNavyBackground)
+                    .border(1.dp, CardBorderColor, RoundedCornerShape(10.dp))
                     .noRippleClickable { onBackClick() },
                 contentAlignment = Alignment.Center
             ) {
@@ -109,8 +110,8 @@ fun ReportedIssuesScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFF0F1015))
-                            .border(1.dp, Color(0xFF1E2028), RoundedCornerShape(16.dp))
+                            .background(CardNavyBackground)
+                            .border(1.dp, CardBorderColor, RoundedCornerShape(16.dp))
                             .padding(16.dp)
                     ) {
                         Column {
@@ -131,8 +132,8 @@ fun ReportedIssuesScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(if (isResolved) Color(0xFF00E676).copy(alpha = 0.15f) else Color(0xFFFFB800).copy(alpha = 0.15f))
-                                        .border(1.dp, if (isResolved) Color(0xFF00E676).copy(alpha = 0.4f) else Color(0xFFFFB800).copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                                        .background(if (isResolved) BrandCasinoGreen.copy(alpha = 0.15f) else Color(0xFFFFB800).copy(alpha = 0.15f))
+                                        .border(1.dp, if (isResolved) BrandCasinoGreen.copy(alpha = 0.4f) else Color(0xFFFFB800).copy(alpha = 0.4f), RoundedCornerShape(6.dp))
                                         .padding(horizontal = 8.dp, vertical = 3.dp)
                                 ) {
                                     Text(
@@ -140,7 +141,7 @@ fun ReportedIssuesScreen(
                                         fontSize = 10.sp,
                                         fontFamily = RubikFont,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (isResolved) Color(0xFF00E676) else Color(0xFFFFB800)
+                                        color = if (isResolved) BrandCasinoGreen else Color(0xFFFFB800)
                                     )
                                 }
                             }

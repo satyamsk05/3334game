@@ -48,3 +48,10 @@
 -keep class com.playingame.app.data.** { *; }
 -keep class com.playingame.app.core.session.** { *; }
 -keep class com.playingame.app.data.repository.** { *; }
+
+# ---- Fix (Issue 4.2): Strip Debug Logs in Release Builds ----
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String, int);
+    public static int v(...);
+    public static int d(...);
+}

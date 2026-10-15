@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -16,10 +18,12 @@ import (
 	"bitarcade-backend/internal/game"
 	"bitarcade-backend/internal/handlers"
 	"bitarcade-backend/internal/middleware"
+	"bitarcade-backend/internal/models"
 	"bitarcade-backend/internal/services"
 	"bitarcade-backend/internal/ws"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -47,7 +51,7 @@ func main() {
 	go hub.Run()
 
 	// Handlers
-	apiHandler := handlers.NewAPIHandler(cfg, authService, walletService)
+	apiHandler := handlers.NewAPIHandler(cfg, authService, walletService, dbBundle)
 
 	// Rate Limiting Middlewares (Redis-backed with in-memory fallback)
 	generalLimiter := middleware.RateLimitMiddleware(dbBundle.Redis, "gen", 120, time.Minute)
@@ -94,9 +98,34 @@ func main() {
 		})
 	})
 
-	router.POST("/api/v1/client-log", func(c *gin.Context) {
-		body, _ := io.ReadAll(c.Request.Body)
-		log.Printf("\n🚨 [CLIENT_CRASH] 🚨\n%s\n", string(body))
+	// Fix (Issues 1.6 & 14.2): Hardened client-log with rate limiting, 64KB size limit, sanitization, and persistent audit storage
+	router.POST("/api/v1/client-log", generalLimiter, func(c *gin.Context) {
+		limitedReader := io.LimitReader(c.Request.Body, 64*1024)
+		body, err := io.ReadAll(limitedReader)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read body"})
+			return
+		}
+
+		safeLog := string(body)
+		if len(safeLog) > 4096 {
+			safeLog = safeLog[:4096] + "... [TRUNCATED]"
+		}
+		// Sanitize carriage returns to prevent terminal injection
+		sanitizedLog := strings.ReplaceAll(safeLog, "\r", "")
+
+		log.Printf("[CLIENT_CRASH] IP=%s: %s", c.ClientIP(), sanitizedLog)
+		if dbBundle != nil && dbBundle.DB != nil {
+			_ = dbBundle.DB.Create(&models.AuditLog{
+				ID:        fmt.Sprintf("CRASH-%s-%d", uuid.New().String()[:8], time.Now().Unix()),
+				AdminUser: "system",
+				Action:    "CLIENT_CRASH",
+				TargetID:  c.ClientIP(),
+				Details:   sanitizedLog,
+				IPAddress: c.ClientIP(),
+				CreatedAt: time.Now(),
+			})
+		}
 		c.JSON(http.StatusOK, gin.H{"status": "logged"})
 	})
 
@@ -109,15 +138,17 @@ func main() {
 		}
 
 		var req struct {
-			Target      string `json:"target" binding:"required"`
-			AmountChips int64  `json:"amountChips" binding:"required"`
+			Target         string `json:"target" binding:"required"`
+			AmountChips    int64  `json:"amountChips" binding:"required"`
+			IdempotencyKey string `json:"idempotencyKey"`
 		}
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Invalid bet payload"})
 			return
 		}
 
-		bet, newBal, err := dtEngine.PlaceBet(userID, req.Target, req.AmountChips)
+		// Fix (Issue 10.1): Deduplicate bets using idempotency key
+		bet, newBal, err := dtEngine.PlaceBetWithIdempotency(userID, req.Target, req.AmountChips, req.IdempotencyKey)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
 			return
@@ -139,12 +170,24 @@ func main() {
 	router.POST("/api/v1/games/dragontiger/bet", middleware.JWTAuthMiddleware(cfg), handleBet)
 	router.POST("/games/dragontiger/bet", middleware.JWTAuthMiddleware(cfg), handleBet)
 
-	// Payment Gateway UI handler (serves payment-proxy/index.html)
+	// Fix: Removed hardcoded local developer path (/Users/satyamkumar/3334game/...) to ensure production compatibility.
+	// Payment Gateway UI handler (serves payment-proxy/index.html dynamically via env, pwd, or executable path)
 	servePaymentPage := func(c *gin.Context) {
-		candidates := []string{
+		candidates := []string{}
+		if customPath := os.Getenv("PAYMENT_PROXY_HTML_PATH"); customPath != "" {
+			candidates = append(candidates, customPath)
+		}
+		candidates = append(candidates,
 			"payment-proxy/index.html",
 			"../payment-proxy/index.html",
-			"/Users/satyamkumar/3334game/payment-proxy/index.html",
+			"../../payment-proxy/index.html",
+		)
+		if exePath, err := os.Executable(); err == nil {
+			exeDir := filepath.Dir(exePath)
+			candidates = append(candidates,
+				filepath.Join(exeDir, "payment-proxy/index.html"),
+				filepath.Join(exeDir, "../payment-proxy/index.html"),
+			)
 		}
 		for _, path := range candidates {
 			if _, err := os.Stat(path); err == nil {
@@ -201,7 +244,13 @@ func main() {
 		paymentGroup.GET("/deposits/status", apiHandler.GetDepositStatus)
 		paymentGroup.POST("/withdraw", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
 		paymentGroup.POST("/withdraw/request", middleware.JWTAuthMiddleware(cfg), apiHandler.RequestWithdrawal)
+		// Fix (Issue 5.3): Server-to-server webhook endpoint
+		paymentGroup.POST("/webhook", apiHandler.PaymentWebhook)
 	}
+
+	// Fix (Issue 5.3): Direct webhook routes
+	router.POST("/api/v1/payments/webhook", apiHandler.PaymentWebhook)
+	router.POST("/payments/webhook", apiHandler.PaymentWebhook)
 
 	// Alternate direct routes matching legacy app & payment proxy paths
 	router.POST("/deposits/initiate", paymentLimiter, middleware.JWTAuthMiddleware(cfg), apiHandler.InitiateDeposit)
@@ -242,116 +291,72 @@ func main() {
 	router.POST("/auth/admin/login", authLimiter, apiHandler.AdminLogin)
 	router.POST("/auth/admin/logout", apiHandler.AdminLogout)
 
+	// Fix (Issues 2.5 & 6.4): Unified Admin Route Registration to eliminate route bloat & duplicate code
+	registerAdminEndpoints := func(g *gin.RouterGroup) {
+		g.GET("/me", apiHandler.AdminMe)
+		g.GET("/dashboard/stats", apiHandler.AdminDashboardStats)
+		g.GET("/dashboard/pending-counts", apiHandler.AdminPendingCounts)
+
+		// Users
+		g.GET("/users", apiHandler.AdminGetUsers)
+		g.GET("/users/:id", apiHandler.AdminGetUserDetails)
+		g.PATCH("/users/:id", apiHandler.AdminUpdateUser)
+		g.POST("/users/:id/ban", apiHandler.AdminToggleBan)
+		g.POST("/users/:id/adjust-wallet", apiHandler.AdminAdjustWallet)
+		g.POST("/users/:id/notes", apiHandler.AdminAddUserNote)
+
+		// Deposits & Withdrawals
+		g.GET("/deposits", apiHandler.AdminGetDeposits)
+		g.POST("/deposits/approve", apiHandler.AdminApproveDeposit)
+		g.POST("/deposits/reject", apiHandler.AdminRejectDeposit)
+
+		g.GET("/withdrawals", apiHandler.AdminGetWithdrawals)
+		g.POST("/withdrawals/approve", apiHandler.AdminApproveWithdrawal)
+		g.POST("/withdrawals/reject", apiHandler.AdminRejectWithdrawal)
+		g.POST("/withdrawals/process", apiHandler.AdminApproveWithdrawal)
+
+		// Ledger & System (Issue 6.4: Separate distinct handler for ledger overview)
+		g.GET("/ledger/overview", apiHandler.AdminGetLedgerOverview)
+		g.GET("/ledger/transactions", apiHandler.AdminGetLedger)
+		g.GET("/system/health", apiHandler.AdminSystemHealth)
+
+		// Promotions
+		g.GET("/promotions", apiHandler.GetPromotions)
+		g.POST("/promotions", apiHandler.AdminCreatePromotion)
+		g.PUT("/promotions/:id", apiHandler.AdminUpdatePromotion)
+		g.PATCH("/promotions/:id/status", apiHandler.AdminTogglePromotionStatus)
+		g.DELETE("/promotions/:id", apiHandler.AdminDeletePromotion)
+
+		// Games
+		g.GET("/games", apiHandler.AdminGetGames)
+		g.GET("/games/:id", apiHandler.AdminGetGameDetails)
+		g.PATCH("/games/:id/status", apiHandler.AdminUpdateGameStatus)
+		g.PATCH("/games/:id/config", apiHandler.AdminUpdateGameConfig)
+
+		// System Settings & Announcements
+		g.GET("/system/settings", apiHandler.AdminGetSystemSettings)
+		g.PATCH("/system/settings/:key", apiHandler.AdminUpdateSystemSetting)
+		g.GET("/system/announcements", apiHandler.AdminGetAnnouncements)
+		g.POST("/system/announcements", apiHandler.AdminCreateAnnouncement)
+		g.PATCH("/system/announcements/:id/status", apiHandler.AdminToggleAnnouncementStatus)
+		g.POST("/system/notifications/push", apiHandler.AdminSendPushNotification)
+
+		// Staff & Audit Logs
+		g.GET("/admins", apiHandler.AdminListAdmins)
+		g.POST("/admins", apiHandler.AdminCreateAdmin)
+		g.PATCH("/admins/:id/status", apiHandler.AdminToggleAdminActive)
+		g.GET("/audit-logs", apiHandler.AdminGetAuditLogs)
+	}
+
 	// Admin Management Group
 	adminGroup := router.Group("/api/v1/admin")
 	adminGroup.Use(middleware.AdminAuthMiddleware(cfg, authService))
-	{
-		adminGroup.GET("/me", apiHandler.AdminMe)
-		adminGroup.GET("/dashboard/stats", apiHandler.AdminDashboardStats)
-		adminGroup.GET("/dashboard/pending-counts", apiHandler.AdminPendingCounts)
-
-		// Users
-		adminGroup.GET("/users", apiHandler.AdminGetUsers)
-		adminGroup.GET("/users/:id", apiHandler.AdminGetUserDetails)
-		adminGroup.PATCH("/users/:id", apiHandler.AdminUpdateUser)
-		adminGroup.POST("/users/:id/ban", apiHandler.AdminToggleBan)
-		adminGroup.POST("/users/:id/adjust-wallet", apiHandler.AdminAdjustWallet)
-		adminGroup.POST("/users/:id/notes", apiHandler.AdminAddUserNote)
-
-		// Deposits & Withdrawals
-		adminGroup.GET("/deposits", apiHandler.AdminGetDeposits)
-		adminGroup.POST("/deposits/approve", apiHandler.AdminApproveDeposit)
-		adminGroup.POST("/deposits/reject", apiHandler.AdminRejectDeposit)
-
-		adminGroup.GET("/withdrawals", apiHandler.AdminGetWithdrawals)
-		adminGroup.POST("/withdrawals/approve", apiHandler.AdminApproveWithdrawal)
-		adminGroup.POST("/withdrawals/reject", apiHandler.AdminRejectWithdrawal)
-		adminGroup.POST("/withdrawals/process", apiHandler.AdminApproveWithdrawal)
-
-		// Ledger & System
-		adminGroup.GET("/ledger/overview", apiHandler.AdminDashboardStats)
-		adminGroup.GET("/ledger/transactions", apiHandler.AdminGetLedger)
-		adminGroup.GET("/system/health", apiHandler.AdminSystemHealth)
-
-		// Promotions
-		adminGroup.GET("/promotions", apiHandler.GetPromotions)
-		adminGroup.POST("/promotions", apiHandler.AdminCreatePromotion)
-		adminGroup.PUT("/promotions/:id", apiHandler.AdminUpdatePromotion)
-		adminGroup.PATCH("/promotions/:id/status", apiHandler.AdminTogglePromotionStatus)
-		adminGroup.DELETE("/promotions/:id", apiHandler.AdminDeletePromotion)
-
-		// Games
-		adminGroup.GET("/games", apiHandler.AdminGetGames)
-		adminGroup.GET("/games/:id", apiHandler.AdminGetGameDetails)
-		adminGroup.PATCH("/games/:id/status", apiHandler.AdminUpdateGameStatus)
-		adminGroup.PATCH("/games/:id/config", apiHandler.AdminUpdateGameConfig)
-
-		// System Settings & Announcements
-		adminGroup.GET("/system/settings", apiHandler.AdminGetSystemSettings)
-		adminGroup.PATCH("/system/settings/:key", apiHandler.AdminUpdateSystemSetting)
-		adminGroup.GET("/system/announcements", apiHandler.AdminGetAnnouncements)
-		adminGroup.POST("/system/announcements", apiHandler.AdminCreateAnnouncement)
-		adminGroup.PATCH("/system/announcements/:id/status", apiHandler.AdminToggleAnnouncementStatus)
-		adminGroup.POST("/system/notifications/push", apiHandler.AdminSendPushNotification)
-
-		// Staff & Audit Logs
-		adminGroup.GET("/admins", apiHandler.AdminListAdmins)
-		adminGroup.POST("/admins", apiHandler.AdminCreateAdmin)
-		adminGroup.PATCH("/admins/:id/status", apiHandler.AdminToggleAdminActive)
-		adminGroup.GET("/audit-logs", apiHandler.AdminGetAuditLogs)
-	}
+	registerAdminEndpoints(adminGroup)
 
 	// Direct aliases for Admin Panel Next.js proxy
 	directAdmin := router.Group("/admin")
 	directAdmin.Use(middleware.AdminAuthMiddleware(cfg, authService))
-	{
-		directAdmin.GET("/me", apiHandler.AdminMe)
-		directAdmin.GET("/dashboard/stats", apiHandler.AdminDashboardStats)
-		directAdmin.GET("/dashboard/pending-counts", apiHandler.AdminPendingCounts)
-		directAdmin.GET("/users", apiHandler.AdminGetUsers)
-		directAdmin.GET("/users/:id", apiHandler.AdminGetUserDetails)
-		directAdmin.PATCH("/users/:id", apiHandler.AdminUpdateUser)
-		directAdmin.POST("/users/:id/ban", apiHandler.AdminToggleBan)
-		directAdmin.POST("/users/:id/adjust-wallet", apiHandler.AdminAdjustWallet)
-		directAdmin.POST("/users/:id/notes", apiHandler.AdminAddUserNote)
-		directAdmin.GET("/deposits", apiHandler.AdminGetDeposits)
-		directAdmin.POST("/deposits/approve", apiHandler.AdminApproveDeposit)
-		directAdmin.POST("/deposits/reject", apiHandler.AdminRejectDeposit)
-		directAdmin.GET("/withdrawals", apiHandler.AdminGetWithdrawals)
-		directAdmin.POST("/withdrawals/approve", apiHandler.AdminApproveWithdrawal)
-		directAdmin.POST("/withdrawals/reject", apiHandler.AdminRejectWithdrawal)
-		directAdmin.POST("/withdrawals/process", apiHandler.AdminApproveWithdrawal)
-		directAdmin.GET("/ledger/overview", apiHandler.AdminDashboardStats)
-		directAdmin.GET("/ledger/transactions", apiHandler.AdminGetLedger)
-		directAdmin.GET("/system/health", apiHandler.AdminSystemHealth)
-
-		// Promotions
-		directAdmin.GET("/promotions", apiHandler.GetPromotions)
-		directAdmin.POST("/promotions", apiHandler.AdminCreatePromotion)
-		directAdmin.PUT("/promotions/:id", apiHandler.AdminUpdatePromotion)
-		directAdmin.PATCH("/promotions/:id/status", apiHandler.AdminTogglePromotionStatus)
-		directAdmin.DELETE("/promotions/:id", apiHandler.AdminDeletePromotion)
-
-		// Games
-		directAdmin.GET("/games", apiHandler.AdminGetGames)
-		directAdmin.GET("/games/:id", apiHandler.AdminGetGameDetails)
-		directAdmin.PATCH("/games/:id/status", apiHandler.AdminUpdateGameStatus)
-		directAdmin.PATCH("/games/:id/config", apiHandler.AdminUpdateGameConfig)
-
-		// System Settings & Announcements
-		directAdmin.GET("/system/settings", apiHandler.AdminGetSystemSettings)
-		directAdmin.PATCH("/system/settings/:key", apiHandler.AdminUpdateSystemSetting)
-		directAdmin.GET("/system/announcements", apiHandler.AdminGetAnnouncements)
-		directAdmin.POST("/system/announcements", apiHandler.AdminCreateAnnouncement)
-		directAdmin.PATCH("/system/announcements/:id/status", apiHandler.AdminToggleAnnouncementStatus)
-		directAdmin.POST("/system/notifications/push", apiHandler.AdminSendPushNotification)
-
-		// Staff & Audit Logs
-		directAdmin.GET("/admins", apiHandler.AdminListAdmins)
-		directAdmin.POST("/admins", apiHandler.AdminCreateAdmin)
-		directAdmin.PATCH("/admins/:id/status", apiHandler.AdminToggleAdminActive)
-		directAdmin.GET("/audit-logs", apiHandler.AdminGetAuditLogs)
-	}
+	registerAdminEndpoints(directAdmin)
 
 
 	// HTTP Server with Graceful Shutdown
