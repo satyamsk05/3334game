@@ -161,6 +161,10 @@ fun MainContainerScreen(
                         )
                     }
 
+                    NavItem.TASK -> {
+                        TaskWebScreen()
+                    }
+
                     NavItem.PROFILE -> {
                         WalletScreen(
                             balance = walletBalance.formattedTotal,
@@ -187,14 +191,6 @@ fun MainContainerScreen(
                             },
                             onVipClick = {
                                 navController.navigate(Screen.VipRewards.route)
-                            }
-                        )
-                    }
-
-                    NavItem.TASK -> {
-                        VipRewardsScreen(
-                            onBackClick = {
-                                MainTabController.selectTab(NavItem.HOME)
                             }
                         )
                     }

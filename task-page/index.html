@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tasks & Rewards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #12131A 0%, #0A0B10 100%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            padding: 16px 14px 40px;
+            overflow-x: hidden;
+        }
+
+        /* Top Header Segment Pill */
+        .segment-container {
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            display: flex;
+            padding: 4px;
+            position: relative;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .segment-btn {
+            flex: 1;
+            padding: 11px 0;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: #8E899B;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            background: transparent;
+            z-index: 2;
+        }
+
+        .segment-btn.active {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #0A0B10;
+            box-shadow: 0 2px 10px rgba(255, 184, 0, 0.35);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.25s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Checkin Banner Card */
+        .banner-card {
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.12) 0%, rgba(20, 22, 32, 0.9) 100%);
+            border: 1px solid rgba(255, 184, 0, 0.25);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .banner-info h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFF;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .banner-info p {
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+
+        .streak-pill {
+            background: rgba(255, 184, 0, 0.18);
+            border: 1px solid #FFB800;
+            color: #FFB800;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* 7-Day Grid */
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .day-card {
+            background: rgba(26, 29, 41, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px 8px;
+            text-align: center;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .day-card.grand {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.18) 0%, rgba(30, 33, 48, 0.9) 100%);
+            border: 1px solid rgba(255, 184, 0, 0.4);
+        }
+
+        .day-card.current {
+            border-color: #FFB800;
+            box-shadow: 0 0 14px rgba(255, 184, 0, 0.25);
+            transform: scale(1.02);
+        }
+
+        .day-card.claimed {
+            opacity: 0.55;
+            background: rgba(16, 18, 26, 0.6);
+        }
+
+        .day-title {
+            font-size: 11px;
+            color: #8E899B;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .day-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .day-reward {
+            font-size: 13px;
+            font-weight: 800;
+            color: #FFD700;
+        }
+
+        .claimed-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #10B981;
+            color: white;
+            font-size: 10px;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Big Action Button */
+        .primary-action-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #FFB800 0%, #FF9100 100%);
+            color: #0A0B10;
+            font-size: 16px;
+            font-weight: 800;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(255, 145, 0, 0.35);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .primary-action-btn:disabled {
+            background: #252836;
+            color: #6B7280;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .primary-action-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        /* Mission Cards */
+        .missions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mission-card {
+            background: rgba(22, 25, 36, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .mission-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 184, 0, 0.12);
+            border: 1px solid rgba(255, 184, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .mission-details {
+            flex: 1;
+        }
+
+        .mission-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #FFF;
+            margin-bottom: 3px;
+        }
+
+        .mission-desc {
+            font-size: 11.5px;
+            color: #9CA3AF;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFB800 0%, #FF9100 100%);
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 10.5px;
+            color: #8E899B;
+            font-weight: 600;
+        }
+
+        .mission-action {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .mission-reward {
+            font-size: 13px;
+            font-weight: 800;
+            color: #10B981;
+        }
+
+        .claim-btn {
+            padding: 7px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .claim-btn.ready {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .claim-btn.locked {
+            background: rgba(255, 255, 255, 0.07);
+            color: #8E899B;
+            cursor: default;
+        }
+
+        .claim-btn.claimed {
+            background: transparent;
+            color: #10B981;
+            font-size: 11px;
+            cursor: default;
+        }
+
+        /* Rules Card */
+        .rules-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 14px;
+            margin-top: 20px;
+            font-size: 11.5px;
+            color: #8E899B;
+            line-height: 1.5;
+        }
+
+        .rules-card h4 {
+            color: #D1D5DB;
+            font-size: 12.5px;
+            margin-bottom: 6px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1F2937;
+            border: 1px solid #374151;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Segment Control (Matches Screenshot Style) -->
+    <div class="segment-container">
+        <button class="segment-btn active" onclick="switchTab('rewards')">Rewards</button>
+        <button class="segment-btn" onclick="switchTab('missions')">Missions</button>
+    </div>
+
+    <!-- TAB 1: REWARDS (Daily Sign-in & Check-in Streak) -->
+    <div id="tab-rewards" class="tab-content active">
+        <div class="banner-card">
+            <div class="banner-info">
+                <h2>Daily Check-in 🎁</h2>
+                <p>Check in every day to unlock big cash rewards</p>
+            </div>
+            <div id="streakBadge" class="streak-pill">Day 0 Streak</div>
+        </div>
+
+        <!-- 7-Day Grid -->
+        <div id="daysGrid" class="days-grid">
+            <!-- Dynamic days will render here -->
+        </div>
+
+        <button id="claimCheckinBtn" class="primary-action-btn" onclick="claimDailyCheckin()">
+            <span>Claim Today's Bonus</span>
+        </button>
+
+        <div class="rules-card">
+            <h4>Check-in Rules:</h4>
+            • Check in daily to increase your consecutive streak.<br>
+            • Complete 7 days in a row to claim the Grand Mystery Box.<br>
+            • If you miss a day, your streak will reset back to Day 1.
+        </div>
+    </div>
+
+    <!-- TAB 2: MISSIONS (Gameplay & Action Tasks) -->
+    <div id="tab-missions" class="tab-content">
+        <div class="banner-card" style="border-color: rgba(16, 185, 129, 0.3);">
+            <div class="banner-info">
+                <h2>Daily Missions ⚡</h2>
+                <p>Complete challenges to earn bonus cash</p>
+            </div>
+        </div>
+
+        <div id="missionsList" class="missions-list">
+            <!-- Dynamic missions will render here -->
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const authToken = urlParams.get('token') || '';
+        const queryUserId = urlParams.get('userId') || '';
+
+        let taskData = null;
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            if (tab === 'rewards') {
+                document.querySelectorAll('.segment-btn')[0].classList.add('active');
+                document.getElementById('tab-rewards').classList.add('active');
+            } else {
+                document.querySelectorAll('.segment-btn')[1].classList.add('active');
+                document.getElementById('tab-missions').classList.add('active');
+            }
+        }
+
+        async function fetchTasks() {
+            try {
+                const headers = {};
+                if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+                const res = await fetch('/api/v1/tasks/list?userId=' + queryUserId, { headers });
+                const json = await res.json();
+                if (json.success && json.data) {
+                    taskData = json.data;
+                    renderData();
+                }
+            } catch (e) {
+                console.error("Failed to load tasks", e);
+            }
+        }
+
+        function renderData() {
+            if (!taskData) return;
+
+            // Render Streak & Days
+            const checkin = taskData.checkin;
+            document.getElementById('streakBadge').innerText = 'Day ' + checkin.currentStreak + ' Streak';
+
+            const daysGrid = document.getElementById('daysGrid');
+            daysGrid.innerHTML = '';
+
+            const icons = ['🪙', '🪙', '🪙', '💰', '💰', '💎', '🎁'];
+
+            checkin.days.forEach((day, index) => {
+                const card = document.createElement('div');
+                card.className = 'day-card';
+                if (day.dayNumber === 7) card.classList.add('grand');
+                if (day.isCurrent) card.classList.add('current');
+                if (day.isClaimed) card.classList.add('claimed');
+
+                card.innerHTML = `
+                    <div class="day-title">${day.dayNumber === 7 ? 'Day 7 Mystery' : 'Day ' + day.dayNumber}</div>
+                    <div class="day-icon">${icons[index] || '🪙'}</div>
+                    <div class="day-reward">+₹${day.rewardRupees}</div>
+                    ${day.isClaimed ? '<div class="claimed-badge">✓</div>' : ''}
+                `;
+                daysGrid.appendChild(card);
+            });
+
+            // Action Button
+            const claimBtn = document.getElementById('claimCheckinBtn');
+            if (checkin.canClaimToday) {
+                claimBtn.disabled = false;
+                claimBtn.innerHTML = `<span>Claim Today (+₹${checkin.todayReward})</span>`;
+            } else {
+                claimBtn.disabled = true;
+                claimBtn.innerHTML = `<span>Claimed Today ✓ (Come Back Tomorrow)</span>`;
+            }
+
+            // Render Missions
+            const missionsList = document.getElementById('missionsList');
+            missionsList.innerHTML = '';
+
+            const missionIcons = {
+                'PLAY_GAMES': '🎮',
+                'BET_AMOUNT': '🎲',
+                'WIN_GAMES': '🏆',
+                'DEPOSIT': '💳'
+            };
+
+            taskData.missions.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'mission-card';
+
+                const progressPct = Math.min(100, Math.floor((m.currentCount / m.targetCount) * 100));
+                const icon = missionIcons[m.type] || '⚡';
+
+                let actionHtml = '';
+                if (m.isClaimed) {
+                    actionHtml = `<span class="claim-btn claimed">Claimed ✓</span>`;
+                } else if (m.isCompleted) {
+                    actionHtml = `<button class="claim-btn ready" onclick="claimMission('${m.id}')">Claim</button>`;
+                } else {
+                    actionHtml = `<span class="claim-btn locked">${m.currentCount}/${m.targetCount}</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="mission-icon">${icon}</div>
+                    <div class="mission-details">
+                        <div class="mission-title">${m.title}</div>
+                        <div class="mission-desc">${m.description}</div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${progressPct}%"></div>
+                        </div>
+                        <div class="progress-text">${m.currentCount} / ${m.targetCount} Completed (${progressPct}%)</div>
+                    </div>
+                    <div class="mission-action">
+                        <div class="mission-reward">+₹${m.rewardRupees}</div>
+                        ${actionHtml}
+                    </div>
+                `;
+                missionsList.appendChild(card);
+            });
+        }
+
+        async function claimDailyCheckin() {
+            if (!authToken) {
+                showToast("Please log in to claim reward");
+                return;
+            }
+            try {
+                const res = await fetch('/api/v1/tasks/checkin/claim', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + authToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const json = await res.json();
+                if (json.success) {
+                    showToast(json.message);
+                    fetchTasks();
+                } else {
+                    showToast(json.message || "Failed to claim reward");
+                }
+            } catch (e) {
+                showToast("Network error. Please try again.");
+            }
+        }
+
+        async function claimMission(taskId) {
+            if (!authToken) {
+                showToast("Please log in to claim reward");
+                return;
+            }
+            try {
+                const res = await fetch('/api/v1/tasks/mission/claim', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + authToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ taskId })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    showToast(json.message);
+                    fetchTasks();
+                } else {
+                    showToast(json.message || "Failed to claim reward");
+                }
+            } catch (e) {
+                showToast("Network error. Please try again.");
+            }
+        }
+
+        fetchTasks();
+    </script>
+</body>
+</html>

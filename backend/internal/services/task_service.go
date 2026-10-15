@@ -248,7 +248,7 @@ func (s *TaskService) ClaimDailyCheckin(userID string) (float64, error) {
 	// Calculate streak day
 	var lastClaim models.DailyCheckinRecord
 	streakDay := 1
-	if err := s.bundle.DB.Where("user_id = ?", userID).Order("claimed_at desc").First(&lastClaim).Error == nil {
+	if err := s.bundle.DB.Where("user_id = ?", userID).Order("claimed_at desc").First(&lastClaim).Error; err == nil {
 		if lastClaim.Date == yesterdayStr {
 			streakDay = lastClaim.DayNumber + 1
 			if streakDay > 7 {

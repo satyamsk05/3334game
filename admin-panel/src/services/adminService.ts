@@ -420,5 +420,21 @@ export const adminService = {
     if (params.adminId) query.append('adminId', params.adminId);
     const res = await api.get(`/admin/audit-logs?${query.toString()}`);
     return res.data;
+  },
+
+  // Tasks & Missions
+  getTasks: async () => {
+    const res = await api.get('/admin/tasks');
+    return res.data;
+  },
+
+  saveTask: async (data: any) => {
+    const res = await api.post('/admin/tasks', data);
+    return res.data;
+  },
+
+  deleteTask: async (id: string) => {
+    const res = await api.delete(`/admin/tasks/${id}`);
+    return res.data;
   }
 };

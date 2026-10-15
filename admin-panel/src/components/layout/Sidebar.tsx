@@ -6,7 +6,8 @@ import {
   ChevronDown,
   ChevronRight,
   PanelLeftClose,
-  PanelLeft
+  PanelLeft,
+  CheckSquare
 } from 'lucide-react';
 import {
   IconDashboard,
@@ -226,6 +227,21 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                 }`}
               >
                 <IconCrown size={20} />
+              </Link>
+
+              {/* Tasks & Missions */}
+              <Link
+                href="/tasks"
+                onClick={() => setMobileOpen(false)}
+                title="Tasks & Missions"
+                aria-label="Tasks & Missions"
+                className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 shrink-0 ${
+                  isLinkActive('/tasks')
+                    ? 'bg-surface-strong text-text-primary ring-1 ring-border-strong shadow-xs'
+                    : 'bg-surface-strong/40 text-text-secondary hover:text-text-primary hover:bg-surface-strong'
+                }`}
+              >
+                <CheckSquare size={20} />
               </Link>
 
               {/* Notifications */}
@@ -495,6 +511,25 @@ export function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: 
                         <span className={isLinkActive('/promotions') ? 'font-bold' : ''}>VIP & Promotions</span>
                       </div>
                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-strong text-text-secondary border border-border-default">
+                        Live
+                      </span>
+                    </Link>
+
+                    {/* Tasks & Daily Missions */}
+                    <Link
+                      href="/tasks"
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-all ${
+                        isLinkActive('/tasks')
+                          ? 'bg-surface-strong text-text-primary ring-1 ring-border-default shadow-xs'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-surface-strong/60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <CheckSquare size={20} className="shrink-0" />
+                        <span className={isLinkActive('/tasks') ? 'font-bold' : ''}>Tasks & Missions</span>
+                      </div>
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                         Live
                       </span>
                     </Link>

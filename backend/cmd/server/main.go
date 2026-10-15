@@ -53,7 +53,8 @@ func main() {
 	// Services & Handlers
 	vipService := services.NewVIPService(dbBundle)
 	bankService := services.NewBankService(dbBundle)
-	apiHandler := handlers.NewAPIHandler(cfg, authService, walletService, vipService, bankService, dbBundle)
+	taskService := services.NewTaskService(dbBundle)
+	apiHandler := handlers.NewAPIHandler(cfg, authService, walletService, vipService, bankService, taskService, dbBundle)
 
 	// Rate Limiting Middlewares (Redis-backed with in-memory fallback)
 	generalLimiter := middleware.RateLimitMiddleware(dbBundle.Redis, "gen", 120, time.Minute)
@@ -273,6 +274,28 @@ func main() {
 		directVipGroup.POST("/claim-monthly", apiHandler.ClaimVIPMonthly)
 	}
 
+	// Tasks & Missions Group
+	taskGroup := router.Group("/api/v1/tasks")
+	taskGroup.Use(middleware.OptionalJWTAuthMiddleware(cfg))
+	{
+		taskGroup.GET("", apiHandler.GetTasks)
+		taskGroup.GET("/list", apiHandler.GetTasks)
+		taskGroup.POST("/checkin/claim", middleware.JWTAuthMiddleware(cfg), apiHandler.ClaimDailyCheckin)
+		taskGroup.POST("/mission/claim", middleware.JWTAuthMiddleware(cfg), apiHandler.ClaimMission)
+	}
+
+	directTaskGroup := router.Group("/tasks")
+	directTaskGroup.Use(middleware.OptionalJWTAuthMiddleware(cfg))
+	{
+		directTaskGroup.GET("/data", apiHandler.GetTasks)
+		directTaskGroup.POST("/checkin/claim", middleware.JWTAuthMiddleware(cfg), apiHandler.ClaimDailyCheckin)
+		directTaskGroup.POST("/mission/claim", middleware.JWTAuthMiddleware(cfg), apiHandler.ClaimMission)
+	}
+
+	// Serve Task HTML Webview
+	router.GET("/tasks", apiHandler.ServeTaskPage)
+	router.GET("/tasks/view", apiHandler.ServeTaskPage)
+
 	// Payments Group
 	paymentGroup := router.Group("/api/v1/payments")
 	paymentGroup.Use(paymentLimiter)
@@ -363,6 +386,12 @@ func main() {
 		g.PUT("/promotions/:id", apiHandler.AdminUpdatePromotion)
 		g.PATCH("/promotions/:id/status", apiHandler.AdminTogglePromotionStatus)
 		g.DELETE("/promotions/:id", apiHandler.AdminDeletePromotion)
+
+		// Tasks & Missions Management
+		g.GET("/tasks", apiHandler.AdminGetTasks)
+		g.POST("/tasks", apiHandler.AdminSaveTask)
+		g.PUT("/tasks", apiHandler.AdminSaveTask)
+		g.DELETE("/tasks/:id", apiHandler.AdminDeleteTask)
 
 		// Games
 		g.GET("/games", apiHandler.AdminGetGames)
