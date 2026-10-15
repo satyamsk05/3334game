@@ -248,8 +248,7 @@ func main() {
 		paymentGroup.POST("/webhook", apiHandler.PaymentWebhook)
 	}
 
-	// Fix (Issue 5.3): Direct webhook routes
-	router.POST("/api/v1/payments/webhook", apiHandler.PaymentWebhook)
+	// Fix (Issue 5.3): Direct webhook fallback route (paymentGroup already registered /api/v1/payments/webhook)
 	router.POST("/payments/webhook", apiHandler.PaymentWebhook)
 
 	// Alternate direct routes matching legacy app & payment proxy paths
