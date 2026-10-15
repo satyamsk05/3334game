@@ -48,6 +48,7 @@ fun SettingsScreen(
     onFairPlayClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
     onDeleteAccountClick: () -> Unit = {},
+    onVipClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     BackHandler {
@@ -206,6 +207,13 @@ fun SettingsScreen(
                         title = "Withdrawals",
                         iconRes = R.drawable.ic_settings_withdraw,
                         onClick = onWithdrawalsClick
+                    )
+                    HorizontalDivider(color = Color(0x1AFFFFFF), thickness = 1.dp)
+
+                    SettingsRow(
+                        title = "👑 VIP Privileges & Club",
+                        iconRes = R.drawable.ic_ui_coin_gold,
+                        onClick = onVipClick
                     )
                 }
             }

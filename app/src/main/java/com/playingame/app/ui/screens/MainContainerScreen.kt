@@ -139,6 +139,9 @@ fun MainContainerScreen(
                             },
                             onAddCashClick = {
                                 MainTabController.selectTab(NavItem.REWARD)
+                            },
+                            onVipClick = {
+                                navController.navigate(Screen.VipRewards.route)
                             }
                         )
                     }
@@ -181,6 +184,17 @@ fun MainContainerScreen(
                             },
                             onProfileClick = {
                                 navController.navigate(Screen.ProfileDetails.route)
+                            },
+                            onVipClick = {
+                                navController.navigate(Screen.VipRewards.route)
+                            }
+                        )
+                    }
+
+                    NavItem.TASK -> {
+                        VipRewardsScreen(
+                            onBackClick = {
+                                MainTabController.selectTab(NavItem.HOME)
                             }
                         )
                     }

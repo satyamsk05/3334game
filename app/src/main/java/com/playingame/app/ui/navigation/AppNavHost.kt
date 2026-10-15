@@ -64,6 +64,9 @@ fun AppNavHost(
                 onWithdrawalsClick = {
                     navController.navigate(Screen.Withdraw.route)
                 },
+                onVipClick = {
+                    navController.navigate(Screen.VipRewards.route)
+                },
                 onCheckUpdatesClick = {},
                 onHelpCentreClick = {
                     navController.navigate(Screen.HelpCentre.route)
@@ -215,6 +218,13 @@ fun AppNavHost(
             val amount = amountStr.toDoubleOrNull() ?: 100.0
             DepositPaymentScreen(
                 amountRupees = amount,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // VIP Club & Rewards Screen
+        composable(Screen.VipRewards.route) {
+            VipRewardsScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }

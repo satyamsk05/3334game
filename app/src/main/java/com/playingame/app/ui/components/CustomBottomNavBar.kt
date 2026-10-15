@@ -16,6 +16,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 import com.playingame.app.R
 import com.playingame.app.ui.navigation.NavItem
 import com.playingame.app.ui.theme.Dimens
@@ -32,7 +34,7 @@ fun CustomBottomNavBar(
     modifier: Modifier = Modifier,
     isScrolling: Boolean = false
 ) {
-    val items = remember { listOf(NavItem.HOME, NavItem.REWARD, NavItem.PROFILE) }
+    val items = remember { listOf(NavItem.HOME, NavItem.REWARD, NavItem.TASK, NavItem.PROFILE) }
 
     Box(
         modifier = modifier
@@ -84,6 +86,16 @@ fun CustomBottomNavBar(
                                     isSelected = isSelected,
                                     size = 30.dp,
                                     isScrolling = isScrolling
+                                )
+                            }
+                            NavItem.TASK -> {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (isSelected) R.drawable.ic_nav_task_active else R.drawable.ic_nav_task
+                                    ),
+                                    contentDescription = "Task",
+                                    modifier = Modifier.size(30.dp),
+                                    tint = if (isSelected) TabActiveGold else Color(0xFF8E899B)
                                 )
                             }
                             NavItem.PROFILE -> {

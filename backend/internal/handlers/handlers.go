@@ -18,14 +18,20 @@ type APIHandler struct {
 	cfg           *config.Config
 	authService   *services.AuthService
 	walletService *services.WalletService
+	vipService    *services.VIPService
+	bankService   *services.BankService
+	taskService   *services.TaskService
 	dbBundle      *database.DBBundle
 }
 
-func NewAPIHandler(cfg *config.Config, authService *services.AuthService, walletService *services.WalletService, dbBundle *database.DBBundle) *APIHandler {
+func NewAPIHandler(cfg *config.Config, authService *services.AuthService, walletService *services.WalletService, vipService *services.VIPService, bankService *services.BankService, taskService *services.TaskService, dbBundle *database.DBBundle) *APIHandler {
 	return &APIHandler{
 		cfg:           cfg,
 		authService:   authService,
 		walletService: walletService,
+		vipService:    vipService,
+		bankService:   bankService,
+		taskService:   taskService,
 		dbBundle:      dbBundle,
 	}
 }

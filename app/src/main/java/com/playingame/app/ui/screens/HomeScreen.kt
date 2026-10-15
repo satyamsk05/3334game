@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ fun HomeScreen(
     onProfileClick: () -> Unit,
     onWalletClick: () -> Unit,
     onAddCashClick: () -> Unit,
+    onVipClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val walletBalance by WalletLedger.walletBalance.collectAsState()
@@ -79,10 +81,92 @@ fun HomeScreen(
                     promotions = serverPromotions,
                     onCtaClick = onAddCashClick
                 )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            // 2. VIP Club Card (Photo Layout Theme)
+            item(key = "vip_club_banner") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(Color(0xFF2E0854), Color(0xFF140727), Color(0xFF1E0B36))
+                            )
+                        )
+                        .border(
+                            1.5.dp,
+                            Brush.horizontalGradient(listOf(Color(0xFFFFD700), Color(0xFFFF007A))),
+                            RoundedCornerShape(16.dp)
+                        )
+                        .noRippleClickable { onVipClick() }
+                        .padding(horizontal = 16.dp, vertical = 14.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        Brush.radialGradient(
+                                            listOf(Color(0xFFFFD700), Color(0xFFB45309))
+                                        )
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "👑",
+                                    fontSize = 20.sp
+                                )
+                            }
+
+                            Column {
+                                Text(
+                                    text = "VIP PRIVILEGES CLUB",
+                                    fontSize = 14.sp,
+                                    fontFamily = RubikFont,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color(0xFFFFD700)
+                                )
+                                Text(
+                                    text = "Level Upgrade, Weekly & Monthly Bonuses",
+                                    fontSize = 11.sp,
+                                    fontFamily = RubikFont,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFFE2E8F0)
+                                )
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(Color(0xFFFF007A))
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            Text(
+                                text = "VIEW >",
+                                fontSize = 11.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.height(14.dp))
             }
 
-            // 2. Featured Game: Dragon vs Tiger (Exclusive Platform Game)
+            // 3. Featured Game: Dragon vs Tiger (Exclusive Platform Game)
             item(key = "game_dragon_tiger") {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

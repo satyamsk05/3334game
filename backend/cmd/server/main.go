@@ -50,8 +50,10 @@ func main() {
 	hub := ws.NewHub(cfg)
 	go hub.Run()
 
-	// Handlers
-	apiHandler := handlers.NewAPIHandler(cfg, authService, walletService, dbBundle)
+	// Services & Handlers
+	vipService := services.NewVIPService(dbBundle)
+	bankService := services.NewBankService(dbBundle)
+	apiHandler := handlers.NewAPIHandler(cfg, authService, walletService, vipService, bankService, dbBundle)
 
 	// Rate Limiting Middlewares (Redis-backed with in-memory fallback)
 	generalLimiter := middleware.RateLimitMiddleware(dbBundle.Redis, "gen", 120, time.Minute)
@@ -239,6 +241,8 @@ func main() {
 	{
 		walletGroup.GET("/balance", apiHandler.GetBalance)
 		walletGroup.GET("/transactions", apiHandler.GetTransactions)
+		walletGroup.GET("/bank-details", apiHandler.GetBankAccount)
+		walletGroup.POST("/bind-bank", apiHandler.BindBankAccount)
 	}
 
 	directWalletGroup := router.Group("/wallet")
@@ -246,6 +250,27 @@ func main() {
 	{
 		directWalletGroup.GET("/balance", apiHandler.GetBalance)
 		directWalletGroup.GET("/transactions", apiHandler.GetTransactions)
+		directWalletGroup.GET("/bank-details", apiHandler.GetBankAccount)
+		directWalletGroup.POST("/bind-bank", apiHandler.BindBankAccount)
+	}
+
+	// VIP Progression & Rewards Group (20 Tiers)
+	vipGroup := router.Group("/api/v1/vip")
+	vipGroup.Use(middleware.JWTAuthMiddleware(cfg))
+	{
+		vipGroup.GET("/status", apiHandler.GetVIPStatus)
+		vipGroup.POST("/claim-upgrade", apiHandler.ClaimVIPUpgrade)
+		vipGroup.POST("/claim-weekly", apiHandler.ClaimVIPWeekly)
+		vipGroup.POST("/claim-monthly", apiHandler.ClaimVIPMonthly)
+	}
+
+	directVipGroup := router.Group("/vip")
+	directVipGroup.Use(middleware.JWTAuthMiddleware(cfg))
+	{
+		directVipGroup.GET("/status", apiHandler.GetVIPStatus)
+		directVipGroup.POST("/claim-upgrade", apiHandler.ClaimVIPUpgrade)
+		directVipGroup.POST("/claim-weekly", apiHandler.ClaimVIPWeekly)
+		directVipGroup.POST("/claim-monthly", apiHandler.ClaimVIPMonthly)
 	}
 
 	// Payments Group
@@ -358,6 +383,10 @@ func main() {
 		g.POST("/admins", apiHandler.AdminCreateAdmin)
 		g.PATCH("/admins/:id/status", apiHandler.AdminToggleAdminActive)
 		g.GET("/audit-logs", apiHandler.AdminGetAuditLogs)
+
+		// Support actions: Unbind bank account
+		g.POST("/users/:id/unbind-bank", apiHandler.AdminUnbindBankAccount)
+		g.DELETE("/users/:id/unbind-bank", apiHandler.AdminUnbindBankAccount)
 	}
 
 	// Admin Management Group

@@ -10,5 +10,6 @@ enum class NavItem(
     HOME("Home", R.drawable.ic_nav_home),
     SHARE("Share", R.drawable.ic_nav_share),
     REWARD("Add Cash", R.drawable.ic_nav_reward),
+    TASK("Task", R.drawable.ic_nav_task),
     PROFILE("Account", R.drawable.ic_nav_profile)
 }

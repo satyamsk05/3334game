@@ -71,11 +71,16 @@ func InitDB(cfg *config.Config) (*DBBundle, error) {
 				&models.DtRound{},
 				&models.DtBet{},
 				&models.AuditLog{},
+				&models.BankAccount{},
+				&models.VIPRewardClaim{},
+				&models.TaskMission{},
+				&models.UserTaskProgress{},
+				&models.DailyCheckinRecord{},
 			)
 			if err != nil {
 				log.Printf("[DATABASE WARNING] AutoMigrate warning: %v", err)
 			} else {
-				log.Println("[DATABASE] ✅ Database ready! Tables migrated: users, wallets, transactions, deposits, withdrawals, promotions, dt_rounds, dt_bets")
+				log.Println("[DATABASE] ✅ Database ready! Tables migrated: users, wallets, transactions, deposits, withdrawals, promotions, dt_rounds, dt_bets, bank_accounts, vip_reward_claims, task_missions, user_task_progress, daily_checkin_records")
 			}
 		}
 	}

@@ -12,8 +12,35 @@ type User struct {
 	FCMToken  string    `gorm:"type:varchar(512)" json:"fcmToken,omitempty"`
 	IsBlocked bool      `gorm:"default:false" json:"isBlocked"`
 	IsBanned  bool      `gorm:"default:false" json:"isBanned"`
+	VIPLevel  int       `gorm:"default:0" json:"vipLevel"`
+	VIPExp    int64     `gorm:"default:0" json:"vipExp"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// BankAccount stores permanent bank & UPI details for withdrawals.
+// Once bound, it is locked (IsLocked = true) and cannot be edited or deleted by the user.
+// Only customer support / admin can unbind or rebind it.
+type BankAccount struct {
+	ID                string    `gorm:"primaryKey;type:varchar(64)" json:"id"`
+	UserID            string    `gorm:"uniqueIndex;type:varchar(64)" json:"userId"`
+	AccountHolderName string    `gorm:"type:varchar(128)" json:"accountHolderName"`
+	AccountNumber     string    `gorm:"type:varchar(64)" json:"accountNumber"`
+	IFSC              string    `gorm:"type:varchar(32)" json:"ifsc"`
+	BankName          string    `gorm:"type:varchar(64)" json:"bankName"`
+	UPIID             string    `gorm:"type:varchar(64)" json:"upiId"`
+	IsLocked          bool      `gorm:"default:true" json:"isLocked"`
+	BoundAt           time.Time `json:"boundAt"`
+	UpdatedAt         time.Time `json:"updatedAt"`
+}
+
+type VIPRewardClaim struct {
+	ID        string    `gorm:"primaryKey;type:varchar(64)" json:"id"`
+	UserID    string    `gorm:"index;type:varchar(64)" json:"userId"`
+	Type      string    `gorm:"type:varchar(32)" json:"type"` // UPGRADE, WEEKLY, MONTHLY
+	Level     int       `json:"level"`
+	Chips     int64     `json:"chips"`
+	ClaimedAt time.Time `json:"claimedAt"`
 }
 
 type Wallet struct {
@@ -120,4 +147,42 @@ type AuditLog struct {
 	IPAddress string    `gorm:"type:varchar(64)" json:"ipAddress"`
 	CreatedAt time.Time `json:"createdAt"`
 }
+
+type TaskMission struct {
+	ID          string    `gorm:"primaryKey;type:varchar(64)" json:"id"`
+	Title       string    `gorm:"type:varchar(128)" json:"title"`
+	Description string    `gorm:"type:varchar(256)" json:"description"`
+	Category    string    `gorm:"type:varchar(32);default:'MISSION'" json:"category"` // REWARD or MISSION
+	Type        string    `gorm:"type:varchar(64)" json:"type"`                     // DAILY_CHECKIN, PLAY_GAMES, BET_AMOUNT, DEPOSIT, WIN_GAMES
+	TargetCount int64     `gorm:"default:1" json:"targetCount"`                     // Target value
+	RewardChips int64     `gorm:"default:0" json:"rewardChips"`                     // Reward chips/paise
+	IconURL     string    `gorm:"type:varchar(256)" json:"iconUrl"`
+	Active      bool      `gorm:"default:true" json:"active"`
+	SortOrder   int       `gorm:"default:0" json:"sortOrder"`
+	DayNumber   int       `gorm:"default:0" json:"dayNumber"`                       // 1-7 for daily check-in
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+type UserTaskProgress struct {
+	ID           string     `gorm:"primaryKey;type:varchar(64)" json:"id"`
+	UserID       string     `gorm:"index;type:varchar(64)" json:"userId"`
+	TaskID       string     `gorm:"index;type:varchar(64)" json:"taskId"`
+	CurrentCount int64      `gorm:"default:0" json:"currentCount"`
+	IsCompleted  bool       `gorm:"default:false" json:"isCompleted"`
+	IsClaimed    bool       `gorm:"default:false" json:"isClaimed"`
+	ClaimedAt    *time.Time `json:"claimedAt,omitempty"`
+	ResetDate    string     `gorm:"type:varchar(16)" json:"resetDate"` // YYYY-MM-DD
+	UpdatedAt    time.Time  `json:"updatedAt"`
+}
+
+type DailyCheckinRecord struct {
+	ID        string    `gorm:"primaryKey;type:varchar(64)" json:"id"`
+	UserID    string    `gorm:"index;type:varchar(64)" json:"userId"`
+	DayNumber int       `json:"dayNumber"` // 1-7
+	Date      string    `gorm:"type:varchar(16)" json:"date"` // YYYY-MM-DD
+	Chips     int64     `json:"chips"`
+	ClaimedAt time.Time `json:"claimedAt"`
+}
+
 

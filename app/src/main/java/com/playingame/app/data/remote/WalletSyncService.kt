@@ -277,4 +277,64 @@ object WalletSyncService {
         syncJob?.cancel()
         syncJob = null
     }
+
+    /**
+     * Fetches permanently bound bank & UPI account details.
+     */
+    suspend fun getBankDetails(): JSONObject? = withContext(Dispatchers.IO) {
+        val token = SessionManager.authToken() ?: return@withContext null
+        try {
+            val url = "${ClientConfig.API_BASE_URL}/wallet/bank-details"
+            val req = Request.Builder().url(url).header("Authorization", "Bearer $token").get().build()
+            val resp = httpClient.newCall(req).execute()
+            val body = resp.body?.string() ?: return@withContext null
+            val json = JSONObject(body)
+            if (json.optBoolean("success", false)) {
+                return@withContext json.optJSONObject("data")
+            }
+        } catch (_: Exception) {}
+        null
+    }
+
+    /**
+     * Permanently binds user withdrawal bank/UPI details in the backend database.
+     * Once bound, it is locked and cannot be edited by the user.
+     */
+    suspend fun bindBankAccount(
+        upiId: String,
+        accountNumber: String = "",
+        ifsc: String = "",
+        holderName: String = "",
+        bankName: String = ""
+    ): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        val token = SessionManager.authToken() ?: return@withContext Pair(false, "User not authenticated")
+        try {
+            val url = "${ClientConfig.API_BASE_URL}/wallet/bind-bank"
+            val payload = JSONObject().apply {
+                put("upiId", upiId)
+                put("accountNumber", accountNumber)
+                put("ifsc", ifsc)
+                put("accountHolderName", holderName)
+                put("bankName", bankName)
+            }
+            val req = Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer $token")
+                .header("Content-Type", "application/json")
+                .post(payload.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+                .build()
+            val resp = httpClient.newCall(req).execute()
+            val body = resp.body?.string() ?: ""
+            val json = JSONObject(body)
+            val success = json.optBoolean("success", false)
+            val msg = if (success) {
+                json.optString("message", "Bank account permanently bound and locked.")
+            } else {
+                json.optString("error", "Failed to bind bank account")
+            }
+            Pair(success, msg)
+        } catch (e: Exception) {
+            Pair(false, e.message ?: "Network error")
+        }
+    }
 }

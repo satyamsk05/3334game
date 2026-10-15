@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -129,6 +130,28 @@ func (s *WalletService) RequestWithdrawal(userID, upiID string, amountChips int6
 		return nil, fmt.Errorf("withdrawal must be between %d and %d chips", minChips/100, maxChips/100)
 	}
 
+	// Auto-bind or retrieve permanent locked bank account
+	if s.bundle.DB != nil {
+		var bound models.BankAccount
+		if err := s.bundle.DB.Where("user_id = ?", userID).First(&bound).Error; err == nil {
+			if bound.UPIID != "" {
+				upiID = bound.UPIID
+			} else if bound.AccountNumber != "" {
+				upiID = fmt.Sprintf("A/C:%s IFSC:%s", bound.AccountNumber, bound.IFSC)
+			}
+		} else if upiID != "" {
+			// Permanently lock withdrawal account on first entry
+			_ = s.bundle.DB.Create(&models.BankAccount{
+				ID:        fmt.Sprintf("BA-%s", uuid.New().String()[:8]),
+				UserID:    userID,
+				UPIID:     upiID,
+				IsLocked:  true,
+				BoundAt:   time.Now(),
+				UpdatedAt: time.Now(),
+			})
+		}
+	}
+
 	// Fix (Issue 2.6): Generate UUID-based collision-safe ID
 	wdID := fmt.Sprintf("W-%s-%d", uuid.New().String()[:8], time.Now().Unix())
 	wd := models.Withdrawal{
@@ -234,6 +257,53 @@ func (s *WalletService) GetTransactions(userID string, limit int) []models.Trans
 	if s.bundle.DB != nil {
 		var txns []models.Transaction
 		s.bundle.DB.Where("user_id = ?", userID).Order("created_at desc").Limit(limit).Find(&txns)
+
+		// Also merge any pending/unsettled deposits so user sees them immediately in history
+		var pendingDeps []models.Deposit
+		s.bundle.DB.Where("user_id = ? AND status = 'PENDING'", userID).Order("created_at desc").Limit(20).Find(&pendingDeps)
+		for _, dep := range pendingDeps {
+			amtChips := int64(dep.AmountRupees * 100)
+			txns = append(txns, models.Transaction{
+				ID:                dep.ID,
+				UserID:            dep.UserID,
+				Type:              "DEPOSIT",
+				AmountChips:       amtChips,
+				BalanceAfterChips: 0,
+				AmountPaise:       amtChips,
+				BalanceAfterPaise: 0,
+				Status:            "PENDING",
+				ReferenceID:       dep.UTR,
+				Description:       "UPI Deposit (Pending Verification)",
+				CreatedAt:         dep.CreatedAt,
+			})
+		}
+
+		// Also merge any pending or processing withdrawals
+		var pendingWds []models.Withdrawal
+		s.bundle.DB.Where("user_id = ? AND status IN ('PENDING', 'PROCESSING')", userID).Order("created_at desc").Limit(20).Find(&pendingWds)
+		for _, wd := range pendingWds {
+			amtChips := int64(wd.AmountRupees * 100)
+			txns = append(txns, models.Transaction{
+				ID:                wd.ID,
+				UserID:            wd.UserID,
+				Type:              "WITHDRAWAL",
+				AmountChips:       amtChips,
+				BalanceAfterChips: 0,
+				AmountPaise:       amtChips,
+				BalanceAfterPaise: 0,
+				Status:            wd.Status,
+				ReferenceID:       wd.UPIID,
+				Description:       fmt.Sprintf("Bank/UPI Withdrawal (%s)", wd.Status),
+				CreatedAt:         wd.CreatedAt,
+			})
+		}
+
+		sort.Slice(txns, func(i, j int) bool {
+			return txns[i].CreatedAt.After(txns[j].CreatedAt)
+		})
+		if len(txns) > limit {
+			txns = txns[:limit]
+		}
 		return txns
 	}
 
@@ -383,6 +453,21 @@ func (s *WalletService) ApproveDeposit(depositID string) (*models.Deposit, error
 			w.UpdatedAt = time.Now()
 			if err := tx.Save(&w).Error; err != nil {
 				return err
+			}
+
+			// Add VIP EXP: 100 chips added = 100 XP (1 chip = 1 XP)
+			var user models.User
+			if err := tx.Set("gorm:query_option", "FOR UPDATE").Where("id = ?", dep.UserID).First(&user).Error; err == nil {
+				user.VIPExp += amountChips
+				for _, tier := range VIPTiers {
+					if user.VIPExp >= tier.RequiredEXP {
+						user.VIPLevel = tier.Level
+					} else {
+						break
+					}
+				}
+				user.UpdatedAt = time.Now()
+				_ = tx.Save(&user)
 			}
 
 			txnRecord := models.Transaction{

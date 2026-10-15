@@ -44,9 +44,30 @@ fun WithdrawDetailsScreen(
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var upiId by remember { mutableStateOf("user@upi") }
-    var showEditUpiDialog by remember { mutableStateOf(false) }
+    var upiId by remember { mutableStateOf("") }
+    var isBound by remember { mutableStateOf(false) }
+    var boundAccountNumber by remember { mutableStateOf("") }
+    var boundIfsc by remember { mutableStateOf("") }
+    var boundHolderName by remember { mutableStateOf("") }
+    var showBindBankDialog by remember { mutableStateOf(false) }
     var isSubmitting by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        val details = WalletSyncService.getBankDetails()
+        if (details != null) {
+            val u = details.optString("upiId", "")
+            val acc = details.optString("accountNumber", "")
+            val ifsc = details.optString("ifsc", "")
+            val name = details.optString("accountHolderName", "")
+            if (u.isNotBlank() || acc.isNotBlank()) {
+                isBound = true
+                upiId = u.ifBlank { acc }
+                boundAccountNumber = acc
+                boundIfsc = ifsc
+                boundHolderName = name
+            }
+        }
+    }
 
     val amountNum = withdrawAmount.toDoubleOrNull() ?: 500.0
     val upiFee = (amountNum * 0.02).coerceAtMost(10.0) // 2% fee max 10
@@ -126,7 +147,7 @@ fun WithdrawDetailsScreen(
             }
         }
 
-        // 3. Option Card: Withdraw via UPI
+        // 3. Option Card: Withdraw via Permanent Bound Account
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -144,21 +165,87 @@ fun WithdrawDetailsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Withdraw via UPI",
+                        text = "Withdrawal Destination",
                         fontSize = 17.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.W800,
                         color = Color.White
                     )
-                    Text(
-                        text = "Edit UPI ID",
-                        fontSize = 13.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFFFFB800),
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.noRippleClickable { showEditUpiDialog = true }
-                    )
+                    if (isBound) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF0F3B2E))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
+                            Text(text = "🔒 BOUND & LOCKED", fontSize = 11.sp, fontFamily = RubikFont, fontWeight = FontWeight.Bold, color = Color(0xFF00FFC2))
+                        }
+                    } else {
+                        Text(
+                            text = "+ Bind Account",
+                            fontSize = 13.sp,
+                            fontFamily = RubikFont,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFFB800),
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.noRippleClickable { showBindBankDialog = true }
+                        )
+                    }
+                }
+
+                // Security Banner if bound or not
+                if (isBound) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF13192B))
+                            .border(1.dp, Color(0xFF1E3255), RoundedCornerShape(12.dp))
+                            .padding(10.dp)
+                    ) {
+                        Column {
+                            Text(
+                                text = "Target: ${if (boundAccountNumber.isNotBlank()) "A/C $boundAccountNumber ($boundIfsc)" else upiId}",
+                                fontSize = 13.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            if (boundHolderName.isNotBlank()) {
+                                Text(
+                                    text = "Holder: $boundHolderName",
+                                    fontSize = 11.sp,
+                                    fontFamily = RubikFont,
+                                    color = Color(0xFF8E899B)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "🔒 Account is permanently locked in database. To change or rebind, contact Customer Support.",
+                                fontSize = 11.sp,
+                                fontFamily = RubikFont,
+                                color = Color(0xFFFFB800)
+                            )
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF2C1A14))
+                            .border(1.dp, Color(0xFF5A2A1A), RoundedCornerShape(12.dp))
+                            .padding(10.dp)
+                    ) {
+                        Text(
+                            text = "⚠️ Notice: First-time bank/UPI binding is PERMANENT. Once bound, it cannot be changed or deleted by users. Please verify details carefully.",
+                            fontSize = 11.sp,
+                            fontFamily = RubikFont,
+                            color = Color(0xFFFF9100)
+                        )
+                    }
                 }
 
                 Row(
@@ -261,8 +348,9 @@ fun WithdrawDetailsScreen(
                                 )
                             )
                             .noRippleClickable(enabled = !isSubmitting) {
-                                if (upiId.isBlank() || !upiId.contains("@")) {
-                                    Toast.makeText(context, "Please enter a valid UPI ID", Toast.LENGTH_SHORT).show()
+                                if (!isBound && upiId.isBlank()) {
+                                    Toast.makeText(context, "Please bind your withdrawal account first", Toast.LENGTH_SHORT).show()
+                                    showBindBankDialog = true
                                 } else {
                                     isSubmitting = true
                                     coroutineScope.launch {
@@ -306,48 +394,151 @@ fun WithdrawDetailsScreen(
         Spacer(modifier = Modifier.height(40.dp))
     }
 
-    // Edit UPI ID Dialog
-    if (showEditUpiDialog) {
+    // Permanent Bank / UPI Binding Dialog
+    if (showBindBankDialog) {
         var tempUpi by remember { mutableStateOf(upiId) }
+        var tempAcc by remember { mutableStateOf(boundAccountNumber) }
+        var tempIfsc by remember { mutableStateOf(boundIfsc) }
+        var tempName by remember { mutableStateOf(boundHolderName) }
+        var isBindingReq by remember { mutableStateOf(false) }
+
         AlertDialog(
-            onDismissRequest = { showEditUpiDialog = false },
+            onDismissRequest = { if (!isBindingReq) showBindBankDialog = false },
             containerColor = CardNavyBackground,
             titleContentColor = Color.White,
             textContentColor = Color(0xFF8E899B),
-            title = { Text("Edit UPI ID", fontWeight = FontWeight.Bold, fontFamily = RubikFont) },
+            title = {
+                Text("Bind Withdrawal Account", fontWeight = FontWeight.W800, fontFamily = RubikFont, color = Color(0xFFFFD700))
+            },
             text = {
-                OutlinedTextField(
-                    value = tempUpi,
-                    onValueChange = { tempUpi = it },
-                    label = { Text("Enter UPI ID", color = Color(0xFF8E899B)) },
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFF383C45),
-                        unfocusedContainerColor = Color(0xFF383C45),
-                        focusedBorderColor = Color(0xFFFFB800),
-                        unfocusedBorderColor = CardBorderColor,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.verticalScroll(rememberScrollState())
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color(0xFF2C1614))
+                            .border(1.dp, Color(0xFF5E2A20), RoundedCornerShape(8.dp))
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = "🔒 PERMANENT LOCK: This account will be permanently saved in the database. You CANNOT edit or delete it yourself. Contact Support if you need to rebind.",
+                            fontSize = 11.sp,
+                            fontFamily = RubikFont,
+                            color = Color(0xFFFF9100)
+                        )
+                    }
+
+                    OutlinedTextField(
+                        value = tempUpi,
+                        onValueChange = { tempUpi = it },
+                        label = { Text("UPI ID (e.g. name@upi)", color = Color(0xFF8E899B)) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFF231C3D),
+                            unfocusedContainerColor = Color(0xFF231C3D),
+                            focusedBorderColor = Color(0xFFFFB800),
+                            unfocusedBorderColor = CardBorderColor,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        )
                     )
-                )
+
+                    OutlinedTextField(
+                        value = tempAcc,
+                        onValueChange = { tempAcc = it },
+                        label = { Text("Bank Account Number (Optional)", color = Color(0xFF8E899B)) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFF231C3D),
+                            unfocusedContainerColor = Color(0xFF231C3D),
+                            focusedBorderColor = Color(0xFFFFB800),
+                            unfocusedBorderColor = CardBorderColor,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        )
+                    )
+
+                    OutlinedTextField(
+                        value = tempIfsc,
+                        onValueChange = { tempIfsc = it.uppercase() },
+                        label = { Text("Bank IFSC Code (Optional)", color = Color(0xFF8E899B)) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFF231C3D),
+                            unfocusedContainerColor = Color(0xFF231C3D),
+                            focusedBorderColor = Color(0xFFFFB800),
+                            unfocusedBorderColor = CardBorderColor,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        )
+                    )
+
+                    OutlinedTextField(
+                        value = tempName,
+                        onValueChange = { tempName = it },
+                        label = { Text("Account Holder Name", color = Color(0xFF8E899B)) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFF231C3D),
+                            unfocusedContainerColor = Color(0xFF231C3D),
+                            focusedBorderColor = Color(0xFFFFB800),
+                            unfocusedBorderColor = CardBorderColor,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        )
+                    )
+                }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        if (tempUpi.contains("@")) {
-                            upiId = tempUpi
-                            showEditUpiDialog = false
-                        } else {
-                            Toast.makeText(context, "Invalid UPI ID format", Toast.LENGTH_SHORT).show()
+                        val upiClean = tempUpi.trim()
+                        val accClean = tempAcc.trim()
+                        if (upiClean.isBlank() && accClean.isBlank()) {
+                            Toast.makeText(context, "Please enter at least a valid UPI ID or Account Number", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (upiClean.isNotBlank() && !upiClean.contains("@")) {
+                            Toast.makeText(context, "Invalid UPI ID format (must include @)", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        isBindingReq = true
+                        coroutineScope.launch {
+                            val res = WalletSyncService.bindBankAccount(
+                                upiId = upiClean,
+                                accountNumber = accClean,
+                                ifsc = tempIfsc.trim(),
+                                holderName = tempName.trim()
+                            )
+                            isBindingReq = false
+                            if (res.first) {
+                                isBound = true
+                                upiId = upiClean.ifBlank { accClean }
+                                boundAccountNumber = accClean
+                                boundIfsc = tempIfsc.trim()
+                                boundHolderName = tempName.trim()
+                                showBindBankDialog = false
+                                Toast.makeText(context, "Account permanently bound & locked!", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(context, res.second, Toast.LENGTH_LONG).show()
+                            }
                         }
                     },
+                    enabled = !isBindingReq,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFB800))
                 ) {
-                    Text("SAVE", color = AppBackground, fontWeight = FontWeight.Bold)
+                    if (isBindingReq) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp), color = Color.Black, strokeWidth = 2.dp)
+                    } else {
+                        Text("LOCK & BIND PERMANENTLY", color = AppBackground, fontWeight = FontWeight.Bold)
+                    }
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showEditUpiDialog = false }) {
+                TextButton(onClick = { if (!isBindingReq) showBindBankDialog = false }) {
                     Text("CANCEL", color = Color(0xFF8E899B))
                 }
             }

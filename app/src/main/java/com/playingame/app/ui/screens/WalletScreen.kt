@@ -29,12 +29,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Brush
 import com.playingame.app.R
+import com.playingame.app.core.config.ClientConfig
+import com.playingame.app.core.session.SessionManager
+import com.playingame.app.data.remote.RemoteApiClient
 import com.playingame.app.data.wallet.WalletLedger
 import com.playingame.app.ui.theme.AppBackground
 import com.playingame.app.ui.theme.BrandCasinoGreen
 import com.playingame.app.ui.theme.RubikFont
 import com.playingame.app.util.noRippleClickable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.Request
+import org.json.JSONObject
 
 @Composable
 fun WalletScreen(
@@ -48,10 +56,54 @@ fun WalletScreen(
     onSupportClick: () -> Unit = {},
     onAllTransactionsClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
+    onVipClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val userProfile by WalletLedger.userProfile.collectAsState()
+
+    var vipLevel by remember { mutableStateOf(0) }
+    var vipExp by remember { mutableStateOf(0L) }
+    var nextExp by remember { mutableStateOf(500L) }
+    var expNeeded by remember { mutableStateOf(500L) }
+    var progressPercent by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            try {
+                val token = SessionManager.authToken()
+                if (!token.isNullOrBlank()) {
+                    val req = Request.Builder()
+                        .url("${ClientConfig.API_BASE_URL}/vip/status")
+                        .header("Authorization", "Bearer $token")
+                        .get()
+                        .build()
+                    val resp = RemoteApiClient.client.newCall(req).execute()
+                    if (resp.isSuccessful) {
+                        val body = resp.body?.string() ?: ""
+                        val json = JSONObject(body)
+                        if (json.optBoolean("success", false)) {
+                            val data = json.optJSONObject("data")
+                            if (data != null) {
+                                val lvl = data.optInt("vipLevel", 0)
+                                val exp = data.optLong("vipExp", 0L)
+                                val nxt = data.optLong("nextLevelExp", 500L)
+                                val needed = data.optLong("expNeeded", 500L)
+                                val pct = data.optDouble("progressPercent", 0.0).toFloat()
+                                withContext(Dispatchers.Main) {
+                                    vipLevel = lvl
+                                    vipExp = exp
+                                    nextExp = nxt
+                                    expNeeded = needed
+                                    progressPercent = (pct / 100f).coerceIn(0.02f, 1f)
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (_: Exception) {}
+        }
+    }
 
     Column(
         modifier = modifier
@@ -161,14 +213,23 @@ fun WalletScreen(
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        // 3. Level / Tier Banner (BEGINNER - 957 XP to BRONZE I)
+        // 3. Level / Tier Banner (Dynamic VIP XP System with onVipClick)
         // ─────────────────────────────────────────────────────────────────────
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF2B2E34))
-                .border(1.dp, Color(0xFF383C44), RoundedCornerShape(16.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(Color(0xFF26123D), Color(0xFF1B112C), Color(0xFF28133F))
+                    )
+                )
+                .border(
+                    1.2.dp,
+                    Brush.horizontalGradient(listOf(Color(0xFFFFD700), Color(0xFF9333EA))),
+                    RoundedCornerShape(16.dp)
+                )
+                .noRippleClickable { onVipClick() }
                 .padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
             Column(
@@ -179,46 +240,60 @@ fun WalletScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "BEGINNER",
-                        fontSize = 13.sp,
-                        fontFamily = RubikFont,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = if (vipLevel == 0) "BEGINNER VIP" else "VIP $vipLevel",
+                            fontSize = 13.sp,
+                            fontFamily = RubikFont,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFFFFD700)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color(0xFF7C3AED))
+                                .padding(horizontal = 5.dp, vertical = 1.dp)
+                        ) {
+                            Text(
+                                text = "VIP PRIVILEGES >",
+                                fontSize = 9.sp,
+                                fontFamily = RubikFont,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
 
                     Text(
-                        text = "957 XP to BRONZE I",
+                        text = if (vipLevel >= 20) "MAX LEVEL REACHED" else "$expNeeded XP to VIP ${vipLevel + 1}",
                         fontSize = 11.5.sp,
                         fontFamily = RubikFont,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF9CA3AF)
+                        color = Color(0xFF00FFC2)
                     )
                 }
 
-                // Custom XP Progress Track with Knob Indicator
+                // Custom XP Progress Track with Neon Gradient
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(8.dp)
+                        .height(9.dp)
                         .clip(RoundedCornerShape(percent = 50))
-                        .background(Color(0xFF1F2227)),
+                        .background(Color(0xFF140D24)),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(0.18f)
+                            .fillMaxWidth(progressPercent.coerceIn(0.04f, 1f))
                             .fillMaxHeight()
-                            .background(Color(0xFF6B7280))
-                    )
-                    // Floating circular knob
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 10.dp)
-                            .size(12.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF9CA3AF))
-                            .border(1.5.dp, Color(0xFFD1D5DB), CircleShape)
+                            .background(
+                                Brush.horizontalGradient(
+                                    listOf(Color(0xFF00FFC2), Color(0xFF7C3AED), Color(0xFFFF007A))
+                                )
+                            )
                     )
                 }
             }

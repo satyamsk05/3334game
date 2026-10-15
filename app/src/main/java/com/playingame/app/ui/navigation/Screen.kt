@@ -21,4 +21,5 @@ sealed class Screen(val route: String) {
     object DepositPayment : Screen("deposit_payment/{amount}") {
         fun createRoute(amount: Double) = "deposit_payment/$amount"
     }
+    object VipRewards : Screen("vip_rewards")
 }
